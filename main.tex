@@ -1,0 +1,96 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{pgfplots}
+\usepgfplotslibrary{external}
+\usepackage{amsmath}
+\usetikzlibrary{intersections}
+\usetikzlibrary{arrows}
+\usepackage{natbib}
+\usetikzlibrary{patterns}
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+\usepackage[margin=1in]{geometry}
+\usepackage{ mathrsfs }
+\pgfplotsset{compat=1.18, width = 9cm}
+\usepackage{titling}
+\setlength{\droptitle}{-5em}
+\usepackage{lipsum}
+\usepackage{csquotes}
+\usepackage{float} 
+\usepackage{subcaption}
+\usepackage{setspace} 
+\usepackage{hyperref}
+\usepackage{longtable}
+
+\title{Paristological prediction draft}
+\renewcommand\maketitlehookc{\vspace{-7ex}}
+
+%\author{Kateri Mouawad}
+\author{ Molly Doruska \and Alexander Mills \and Kateri Mouawad}
+\renewcommand\maketitlehookc{\vspace{-3ex}} % Add space between author and date
+\date{\vspace{1ex}November 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This is a draft. My questions are the following:
+\begin{itemize}
+    \item Do we want to see the infections separately, i.e. separate LR, OR, and CI for S. haematobium and S. mansoni?
+    \item Do we want to keep categorical variables as factors? I.e, health\_5\_8 has 2's included for "I don't knows", which is why the stats aren't interpretable right now)
+    \item Do we want to try regressing on actual egg count for S. haematobium and S. mansoni?
+    \item Do we want to include the constant?
+    \item Where this stands right now, what would Chris find the most helpful to send him today?
+\end{itemize}
+\tableofcontents 
+
+\section{Logit model 01}
+\input{logit_model_01_table}
+
+%\clearpage
+
+\input{odds_ratios_01}
+
+%\clearpage
+
+\input{CI_odds_01}
+
+\clearpage
+\section{Logit model 02}
+\input{logit_model_02_table}
+
+%\clearpage
+
+\input{odds_ratios_02}
+
+%\clearpage
+
+\input{CI_odds_02}
+
+\clearpage
+\section{Logit model 03}
+\input{logit_model_03_table}
+
+%\clearpage
+
+\input{odds_ratios_03}
+
+%\clearpage
+
+\input{CI_odds_03}
+
+\clearpage
+\section{Logit model 04}
+\input{logit_model_04_table}
+
+%\clearpage
+
+\input{odds_ratios_04}
+
+%\clearpage
+
+\input{CI_odds_04}
+
+\end{document}

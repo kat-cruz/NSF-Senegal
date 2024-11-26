@@ -10,7 +10,7 @@ date: "2024-11-18"
 #install.packages("ggmosaic")
 #install.packages("vcd")
 #install.packages("stargazer")
-install.packages("MASS")  
+#install.packages("MASS")  
 
 library(vcd)
 library(ggmosaic)
@@ -25,7 +25,7 @@ library(rtf)
 library(tidyverse)
 library(estimatr)
 library(broom)
-library("MASS")       
+#library(MASS)       
 library(stats)
 library(stargazer)
 ```
@@ -89,15 +89,15 @@ matched_only_df <- matched_only_df %>%
 
 #Change variables to factors 
 
-matched_only_df <- matched_only_df %>%
-  mutate(
-    health_5_3_2_ = as.factor(health_5_3_2_), 
-    health_5_5_ = as.factor(health_5_5_),
-    health_5_6_ = as.factor(health_5_6_),
-    health_5_8_ = as.factor(health_5_8_),
-    health_5_9_ = as.factor(health_5_9_),
-    health_5_10_ = as.factor(health_5_10_)
-)
+# matched_only_df <- matched_only_df %>%
+#   mutate(
+#     health_5_3_2_ = as.factor(health_5_3_2_), 
+#     health_5_5_ = as.factor(health_5_5_),
+#     health_5_6_ = as.factor(health_5_6_),
+#     health_5_8_ = as.factor(health_5_8_),
+#     health_5_9_ = as.factor(health_5_9_),
+#     health_5_10_ = as.factor(health_5_10_)
+# )
 
 ```
 
@@ -108,6 +108,243 @@ str(matched_only_df$sm_egg_count)
 table(matched_only_df$sm_egg_count)
 summary(matched_only_df$sm_egg_count)
 ```
+
+```{r}
+# var_names <- c("health_5_3_2_", "health_5_4_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_", "hh_gender_", "hh_ethnicity_", "hh_12_1_", "hh_12_2_", "hh_12_3_",  "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_", "hh_12_8_", "hh_31_", "hh_33_", "hh_37_", "living_01", "living_02", "living_04", "wealthindex")
+# 
+# matched_only_df_summary <- matched_only_df %>%
+#    dplyr::select(all_of(var_names))
+#Categorical function
+
+# Function to calculate summary statistics for a single categorical vector
+categ_func_l <- function(value_l) {
+  # N = Total number of non-empty, non-NA observations (including -9s but excluding true NAs/empty cells)
+  N <- sum(!is.na(value_l) & value_l != "")
+  
+  # Remove NAs and invalid values (-9 in this example)
+  valid_value_l <- value_l[!is.na(value_l) & value_l != -9]
+  
+  # Calculate frequency and proportion for valid responses
+  freq_table_l <- table(valid_value_l)
+  proportions_l <- round(freq_table_l / length(valid_value_l), 2)
+  
+  # Calculate the proportion of -9s and NAs
+  prop_na_l <- round(sum(value_l == -9, na.rm = TRUE) / N, 2)
+  
+  # Create a data frame with the summary
+  categorical_data_l <- data.frame(
+    Value = names(freq_table_l),
+    N = N,  # Total number of observations
+    Frequency = as.vector(freq_table_l),  # Frequency of valid responses
+    Proportion = as.vector(proportions_l),  # Proportion of valid responses
+    prop_na = prop_na_l  # Proportion of -9s/NAs
+  )
+  
+  return(categorical_data_l)
+}
+
+# Function to summarize multiple categorical variables by prefix
+categ_summary_l <- function(data_l, prefixes_l) {
+  summaries_l <- lapply(prefixes_l, function(prefix_l) {
+    variable_data_l <- data_l %>%
+      select(starts_with(prefix_l))
+    
+    # Pull the 'value' column and pass to categ_func_l
+    value_l <- variable_data_l[[1]]
+    summary_categ_l <- categ_func_l(value_l)
+    summary_categ_l$Variable_l <- prefix_l  # Assign the prefix as the variable name
+    return(summary_categ_l)
+  })
+  
+  categ_sum_set_l <- bind_rows(summaries_l)
+  return(categ_sum_set_l)
+}
+
+
+```
+
+
+
+```{r}
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+
+prefixes_categ <- c("hh_31_", "hh_33_", "living_01", "living_02", "living_03", "living_04")
+
+
+output_categ <- as.data.frame(categ_summary_l(matched_only_df, prefixes_categ))
+rownames(output_categ) <- NULL
+
+
+output_categ_clean <- as_tibble(output_categ)
+# Use stargazer for the formatted output
+stargazer(output_categ_clean,
+          type = "text",
+          style = "aer",
+           summary = FALSE,
+            rownames = NULL,
+          single.row = FALSE,
+          order = NULL,
+          out = "Categorical_var.tex")
+
+
+```
+
+
+###binary
+
+```{r}
+# Function to calculate summary statistics for a single vector (variable)
+binary_func_l <- function(value) {
+
+  # Calculate summary statistics for 0s and 1s
+  binary_stats_l <- data.frame(
+    N = round(sum(!is.na(value)), 2),
+    mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)
+  )
+  
+  return(binary_stats_l)
+}
+
+binary_summary_l <- function(baseline_data, prefixes) {
+  # Loop over each prefix
+  summaries_binary_l <- lapply(prefixes, function(prefix) {
+    # Select the column that matches the prefix
+    selected_data <- baseline_data %>%
+      select(starts_with(prefix))
+    
+    # Pull the column values and pass to binary_func_l
+    value <- selected_data[[1]]
+    summary_stats <- binary_func_l(value)
+    
+    # Add the prefix (variable name) to the summary
+    summary_stats$variable <- prefix
+    
+    return(summary_stats)
+  })
+  
+  binary_sum_set_l <- bind_rows(summaries_binary_l)
+  return(binary_sum_set_l)
+}
+
+```
+
+
+
+```{r}
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+
+prefixes_binary <- c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_", "hh_gender_", "hh_12_1_", "hh_12_2_", "hh_12_3_", "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_",  "hh_12_8_")
+
+# output_binary <- as.data.frame(categ_summary_l(matched_only_df, prefixes_binary))
+# rownames(output_binary) <- NULL
+
+output_binary <- binary_summary_l(matched_only_df, prefixes_binary)
+
+# Use stargazer for the formatted output
+stargazer(output_binary,
+          type = "text",
+          style = "aer",
+           summary = FALSE,
+            rownames = NULL,
+          single.row = FALSE,
+          order = NULL,
+          out = "binary_var.tex")
+
+
+```
+
+###numerical 
+
+health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ + hh_gender_ + hh_ethnicity_ + hh_12_1_ + hh_12_2_ + hh_12_3_ + hh_12_4_ + hh_12_5_ + hh_12_6_ + hh_12_7_ + hh_12_8_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_03 + living_04  + wealthindex
+
+```{r}
+
+# Function to calculate summary statistics for a single numeric vector
+numerical_summary_func_l <- function(value) {
+  
+  # Calculate summary statistics for numeric variables
+  numerical_stats_l <- data.frame(
+    N = round(sum(!is.na(value)), 2),
+    min = round(min(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    #max = round(max(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    max = sprintf("%.2f", max(ifelse(value == -9, NA, value), na.rm = TRUE),2),
+    sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)
+  )
+  
+  return(numerical_stats_l)
+}
+
+# Function to summarize multiple sets of numeric variables by prefix
+numerical_summary_l <- function(baseline_data, prefixes) {
+  # Loop over each prefix
+  summaries_numerical_l <- lapply(prefixes, function(prefix) {
+    # Select the column that matches the prefix
+    numerical_data_l <- baseline_data %>%
+      select(starts_with(prefix))
+    
+    # Pull the column values and pass to numerical_summary_func_l
+    value <- numerical_data_l[[1]]
+    numerical_summary_stats <- numerical_summary_func_l(value)
+    
+    # Add the prefix (variable name) to the summary
+    numerical_summary_stats$variable <- prefix
+    
+    return(numerical_summary_stats)
+  })
+  
+  # Combine the summaries into a single data frame
+  numerical_sum_set_l <- bind_rows(summaries_numerical_l)
+  return(numerical_sum_set_l)
+}
+
+
+```
+
+
+```{r}
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+
+prefixes_numerical <- c("wealthindex", "health_5_4_", "hh_age_")
+
+# output_binary <- as.data.frame(categ_summary_l(matched_only_df, prefixes_binary))
+# rownames(output_binary) <- NULL
+
+output_numerical <- numerical_summary_l(matched_only_df, prefixes_numerical)
+
+# Use stargazer for the formatted output
+stargazer(output_numerical,
+          type = "text",
+          style = "aer",
+           summary = FALSE,
+            rownames = NULL,
+          single.row = FALSE,
+          order = NULL,
+          out = "numerical_var.tex")
+
+
+```
+
+
+
+
+```{r}
+#MAYBE do this lol
+###rename vars for clarity 
+
+# matched_only_df <- matched_only_df %>%
+#   rename(health_perception = health_5_3_2_,
+#          health_sch = health_5_4_,
+#          health_med = health_5_5_,
+#          health_diag = health_5_6_,
+#          
+#                   )
+
+```
+
 
 #Variable notes:
 
@@ -152,7 +389,7 @@ output of regression table
 
 ```{r}
 
-setwd("C:/Users/km978/Box/NSF Senegal/Data Management/Output/Data Analysis/Parasitological Predictive Tables")
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
 # Specify the formula for logistic regression
 formula_01 <- sh_inf ~ health_5_3_2_ + health_5_4_ 
 
@@ -165,7 +402,7 @@ logit_model_01 <- glm(formula_01, data = matched_only_df, family = binomial)
 stargazer(logit_model_01,  
           covariate.labels = c("Percieved infection", "Missed school days"),
           #dep.var.labels = "",
-          type = "latex", 
+          type = "text", 
           digit.separator = "",
           no.space = TRUE,
           column.sep.width = "3pt",
@@ -176,7 +413,7 @@ coefficients_01 <- coef(logit_model_01)
 
 # Calculate odds ratios
 odds_ratios_01 <- exp(coefficients_01)
-
+odds_ratios_01
 # Display odds ratios
 
 # Display odds ratios in long format for better readability 
@@ -217,7 +454,7 @@ stargazer(CI_odds_01,
 
 
 ```{r}
-setwd("C:/Users/km978/Box/NSF Senegal/Data Management/Output/Data Analysis/Parasitological Predictive Tables")
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
 
 # Specify the formula for logistic regression
 formula_02 <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
@@ -231,7 +468,7 @@ logit_model_02 <- glm(formula, data = matched_only_df, family = binomial)
 stargazer(logit_model_02,  
           covariate.labels = c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia"),
           #dep.var.labels = "",
-          type = "latex", 
+          type = "text", 
           digit.separator = "",
           no.space = TRUE,
           column.sep.width = "3pt",
@@ -259,7 +496,7 @@ stargazer(odds_ratios_long_02,
           summary = FALSE,   # Suppresses summary statistics
           type = "latex",
           rownames = FALSE, #Removes row numbers
-          out = "odds_ratios_long.tex")
+          out = "odds_ratios_02.tex")
 
 # Calculate confidence intervals for coefficients
 conf_int <- confint(logit_model_02)
@@ -279,26 +516,29 @@ stargazer(CI_odds_02,
 
 
 
-```{r}
-setwd("C:/Users/km978/Box/NSF Senegal/Data Management/Output/Data Analysis/Parasitological Predictive Tables")
+#Bivariate Logistic regression 03
 
+```{r}
+#setwd("C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+     setwd("C:/Users/Kateri/Downloads/NSF-Senegal/Latex Output")
 # Specify the formula for logistic regression
-formula_03 <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_
+formula_03 <- sh_inf ~  health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ 
 
 # Run the logistic regression
-logit_model_03 <- glm(formula, data = matched_only_df, family = binomial)
+logit_model_03 <- glm(formula_03, data = matched_only_df, family = binomial)
 
-#covariate_labels <- c("Perception", "Recently infected") 
+covariate_labels_03 <- c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in urine 'Don't Knows'", "Blood in stool")
+#view(matched_only_df)
 
 # Display summary of the model
 stargazer(logit_model_03,  
-          covariate.labels = c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia"),
+          covariate.labels = covariate_labels_03,
           #dep.var.labels = "",
-          type = "latex", 
+          type = "text", 
           digit.separator = "",
           no.space = TRUE,
           column.sep.width = "3pt",
-          out = "logit_model_02_table.tex")  # Omit some statistics
+          out = "logit_model_03_table.tex")  # Omit some statistics
 
 
 # Extract coefficients
@@ -306,14 +546,17 @@ coefficients_03 <- coef(logit_model_03)
 
 # Calculate odds ratios
 odds_ratios_03 <- exp(coefficients_03)
-
-# Display odds ratios in long format for better readability 
+odds_ratios_03
+#Display odds ratios in long format for better readability
 odds_ratios_long_03 <- data.frame(
   Variable = c("Intercept", 
-               "Perceived infection", 
-               "Missed school days", 
-               "Received medication", 
-               "Ever diagnosed with Bilharzia"),
+               "Percieved infection",
+               "Missed school days",
+               "Recived medication", 
+               "Ever diagnosed with Bilharzia", 
+               "Blood in urine",
+               "Blood in urine 'Don't Knows",
+               "Blood in stool"),
   Odds_Ratio = odds_ratios_03
 )
 
@@ -322,16 +565,16 @@ stargazer(odds_ratios_long_03,
           summary = FALSE,   # Suppresses summary statistics
           type = "latex",
           rownames = FALSE, #Removes row numbers
-          out = "odds_ratios_long.tex")
+          out = "odds_ratios_03.tex")
 
 # Calculate confidence intervals for coefficients
-conf_int <- confint(logit_model_03)
+conf_int_03 <- confint(logit_model_03)
 
 # Exponentiate to get confidence intervals for odds ratios
-conf_int_odds_ratios_02 <- exp(conf_int)
+conf_int_odds_ratios_03 <- exp(conf_int_03)
 
 # Display odds ratios with confidence intervals
-CI_odds_02 <- data.frame(Odds_Ratio = odds_ratios_03, 
+CI_odds_03 <- data.frame(Odds_Ratio = odds_ratios_03, 
            CI_Lower = conf_int_odds_ratios_03[, 1], 
            CI_Upper = conf_int_odds_ratios_03[, 2])
 
@@ -342,10 +585,73 @@ stargazer(CI_odds_03,
 
 
 
+#Bivariate Logistic regression 04
+
+
+```{r}
+# hh_12_7_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_03 + living_04 + wealthindex 
+```
 
 
 
 
+```{r}
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+
+# Specify the formula for logistic regression
+formula_04 <- sh_inf ~  health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ + hh_gender_ + hh_ethnicity_ + hh_12_1_ + hh_12_2_ + hh_12_3_ + hh_12_4_ + hh_12_5_ + hh_12_6_ + hh_12_7_ + hh_12_8_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_03 + living_04  + wealthindex
+# hh_11_ = "Type of surface water", maybe bring this back???
+# Run the logistic regression
+logit_model_04 <- glm(formula_04, data = matched_only_df, family = binomial)
+logit_model_04
+
+covariate_labels_04 <- c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in urine 'Don't Knows'", "Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index")
+
+# Display summary of the model
+stargazer(logit_model_04,  
+          covariate.labels = covariate_labels_04,
+          #dep.var.labels = "",
+          type = "text", 
+          digit.separator = "",
+          no.space = TRUE,
+          column.sep.width = "3pt",
+          out = "logit_model_04_table.tex")  # Omit some statistics
+
+
+# Extract coefficients
+coefficients_04 <- coef(logit_model_04)
+
+# Calculate odds ratios
+odds_ratios_04 <- exp(coefficients_04)
+odds_ratios_04
+#Display odds ratios in long format for better readability
+odds_ratios_long_04 <- data.frame(
+  Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in urine 'Don't Knows'", "Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
+  Odds_Ratio = odds_ratios_04
+)
+
+# Use stargazer for a "long" table
+stargazer(odds_ratios_long_04,
+          summary = FALSE,   # Suppresses summary statistics
+          type = "latex",
+          rownames = FALSE, #Removes row numbers
+          out = "odds_ratios_04.tex")
+
+# Calculate confidence intervals for coefficients
+conf_int_04 <- confint(logit_model_04)
+
+# Exponentiate to get confidence intervals for odds ratios
+conf_int_odds_ratios_04 <- exp(conf_int_04)
+
+# Display odds ratios with confidence intervals
+CI_odds_04 <- data.frame(Odds_Ratio = odds_ratios_04, 
+           CI_Lower = conf_int_odds_ratios_04[, 1], 
+           CI_Upper = conf_int_odds_ratios_04[, 2])
+
+stargazer(CI_odds_04,
+          type = "latex",
+          out = "CI_odds_04.tex")
+```
 
 
 

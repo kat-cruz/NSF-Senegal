@@ -1,0 +1,361 @@
+---
+title: "Parasitological_Logistic_Regression_Analysis"
+output: html_document
+date: "2024-11-18"
+---
+
+#BEGIN HERE - load packages
+
+```{r}
+#install.packages("ggmosaic")
+#install.packages("vcd")
+#install.packages("stargazer")
+install.packages("MASS")  
+
+library(vcd)
+library(ggmosaic)
+library(officer)
+library(r2rtf)
+library(dplyr)
+library(ggplot2)
+library(kwb.utils)
+library(haven)
+library(data.table)
+library(rtf)
+library(tidyverse)
+library(estimatr)
+library(broom)
+library("MASS")       
+library(stats)
+library(stargazer)
+```
+
+#Load file paths
+
+```{r}
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Dataframe"
+  ))
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Dataframe"
+  ))
+}
+
+file_path_infection_df <- file.path(proj$p1, "child_infection_dataframe_features.dta")
+infection_df <- read_dta(file_path_infection_df)
+
+
+```
+
+## Filter df
+
+```{r}
+
+matched_only_df <- infection_df %>%
+  filter(match_score != "")
+
+```
+
+#Create relevant variables
+
+```{r}
+
+
+# Calculate egg counts
+matched_only_df <- matched_only_df %>%
+  # 1) Calculate S. haematobium egg count
+  mutate(
+    sh_egg_count = if_else(fu_p1 > 0, fu_p1, fu_p2),  # max of fu_p1 and fu_p2, only use fu_p2 if fu_p1 is zero
+
+    #  2) Calculate S. mansoni egg count
+    # Calculate average of each pass
+    p1_avg = (p1_kato1_k1_pg + p1_kato2_k2_peg) / 2,
+    p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2,
+
+    # Only calculate p2_avg if p1_avg is zero, then take the maximum of p1_avg and p2_avg
+    sm_egg_count = if_else(p1_avg > 0, p1_avg, p2_avg)
+  )# %>%
+
+#Change variables to factors 
+
+matched_only_df <- matched_only_df %>%
+  mutate(
+    health_5_3_2_ = as.factor(health_5_3_2_), 
+    health_5_5_ = as.factor(health_5_5_),
+    health_5_6_ = as.factor(health_5_6_),
+    health_5_8_ = as.factor(health_5_8_),
+    health_5_9_ = as.factor(health_5_9_),
+    health_5_10_ = as.factor(health_5_10_)
+)
+
+```
+
+#EDA
+
+```{r}
+str(matched_only_df$sm_egg_count)
+table(matched_only_df$sm_egg_count)
+summary(matched_only_df$sm_egg_count)
+```
+
+#Variable notes:
+
+-   health_5_3_2 = illness suffered? \_2 = chose Bilharzia
+-   health_5_4 = how many days of school missed
+-   health_5_5 = Has he/she received medication for schistosomiasis in the past 12 months?
+-   health_5_6 = Ever diagnosed w/ schisto?
+-   health_5_8 = blood in urine past 12 months?
+-   health_5_9 = blood in stool past 12 months?
+-   hh_11 = which water source
+-   hh_12 = why person spent time near water source
+-   hh_33 = performace in class
+-   hh_37 = had illness last 12 months
+-   living_01 = source of drinking water
+-   living_02 = is the water treated
+-   living_03 = if so, how
+-   living_04 = main type of toilet used
+
+#Bivariate Logistic regression 01
+health_5_3_2_ = What type of illness or injury did he/she suffer from? (answer choice is Bilharzia) Binary
+health_5_4_ = How many days did he/she miss work/school due to illness or injury in the past month? Numeric
+
+##stargazer package reminders lol
+
+output of regression table
+ stargazer(production_reg,
+           title ="Precision",
+           type = "text",
+           report = "vc*s",
+           #model.numbers=FALSE,
+           covariate.labels = c("Heat", "Male", "Time", "Heat X Time ", "Height", "Height (Missing)"),
+           dep.var.labels = "",
+           column.labels = regression_names,
+           no.space = TRUE,
+           column.sep.width = "3pt",
+           se = production_reg_pvals,
+           p = production_reg_pvals,
+           omit.stat = c("f", "adj.rsq", "ser")
+           omit = c("height_reg", "height_reg_miss")
+
+
+
+```{r}
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data Management/Output/Data Analysis/Parasitological Predictive Tables")
+# Specify the formula for logistic regression
+formula_01 <- sh_inf ~ health_5_3_2_ + health_5_4_ 
+
+# Run the logistic regression
+logit_model_01 <- glm(formula_01, data = matched_only_df, family = binomial)
+
+#covariate_labels <- c("Perception", "Recently infected") 
+
+# Display summary of the model
+stargazer(logit_model_01,  
+          covariate.labels = c("Percieved infection", "Missed school days"),
+          #dep.var.labels = "",
+          type = "latex", 
+          digit.separator = "",
+          no.space = TRUE,
+          column.sep.width = "3pt",
+          out = "logit_model_01_table.tex")  # Omit some statistics
+
+# Extract coefficients
+coefficients_01 <- coef(logit_model_01)
+
+# Calculate odds ratios
+odds_ratios_01 <- exp(coefficients_01)
+
+# Display odds ratios
+
+# Display odds ratios in long format for better readability 
+odds_ratios_long_01 <- data.frame(
+  Variable = c("Intercept", 
+               "Perceived infection", 
+               "Missed school days"),
+  Odds_Ratio = odds_ratios_01
+)
+
+# Use stargazer for a "long" table
+stargazer(odds_ratios_long_01,
+          summary = FALSE,   # Suppresses summary statistics
+          type = "latex",
+          rownames = FALSE, #Removes row numbers
+          out = "odds_ratios_01.tex")
+
+# Calculate confidence intervals for coefficients
+conf_int_01 <- confint(logit_model_01)
+
+# Exponentiate to get confidence intervals for odds ratios
+conf_int_odds_ratios_01 <- exp(conf_int_01)
+
+# Display odds ratios with confidence intervals
+CI_odds_01 <- data.frame(Odds_Ratio = odds_ratios_01, 
+           CI_Lower = conf_int_odds_ratios_01[, 1], 
+           CI_Upper = conf_int_odds_ratios_01[, 2])
+
+stargazer(CI_odds_01,
+          type = "latex",
+          out = "CI_odds_01.tex")
+
+```
+
+
+#Bivariate Logistic regression 02
+
+
+
+```{r}
+setwd("C:/Users/km978/Box/NSF Senegal/Data Management/Output/Data Analysis/Parasitological Predictive Tables")
+
+# Specify the formula for logistic regression
+formula_02 <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
+
+# Run the logistic regression
+logit_model_02 <- glm(formula, data = matched_only_df, family = binomial)
+
+#covariate_labels <- c("Perception", "Recently infected") 
+
+# Display summary of the model
+stargazer(logit_model_02,  
+          covariate.labels = c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia"),
+          #dep.var.labels = "",
+          type = "latex", 
+          digit.separator = "",
+          no.space = TRUE,
+          column.sep.width = "3pt",
+          out = "logit_model_02_table.tex")  # Omit some statistics
+
+
+# Extract coefficients
+coefficients_02 <- coef(logit_model_02)
+
+# Calculate odds ratios
+odds_ratios_02 <- exp(coefficients_02)
+
+# Display odds ratios in long format for better readability 
+odds_ratios_long_02 <- data.frame(
+  Variable = c("Intercept", 
+               "Perceived infection", 
+               "Missed school days", 
+               "Received medication", 
+               "Ever diagnosed with Bilharzia"),
+  Odds_Ratio = odds_ratios_02
+)
+
+# Use stargazer for a "long" table
+stargazer(odds_ratios_long_02,
+          summary = FALSE,   # Suppresses summary statistics
+          type = "latex",
+          rownames = FALSE, #Removes row numbers
+          out = "odds_ratios_long.tex")
+
+# Calculate confidence intervals for coefficients
+conf_int <- confint(logit_model_02)
+
+# Exponentiate to get confidence intervals for odds ratios
+conf_int_odds_ratios_02 <- exp(conf_int)
+
+# Display odds ratios with confidence intervals
+CI_odds_02 <- data.frame(Odds_Ratio = odds_ratios_02, 
+           CI_Lower = conf_int_odds_ratios_02[, 1], 
+           CI_Upper = conf_int_odds_ratios_02[, 2])
+
+stargazer(CI_odds_02,
+          type = "latex",
+          out = "CI_odds_02.tex")
+```
+
+
+
+```{r}
+setwd("C:/Users/km978/Box/NSF Senegal/Data Management/Output/Data Analysis/Parasitological Predictive Tables")
+
+# Specify the formula for logistic regression
+formula_03 <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_
+
+# Run the logistic regression
+logit_model_03 <- glm(formula, data = matched_only_df, family = binomial)
+
+#covariate_labels <- c("Perception", "Recently infected") 
+
+# Display summary of the model
+stargazer(logit_model_03,  
+          covariate.labels = c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia"),
+          #dep.var.labels = "",
+          type = "latex", 
+          digit.separator = "",
+          no.space = TRUE,
+          column.sep.width = "3pt",
+          out = "logit_model_02_table.tex")  # Omit some statistics
+
+
+# Extract coefficients
+coefficients_03 <- coef(logit_model_03)
+
+# Calculate odds ratios
+odds_ratios_03 <- exp(coefficients_03)
+
+# Display odds ratios in long format for better readability 
+odds_ratios_long_03 <- data.frame(
+  Variable = c("Intercept", 
+               "Perceived infection", 
+               "Missed school days", 
+               "Received medication", 
+               "Ever diagnosed with Bilharzia"),
+  Odds_Ratio = odds_ratios_03
+)
+
+# Use stargazer for a "long" table
+stargazer(odds_ratios_long_03,
+          summary = FALSE,   # Suppresses summary statistics
+          type = "latex",
+          rownames = FALSE, #Removes row numbers
+          out = "odds_ratios_long.tex")
+
+# Calculate confidence intervals for coefficients
+conf_int <- confint(logit_model_03)
+
+# Exponentiate to get confidence intervals for odds ratios
+conf_int_odds_ratios_02 <- exp(conf_int)
+
+# Display odds ratios with confidence intervals
+CI_odds_02 <- data.frame(Odds_Ratio = odds_ratios_03, 
+           CI_Lower = conf_int_odds_ratios_03[, 1], 
+           CI_Upper = conf_int_odds_ratios_03[, 2])
+
+stargazer(CI_odds_03,
+          type = "latex",
+          out = "CI_odds_03.tex")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

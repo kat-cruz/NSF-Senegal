@@ -11,6 +11,8 @@ date: "2024-11-18"
 #install.packages("vcd")
 #install.packages("stargazer")
 #install.packages("MASS")  
+#install.packages("pscl")  
+#install.packages("sandwich")
 
 library(vcd)
 library(ggmosaic)
@@ -28,6 +30,9 @@ library(broom)
 #library(MASS)       
 library(stats)
 library(stargazer)
+library(pscl)
+library(sandwich)
+
 ```
 
 #Load file paths
@@ -109,6 +114,7 @@ table(matched_only_df$sm_egg_count)
 summary(matched_only_df$sm_egg_count)
 ```
 
+###categorical 
 ```{r}
 # var_names <- c("health_5_3_2_", "health_5_4_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_", "hh_gender_", "hh_ethnicity_", "hh_12_1_", "hh_12_2_", "hh_12_3_",  "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_", "hh_12_8_", "hh_31_", "hh_33_", "hh_37_", "living_01", "living_02", "living_04", "wealthindex")
 # 
@@ -166,7 +172,9 @@ categ_summary_l <- function(data_l, prefixes_l) {
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+install.packages("gt")
+library(gt)
 
 prefixes_categ <- c("hh_31_", "hh_33_", "living_01", "living_02", "living_03", "living_04")
 
@@ -175,18 +183,15 @@ output_categ <- as.data.frame(categ_summary_l(matched_only_df, prefixes_categ))
 rownames(output_categ) <- NULL
 
 
-output_categ_clean <- as_tibble(output_categ)
-# Use stargazer for the formatted output
-stargazer(output_categ_clean,
-          type = "text",
-          style = "aer",
-           summary = FALSE,
-            rownames = NULL,
-          single.row = FALSE,
-          order = NULL,
-          out = "Categorical_var.tex")
+output_categ_gt <- gt(output_categ)
+
+output_categ_gt <- output_categ_gt %>%
+  tab_header(
+    title = "Categorical Stats"
+  )
 
 
+gtsave(output_categ_gt, "output_categ_clean_table.tex", path = "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
 ```
 
 
@@ -233,7 +238,7 @@ binary_summary_l <- function(baseline_data, prefixes) {
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
 
 prefixes_binary <- c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_", "hh_gender_", "hh_12_1_", "hh_12_2_", "hh_12_3_", "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_",  "hh_12_8_")
 
@@ -243,21 +248,30 @@ prefixes_binary <- c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_
 output_binary <- binary_summary_l(matched_only_df, prefixes_binary)
 
 # Use stargazer for the formatted output
-stargazer(output_binary,
-          type = "text",
-          style = "aer",
-           summary = FALSE,
-            rownames = NULL,
-          single.row = FALSE,
-          order = NULL,
-          out = "binary_var.tex")
+# stargazer(output_binary,
+#           type = "text",
+#           style = "aer",
+#            summary = FALSE,
+#             rownames = NULL,
+#           single.row = FALSE,
+#           order = NULL,
+#           out = "binary_var.tex")
+
+output_binary_gt <- gt(output_binary)
+
+output_binary_gt <- output_binary_gt %>%
+  tab_header(
+    title = "Binary Stats"
+  )
+
+
+gtsave(output_binary_gt, "output_binary_clean_table.tex", path = "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
 
 
 ```
 
 ###numerical 
 
-health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ + hh_gender_ + hh_ethnicity_ + hh_12_1_ + hh_12_2_ + hh_12_3_ + hh_12_4_ + hh_12_5_ + hh_12_6_ + hh_12_7_ + hh_12_8_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_03 + living_04  + wealthindex
 
 ```{r}
 
@@ -306,24 +320,34 @@ numerical_summary_l <- function(baseline_data, prefixes) {
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
 
 prefixes_numerical <- c("wealthindex", "health_5_4_", "hh_age_")
 
 # output_binary <- as.data.frame(categ_summary_l(matched_only_df, prefixes_binary))
 # rownames(output_binary) <- NULL
-
+# 
 output_numerical <- numerical_summary_l(matched_only_df, prefixes_numerical)
+# 
+# # Use stargazer for the formatted output
+# stargazer(output_numerical,
+#           type = "text",
+#           style = "aer",
+#            summary = FALSE,
+#             rownames = NULL,
+#           single.row = FALSE,
+#           order = NULL,
+#           out = "numerical_var.tex")
 
-# Use stargazer for the formatted output
-stargazer(output_numerical,
-          type = "text",
-          style = "aer",
-           summary = FALSE,
-            rownames = NULL,
-          single.row = FALSE,
-          order = NULL,
-          out = "numerical_var.tex")
+output_numerical_gt <- gt(output_numerical)
+
+output_numerical_gt <- output_numerical_gt %>%
+  tab_header(
+    title = "Numerical Stats"
+  )
+
+
+gtsave(output_numerical_gt, "output_numerical_clean_table.tex", path = "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
 
 
 ```
@@ -363,7 +387,7 @@ stargazer(output_numerical,
 -   living_03 = if so, how
 -   living_04 = main type of toilet used
 
-#Bivariate Logistic regression 01
+
 health_5_3_2_ = What type of illness or injury did he/she suffer from? (answer choice is Bilharzia) Binary
 health_5_4_ = How many days did he/she miss work/school due to illness or injury in the past month? Numeric
 
@@ -385,11 +409,11 @@ output of regression table
            omit.stat = c("f", "adj.rsq", "ser")
            omit = c("height_reg", "height_reg_miss")
 
-
+#Bivariate Logistic regression 01
 
 ```{r}
 
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
 # Specify the formula for logistic regression
 formula_01 <- sh_inf ~ health_5_3_2_ + health_5_4_ 
 
@@ -397,16 +421,58 @@ formula_01 <- sh_inf ~ health_5_3_2_ + health_5_4_
 logit_model_01 <- glm(formula_01, data = matched_only_df, family = binomial)
 
 #covariate_labels <- c("Perception", "Recently infected") 
+# Calculate McFadden's pseudo R^2
 
-# Display summary of the model
-stargazer(logit_model_01,  
+# Calculate Pseudo R^2 using the pscl package
+pseudo_r2 <- pR2(logit_model_01)["McFadden"]
+pseudo_r2
+# Calculate BIC
+bic_value <- BIC(logit_model_01)
+
+# Display the regression summary with additional statistics
+# stargazer(logit_model_01,  
+#           covariate.labels = c("Percieved infection", "Missed school days"),
+#           type = "text", 
+#           digit.separator = "",
+#           no.space = TRUE,
+#           column.sep.width = "3pt",
+#           add.lines = list(c("BIC", round(bic_value, 2))),
+#           out = "logit_model_01_table.tex")
+
+logit_model_01_done <- stargazer(logit_model_01,  
           covariate.labels = c("Percieved infection", "Missed school days"),
-          #dep.var.labels = "",
           type = "text", 
           digit.separator = "",
           no.space = TRUE,
           column.sep.width = "3pt",
-          out = "logit_model_01_table.tex")  # Omit some statistics
+          add.lines = list(c("Pseudo R^2", pseudo_r2)), 
+              c("BIC", round(bic_value, 2))
+          )
+          
+
+cat(logit_model_01_done, sep = '\n', file = "logit_model_01_table.tex")
+
+# pseudo_r2 <- pR2(logit_model_01)["McFadden"]
+# 
+# # Calculate BIC
+# bic_value <- BIC(logit_model_01)
+# 
+# 
+# 
+# # Display summary of the model
+# stargazer(logit_model_01,  
+#           covariate.labels = c("Percieved infection", "Missed school days"),
+#           #dep.var.labels = "",
+#           type = "text", 
+#           digit.separator = "",
+#           no.space = TRUE,
+#           column.sep.width = "3pt",
+#           add.lines = pseudo_r2, 
+#           add.lines = bic_value,
+#           # add.lines = list(c("Pseudo R^2", round(pseudo_r2, 4)), 
+#           #                  c("BIC", round(bic_value, 2))),
+#           out = "logit_model_01_table.tex")  # Omit some statistics
+
 
 # Extract coefficients
 coefficients_01 <- coef(logit_model_01)
@@ -454,7 +520,7 @@ stargazer(CI_odds_01,
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
 
 # Specify the formula for logistic regression
 formula_02 <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
@@ -520,21 +586,31 @@ stargazer(CI_odds_02,
 
 ```{r}
 #setwd("C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
-     setwd("C:/Users/Kateri/Downloads/NSF-Senegal/Latex Output")
+   setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+
 # Specify the formula for logistic regression
+
+# Replace all 2s in the variable health_5_8_ with NAs
+# Replace all 2s in the variable health_5_8_ with NAs directly in the dataframe
+matched_only_df$health_5_8_ <- ifelse(matched_only_df$health_5_8_ == 2, NA, matched_only_df$health_5_8_)
+
+
+
+
+
 formula_03 <- sh_inf ~  health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ 
 
 # Run the logistic regression
 logit_model_03 <- glm(formula_03, data = matched_only_df, family = binomial)
 
-covariate_labels_03 <- c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in urine 'Don't Knows'", "Blood in stool")
+covariate_labels_03 <- c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in stool")
 #view(matched_only_df)
 
 # Display summary of the model
 stargazer(logit_model_03,  
           covariate.labels = covariate_labels_03,
           #dep.var.labels = "",
-          type = "text", 
+          type = "latex", 
           digit.separator = "",
           no.space = TRUE,
           column.sep.width = "3pt",
@@ -555,7 +631,6 @@ odds_ratios_long_03 <- data.frame(
                "Recived medication", 
                "Ever diagnosed with Bilharzia", 
                "Blood in urine",
-               "Blood in urine 'Don't Knows",
                "Blood in stool"),
   Odds_Ratio = odds_ratios_03
 )
@@ -596,22 +671,22 @@ stargazer(CI_odds_03,
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex Output")
+setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
 
 # Specify the formula for logistic regression
-formula_04 <- sh_inf ~  health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ + hh_gender_ + hh_ethnicity_ + hh_12_1_ + hh_12_2_ + hh_12_3_ + hh_12_4_ + hh_12_5_ + hh_12_6_ + hh_12_7_ + hh_12_8_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_03 + living_04  + wealthindex
+formula_04 <- sh_inf ~  health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ + hh_gender_ + hh_ethnicity_ + hh_12_1_ + hh_12_2_ + hh_12_3_ + hh_12_4_ + hh_12_5_ + hh_12_6_ + hh_12_7_ + hh_12_8_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_04  + wealthindex
 # hh_11_ = "Type of surface water", maybe bring this back???
 # Run the logistic regression
 logit_model_04 <- glm(formula_04, data = matched_only_df, family = binomial)
 logit_model_04
 
-covariate_labels_04 <- c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in urine 'Don't Knows'", "Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index")
+covariate_labels_04 <- c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index")
 
 # Display summary of the model
 stargazer(logit_model_04,  
           covariate.labels = covariate_labels_04,
           #dep.var.labels = "",
-          type = "text", 
+          type = "latex", 
           digit.separator = "",
           no.space = TRUE,
           column.sep.width = "3pt",
@@ -626,7 +701,7 @@ odds_ratios_04 <- exp(coefficients_04)
 odds_ratios_04
 #Display odds ratios in long format for better readability
 odds_ratios_long_04 <- data.frame(
-  Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in urine 'Don't Knows'", "Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
+  Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine","Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
   Odds_Ratio = odds_ratios_04
 )
 

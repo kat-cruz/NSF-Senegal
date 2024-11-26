@@ -261,6 +261,12 @@ drop _merge
 
 merge 1:1 hhid using "${crdes}\Baseline\Deidentified\Complete_Baseline_Agriculture.dta"
 
+
+
+*decode hhid_village, gen(hhid_village_)  // if it's a string factor variable
+
+merge m:1 hhid_village "${crdes}\Baseline\Deidentified\Complete_Community_Baseline.dta"
+
 *additional variables
 
 keep hhid health_5_3_2_* health_5_4_* health_5_5_* health_5_6_* health_5_7_* health_5_8_* health_5_9_* health_5_10_* hh_ethnicity_* hh_age* hh_gender* hh_12_* hh_22_* hh_31_* hh_33_* hh_37_* living_01 living_02 living_03 living_04 list_actifscount

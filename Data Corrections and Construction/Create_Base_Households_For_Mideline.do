@@ -47,8 +47,12 @@ order hhid_village hhid individ, first
 *** save long data *** 
 save "$data\Households_For_Midline_Long.dta"
 
+export excel "$data\Households_For_Midline_Long.xlsx", firstrow(variables)
+
 *** reshape to wide data *** 
 reshape wide hh_full_name_calc_ hh_gender_ hh_age_ individ, i(hhid_village hhid hh_head_name_complet hh_name_complet_resp hh_age_resp hh_gender_resp hh_phone) j(individual)
 
 *** save wide data *** 
 save "$data\Households_For_Midline_Wide.dta"
+
+export excel "$data\Households_For_Midline_Wide.xlsx", firstrow(variables) 

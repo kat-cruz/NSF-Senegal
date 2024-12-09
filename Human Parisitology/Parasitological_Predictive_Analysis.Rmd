@@ -13,7 +13,9 @@ date: "2024-11-18"
 #install.packages("MASS")  
 #install.packages("pscl")  
 #install.packages("sandwich")
+#install.packages("gt")
 
+library(gt)
 library(vcd)
 library(ggmosaic)
 library(officer)
@@ -193,9 +195,17 @@ categ_summary_l <- function(data_l, prefixes_l) {
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
-install.packages("gt")
-library(gt)
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
+
 
 prefixes_categ <- c("hh_31_", "hh_33_", "living_01", "living_02", "living_03", "living_04")
 
@@ -212,7 +222,7 @@ output_categ_gt <- output_categ_gt %>%
   )
 
 
-gtsave(output_categ_gt, "output_categ_clean_table.tex", path = "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+gtsave(output_categ_gt, "output_categ_clean_table.tex")
 ```
 
 
@@ -259,7 +269,16 @@ binary_summary_l <- function(baseline_data, prefixes) {
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
 
 prefixes_binary <- c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_", "hh_gender_", "hh_12_1_", "hh_12_2_", "hh_12_3_", "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_",  "hh_12_8_")
 
@@ -286,7 +305,7 @@ output_binary_gt <- output_binary_gt %>%
   )
 
 
-gtsave(output_binary_gt, "output_binary_clean_table.tex", path = "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+gtsave(output_binary_gt, "output_binary_clean_table.tex")
 
 
 ```
@@ -341,7 +360,16 @@ numerical_summary_l <- function(baseline_data, prefixes) {
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
 
 prefixes_numerical <- c("wealthindex", "health_5_4_", "hh_age_")
 
@@ -368,7 +396,7 @@ output_numerical_gt <- output_numerical_gt %>%
   )
 
 
-gtsave(output_numerical_gt, "output_numerical_clean_table.tex", path = "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+gtsave(output_numerical_gt, "output_numerical_clean_table.tex")
 
 
 ```
@@ -408,6 +436,15 @@ gtsave(output_numerical_gt, "output_numerical_clean_table.tex", path = "C:/Users
 -   living_02 = is the water treated
 -   living_03 = if so, how
 -   living_04 = main type of toilet used
+-   q_18 = 18.Educational facilities (e.g. school)
+-   q_19 = Health facilities (e.g. health center)
+-   q_23 = Running drinking water for drinking
+-   q_24 = Tap water system (only if 23 = YES)
+-   q_35_check = Was there any deworming treatment carried out by the Ministry of Health or another organization?
+-   q_39 = In the village, are there currently any ongoing projects aimed at reducing the prevalence of bilharzia?
+-   q_46 = How many minutes does it take to go to the nearest doctor by car/motorcycle?
+-   q_49 = How far is the nearest water point (in kilometers)?
+-   q_51 = How far is the nearest health infrastructure (in kilometers)?
 
 
 health_5_3_2_ = What type of illness or injury did he/she suffer from? (answer choice is Bilharzia) Binary
@@ -483,7 +520,20 @@ output of regression table
 
 ```{r}
 
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
+
+## Selected covariates at the village level:
+
+
 # Specify the formula for logistic regression
 formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ 
 formula_01_m <- sm_inf ~ health_5_3_2_ + health_5_4_ 
@@ -558,34 +608,34 @@ odds_ratios_01_m <- exp(coefficients_01_m)
 # Extract coefficients for the OLS model
 coefficients_01_t <- coef(ols_model_01_t)
 
-# Create data frames for odds ratios and coefficients (long format)
-odds_ratios_long_01_h <- data.frame(
-  Variable = c("Intercept", 
-               "Perceived infection", 
-               "Missed school days"),
-  Odds_Ratio = odds_ratios_01_h
-)
-
-odds_ratios_long_01_m <- data.frame(
-  Variable = c("Intercept", 
-               "Perceived infection", 
-               "Missed school days"),
-  Odds_Ratio = odds_ratios_01_m
-)
-
-coefficients_long_01_t <- data.frame(
-  Variable = c("Intercept", 
-               "Perceived infection", 
-               "Missed school days"),
-  Coefficient = coefficients_01_t
-)
-
-# Use stargazer to create latex tables for odds ratios and coefficients
-stargazer(odds_ratios_long_01_h, odds_ratios_long_01_m,
-          summary = FALSE,   # Suppress summary statistics
-          type = "latex",
-          rownames = FALSE,   # Remove row numbers
-          out = "odds_ratios_01_h_m.tex")
+# # Create data frames for odds ratios and coefficients (long format)
+# odds_ratios_long_01_h <- data.frame(
+#   Variable = c("Intercept", 
+#                "Perceived infection", 
+#                "Missed school days"),
+#   Odds_Ratio = odds_ratios_01_h
+# )
+# 
+# odds_ratios_long_01_m <- data.frame(
+#   Variable = c("Intercept", 
+#                "Perceived infection", 
+#                "Missed school days"),
+#   Odds_Ratio = odds_ratios_01_m
+# )
+# 
+# coefficients_long_01_t <- data.frame(
+#   Variable = c("Intercept", 
+#                "Perceived infection", 
+#                "Missed school days"),
+#   Coefficient = coefficients_01_t
+# )
+# 
+# # Use stargazer to create latex tables for odds ratios and coefficients
+# stargazer(odds_ratios_long_01_h, odds_ratios_long_01_m,
+#           summary = FALSE,   # Suppress summary statistics
+#           type = "latex",
+#           rownames = FALSE,   # Remove row numbers
+#           out = "odds_ratios_01_h_m.tex")
 
 # Calculate confidence intervals for logistic models
 conf_int_01_h <- confint(logit_model_01_h)
@@ -630,8 +680,16 @@ stargazer(CI_coeff_01_t,
 
 ```{r}
 
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
 
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
 # Specify the formula for logistic regression
 formula_02_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
 formula_02_m <- sm_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
@@ -690,63 +748,64 @@ logit_models_done_02 <- stargazer(logit_model_02_h, logit_model_02_m, ols_model_
 
 cat(logit_models_done_02, sep = '\n', file = 'logit_modeles_02_table.tex')
 #out = "logit_model_02_table.tex"
-# Extract coefficients
 
-# Logistic regression model for S. haematobium (logit_model_02_h)
-# Extract coefficients for the first model
-coefficients_02_h <- coef(logit_model_02_h)
-odds_ratios_02_h <- exp(coefficients_02_h)
+#>>>>>****>>>> Extract coefficients <<<<<****<<<<<
 
-# Logistic regression model for S. mansoni (logit_model_02_m)
-# Extract coefficients for the second model
-coefficients_02_m <- coef(logit_model_02_m)
-odds_ratios_02_m <- exp(coefficients_02_m)
-
-# OLS model for Total Egg Count (ols_model_02_t)
-# Extract coefficients for the OLS model
-coefficients_02_t <- coef(ols_model_02_t)
-
-# Create data frames for odds ratios and coefficients (long format)
-odds_ratios_long_02_h <- data.frame(
- Variable = c("Intercept", 
-               "Perceived infection", 
-               "Missed school days", 
-               "Received medication", 
-               "Ever diagnosed with Bilharzia"),
-  Odds_Ratio = odds_ratios_02_h
-)
-
-odds_ratios_long_02_m <- data.frame(
-  Variable = c("Intercept", 
-               "Perceived infection", 
-               "Missed school days", 
-               "Received medication", 
-               "Ever diagnosed with Bilharzia"),
-  Odds_Ratio = odds_ratios_02_m
-)
-
-coefficients_long_02_t <- data.frame(
-  Variable = c("Intercept", 
-               "Perceived infection", 
-               "Missed school days", 
-               "Received medication", 
-               "Ever diagnosed with Bilharzia"),
-  Coefficient = coefficients_02_t
-)
-
-# Use stargazer to create latex tables for odds ratios and coefficients
-stargazer(odds_ratios_long_02_h, odds_ratios_long_02_m,
-          summary = FALSE,   # Suppress summary statistics
-          type = "latex",
-          rownames = FALSE,   # Remove row numbers
-          out = "odds_ratios_02_h_m.tex")
+# # Logistic regression model for S. haematobium (logit_model_02_h)
+# # Extract coefficients for the first model
+# coefficients_02_h <- coef(logit_model_02_h)
+# odds_ratios_02_h <- exp(coefficients_02_h)
+# 
+# # Logistic regression model for S. mansoni (logit_model_02_m)
+# # Extract coefficients for the second model
+# coefficients_02_m <- coef(logit_model_02_m)
+# odds_ratios_02_m <- exp(coefficients_02_m)
+# 
+# # OLS model for Total Egg Count (ols_model_02_t)
+# # Extract coefficients for the OLS model
+# coefficients_02_t <- coef(ols_model_02_t)
+# 
+# # Create data frames for odds ratios and coefficients (long format)
+# odds_ratios_long_02_h <- data.frame(
+#  Variable = c("Intercept", 
+#                "Perceived infection", 
+#                "Missed school days", 
+#                "Received medication", 
+#                "Ever diagnosed with Bilharzia"),
+#   Odds_Ratio = odds_ratios_02_h
+# )
+# 
+# odds_ratios_long_02_m <- data.frame(
+#   Variable = c("Intercept", 
+#                "Perceived infection", 
+#                "Missed school days", 
+#                "Received medication", 
+#                "Ever diagnosed with Bilharzia"),
+#   Odds_Ratio = odds_ratios_02_m
+# )
+# 
+# coefficients_long_02_t <- data.frame(
+#   Variable = c("Intercept", 
+#                "Perceived infection", 
+#                "Missed school days", 
+#                "Received medication", 
+#                "Ever diagnosed with Bilharzia"),
+#   Coefficient = coefficients_02_t
+# )
+# 
+# # Use stargazer to create latex tables for odds ratios and coefficients
+# stargazer(odds_ratios_long_02_h, odds_ratios_long_02_m,
+#           summary = FALSE,   # Suppress summary statistics
+#           type = "latex",
+#           rownames = FALSE,   # Remove row numbers
+#           out = "odds_ratios_02_h_m.tex")
 
 # Calculate confidence intervals for logistic models
-conf_int_02_h <- confint(logit_model_02_h)
-conf_int_odds_ratios_02_h <- exp(conf_int_02_h)
-
-conf_int_02_m <- confint(logit_model_02_m)
-conf_int_odds_ratios_02_m <- exp(conf_int_02_m)
+# conf_int_02_h <- confint(logit_model_02_h)
+# conf_int_odds_ratios_02_h <- exp(conf_int_02_h)
+# 
+# conf_int_02_m <- confint(logit_model_02_m)
+# conf_int_odds_ratios_02_m <- exp(conf_int_02_m)
 
 # Confidence intervals for OLS model (coefficients and standard errors)
 conf_int_02_t <- confint(ols_model_02_t)
@@ -945,7 +1004,17 @@ stargazer(CI_coeff_02_t,
 
 
 ```{r}
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
+
 # Specify the formula for logistic regression
 formula_03_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ 
 formula_03_m <- sm_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ 
@@ -1010,58 +1079,58 @@ cat(logit_models_done_03, sep = '\n', file = 'logit_modeles_03_table.tex')
 
 # Logistic regression model for S. haematobium (logit_model_03_h)
 # Extract coefficients for the first model
-coefficients_03_h <- coef(logit_model_03_h)
-odds_ratios_03_h <- exp(coefficients_03_h)
+# coefficients_03_h <- coef(logit_model_03_h)
+# odds_ratios_03_h <- exp(coefficients_03_h)
 
 # Logistic regression model for S. mansoni (logit_model_03_m)
 # Extract coefficients for the second model
-coefficients_03_m <- coef(logit_model_03_m)
-odds_ratios_03_m <- exp(coefficients_03_m)
-
-# OLS model for Total Egg Count (ols_model_03_t)
-# Extract coefficients for the OLS model
-coefficients_03_t <- coef(ols_model_03_t)
-
-# Create data frames for odds ratios and coefficients (long format)
-odds_ratios_long_03_h <- data.frame(
- Variable = c("Intercept", 
-               "Percieved infection",
-               "Missed school days",
-               "Recived medication",
-               "Ever diagnosed with Bilharzia",
-               "Blood in urine",
-               "Blood in stool"),
-  Odds_Ratio = odds_ratios_03_h
-)
-
-odds_ratios_long_03_m <- data.frame(
-Variable = c("Intercept", 
-               "Percieved infection",
-               "Missed school days",
-               "Recived medication",
-               "Ever diagnosed with Bilharzia",
-               "Blood in urine",
-               "Blood in stool"),
-  Odds_Ratio = odds_ratios_03_m
-)
-
-coefficients_long_03_t <- data.frame(
- Variable = c("Intercept", 
-               "Percieved infection",
-               "Missed school days",
-               "Recived medication",
-               "Ever diagnosed with Bilharzia",
-               "Blood in urine",
-               "Blood in stool"),
-  Coefficient = coefficients_03_t
-)
-
-# Use stargazer to create latex tables for odds ratios and coefficients
-stargazer(odds_ratios_long_03_h, odds_ratios_long_03_m,
-          summary = FALSE,   # Suppress summary statistics
-          type = "latex",
-          rownames = FALSE,   # Remove row numbers
-          out = "odds_ratios_03_h_m.tex")
+# coefficients_03_m <- coef(logit_model_03_m)
+# odds_ratios_03_m <- exp(coefficients_03_m)
+# 
+# # OLS model for Total Egg Count (ols_model_03_t)
+# # Extract coefficients for the OLS model
+# coefficients_03_t <- coef(ols_model_03_t)
+# 
+# # Create data frames for odds ratios and coefficients (long format)
+# odds_ratios_long_03_h <- data.frame(
+#  Variable = c("Intercept", 
+#                "Percieved infection",
+#                "Missed school days",
+#                "Recived medication",
+#                "Ever diagnosed with Bilharzia",
+#                "Blood in urine",
+#                "Blood in stool"),
+#   Odds_Ratio = odds_ratios_03_h
+# )
+# 
+# odds_ratios_long_03_m <- data.frame(
+# Variable = c("Intercept", 
+#                "Percieved infection",
+#                "Missed school days",
+#                "Recived medication",
+#                "Ever diagnosed with Bilharzia",
+#                "Blood in urine",
+#                "Blood in stool"),
+#   Odds_Ratio = odds_ratios_03_m
+# )
+# 
+# coefficients_long_03_t <- data.frame(
+#  Variable = c("Intercept", 
+#                "Percieved infection",
+#                "Missed school days",
+#                "Recived medication",
+#                "Ever diagnosed with Bilharzia",
+#                "Blood in urine",
+#                "Blood in stool"),
+#   Coefficient = coefficients_03_t
+# )
+# 
+# # Use stargazer to create latex tables for odds ratios and coefficients
+# stargazer(odds_ratios_long_03_h, odds_ratios_long_03_m,
+#           summary = FALSE,   # Suppress summary statistics
+#           type = "latex",
+#           rownames = FALSE,   # Remove row numbers
+#           out = "odds_ratios_03_h_m.tex")
 
 # Calculate confidence intervals for logistic models
 conf_int_03_h <- confint(logit_model_03_h)
@@ -1104,8 +1173,17 @@ stargazer(CI_coeff_03_t,
 
 
 ```{r}
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
 
-setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
+
 # Specify the formula for logistic regression
 formula_04_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ + hh_gender_ + hh_ethnicity_ + hh_12_1_ + hh_12_2_ + hh_12_3_ + hh_12_4_ + hh_12_5_ + hh_12_6_ + hh_12_7_ + hh_12_8_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_04  + wealthindex
 formula_04_m <- sm_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ + hh_gender_ + hh_ethnicity_ + hh_12_1_ + hh_12_2_ + hh_12_3_ + hh_12_4_ + hh_12_5_ + hh_12_6_ + hh_12_7_ + hh_12_8_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_04  + wealthindex
@@ -1170,40 +1248,40 @@ cat(logit_models_done_04, sep = '\n', file = 'logit_modeles_04_table.tex')
 
 # Logistic regression model for S. haematobium (logit_model_04_h)
 # Extract coefficients for the first model
-coefficients_04_h <- coef(logit_model_04_h)
-odds_ratios_04_h <- exp(coefficients_04_h)
-
-# Logistic regression model for S. mansoni (logit_model_04_m)
-# Extract coefficients for the second model
-coefficients_04_m <- coef(logit_model_04_m)
-odds_ratios_04_m <- exp(coefficients_04_m)
-
-# OLS model for Total Egg Count (ols_model_04_t)
-# Extract coefficients for the OLS model
-coefficients_04_t <- coef(ols_model_04_t)
-
-# Create data frames for odds ratios and coefficients (long format)
-odds_ratios_long_04_h <- data.frame(
- Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine","Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
-  Odds_Ratio = odds_ratios_04_h
-)
-
-odds_ratios_long_04_m <- data.frame(
- Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine","Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
-  Odds_Ratio = odds_ratios_04_m
-)
-
-coefficients_long_04_t <- data.frame(
- Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine","Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
-  Coefficient = coefficients_04_t
-)
-
-# Use stargazer to create latex tables for odds ratios and coefficients
-stargazer(odds_ratios_long_04_h, odds_ratios_long_04_m,
-          summary = FALSE,   # Suppress summary statistics
-          type = "latex",
-          rownames = FALSE,   # Remove row numbers
-          out = "odds_ratios_04_h_m.tex")
+# coefficients_04_h <- coef(logit_model_04_h)
+# odds_ratios_04_h <- exp(coefficients_04_h)
+# 
+# # Logistic regression model for S. mansoni (logit_model_04_m)
+# # Extract coefficients for the second model
+# coefficients_04_m <- coef(logit_model_04_m)
+# odds_ratios_04_m <- exp(coefficients_04_m)
+# 
+# # OLS model for Total Egg Count (ols_model_04_t)
+# # Extract coefficients for the OLS model
+# coefficients_04_t <- coef(ols_model_04_t)
+# 
+# # Create data frames for odds ratios and coefficients (long format)
+# odds_ratios_long_04_h <- data.frame(
+#  Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine","Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
+#   Odds_Ratio = odds_ratios_04_h
+# )
+# 
+# odds_ratios_long_04_m <- data.frame(
+#  Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine","Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
+#   Odds_Ratio = odds_ratios_04_m
+# )
+# 
+# coefficients_long_04_t <- data.frame(
+#  Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine","Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
+#   Coefficient = coefficients_04_t
+# )
+# 
+# # Use stargazer to create latex tables for odds ratios and coefficients
+# stargazer(odds_ratios_long_04_h, odds_ratios_long_04_m,
+#           summary = FALSE,   # Suppress summary statistics
+#           type = "latex",
+#           rownames = FALSE,   # Remove row numbers
+#           out = "odds_ratios_04_h_m.tex")
 
 # Calculate confidence intervals for logistic models
 conf_int_04_h <- confint(logit_model_04_h)
@@ -1240,78 +1318,6 @@ stargazer(CI_coeff_04_t,
           out = "CI_coeff_04_t.tex")
 ```
 
-
-
-
-```{r}
-# setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
-# 
-# # Specify the formula for logistic regression
-# formula_04 <- sh_inf ~  health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ + health_5_8_ + health_5_9_ + hh_gender_ + hh_ethnicity_ + hh_12_1_ + hh_12_2_ + hh_12_3_ + hh_12_4_ + hh_12_5_ + hh_12_6_ + hh_12_7_ + hh_12_8_ + hh_31_ + hh_33_ + hh_37_ + living_01 + living_02 + living_04  + wealthindex
-# # hh_11_ = "Type of surface water", maybe bring this back???
-# # Run the logistic regression
-# logit_model_04 <- glm(formula_04, data = matched_only_df, family = binomial)
-# 
-# covariate_labels_04 <- c("Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine", "Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index")
-# 
-# pseudoR2_04 <- pR2(logit_model_04)["McFadden"]
-# pseudoR2_04 <- ifelse(is.null(pseudoR2_04) || is.na(pseudoR2_04), "N/A", round(as.numeric(pseudoR2_04), 4))
-# 
-# # Calculate BIC
-# bic_value_04 <- BIC(logit_model_04)
-# 
-# robust_se_04 <- sqrt(diag(vcovHC(logit_model_04, type = "HC1")))
-# # Display summary of the model
-# logit_model_04_done <- stargazer(logit_model_04,  
-#           covariate.labels = covariate_labels_04,
-#           #dep.var.labels = "",
-#           type = "latex", 
-#           digit.separator = "",
-#           no.space = TRUE,
-#           column.sep.width = "3pt",
-#           omit.stat = c("f", "adj.rsq"),
-#           se = list(robust_se_04),
-#           add.lines = list(c("Pseudo $R^2$", round(pseudoR2_04, 4)),
-#                             c("BIC", round(bic_value_04, 2)))
-#          )  
-# #This is a workaround so the entire chunk can run
-# cat(logit_model_04_done, sep = '\n', file = 'logit_model_04_table.tex')
-# 
-# 
-# # Extract coefficients
-# coefficients_04 <- coef(logit_model_04)
-# 
-# # Calculate odds ratios
-# odds_ratios_04 <- exp(coefficients_04)
-# odds_ratios_04
-# #Display odds ratios in long format for better readability
-# odds_ratios_long_04 <- data.frame(
-#   Variable = c("Intercept", "Percieved infection", "Missed school days", "Recived medication", "Ever diagnosed with Bilharzia", "Blood in urine","Blood in stool", "Gender", "Ethnicity", "Fetch water for HH", "water for Livestock", "Fetch water for ag", "Wash clothes", "Do the dishes", "harvest aquatic veg", "Swim/bathe", "Play", "Grade achieved in 2022/2023", "Academic performance", "School missed", "Source of drinking water supply", "Water treated?", "Type of toilet", "wealth index"),
-#   Odds_Ratio = odds_ratios_04
-# )
-# 
-# # Use stargazer for a "long" table
-# stargazer(odds_ratios_long_04,
-#           summary = FALSE,   # Suppresses summary statistics
-#           type = "latex",
-#           rownames = FALSE, #Removes row numbers
-#           out = "odds_ratios_04.tex")
-# 
-# # Calculate confidence intervals for coefficients
-# conf_int_04 <- confint(logit_model_04)
-# 
-# # Exponentiate to get confidence intervals for odds ratios
-# conf_int_odds_ratios_04 <- exp(conf_int_04)
-# 
-# # Display odds ratios with confidence intervals
-# CI_odds_04 <- data.frame(Odds_Ratio = odds_ratios_04, 
-#            CI_Lower = conf_int_odds_ratios_04[, 1], 
-#            CI_Upper = conf_int_odds_ratios_04[, 2])
-# 
-# stargazer(CI_odds_04,
-#           type = "latex",
-#           out = "CI_odds_04.tex")
-```
 
 
 

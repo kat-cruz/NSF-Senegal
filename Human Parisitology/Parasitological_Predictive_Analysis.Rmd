@@ -373,20 +373,7 @@ if (dir.exists(path1)) {
 
 prefixes_numerical <- c("wealthindex", "health_5_4_", "hh_age_")
 
-# output_binary <- as.data.frame(categ_summary_l(matched_only_df, prefixes_binary))
-# rownames(output_binary) <- NULL
-# 
 output_numerical <- numerical_summary_l(matched_only_df, prefixes_numerical)
-# 
-# # Use stargazer for the formatted output
-# stargazer(output_numerical,
-#           type = "text",
-#           style = "aer",
-#            summary = FALSE,
-#             rownames = NULL,
-#           single.row = FALSE,
-#           order = NULL,
-#           out = "numerical_var.tex")
 
 output_numerical_gt <- gt(output_numerical)
 
@@ -429,6 +416,11 @@ gtsave(output_numerical_gt, "output_numerical_clean_table.tex")
 -   health_5_9 = blood in stool past 12 months?
 -   hh_11 = which water source
 -   hh_12 = why person spent time near water source
+-   hh_13_ = past 12 months, how many hours per week     spent near water source?
+-   hh_18_ = past 7 days, how many hours spent near water source? 
+-   hh_19_ = what source of water? 
+      - lake, pond, river, irrigation channel, other
+-   hh_30 = did they attend any school during 2022-23
 -   hh_31_ = result acheived in academic year 
 -   hh_33 = performace in class
 -   hh_37 = had illness last 12 months
@@ -471,53 +463,6 @@ output of regression table
 #Bivariate Logistic regression 01
 
 
-
-```{r}
-
-# formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ 
-# formula_01_m <- sm_inf ~ health_5_3_2_ + health_5_4_ 
-# formula_01_t <- total_egg ~ health_5_3_2_ + health_5_4_ 
-# 
-# # Run logistic regressions
-# logit_model_01_h <- glm(formula_01_h, data = matched_only_df, family = binomial)
-# logit_model_01_m <- glm(formula_01_m, data = matched_only_df, family = binomial)
-# 
-# # Calculate McFadden's Pseudo R^2 and handle missing/null values
-# pseudo_r2_h <- pR2(logit_model_01_h)["McFadden"]
-# pseudo_r2_h <- ifelse(is.null(pseudo_r2_h) || is.na(pseudo_r2_h), "N/A", round(as.numeric(pseudo_r2_h), 4))
-# 
-# pseudo_r2_m <- pR2(logit_model_01_m)["McFadden"]
-# pseudo_r2_m <- ifelse(is.null(pseudo_r2_m) || is.na(pseudo_r2_m), "N/A", round(as.numeric(pseudo_r2_m), 4))
-# 
-# # Calculate BIC for both models
-# bic_value_h <- BIC(logit_model_01_h)
-# bic_value_m <- BIC(logit_model_01_m)
-# 
-# # Calculate robust standard errors for both models
-# robust_se_h <- sqrt(diag(vcovHC(logit_model_01_h, type = "HC1")))
-# robust_se_m <- sqrt(diag(vcovHC(logit_model_01_m, type = "HC1")))
-# 
-# # Display summary of both models using stargazer
-# logit_models_done <- stargazer(logit_model_01_h, logit_model_01_m,
-#           covariate.labels = c("Percieved infection", "Missed school days"),
-#           type = "latex",
-#           digit.separator = "",
-#           no.space = TRUE,
-#           column.sep.width = "3pt",
-#           dep.var.labels = c("S. haematobium", "S. mansoni"),
-#           #column.labels = c("S. haematobium", "S. mansoni"),
-#           omit.stat = c("f", "adj.rsq"),
-#           se = list(robust_se_h, robust_se_m),
-#           add.lines = list(
-#             c("Pseudo $R^2$", pseudo_r2_h, pseudo_r2_m),
-#             c("BIC", round(bic_value_h, 2), round(bic_value_m, 2)))
-#               )
-
-```
-
-
-
-
 ```{r}
 
 # Define possible paths
@@ -532,7 +477,7 @@ if (dir.exists(path1)) {
 }
 
 ## Selected covariates at the village level:
-
+view(matched_only_df)
 
 # Specify the formula for logistic regression
 formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ 
@@ -594,82 +539,6 @@ cat(logit_models_done_01, sep = '\n', file = 'logit_modeles_01_table.tex')
 #out = "logit_model_01_table.tex"
 # Extract coefficients
 
-# Logistic regression model for S. haematobium (logit_model_01_h)
-# Extract coefficients for the first model
-coefficients_01_h <- coef(logit_model_01_h)
-odds_ratios_01_h <- exp(coefficients_01_h)
-
-# Logistic regression model for S. mansoni (logit_model_01_m)
-# Extract coefficients for the second model
-coefficients_01_m <- coef(logit_model_01_m)
-odds_ratios_01_m <- exp(coefficients_01_m)
-
-# OLS model for Total Egg Count (ols_model_01_t)
-# Extract coefficients for the OLS model
-coefficients_01_t <- coef(ols_model_01_t)
-
-# # Create data frames for odds ratios and coefficients (long format)
-# odds_ratios_long_01_h <- data.frame(
-#   Variable = c("Intercept", 
-#                "Perceived infection", 
-#                "Missed school days"),
-#   Odds_Ratio = odds_ratios_01_h
-# )
-# 
-# odds_ratios_long_01_m <- data.frame(
-#   Variable = c("Intercept", 
-#                "Perceived infection", 
-#                "Missed school days"),
-#   Odds_Ratio = odds_ratios_01_m
-# )
-# 
-# coefficients_long_01_t <- data.frame(
-#   Variable = c("Intercept", 
-#                "Perceived infection", 
-#                "Missed school days"),
-#   Coefficient = coefficients_01_t
-# )
-# 
-# # Use stargazer to create latex tables for odds ratios and coefficients
-# stargazer(odds_ratios_long_01_h, odds_ratios_long_01_m,
-#           summary = FALSE,   # Suppress summary statistics
-#           type = "latex",
-#           rownames = FALSE,   # Remove row numbers
-#           out = "odds_ratios_01_h_m.tex")
-
-# Calculate confidence intervals for logistic models
-conf_int_01_h <- confint(logit_model_01_h)
-conf_int_odds_ratios_01_h <- exp(conf_int_01_h)
-
-conf_int_01_m <- confint(logit_model_01_m)
-conf_int_odds_ratios_01_m <- exp(conf_int_01_m)
-
-# Confidence intervals for OLS model (coefficients and standard errors)
-conf_int_01_t <- confint(ols_model_01_t)
-
-# Combine the odds ratios with their confidence intervals for logistic models
-CI_odds_01_h <- data.frame(Odds_Ratio = odds_ratios_01_h, 
-                           CI_Lower = conf_int_odds_ratios_01_h[, 1], 
-                           CI_Upper = conf_int_odds_ratios_01_h[, 2])
-
-CI_odds_01_m <- data.frame(Odds_Ratio = odds_ratios_01_m, 
-                           CI_Lower = conf_int_odds_ratios_01_m[, 1], 
-                           CI_Upper = conf_int_odds_ratios_01_m[, 2])
-
-
-# Display odds ratios with confidence intervals using stargazer
-stargazer(CI_odds_01_h, CI_odds_01_m,
-          type = "latex",
-          out = "CI_odds_01_h_m.tex")
-
-# Display coefficients with confidence intervals for the OLS model
-CI_coeff_01_t <- data.frame(Coefficient = coefficients_01_t,
-                            CI_Lower = conf_int_01_t[, 1],
-                            CI_Upper = conf_int_01_t[, 2])
-
-stargazer(CI_coeff_01_t,
-          type = "latex",
-          out = "CI_coeff_01_t.tex")
 
 ```
 
@@ -1322,11 +1191,164 @@ stargazer(CI_coeff_04_t,
 
 
 
+##old codes
 
+```{r}
 
+#Old code of model 01 - contains odd ratios 
 
+# Define possible paths
+# path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
+# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+# 
+# # set the working directory
+# if (dir.exists(path1)) {
+#   setwd(path1)
+# } else if (dir.exists(path2)) {
+#   setwd(path2)
+# }
+# 
+# ## Selected covariates at the village level:
+# 
+# 
+# # Specify the formula for logistic regression
+# formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ 
+# formula_01_m <- sm_inf ~ health_5_3_2_ + health_5_4_ 
+# formula_01_t <- total_egg ~ health_5_3_2_ + health_5_4_ 
+# # Run logistic regressions for S. haematobium and S. mansoni
+# logit_model_01_h <- glm(formula_01_h, data = matched_only_df, family = binomial)
+# logit_model_01_m <- glm(formula_01_m, data = matched_only_df, family = binomial)
+# 
+# # Run OLS regression for Total Egg Count
+# ols_model_01_t <- lm(formula_01_t, data = matched_only_df)
+# 
+# # Calculate McFadden's Pseudo R^2 for the logistic models
+# pseudo_r2_h_01 <- pR2(logit_model_01_h)["McFadden"]
+# pseudo_r2_h_01 <- ifelse(is.null(pseudo_r2_h_01) || is.na(pseudo_r2_h_01), "N/A", round(as.numeric(pseudo_r2_h_01), 4))
+# 
+# pseudo_r2_m_01 <- pR2(logit_model_01_m)["McFadden"]
+# pseudo_r2_m_01 <- ifelse(is.null(pseudo_r2_m_01) || is.na(pseudo_r2_m_01), "N/A", round(as.numeric(pseudo_r2_m_01), 4))
+# 
+# # Calculate BIC for both logistic models
+# bic_value_h_01 <- BIC(logit_model_01_h)
+# bic_value_m_01 <- BIC(logit_model_01_m)
+# 
+# # Calculate robust standard errors for the logistic models
+# robust_se_h_01 <- sqrt(diag(vcovHC(logit_model_01_h, type = "HC1")))
+# robust_se_m_01 <- sqrt(diag(vcovHC(logit_model_01_m, type = "HC1")))
+# 
+# # Calculate R-squared, Adjusted R-squared, and RMSE for the OLS model (total_egg)
+# r_squared_t_01 <- summary(ols_model_01_t)$r.squared
+# adj_r_squared_t_01 <- summary(ols_model_01_t)$adj.r.squared
+# rmse_t_01 <- sqrt(mean(residuals(ols_model_01_t)^2))
+# 
+# # Calculate BIC for the OLS model
+# bic_value_t_01 <- BIC(ols_model_01_t)
+# 
+# # Calculate robust standard errors for the OLS model
+# robust_se_t_01 <- sqrt(diag(vcovHC(ols_model_01_t, type = "HC1")))
+# 
+# # Display summary of both logistic models and the OLS model using stargazer
+# logit_models_done_01 <- stargazer(logit_model_01_h, logit_model_01_m, ols_model_01_t,
+#           covariate.labels = c("Percieved infection", "Missed school days"),
+#           type = "latex",
+#           digit.separator = "",
+#           no.space = TRUE,
+#           column.sep.width = "3pt",
+#           dep.var.labels = c("S. haematobium", "S. mansoni", "Total egg count"),
+#           omit.stat = c("f", "adj.rsq"),
+#           se = list(robust_se_h_01, robust_se_m_01, robust_se_t_01),
+#           add.lines = list(
+#             c("Pseudo $R^2$", pseudo_r2_h, pseudo_r2_m, "N/A"),  # For OLS (not applicable)
+#             c("BIC", round(bic_value_h_01, 2), round(bic_value_m_01, 2), round(bic_value_t_01, 2)),
+#             c("R-squared", "", "", round(r_squared_t_01, 4)),
+#             c("Adjusted R-squared", "", "", round(adj_r_squared_t_01, 4)),
+#             c("RMSE", "", "", round(rmse_t_01, 4))
+#           )
+# )
+# 
+# cat(logit_models_done_01, sep = '\n', file = 'logit_modeles_01_table.tex')
+# #out = "logit_model_01_table.tex"
+# # Extract coefficients
+# 
+# # Logistic regression model for S. haematobium (logit_model_01_h)
+# # Extract coefficients for the first model
+# coefficients_01_h <- coef(logit_model_01_h)
+# odds_ratios_01_h <- exp(coefficients_01_h)
+# 
+# # Logistic regression model for S. mansoni (logit_model_01_m)
+# # Extract coefficients for the second model
+# coefficients_01_m <- coef(logit_model_01_m)
+# odds_ratios_01_m <- exp(coefficients_01_m)
+# 
+# # OLS model for Total Egg Count (ols_model_01_t)
+# # Extract coefficients for the OLS model
+# coefficients_01_t <- coef(ols_model_01_t)
+# 
+# # # Create data frames for odds ratios and coefficients (long format)
+# # odds_ratios_long_01_h <- data.frame(
+# #   Variable = c("Intercept", 
+# #                "Perceived infection", 
+# #                "Missed school days"),
+# #   Odds_Ratio = odds_ratios_01_h
+# # )
+# # 
+# # odds_ratios_long_01_m <- data.frame(
+# #   Variable = c("Intercept", 
+# #                "Perceived infection", 
+# #                "Missed school days"),
+# #   Odds_Ratio = odds_ratios_01_m
+# # )
+# # 
+# # coefficients_long_01_t <- data.frame(
+# #   Variable = c("Intercept", 
+# #                "Perceived infection", 
+# #                "Missed school days"),
+# #   Coefficient = coefficients_01_t
+# # )
+# # 
+# # # Use stargazer to create latex tables for odds ratios and coefficients
+# # stargazer(odds_ratios_long_01_h, odds_ratios_long_01_m,
+# #           summary = FALSE,   # Suppress summary statistics
+# #           type = "latex",
+# #           rownames = FALSE,   # Remove row numbers
+# #           out = "odds_ratios_01_h_m.tex")
+# 
+# # Calculate confidence intervals for logistic models
+# conf_int_01_h <- confint(logit_model_01_h)
+# conf_int_odds_ratios_01_h <- exp(conf_int_01_h)
+# 
+# conf_int_01_m <- confint(logit_model_01_m)
+# conf_int_odds_ratios_01_m <- exp(conf_int_01_m)
+# 
+# # Confidence intervals for OLS model (coefficients and standard errors)
+# conf_int_01_t <- confint(ols_model_01_t)
+# 
+# # Combine the odds ratios with their confidence intervals for logistic models
+# CI_odds_01_h <- data.frame(Odds_Ratio = odds_ratios_01_h, 
+#                            CI_Lower = conf_int_odds_ratios_01_h[, 1], 
+#                            CI_Upper = conf_int_odds_ratios_01_h[, 2])
+# 
+# CI_odds_01_m <- data.frame(Odds_Ratio = odds_ratios_01_m, 
+#                            CI_Lower = conf_int_odds_ratios_01_m[, 1], 
+#                            CI_Upper = conf_int_odds_ratios_01_m[, 2])
+# 
+# 
+# # Display odds ratios with confidence intervals using stargazer
+# stargazer(CI_odds_01_h, CI_odds_01_m,
+#           type = "latex",
+#           out = "CI_odds_01_h_m.tex")
+# 
+# # Display coefficients with confidence intervals for the OLS model
+# CI_coeff_01_t <- data.frame(Coefficient = coefficients_01_t,
+#                             CI_Lower = conf_int_01_t[, 1],
+#                             CI_Upper = conf_int_01_t[, 2])
+# 
+# stargazer(CI_coeff_01_t,
+#           type = "latex",
+#           out = "CI_coeff_01_t.tex")
 
-
+```
 
 
 

@@ -27,6 +27,7 @@ if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box"
 * Define project-specific paths
 global path "${box_path}\Data Management\_PartnerData\Child infection dataframe"
 global crdes "${box_path}\Data Management\_CRDES_CleanData"
+global eco "${box_path}\Data Management\_PartnerData\Ecological Data\Baseline"
 
 ***** Global folders *****
 global data      "${path}\data"
@@ -260,18 +261,27 @@ merge 1:1 hhid using "${crdes}\Baseline\Deidentified\Complete_Baseline_Standard_
 drop _merge 
 
 merge 1:1 hhid using "${crdes}\Baseline\Deidentified\Complete_Baseline_Agriculture.dta"
+drop _merge
+ 
+*include community data
+merge m:1 hhid_village using "${crdes}\Baseline\Deidentified\Complete_Baseline_Community.dta"
 drop _merge 
 
-merge m:m hhid_village using "${crdes}\Baseline\Deidentified\Complete_Baseline_Community.dta"
+*use "${crdes}\Baseline\Deidentified\Complete_Baseline_Community.dta", clear 
 
-*for ecological data, use village codes to merge like above 
-	*drop upstream/downstream villages
-	
+* include ecological data
+merge m:1 hhid_village using "${eco}\DISES_baseline_ecological data.dta"
 
+/*
+keep if _merge == 2
+
+keep hhid_village village_select_o hhid _merge
+use "${eco}\DISES_baseline_ecological data.dta", clear 
+*/
 
 *additional variables
 
-keep hhid health_5_3_2_* health_5_4_* health_5_5_* health_5_6_* health_5_7_* health_5_8_* health_5_9_* health_5_10_* hh_ethnicity_* hh_age* hh_gender* hh_12_* hh_13_* hh_18_* hh_19_* hh_22_* hh_30_* hh_31_* hh_33_* hh_37_* living_01 living_02 living_03 living_04 list_actifscount q_18 q_19 q_23 q_24 q_35_check q_39 q_49 q_46 q_51
+keep hhid health_5_3_2_* health_5_4_* health_5_5_* health_5_6_* health_5_7_* health_5_8_* health_5_9_* health_5_10_* hh_ethnicity_* hh_age* hh_gender* hh_12_* hh_13_* hh_18_* hh_19_* hh_22_* hh_30_* hh_31_* hh_33_* hh_37_* living_01 living_02 living_03 living_04 list_actifscount q_18 q_19 q_23 q_24 q_35_check q_39 q_49 q_46 q_51 Cerratophyllummassg Bulinus Biomph Humanwatercontact BegeningTimesampling Endsamplingtime Schistoinfection InfectedBulinus  InfectedBiomphalaria
  
 *drop strings 
 drop hh_12_o* hh_12_a* hh_12_ro* hh_12_cal* hh_13_o* hh_13_s* hh_19_o* hh_ethnicity_o*
@@ -284,7 +294,7 @@ foreach i of numlist 1/55 {
 *variables removed: hh_age hh_gender living_01 living_02 living_03 living_04
 
 * Reshape long with hhid and id
-reshape long health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ hh_ethnicity_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_  hh_12_8_ hh_13_ hh_18_ hh_19_ hh_22_ hh_31_ hh_33_ hh_37_ hh_age_ hh_gender_, ///
+reshape long health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ hh_ethnicity_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_  hh_12_8_ hh_13_ hh_18_ hh_19_ hh_22_ hh_30_ hh_31_ hh_33_ hh_37_ hh_age_ hh_gender_, ///
     i(hhid) j(id)
 
 
@@ -297,7 +307,7 @@ format individual_id_crdes %15s
 gen wealthindex=list_actifscount/16
 
 * **Keep only individual_id_crdes and variables of interest to avoid conflicts**
-keep individual_id_crdes health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ hh_ethnicity_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_22_ hh_31_ hh_33_ hh_37_ hh_age_ hh_gender_ living_01 living_02 living_03 living_04 wealthindex q_18 q_19 q_23 q_24 q_35_check q_39 q_49 q_46 q_51 list_actifscount
+keep individual_id_crdes health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ hh_ethnicity_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_ hh_18_ hh_19_ hh_22_ hh_31_ hh_33_ hh_37_ hh_age_ hh_gender_ living_01 living_02 living_03 living_04 wealthindex q_18 q_19 q_23 q_24 q_35_check q_39 q_49 q_46 q_51 list_actifscount Cerratophyllummassg Bulinus Biomph Humanwatercontact BegeningTimesampling Endsamplingtime Schistoinfection InfectedBulinus  InfectedBiomphalaria
 
 * Save temp health data
 *save "${dataframe}\temp_health_reshaped.dta", replace

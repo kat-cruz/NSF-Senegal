@@ -126,6 +126,22 @@ matched_only_df <- matched_only_df %>%
 total_egg = sm_egg_count + sh_egg_count
 )
 
+#Scale watercontact variable 
+
+# create total time variable. Replace "h" with ":" and calculate total time
+matched_only_df$total_time <- as.numeric(difftime(
+  as.POSIXct(gsub("h", ":", matched_only_df$Endsamplingtime), format = "%H:%M"),
+  as.POSIXct(gsub("h", ":", matched_only_df$BegeningTimesampling), format = "%H:%M"),
+  units = "mins"
+))
+
+#Create scaled variable:
+matched_only_df$Humanwatercontact <- as.numeric(matched_only_df$Humanwatercontact)
+matched_only_df <- matched_only_df %>%
+  mutate(scaled = Humanwatercontact / total_time)
+
+view(matched_only_df)
+
 ```
 
 
@@ -139,11 +155,6 @@ summary(matched_only_df$sm_egg_count)
 
 ###categorical 
 ```{r}
-# var_names <- c("health_5_3_2_", "health_5_4_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_", "hh_gender_", "hh_ethnicity_", "hh_12_1_", "hh_12_2_", "hh_12_3_",  "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_", "hh_12_8_", "hh_31_", "hh_33_", "hh_37_", "living_01", "living_02", "living_04", "wealthindex")
-# 
-# matched_only_df_summary <- matched_only_df %>%
-#    dplyr::select(all_of(var_names))
-#Categorical function
 
 # Function to calculate summary statistics for a single categorical vector
 categ_func_l <- function(value_l) {
@@ -216,6 +227,7 @@ rownames(output_categ) <- NULL
 
 output_categ_gt <- gt(output_categ)
 
+
 output_categ_gt <- output_categ_gt %>%
   tab_header(
     title = "Categorical Stats"
@@ -280,7 +292,7 @@ if (dir.exists(path1)) {
   setwd(path2)
 }
 
-prefixes_binary <- c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_", "hh_gender_", "hh_12_1_", "hh_12_2_", "hh_12_3_", "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_",  "hh_12_8_")
+prefixes_binary <- c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_", "hh_gender_", "hh_12_1_", "hh_12_2_", "hh_12_3_", "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_",  "hh_12_8_", "schisto_indicator")
 
 # output_binary <- as.data.frame(categ_summary_l(matched_only_df, prefixes_binary))
 # rownames(output_binary) <- NULL
@@ -303,6 +315,12 @@ output_binary_gt <- output_binary_gt %>%
   tab_header(
     title = "Binary Stats"
   )
+
+ variable_lables <- c("Intercept", 
+               "Perceived infection",
+               "Missed school days",
+               "Received medication",
+               "Ever diagnosed with Bilharzia")
 
 
 gtsave(output_binary_gt, "output_binary_clean_table.tex")
@@ -489,7 +507,7 @@ if (dir.exists(path1)) {
 view(matched_only_df)
 
 # Specify the formula for logistic regression
-formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ 
+formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + 
 formula_01_m <- sm_inf ~ health_5_3_2_ + health_5_4_ 
 formula_01_t <- total_egg ~ health_5_3_2_ + health_5_4_ 
 # Run logistic regressions for S. haematobium and S. mansoni
@@ -532,7 +550,7 @@ logit_models_done_01 <- stargazer(logit_model_01_h, logit_model_01_m, ols_model_
           digit.separator = "",
           no.space = TRUE,
           column.sep.width = "3pt",
-          dep.var.labels = c("S. haematobium", "S. mansoni", "Total egg count"),
+          dep.var.labels = c("S. haematobium", "S. mansoni", "S. haematobium + S. mansoni egg count"),
           omit.stat = c("f", "adj.rsq"),
           se = list(robust_se_h_01, robust_se_m_01, robust_se_t_01),
           add.lines = list(
@@ -569,7 +587,7 @@ if (dir.exists(path1)) {
   setwd(path2)
 }
 # Specify the formula for logistic regression
-formula_02_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
+formula_02_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_ +
 formula_02_m <- sm_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
 formula_02_t <- total_egg ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
 # Run logistic regressions for S. haematobium and S. mansoni

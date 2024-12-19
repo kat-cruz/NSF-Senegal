@@ -25,18 +25,18 @@ else if "`c(username)'"=="km978" {
 *** additional file paths ***
 global data "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
 
-global village_observations "$master\Data Quality Checks\Output\Village_Household_Identifiers"
-global household_roster "$master\Data Quality Checks\Output\Household_Roster"
-global knowledge "$master\Data Quality Checks\Output\Knowledge"
-global health "$master\Data Quality Checks\Output\Health" 
-global agriculture_inputs "$master\Data Quality Checks\Output\Agriculture_Inputs"
-global agriculture_production "$master\Data Quality Checks\Output\Agriculture_Production"
-global food_consumption "$master\Data Quality Checks\Output\Food_Consumption"
-global income "$master\Data Quality Checks\Output\Income"
-global standard_living "$master\Data Quality Checks\Output\Standard_Living"
-global beliefs "$master\Data Quality Checks\Output\Beliefs" 
-global public_goods "$master\Data Quality Checks\Output\Public_Goods"
-global enum_observations "$master\Data Quality Checks\Output\Enumerator_Observations"
+global village_observations "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Village_Household_Identifiers"
+global household_roster "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Household_Roster"
+global knowledge "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Knowledge"
+global health "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Health" 
+global agriculture_inputs "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Agriculture_Inputs"
+global agriculture_production "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Agriculture_Production"
+global food_consumption "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Food_Consumption"
+global income "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Income"
+global standard_living "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Standard_Living"
+global beliefs "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Beliefs" 
+global public_goods "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Public_Goods"
+global enum_observations "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Enumerator_Observations"
 
 *** Import data - update this every new data cleaning session ***
 import delimited "$data\DISES_enquete_ménage_FINALE_WIDE_6Feb24.csv", clear varnames(1) bindquote(strict)

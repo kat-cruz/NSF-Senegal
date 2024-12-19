@@ -1,32 +1,30 @@
-*** DISES Baseline Data Checks - Household Survey***
-*** File Created By: Molly Doruska ***
-*** File Last Updated By: Kateri Mouawad ***
-*** File Last Updated On: February 5, 2024 ***
+*** DISES Midline Data Checks - Household Survey***
+*** File originally created By: Molly Doruska - Adapted by Kateri Mouawad ***
+*** Updates recorded in GitHub ***
+*==============================================================================
+clear all
+set mem 100m
+set maxvar 30000
+set matsize 11000
+set more off
 
+**************************************************
+* SET FILE PATHS
+**************************************************
 
-clear all 
+* Set base Box path for each user
+if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box"
+if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box"
+if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
+if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
+if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box"
 
-*** set maximum variables to at least 20,000 ***
-set maxvar 20000
-
-**** Master file path  ****
-
-if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
-}
-else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Baseline Data Collection"
-				
-}
-
-*global master "C:\Users\kateri\Box\NSF Senegal\Baseline Data Collection"
-*global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
 
 *** additional file paths ***
 global data "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
 
 global village_observations "$master\Data Quality Checks\Output\Village_Household_Identifiers"
-global household_roster "$master\Data Quality Checks\Output\Household_Roster"
+global household_roster "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Household_Roster"
 global knowledge "$master\Data Quality Checks\Output\Knowledge"
 global health "$master\Data Quality Checks\Output\Health" 
 global agriculture_inputs "$master\Data Quality Checks\Output\Agriculture_Inputs"
@@ -38,12 +36,11 @@ global beliefs "$master\Data Quality Checks\Output\Beliefs"
 global public_goods "$master\Data Quality Checks\Output\Public_Goods"
 global enum_observations "$master\Data Quality Checks\Output\Enumerator_Observations"
 
-*** Import data - update this every new data cleaning session ***
+*** Import household data - update this every new data cleaning session ***
 import delimited "$data\DISES_enquete_ménage_FINALE_WIDE_6Feb24.csv", clear varnames(1) bindquote(strict)
 
 *** import community survey data ***
-*** this imports test data, update with acutal survey data ***
-*use "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection\Surveys\Baseline CRDES data (Jan-Feb 2024)\DISES_enquete_ménage_FINALE.dta", clear 
+
 
 *** label variables - location and respondent ***
 label variable village_select "Selectionnez le vilalge pour le questionnaire menage"

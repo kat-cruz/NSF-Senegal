@@ -1,19 +1,24 @@
-*** DISES Baseline Data Checks ***
-*** File Created By: Molly Doruska ***
-*** File Last Updated By: Kateri Mouawad ***
-*** File Last Updated On: Febuary 05, 2024 ***
+*** File originally created By: Molly Doruska ***
+      *** Adapted by Kateri Mouawad ***
+	*** Updates recorded in GitHub ***
+*==============================================================================
+clear all
+set mem 100m
+set maxvar 30000
+set matsize 11000
+set more off
 
-clear all 
+**************************************************
+* SET FILE PATHS
+**************************************************
 
-**** Master file path  ****
+* Set base Box path for each user
+if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box"
+if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box"
+if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
+if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
+if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box"
 
-if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
-}
-else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Baseline Data Collection"
-				
-}
 
 global community "$master\Data Quality Checks\Output\Community_Issues"
 global issues "$master\Data Quality Checks\Full Issues"

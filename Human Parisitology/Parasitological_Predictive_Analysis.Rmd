@@ -14,6 +14,7 @@ date: "2024-11-18"
 #install.packages("pscl")  
 #install.packages("sandwich")
 #install.packages("gt")
+#install.packages("caret")
 
 library(gt)
 library(vcd)
@@ -34,6 +35,7 @@ library(stats)
 library(stargazer)
 library(pscl)
 library(sandwich)
+library(caret)
 
 ```
 
@@ -238,7 +240,7 @@ gtsave(output_categ_gt, "output_categ_clean_table.tex")
 ```
 
 
-###binary
+###binary function
 
 ```{r}
 # Function to calculate summary statistics for a single vector (variable)
@@ -278,7 +280,7 @@ binary_summary_l <- function(baseline_data, prefixes) {
 
 ```
 
-
+######binary results
 
 ```{r}
 # Define possible paths
@@ -487,10 +489,12 @@ output of regression table
            omit.stat = c("f", "adj.rsq", "ser")
            omit = c("height_reg", "height_reg_miss")
 
-#Bivariate Logistic regression 01
+#Regression 01
 
 
 ```{r}
+
+############################ Bivariate Logistic Regression #####################################
 
 # Define possible paths
 path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
@@ -504,7 +508,7 @@ if (dir.exists(path1)) {
 }
 
 ## Selected covariates at the village level:
-view(matched_only_df)
+#view(matched_only_df)
 
 # Specify the formula for logistic regression
 formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + 
@@ -564,7 +568,35 @@ logit_models_done_01 <- stargazer(logit_model_01_h, logit_model_01_m, ols_model_
 
 cat(logit_models_done_01, sep = '\n', file = 'logit_modeles_01_table.tex')
 #out = "logit_model_01_table.tex"
-# Extract coefficients
+
+## Confusion matrix 
+
+# generate predicted probabilities
+predicted_probs <- predict(logit_model_01_h, type = "response")
+
+# define thresholds
+thresholds <- seq(0, 1, by = 0.1)
+
+# iterate over thresholds and calculate errors
+errors <- sapply(thresholds, function(t) {
+  predictions <- ifelse(predicted_probs > t, 1, 0)
+  confusion_matrix <- table(Predicted = predictions, Actual = matched_only_df$actual_infection_status)
+  
+  fnr <- confusion_matrix[2, 1] / sum(confusion_matrix[, 1])  # FN / (FN + TP)
+  fpr <- confusion_matrix[1, 2] / sum(confusion_matrix[, 2])  # FP / (FP + TN)
+  
+  return(fnr + fpr)
+})
+
+# identify the optimal threshold
+optimal_threshold <- thresholds[which.min(errors)]
+
+# validate results
+predictions_optimal <- ifelse(predicted_probs > optimal_threshold, 1, 0)
+confusion_matrix_optimal <- table(Predicted = predictions_optimal, Actual = matched_only_df$actual_infection_status)
+
+cat("Optimal Threshold:", optimal_threshold, "\n")
+print(confusion_matrix_optimal)
 
 
 ```

@@ -15,6 +15,7 @@ date: "2024-11-18"
 #install.packages("sandwich")
 #install.packages("gt")
 #install.packages("caret")
+#install.packages("xtable")
 
 library(gt)
 library(vcd)
@@ -36,6 +37,7 @@ library(stargazer)
 library(pscl)
 library(sandwich)
 library(caret)
+library(xtable)
 
 ```
 
@@ -113,7 +115,7 @@ matched_only_df <- matched_only_df %>%
 #Cleaning 
 
 ```{r}
-
+#turn NAs into zeros
 matched_only_df <- matched_only_df %>%
   mutate(
     hh_31_ = ifelse(is.na(hh_31_), 0, hh_31_),
@@ -141,6 +143,11 @@ matched_only_df$total_time <- as.numeric(difftime(
 matched_only_df$Humanwatercontact <- as.numeric(matched_only_df$Humanwatercontact)
 matched_only_df <- matched_only_df %>%
   mutate(scaled = Humanwatercontact / total_time)
+
+matched_only_df <- matched_only_df %>%
+  mutate(
+    total_time = ifelse(is.na(total_time), 0, total_time),
+    scaled = ifelse(is.na(scaled), 0, scaled))
 
 view(matched_only_df)
 
@@ -511,9 +518,9 @@ if (dir.exists(path1)) {
 #view(matched_only_df)
 
 # Specify the formula for logistic regression
-formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + 
-formula_01_m <- sm_inf ~ health_5_3_2_ + health_5_4_ 
-formula_01_t <- total_egg ~ health_5_3_2_ + health_5_4_ 
+formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + total_time 
+formula_01_m <- sm_inf ~ health_5_3_2_ + health_5_4_ + total_time 
+formula_01_t <- total_egg ~ health_5_3_2_ + health_5_4_ + total_time 
 # Run logistic regressions for S. haematobium and S. mansoni
 logit_model_01_h <- glm(formula_01_h, data = matched_only_df, family = binomial)
 logit_model_01_m <- glm(formula_01_m, data = matched_only_df, family = binomial)
@@ -549,7 +556,7 @@ robust_se_t_01 <- sqrt(diag(vcovHC(ols_model_01_t, type = "HC1")))
 
 # Display summary of both logistic models and the OLS model using stargazer
 logit_models_done_01 <- stargazer(logit_model_01_h, logit_model_01_m, ols_model_01_t,
-          covariate.labels = c("Percieved infection", "Missed school days"),
+          covariate.labels = c("Percieved infection", "Missed school days", ""),
           type = "latex",
           digit.separator = "",
           no.space = TRUE,
@@ -566,10 +573,29 @@ logit_models_done_01 <- stargazer(logit_model_01_h, logit_model_01_m, ols_model_
           )
 )
 
-cat(logit_models_done_01, sep = '\n', file = 'logit_modeles_01_table.tex')
+#cat(logit_models_done_01, sep = '\n', file = 'logit_modeles_01_table.tex')
 #out = "logit_model_01_table.tex"
+```
 
-## Confusion matrix 
+##Confusion matricies 01
+
+```{r}
+
+## Confusion matrix
+# This code is evaluating the classification performance of a logistic regression model (logit_model_01_h) by:
+# 
+# 1) Generating predicted probabilities of the target variable.
+# 2) Using thresholds (from 0 to 1) to classify predictions as 1 (positive) or 0 (negative).
+# 3) Creating confusion matrices at each threshold to calculate false negative rates (FNR) and false positive rates (FPR).
+# 4) Computing a combined error metric (FNR + FPR) for each threshold to find the optimal threshold for minimizing prediction errors.
+
+# A confusion matrix compares the predicted classifications (predictions) to the actual outcomes (matched_only_df$sh_inf):
+          # True Positives (TP): Correctly predicted infected.
+          # True Negatives (TN): Correctly predicted not infected.
+          # False Positives (FP): Predicted infected but not infected.
+          # False Negatives (FN): Predicted not infected but actually infected.
+          # False Negative Rate (FNR): Proportion of actual positives classified as negatives.
+          # False Positive Rate (FPR): Proportion of actual negatives classified as positives.
 
 # generate predicted probabilities
 predicted_probs <- predict(logit_model_01_h, type = "response")
@@ -580,10 +606,22 @@ thresholds <- seq(0, 1, by = 0.1)
 # iterate over thresholds and calculate errors
 errors <- sapply(thresholds, function(t) {
   predictions <- ifelse(predicted_probs > t, 1, 0)
-  confusion_matrix <- table(Predicted = predictions, Actual = matched_only_df$actual_infection_status)
   
-  fnr <- confusion_matrix[2, 1] / sum(confusion_matrix[, 1])  # FN / (FN + TP)
-  fpr <- confusion_matrix[1, 2] / sum(confusion_matrix[, 2])  # FP / (FP + TN)
+  # Create a complete confusion matrix
+  confusion_matrix <- table(
+    factor(predictions, levels = c(0, 1)), 
+    factor(matched_only_df$sh_inf, levels = c(0, 1))
+  )
+  
+  # Avoid subscript out of bounds by checking if the matrix has both rows/columns
+  if (all(dim(confusion_matrix) == c(2, 2))) {
+    fnr <- confusion_matrix[2, 1] / sum(confusion_matrix[, 1])  # FN / (FN + TP)
+    fpr <- confusion_matrix[1, 2] / sum(confusion_matrix[, 2])  # FP / (FP + TN)
+  } else {
+    # If any row/column is missing, set FNR/FPR to NA or a default value
+    fnr <- NA
+    fpr <- NA
+  }
   
   return(fnr + fpr)
 })
@@ -593,9 +631,14 @@ optimal_threshold <- thresholds[which.min(errors)]
 
 # validate results
 predictions_optimal <- ifelse(predicted_probs > optimal_threshold, 1, 0)
-confusion_matrix_optimal <- table(Predicted = predictions_optimal, Actual = matched_only_df$actual_infection_status)
+confusion_matrix_optimal_h_01 <- table(Predicted = predictions_optimal, Actual = matched_only_df$sh_inf)
+
+latex_confusion <- xtable(confusion_matrix_optimal_h_01, 
+                          caption = "Confusion Matrix", 
+                          label = "tab:confusion_matrix_optimal_h_01")
 
 cat("Optimal Threshold:", optimal_threshold, "\n")
+
 print(confusion_matrix_optimal)
 
 

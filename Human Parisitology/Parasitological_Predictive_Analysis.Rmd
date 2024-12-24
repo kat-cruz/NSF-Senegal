@@ -149,7 +149,7 @@ matched_only_df <- matched_only_df %>%
     total_time = ifelse(is.na(total_time), 0, total_time),
     scaled = ifelse(is.na(scaled), 0, scaled))
 
-view(matched_only_df)
+#view(matched_only_df)
 
 ```
 
@@ -216,8 +216,8 @@ categ_summary_l <- function(data_l, prefixes_l) {
 
 ```{r}
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -291,8 +291,8 @@ binary_summary_l <- function(baseline_data, prefixes) {
 
 ```{r}
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -388,8 +388,8 @@ numerical_summary_l <- function(baseline_data, prefixes) {
 
 ```{r}
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -447,6 +447,7 @@ gtsave(output_numerical_gt, "output_numerical_clean_table.tex")
 -   hh_18_ = past 7 days, how many hours spent near water source? 
 -   hh_19_ = what source of water? 
       - lake, pond, river, irrigation channel, other
+-   hh_29_ = what is highest level of education achieved
 -   hh_30 = did they attend any school during 2022-23
 -   hh_31_ = result acheived in academic year 
 -   hh_33 = performace in class
@@ -504,8 +505,8 @@ output of regression table
 ############################ Bivariate Logistic Regression #####################################
 
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -514,19 +515,25 @@ if (dir.exists(path1)) {
   setwd(path2)
 }
 
+model_01_data <- matched_only_df %>% 
+  select(total_egg, sm_inf, sh_inf, health_5_3_2_,health_5_4_, hh_gender_, hh_age_, hh_29_, q_23, q_24, q_49, Cerratophyllummassg, schisto_indicator, scaled, Humanwatercontact, InfectedBulinus, InfectedBiomphalaria)
+
+model_01_data <- model_01_data[complete.cases(model_01_data), ]
+#(model_01_data)
+
 ## Selected covariates at the village level:
 #view(matched_only_df)
 
 # Specify the formula for logistic regression
-formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + total_time 
-formula_01_m <- sm_inf ~ health_5_3_2_ + health_5_4_ + total_time 
-formula_01_t <- total_egg ~ health_5_3_2_ + health_5_4_ + total_time 
-# Run logistic regressions for S. haematobium and S. mansoni
-logit_model_01_h <- glm(formula_01_h, data = matched_only_df, family = binomial)
-logit_model_01_m <- glm(formula_01_m, data = matched_only_df, family = binomial)
+formula_01_h <- sh_inf ~ health_5_3_2_ + health_5_4_ + hh_gender_ + hh_age_ +  hh_29_ + q_23 + q_24 + q_49 + Cerratophyllummassg + schisto_indicator + scaled + Humanwatercontact + InfectedBulinus + InfectedBiomphalaria
+formula_01_m <- sm_inf ~ health_5_3_2_ + health_5_4_ + hh_gender_ + hh_age_ +  hh_29_ + q_23 + q_24 + q_49 + Cerratophyllummassg + schisto_indicator + scaled + Humanwatercontact + InfectedBulinus + InfectedBiomphalaria
+formula_01_t <- total_egg ~ health_5_3_2_ + health_5_4_ + hh_gender_ + hh_age_ +  hh_29_ + q_23 + q_24 + q_49 + Cerratophyllummassg + schisto_indicator + scaled + Humanwatercontact + InfectedBulinus + InfectedBiomphalaria
+# Run logistic regressions for S. haematobium and S. mansoni 
+logit_model_01_h <- glm(formula_01_h, data = model_01_data, family = binomial)
+logit_model_01_m <- glm(formula_01_m, data = model_01_data, family = binomial)
 
 # Run OLS regression for Total Egg Count
-ols_model_01_t <- lm(formula_01_t, data = matched_only_df)
+ols_model_01_t <- lm(formula_01_t, data = model_01_data)
 
 # Calculate McFadden's Pseudo R^2 for the logistic models
 pseudo_r2_h_01 <- pR2(logit_model_01_h)["McFadden"]
@@ -556,28 +563,156 @@ robust_se_t_01 <- sqrt(diag(vcovHC(ols_model_01_t, type = "HC1")))
 
 # Display summary of both logistic models and the OLS model using stargazer
 logit_models_done_01 <- stargazer(logit_model_01_h, logit_model_01_m, ols_model_01_t,
-          covariate.labels = c("Percieved infection", "Missed school days", ""),
+          covariate.labels = c("Percieved infection", "Missed school days", "Sex", "Age", "Education level"),
+          title = "Regression Models 01",
           type = "latex",
           digit.separator = "",
           no.space = TRUE,
           column.sep.width = "3pt",
-          dep.var.labels = c("S. haematobium", "S. mansoni", "S. haematobium + S. mansoni egg count"),
-          omit.stat = c("f", "adj.rsq"),
+          dep.var.labels = c("S. h", 
+                             "S. m", 
+                             "\\makecell{{S.h + S.m} \\\\ \\ {egg count}}"),
+          omit = c("q_23", "q_24", "q_49", "Cerratophyllummassg", "schisto_indicator", 
+           "scaled", "Humanwatercontact", "InfectedBulinus", "InfectedBiomphalaria"),
           se = list(robust_se_h_01, robust_se_m_01, robust_se_t_01),
+          omit.stat = c("f", "adj.rsq", "rsq", "ll", "aic", "ser"),
           add.lines = list(
             c("Pseudo $R^2$", pseudo_r2_h, pseudo_r2_m, "N/A"),  # For OLS (not applicable)
             c("BIC", round(bic_value_h_01, 2), round(bic_value_m_01, 2), round(bic_value_t_01, 2)),
-            c("R-squared", "", "", round(r_squared_t_01, 4)),
-            c("Adjusted R-squared", "", "", round(adj_r_squared_t_01, 4)),
-            c("RMSE", "", "", round(rmse_t_01, 4))
-          )
+            c("$R^2$", "", "", round(r_squared_t_01, 4)),
+            c("Adjusted $R^2$", "", "", round(adj_r_squared_t_01, 4)),
+            c("RMSE", "", "", round(rmse_t_01, 4))),
+           notes = "Note: Variables q_23, q_24, q_49, Cerratophyllummassg, schisto_indicator, scaled, Humanwatercontact, InfectedBulinus, and InfectedBiomphalaria are included as village-level covariates."
 )
 
-#cat(logit_models_done_01, sep = '\n', file = 'logit_modeles_01_table.tex')
-#out = "logit_model_01_table.tex"
+cat(logit_models_done_01, sep = '\n', file = 'logit_modeles_01_table.tex')
+
 ```
 
 ##Confusion matricies 01
+
+
+
+
+```{r}
+
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
+
+
+#view(matched_only_df)
+
+# Generate predicted probabilities for each model
+predicted_probs_h_01 <- predict(logit_model_01_h, type = "response")
+predicted_probs_m_01 <- predict(logit_model_01_m, type = "response")
+predicted_probs_t_01 <- predict(ols_model_01_t, type = "response")  # Assuming binary output from OLS
+
+
+# Define thresholds
+thresholds_01 <- seq(0, 1, by = 0.1)
+# Define a threshold for Total_egg (you can adjust this based on your data)
+threshold_egg <- 5  # Example threshold - Create a binary version of the Total_egg variable
+binary_total_egg <- ifelse(model_01_data$total_egg > threshold_egg, 1, 0)
+
+# Function to compute confusion matrix and errors for a given model
+compute_confusion_01 <- function(predicted_probs_01, actual_values_01, thresholds_01) {
+  errors_01 <- sapply(thresholds_01, function(t_01) {
+    predictions_01 <- ifelse(predicted_probs_01 > t_01, 1, 0)
+    
+    # Convert both to factors with the same levels
+    confusion_matrix_01 <- table(
+      factor(predictions_01, levels = c(0, 1)),
+      factor(actual_values_01, levels = c(0, 1))
+    )
+    
+    # Avoid subscript out of bounds by checking if the matrix has both rows/columns
+    if (all(dim(confusion_matrix_01) == c(2, 2))) {
+      fnr_01 <- confusion_matrix_01[2, 1] / sum(confusion_matrix_01[, 1])  # FN / (FN + TP)
+      fpr_01 <- confusion_matrix_01[1, 2] / sum(confusion_matrix_01[, 2])  # FP / (FP + TN)
+    } else {
+      fnr_01 <- NA
+      fpr_01 <- NA
+    }
+    
+    return(fnr_01 + fpr_01)
+  })
+  
+  optimal_threshold_01 <- thresholds_01[which.min(errors_01)]
+  
+  # Generate confusion matrix at optimal threshold
+  predictions_optimal_01 <- ifelse(predicted_probs_01 > optimal_threshold_01, 1, 0)
+  confusion_matrix_optimal_01 <- table(
+    Predicted_01 = predictions_optimal_01, 
+    Actual_01 = actual_values_01
+  )
+  
+  return(list(confusion_matrix_optimal_01 = confusion_matrix_optimal_01, optimal_threshold_01 = optimal_threshold_01))
+}
+
+# Apply the function to each model
+results_h_01 <- compute_confusion_01(predicted_probs_h_01, model_01_data$sh_inf, thresholds_01)
+results_m_01 <- compute_confusion_01(predicted_probs_m_01, model_01_data$sm_inf, thresholds_01)
+results_t_01 <- compute_confusion_01(predicted_probs_t_01, binary_total_egg, thresholds_01)
+
+# Combine confusion matrices into a single LaTeX table
+combined_matrix_01 <- rbind(
+  cbind(Model_01 = "Logit Model H", as.matrix(results_h_01$confusion_matrix_optimal_01)),
+  cbind(Model_01 = "Logit Model M", as.matrix(results_m_01$confusion_matrix_optimal_01)),
+  cbind(Model_01 = "OLS Model T", as.matrix(results_t_01$confusion_matrix_optimal_01))
+)
+
+# Add row and column names for clarity
+# rownames(combined_matrix_01) <- c(
+#   "Logit H", "Logit H",  # These will correspond to the rows for Logit H model
+#   "Logit M", "Logit M",  # These will correspond to the rows for Logit M model
+#   "OLS T", "OLS T"  # These will correspond to the rows for OLS T model
+# )
+
+colnames(combined_matrix_01) <- c("Model:", "Predicted: Class 0", "Predicted: Class 1")
+
+# Output to LaTeX
+latex_combined_01 <- xtable(combined_matrix_01, 
+                            caption = "Combined Confusion Matrices for Three Models", 
+                            label = "tab:combined_confusion_matrices_01")
+print(latex_combined_01, include.rownames = FALSE, include.colnames = TRUE)
+
+# Print optimal thresholds for each model
+cat("Optimal Thresholds:\n")
+cat("Logit Model H:", results_h_01$optimal_threshold_01, "\n")
+cat("Logit Model M:", results_m_01$optimal_threshold_01, "\n")
+cat("OLS Model T:", results_t_01$optimal_threshold_01, "\n")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```{r}
 
@@ -596,50 +731,156 @@ logit_models_done_01 <- stargazer(logit_model_01_h, logit_model_01_m, ols_model_
           # False Negatives (FN): Predicted not infected but actually infected.
           # False Negative Rate (FNR): Proportion of actual positives classified as negatives.
           # False Positive Rate (FPR): Proportion of actual negatives classified as positives.
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
+
+
+# Generate predicted probabilities for each model
+predicted_probs_h_01 <- predict(logit_model_01_h, type = "response")
+predicted_probs_m_01 <- predict(logit_model_01_m, type = "response")
+predicted_probs_t_01 <- predict(ols_model_01_t, type = "response")  # Assuming binary output from OLS
+
+
+# Define thresholds
+thresholds_01 <- seq(0, 1, by = 0.1)
+
+# Function to compute confusion matrix and errors for a given model
+compute_confusion_01 <- function(predicted_probs_01, actual_values_01, thresholds_01) {
+  errors_01 <- sapply(thresholds_01, function(t_01) {
+    predictions_01 <- ifelse(predicted_probs_01 > t_01, 1, 0)
+    
+    # Create a complete confusion matrix
+    confusion_matrix_01 <- table(
+      factor(predictions_01, levels = c(0, 1)),
+      factor(actual_values_01, levels = c(0, 1))
+    )
+    
+    # Avoid subscript out of bounds by checking if the matrix has both rows/columns
+    if (all(dim(confusion_matrix_01) == c(2, 2))) {
+      fnr_01 <- confusion_matrix_01[2, 1] / sum(confusion_matrix_01[, 1])  # FN / (FN + TP)
+      fpr_01 <- confusion_matrix_01[1, 2] / sum(confusion_matrix_01[, 2])  # FP / (FP + TN)
+    } else {
+      fnr_01 <- NA
+      fpr_01 <- NA
+    }
+    
+    return(fnr_01 + fpr_01)
+  })
+  
+  optimal_threshold_01 <- thresholds_01[which.min(errors_01)]
+  
+  # Generate confusion matrix at optimal threshold
+  predictions_optimal_01 <- ifelse(predicted_probs_01 > optimal_threshold_01, 1, 0)
+  confusion_matrix_optimal_01 <- table(
+    Predicted_01 = predictions_optimal_01, 
+    Actual_01 = actual_values_01
+  )
+  
+  return(list(confusion_matrix_optimal_01 = confusion_matrix_optimal_01, optimal_threshold_01 = optimal_threshold_01))
+}
+
+# Apply the function to each model
+results_h_01 <- compute_confusion_01(predicted_probs_h_01, matched_only_df$sh_inf, thresholds_01)
+results_m_01 <- compute_confusion_01(predicted_probs_m_01, matched_only_df$sh_inf, thresholds_01)
+results_t_01 <- compute_confusion_01(predicted_probs_t_01, matched_only_df$sh_inf, thresholds_01)
+
+# Combine confusion matrices into a single LaTeX table
+combined_matrix_01 <- rbind(
+  cbind(Model_01 = "Logit Model H", as.matrix(results_h_01$confusion_matrix_optimal_01)),
+  cbind(Model_01 = "Logit Model M", as.matrix(results_m_01$confusion_matrix_optimal_01)),
+  cbind(Model_01 = "OLS Model T", as.matrix(results_t_01$confusion_matrix_optimal_01))
+)
+
+# Add row and column names for clarity
+rownames(combined_matrix_01) <- c(
+  "Logit H - Actual: Class 0", "Logit H - Actual: Class 1",
+  "Logit M - Actual: Class 0", "Logit M - Actual: Class 1",
+  "OLS T - Actual: Class 0", "OLS T - Actual: Class 1"
+)
+colnames(combined_matrix_01) <- c("Model_01", "Predicted: Class 0", "Predicted: Class 1")
+
+# Output to LaTeX
+latex_combined_01 <- xtable(combined_matrix_01, 
+                            caption = "Combined Confusion Matrices for Three Models", 
+                            label = "tab:combined_confusion_matrices_01")
+print(latex_combined_01, include.rownames = TRUE, include.colnames = TRUE)
+
+# Print optimal thresholds for each model
+cat("Optimal Thresholds:\n")
+cat("Logit Model H:", results_h_01$optimal_threshold_01, "\n")
+cat("Logit Model M:", results_m_01$optimal_threshold_01, "\n")
+cat("OLS Model T:", results_t_01$optimal_threshold_01, "\n")
+
+
+
+
+
+
+```
+
+```{r}
+
 
 # generate predicted probabilities
-predicted_probs <- predict(logit_model_01_h, type = "response")
+predicted_probs_01 <- predict(logit_model_01_h, type = "response")
 
 # define thresholds
-thresholds <- seq(0, 1, by = 0.1)
+thresholds_01 <- seq(0, 1, by = 0.1)
 
 # iterate over thresholds and calculate errors
-errors <- sapply(thresholds, function(t) {
-  predictions <- ifelse(predicted_probs > t, 1, 0)
+errors_01 <- sapply(thresholds, function(t) {
+  predictions_01 <- ifelse(predicted_probs_01 > t, 1, 0)
   
   # Create a complete confusion matrix
-  confusion_matrix <- table(
+  confusion_matrix_01 <- table(
     factor(predictions, levels = c(0, 1)), 
     factor(matched_only_df$sh_inf, levels = c(0, 1))
   )
   
   # Avoid subscript out of bounds by checking if the matrix has both rows/columns
-  if (all(dim(confusion_matrix) == c(2, 2))) {
-    fnr <- confusion_matrix[2, 1] / sum(confusion_matrix[, 1])  # FN / (FN + TP)
-    fpr <- confusion_matrix[1, 2] / sum(confusion_matrix[, 2])  # FP / (FP + TN)
+  if (all(dim(confusion_matrix_01) == c(2, 2))) {
+    fnr <- confusion_matrix_01[2, 1] / sum(confusion_matrix_01[, 1])  # FN / (FN + TP)
+    fpr <- confusion_matrix_01[1, 2] / sum(confusion_matrix_01[, 2])  # FP / (FP + TN)
   } else {
     # If any row/column is missing, set FNR/FPR to NA or a default value
-    fnr <- NA
-    fpr <- NA
+    fnr_01 <- NA
+    fpr_01 <- NA
   }
   
-  return(fnr + fpr)
+  return(fnr_01 + fpr_01)
 })
 
 # identify the optimal threshold
-optimal_threshold <- thresholds[which.min(errors)]
+optimal_threshold_01 <- thresholds[which.min(errors)]
+
+
+
 
 # validate results
-predictions_optimal <- ifelse(predicted_probs > optimal_threshold, 1, 0)
-confusion_matrix_optimal_h_01 <- table(Predicted = predictions_optimal, Actual = matched_only_df$sh_inf)
+predictions_optimal_01 <- ifelse(predicted_probs_01 > optimal_threshold_01, 1, 0)
+confusion_matrix_optimal_h_01 <- table(Predicted_01 = predictions_optimal_01, Actual = matched_only_df$sh_inf)
 
-latex_confusion <- xtable(confusion_matrix_optimal_h_01, 
-                          caption = "Confusion Matrix", 
+rownames(confusion_matrix_optimal_h_01) <- c("Actual: Class 0", "Actual: Class 1")
+colnames(confusion_matrix_optimal_h_01) <- c("Predicted: Class 0", "Predicted: Class 1")
+
+latex_confusion_01 <- xtable(confusion_matrix_optimal_01, 
+                          caption = "S. haematobium Confusion Matrix", 
                           label = "tab:confusion_matrix_optimal_h_01")
 
-cat("Optimal Threshold:", optimal_threshold, "\n")
+cat("Optimal Threshold:", optimal_threshold_01, "\n")
+print(confusion_matrix_optimal_01)
 
-print(confusion_matrix_optimal)
+
+
+print(latex_confusion_01, include.rownames = TRUE, include.colnames = TRUE, type = "latex", file = "latex_confusion_01.tex")
 
 
 ```
@@ -652,8 +893,8 @@ print(confusion_matrix_optimal)
 ```{r}
 
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -752,7 +993,7 @@ stargazer(CI_coeff_02_t,
 
 
 ```{r}
-# setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex")
+# setwd("C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis")
 # 
 # # Specify the formula for logistic regression
 # formula_02 <- sh_inf ~ health_5_3_2_ + health_5_4_ + health_5_5_ + health_5_6_
@@ -831,8 +1072,8 @@ stargazer(CI_coeff_02_t,
 
 ```{r}
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -1000,8 +1241,8 @@ stargazer(CI_coeff_03_t,
 
 ```{r}
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -1155,8 +1396,8 @@ stargazer(CI_coeff_04_t,
 #Old code of model 01 - contains odd ratios 
 
 # Define possible paths
-# path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+# path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 # 
 # # set the working directory
 # if (dir.exists(path1)) {
@@ -1312,8 +1553,8 @@ stargazer(CI_coeff_04_t,
 #Regression 2:
 
 # # Define possible paths
-# path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+# path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 # 
 # # set the working directory
 # if (dir.exists(path1)) {
@@ -1473,8 +1714,8 @@ stargazer(CI_coeff_04_t,
 #Model 03
 
 # # Define possible paths
-# path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+# path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 # 
 # # set the working directory
 # if (dir.exists(path1)) {
@@ -1643,8 +1884,8 @@ stargazer(CI_coeff_04_t,
 # Model 04:
 
 # Define possible paths
-# path1 <- "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex"
-# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/NSF-Senegal/Latex"
+# path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
 # 
 # # set the working directory
 # if (dir.exists(path1)) {

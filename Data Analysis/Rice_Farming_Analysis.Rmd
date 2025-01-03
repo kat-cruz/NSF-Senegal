@@ -1,0 +1,102 @@
+---
+title: "Rice Farming Analysis"
+author: "Kateri Mouawad"
+date: "2025-01-02"
+output: html_document
+---
+
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Example data loading (replace with actual data)
+# Ensure your data frame is named `data` and contains columns:
+# - `rice_farming` (1 = rice farming, 0 = non-rice farming)
+# - `infection_rate` (numeric, e.g., percentage or proportion)
+# - `asset_holdings` (numeric, e.g., monetary value of assets)
+
+# Simulated dataset for demonstration (remove in actual use)
+data <- data.frame(
+  household_id = 1:100,
+  rice_farming = sample(0:1, 100, replace = TRUE),
+  infection_rate = rnorm(100, mean = 0.2, sd = 0.05),
+  asset_holdings = rnorm(100, mean = 5000, sd = 1200)
+)
+
+# Split data into rice and non-rice farming households
+rice_farming_group <- data %>% filter(rice_farming == 1)
+non_rice_farming_group <- data %>% filter(rice_farming == 0)
+
+# Descriptive statistics
+descriptive_stats <- data %>%
+  group_by(rice_farming) %>%
+  summarise(
+    mean_infection_rate = mean(infection_rate, na.rm = TRUE),
+    sd_infection_rate = sd(infection_rate, na.rm = TRUE),
+    mean_asset_holdings = mean(asset_holdings, na.rm = TRUE),
+    sd_asset_holdings = sd(asset_holdings, na.rm = TRUE),
+    n = n()
+  )
+
+print("Descriptive Statistics")
+print(descriptive_stats)
+
+# Hypothesis testing
+# Infection rate: T-test or Wilcoxon test depending on normality
+infection_normality <- shapiro.test(data$infection_rate)$p.value
+
+if (infection_normality > 0.05) {
+  infection_test <- t.test(
+    infection_rate ~ rice_farming,
+    data = data
+  )
+  print("T-test for Infection Rate:")
+} else {
+  infection_test <- wilcox.test(
+    infection_rate ~ rice_farming,
+    data = data
+  )
+  print("Wilcoxon Test for Infection Rate:")
+}
+print(infection_test)
+
+# Asset holdings: T-test or Wilcoxon test depending on normality
+asset_normality <- shapiro.test(data$asset_holdings)$p.value
+
+if (asset_normality > 0.05) {
+  asset_test <- t.test(
+    asset_holdings ~ rice_farming,
+    data = data
+  )
+  print("T-test for Asset Holdings:")
+} else {
+  asset_test <- wilcox.test(
+    asset_holdings ~ rice_farming,
+    data = data
+  )
+  print("Wilcoxon Test for Asset Holdings:")
+}
+print(asset_test)
+
+# Optional: Visualization
+# Boxplots for infection rate
+ggplot(data, aes(x = factor(rice_farming, labels = c("Non-Rice Farming", "Rice Farming")), 
+                 y = infection_rate)) +
+  geom_boxplot() +
+  labs(title = "Infection Rates by Household Type", 
+       x = "Household Type", 
+       y = "Infection Rate")
+
+# Boxplots for asset holdings
+ggplot(data, aes(x = factor(rice_farming, labels = c("Non-Rice Farming", "Rice Farming")), 
+                 y = asset_holdings)) +
+  geom_boxplot() +
+  labs(title = "Asset Holdings by Household Type", 
+       x = "Household Type", 
+       y = "Asset Holdings")
+
+```
+

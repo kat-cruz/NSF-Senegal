@@ -117,7 +117,8 @@ label values schistosomiasis_primary_effect schisto_impact
 label values schistosomiasis_sources schisto_source
 
 *** Value Checks ***
-
+*** Drop observations where consent is not provided ***
+drop if consent_obtain == 0
 
 * a. Check for missing values in the variables below:
 * PROBLEM: first variable NOT being detected - need to run through misstable first 

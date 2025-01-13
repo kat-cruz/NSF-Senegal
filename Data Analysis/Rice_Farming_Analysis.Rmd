@@ -11,39 +11,75 @@ output: html_document
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(haven)
 
-# Example data loading (replace with actual data)
-# Ensure your data frame is named `data` and contains columns:
-# - `rice_farming` (1 = rice farming, 0 = non-rice farming)
-# - `infection_rate` (numeric, e.g., percentage or proportion)
-# - `asset_holdings` (numeric, e.g., monetary value of assets)
+```
 
-# Simulated dataset for demonstration (remove in actual use)
-data <- data.frame(
-  household_id = 1:100,
-  rice_farming = sample(0:1, 100, replace = TRUE),
-  infection_rate = rnorm(100, mean = 0.2, sd = 0.05),
-  asset_holdings = rnorm(100, mean = 5000, sd = 1200)
+
+
+#Load file paths
+
+```{r}
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
 )
 
-# Split data into rice and non-rice farming households
-rice_farming_group <- data %>% filter(rice_farming == 1)
-non_rice_farming_group <- data %>% filter(rice_farming == 0)
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data Management/Output/Data Analysis/Rice_Asset_Analysis"
+  ))
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data Management/Output/Data Analysis/Rice_Asset_Analysis"
+  ))
+}
 
+file_path_infection_df <- file.path(proj$p1, "child_infection_dataframe_features_rice.dta")
+infection_df <- read_dta(file_path_infection_df)
+
+View(infection_df)
+```
+
+
+
+
+```{r}
+
+
+
+
+# Split data into rice and non-rice farming households
+infection_df <- infection_df %>%
+  mutate(
+    rice_farming_group = if_else(agri_6_20_ == 1, 1, 0)
+  )
+
+
+View(infection_df)
 # Descriptive statistics
-descriptive_stats <- data %>%
-  group_by(rice_farming) %>%
+descriptive_stats <- infection_df %>%
+  group_by(rice_farming_group) %>%
   summarise(
-    mean_infection_rate = mean(infection_rate, na.rm = TRUE),
-    sd_infection_rate = sd(infection_rate, na.rm = TRUE),
-    mean_asset_holdings = mean(asset_holdings, na.rm = TRUE),
-    sd_asset_holdings = sd(asset_holdings, na.rm = TRUE),
+    mean_infection_rate = mean(health_5_3_2_, na.rm = TRUE),
+    sd_infection_rate = sd(health_5_3_2_, na.rm = TRUE),
+    mean_asset_holdings = mean(list_actifscount, na.rm = TRUE),
+    sd_asset_holdings = sd(list_actifscount, na.rm = TRUE),
     n = n()
   )
 
 print("Descriptive Statistics")
 print(descriptive_stats)
 
+
+```
+
+
+```{r}
 # Hypothesis testing
 # Infection rate: T-test or Wilcoxon test depending on normality
 infection_normality <- shapiro.test(data$infection_rate)$p.value

@@ -1,0 +1,158 @@
+---
+title: "Treatment_Arms"
+author: "Kateri Mouawad"
+date: "2025-01-03"
+output: html_document
+---
+
+#START HERE - load packages
+
+```{r}
+
+#remotes::install_github("kwb-r/kwb.utils")
+
+#options(repos = c(
+#  kwbr = 'https://kwb-r.r-universe.dev',
+#  CRAN = 'https://cloud.r-project.org'))
+  
+# Download and install kwb.utils in R
+#install.packages('kwb.utils')
+
+
+
+
+# install.packages(officer)
+# install.packages(r2rtf)
+# install.packages(dplyr)
+# install.packages(ggplot2)
+# install.packages(kwb.utils)
+# install.packages(haven)
+# install.packages(data.table)
+# install.packages(rtf)
+# install.packages(tidyverse)
+# install.packages(estimatr)
+# install.packages(broom)
+
+library(officer)
+library(r2rtf)
+library(dplyr)
+library(ggplot2)
+library(kwb.utils)
+library(haven)
+library(data.table)
+library(rtf)
+library(tidyverse)
+library(estimatr)
+library(broom)
+
+```
+
+
+```{r}
+
+
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data Management/Output/Data Corrections/Treatments"
+  ))
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data Management/Output/Data Corrections/Treatments"
+  ))
+}
+
+
+file_path_hh <- file.path(proj$p1, "Treated_variables_df.dta")
+trained_data <- read_dta(file_path_hh)
+view(trained_data)
+
+
+
+
+```
+
+
+
+
+
+
+
+```{r}
+
+#Village level co-variates
+# Define possible paths
+path1 <- "C:/Users/km978/Box/NSF Senegal/Data Management/Output/Data Corrections/Baseline"
+path2 <- "C:/Users/km978/Box/NSF Senegal/Data Management/Output/Data Corrections/Baseline"
+
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
+
+
+# Adding indicator variables for household training categories
+trained_data <- trained_data %>%
+  mutate(
+    # Extract the two middle characters (e.g., 2A) from hhid
+    group = str_sub(hhid, 3, 4),
+    
+    # Add indicator variables based on the group value
+    control = if_else(group %in% c("0A", "0B"), 1, 0),
+    public_health_trained = if_else(group %in% c("1A", "1B"), 1, 0),
+    private_benefits_trained = if_else(group %in% c("2A", "2B"), 1, 0),
+    public_and_private_trained = if_else(group %in% c("3A", "3B"), 1, 0)
+  ) %>%
+  # Drop the 'group' column if it's not needed
+  select(-group)
+
+
+# View the updated dataframe
+head(trained_data)
+
+#view(trained_data)
+
+write.csv(trained_data, "trained_and_treatment_arms", row.names = TRUE)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,166 @@
+---
+title: "Balance_Tables"
+author: "Kateri Mouawad"
+date: "2025-01-03"
+output: html_document
+---
+
+#START HERE - load packages
+
+```{r}
+
+#remotes::install_github("kwb-r/kwb.utils")
+
+#options(repos = c(
+#  kwbr = 'https://kwb-r.r-universe.dev',
+#  CRAN = 'https://cloud.r-project.org'))
+  
+# Download and install kwb.utils in R
+#install.packages('kwb.utils')
+
+
+
+
+# install.packages(officer)
+# install.packages(r2rtf)
+# install.packages(dplyr)
+# install.packages(ggplot2)
+# install.packages(kwb.utils)
+# install.packages(haven)
+# install.packages(data.table)
+# install.packages(rtf)
+# install.packages(tidyverse)
+# install.packages(estimatr)
+# install.packages(broom)
+
+library(officer)
+library(r2rtf)
+library(dplyr)
+library(ggplot2)
+library(kwb.utils)
+library(haven)
+library(data.table)
+library(rtf)
+library(tidyverse)
+library(estimatr)
+library(broom)
+
+```
+
+
+
+#File and Data paths
+```{r}
+
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data Management/_CRDES_CleanData/Baseline/Deidentified"
+  ))
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data Management/_CRDES_CleanData/Baseline/Deidentified"
+  ))
+}
+
+
+
+# proj <- kwb.utils::resolve(list(
+#   projects = "C:/Users/Kateri/Box/NSF Senegal",
+#   p1 = "<projects>/Data Work/Output/Data Corrections"
+# ))
+
+file_path_hh <- file.path(proj$p1, "Complete_Baseline_Household_Roster.dta")
+household_df <- read_dta(file_path_hh)
+
+file_path_know <- file.path(proj$p1, "Complete_Baseline_Knowledge.dta")
+knowledge_df <- read_dta(file_path_know)
+
+file_path_health <- file.path(proj$p1, "Complete_Baseline_Health.dta")
+health_df <- read_dta(file_path_health)
+
+file_path_agri <- file.path(proj$p1, "Complete_Baseline_Agriculture.dta")
+agriculture_df <- read_dta(file_path_agri)
+
+file_path_prod <- file.path(proj$p1, "Complete_Baseline_Production.dta")
+production_df <- read_dta(file_path_prod)
+
+file_path_cop <- file.path(proj$p1, "Complete_Baseline_Lean_Season.dta")
+coping_df <- read_dta(file_path_cop)
+
+file_path_income <- file.path(proj$p1, "Complete_Baseline_Income.dta")
+income_df <- read_dta(file_path_income)
+
+file_path_standard <- file.path(proj$p1, "Complete_Baseline_Standard_Of_Living.dta")
+standard_df <- read_dta(file_path_standard)
+
+file_path_beliefs <- file.path(proj$p1, "Complete_Baseline_Beliefs.dta")
+beliefs_df <- read_dta(file_path_beliefs)
+
+file_path_game <- file.path(proj$p1, "Complete_Baseline_Public_Goods_Game.dta")
+donation_df <- read_dta(file_path_game)
+
+file_path_enumerator <- file.path(proj$p1, "Complete_Baseline_Enumerator_Observations.dta")
+enumerator_df <- read_dta(file_path_enumerator)
+
+file_path_community <- file.path(proj$p1, "Complete_Baseline_Community.dta")
+community_df <- read_dta(file_path_community)
+
+
+
+#print(head(baseline_data, 10))
+
+#baseline_data <- baseline_data %>%
+ # mutate(hh_age_resp = if_else(hhid == "023B09", 50, hh_age_resp))
+
+```
+
+
+##merge necessary DFs
+
+```{r}
+
+
+# Merge all datasets by 'hhid'
+merged_df <- household_df
+
+merged_df <- merge(merged_df, health_df, by = "hhid", all = TRUE)
+merged_df <- merge(merged_df, agriculture_df, by = "hhid", all = TRUE)
+merged_df <- merge(merged_df, production_df, by = "hhid", all = TRUE)
+merged_df <- merge(merged_df, income_df, by = "hhid", all = TRUE)
+merged_df <- merge(merged_df, standard_df, by = "hhid", all = TRUE)
+merged_df <- merge(merged_df, donation_df, by = "hhid", all = TRUE)
+merged_df <- merge(merged_df, enumerator_df, by = "hhid", all = TRUE)
+
+# View the merged dataframe
+head(merged_df)
+
+
+select(hh_gender, hh_age, hh_education_skills, hh_education_level, hh_education_year_achieve, hh_number, hh_03, hh_10, hh_11, hh_12, hh_13, hh_14, hh_15, hh_16, hh_29, hh_16, health_5_2,
+       
+       
+)
+ 
+
+```
+
+
+filter by treatment group
+
+```{r}
+
+```
+
+
+
+
+
+

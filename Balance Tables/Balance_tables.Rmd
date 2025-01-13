@@ -143,19 +143,69 @@ merged_df <- merge(merged_df, enumerator_df, by = "hhid", all = TRUE)
 # View the merged dataframe
 head(merged_df)
 
+tables_df <- merged_df %>%
+select(hhid, hhid_village, starts_with("hh_gender"), starts_with("hh_age"), starts_with("hh_education_skills"), starts_with("hh_education_level"), starts_with("hh_education_year_achieve"), starts_with("hh_number"), starts_with("hh_03"), starts_with("hh_10"), starts_with("hh_11"), starts_with("hh_12"), starts_with("hh_13"), starts_with("hh_14"), starts_with("hh_15"), starts_with("hh_16"), starts_with("hh_29"), starts_with("hh_16"), starts_with("health_5_2"), starts_with("health_5_3"), starts_with("health_5_5"), starts_with("health_5_6"), starts_with("health_5_7"), starts_with("agri_6_15"), starts_with("species"), starts_with("agri_income_05"), starts_with("living_01"), starts_with("living_03"), starts_with("living_04"),starts_with("living_05"),starts_with("amount_02"), starts_with("amount_05"), starts_with("face_04"),starts_with("face_13"),starts_with("enum_03"),starts_with("enum_04"),starts_with("enum_05") 
+       )
 
-select(hh_gender, hh_age, hh_education_skills, hh_education_level, hh_education_year_achieve, hh_number, hh_03, hh_10, hh_11, hh_12, hh_13, hh_14, hh_15, hh_16, hh_29, hh_16, health_5_2,
-       
-       
-)
- 
+#to remove 
+#hh_12_r  hh_12name_4_7 hh_12index_4_5 "hh_education_level_o_31" hh_11_o_12 hh_education_skills_0_52
+
+
+tables_df <- tables_df  %>%
+select(-starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" ")
+       )
+
+head(tables_df)
+view(tables_df)
 
 ```
+
+
+##switch from wide to long 
+
+
+```{r}
+
+
+df_long <- df %>%
+  pivot_longer(
+    cols = starts_with("health_5_"),  # Include all variables starting with "health_5_"
+    names_to = "variable",            # Original column names go into 'variable'
+    values_to = "value"               # Values go into 'value'
+  )
+
+
+
+
+
+
+
+```
+
 
 
 filter by treatment group
 
 ```{r}
+
+
+# Adding indicator variables for household training categories
+trained_data <- trained_data %>%
+  mutate(
+    # Extract the two middle characters (e.g., 2A) from hhid
+    group = str_sub(hhid, 3, 4),
+    
+    # Add indicator variables based on the group value
+    control = if_else(group %in% c("0A", "0B"), 1, 0),
+    public_health_trained = if_else(group %in% c("1A", "1B"), 1, 0),
+    private_benefits_trained = if_else(group %in% c("2A", "2B"), 1, 0),
+    public_and_private_trained = if_else(group %in% c("3A", "3B"), 1, 0)
+  ) %>%
+  # Drop the 'group' column if it's not needed
+  select(-group)
+
+
+
 
 ```
 

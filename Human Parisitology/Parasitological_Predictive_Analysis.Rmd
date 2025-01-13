@@ -122,8 +122,30 @@ matched_only_df <- matched_only_df %>%
     hh_33_ = ifelse(is.na(hh_33_), 0, hh_33_),
     health_5_4_ = ifelse(is.na(health_5_4_), 0, health_5_4_),
     health_5_3_2_ = ifelse(is.na(health_5_3_2_), 0, health_5_3_2_)
-  )
+    )
 
+matched_only_df <- matched_only_df %>%
+  mutate(
+    hh_19_ = if_else(hh_19_ == 0 & hh_18_ == 0, 0, hh_19_),
+    hh_31_ = if_else(hh_30_ == 0 & hh_26_ == 0, 0, hh_31_),  # hh_30 conditional on hh_26 = 1
+    hh_33_ = if_else(hh_26_ == 0 & hh_32_ == 0, 0, hh_33_),
+    living_03 = if_else(living_02 == 0, 0, living_03),
+    living_04 = 0,  # No condition provided
+    hh_12_1_ = if_else(hh_10_ == 0, 0, hh_12_1_),
+    hh_12_2_ = if_else(hh_10_ == 0, 0, hh_12_2_),
+    hh_12_3_ = if_else(hh_10_ == 0, 0, hh_12_3_), 
+    hh_12_4_ = if_else(hh_10_ == 0, 0, hh_12_4_),    
+    hh_12_5_ = if_else(hh_10_ == 0, 0, hh_12_5_),    
+    hh_12_6_ = if_else(hh_10_ == 0, 0, hh_12_6_),    
+    hh_12_7_ = if_else(hh_10_ == 0, 0, hh_12_7_),    
+    hh_12_8_ = if_else(hh_10_ == 0, 0, hh_12_8_)  
+    
+    
+     )
+
+
+view(matched_only_df)
+names(matched_only_df)
 #Create total egg count: 
 matched_only_df <- matched_only_df %>%
   mutate(

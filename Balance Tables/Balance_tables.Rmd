@@ -152,12 +152,13 @@ select(hhid, hhid_village, starts_with("hh_gender"), starts_with("hh_age"), star
 
 
 tables_df <- tables_df  %>%
-select(-starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" "), -starts_with(" ")
-       )
+select(-starts_with("hh_12_r"), -starts_with("hh_12name_"), -starts_with("hh_12_calc_"), -starts_with("hh_12index_"), -starts_with("hh_education_level_o_"), -starts_with("hh_11_o_"), -starts_with("hh_education_skills_0_")  -starts_with("hh_15_o") 
+)
 
 head(tables_df)
 view(tables_df)
-
+names(tables_df)
+sapply(tables_df, class)
 ```
 
 
@@ -166,16 +167,27 @@ view(tables_df)
 
 ```{r}
 
+tables_df <- tables_df %>%
+  mutate(across(starts_with("hh_education_skills"), as.numeric),
+         across(starts_with("hh_12_"), as.numeric),
+                  )
 
-df_long <- df %>%
+
+
+tables_df_long <- tables_df %>%
   pivot_longer(
-    cols = starts_with("health_5_"),  # Include all variables starting with "health_5_"
+    cols = c(
+      starts_with("hh_gender"), starts_with("hh_age"), starts_with("hh_education_skills"),
+      starts_with("hh_education_level"), starts_with("hh_education_year_achieve"),
+      starts_with("hh_number"), starts_with("hh_03"), starts_with("hh_10"),
+      starts_with("hh_11"), starts_with("hh_12"), starts_with("hh_13"),
+      starts_with("hh_14"), starts_with("hh_15"), starts_with("hh_16"),
+      starts_with("hh_29"), starts_with("health_5_2"), starts_with("health_5_3"),
+      starts_with("health_5_5"), starts_with("health_5_6"), starts_with("health_5_7")
+    ),  # Correct grouping of column selectors
     names_to = "variable",            # Original column names go into 'variable'
     values_to = "value"               # Values go into 'value'
   )
-
-
-
 
 
 

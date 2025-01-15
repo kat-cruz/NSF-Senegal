@@ -41,7 +41,7 @@ library(xtable)
 
 ```
 
-#Load file paths
+#Run file paths & load data
 
 ```{r}
 # Define the file paths
@@ -54,12 +54,12 @@ proj_paths <- list(
 if (file.exists(proj_paths$projects)) {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$projects,
-    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Dataframe"
+    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Clean Data"
   ))
 } else {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$alternative_projects,
-    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Dataframe"
+    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Clean Data"
   ))
 }
 
@@ -69,14 +69,106 @@ infection_df <- read_dta(file_path_infection_df)
 
 ```
 
-## Filter df
+
+#Cleaning 
 
 ```{r}
 
+# Define possible paths
+path1 <- "C:\\Users\\kateri\\Box\\NSF Senegal\\Data Management\\_PartnerData\\Child infection dataframe\\Clean Data"
+path2 <- "C:/Users/km978\\Box\\NSF Senegal\\Data Management\\_PartnerData\\Child infection dataframe\\Clean Data"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
+
+
+
+
+
+# Filter df
 matched_only_df <- infection_df %>%
   filter(match_score != "")
+#turn NAs into zeros
+matched_only_df <- matched_only_df %>%
+  mutate(
+    hh_31_ = ifelse(is.na(hh_31_), 0, hh_31_),
+    hh_33_ = ifelse(is.na(hh_33_), 0, hh_33_),
+    health_5_4_ = ifelse(is.na(health_5_4_), 0, health_5_4_),
+    health_5_3_2_ = ifelse(is.na(health_5_3_2_), 0, health_5_3_2_)
+    )
+
+
+matched_only_df <- matched_only_df %>%
+  mutate(
+    hh_19_ = as.integer(hh_19_),
+    hh_30_ = as.integer(hh_30_), 
+    hh_31_ = as.integer(hh_31_),
+    hh_33_ = as.integer(hh_33_),    
+    living_03 = as.integer(living_03),    
+    hh_31_ = as.integer(hh_31_),
+    
+    hh_12_1_ = as.integer(hh_12_1_), 
+    hh_12_2_ = as.integer(hh_12_2_),
+    hh_12_3_ = as.integer(hh_12_3_),    
+    hh_12_4_ = as.integer(hh_12_4_),    
+    hh_12_5_ = as.integer(hh_12_5_),  
+    hh_12_6_ = as.integer(hh_12_6_), 
+    hh_12_7_ = as.integer(hh_12_7_),
+    hh_12_8_ = as.integer(hh_12_8_)
+    )
+
+
+#Clean based off skip patterns
+
+matched_only_df <- matched_only_df %>%
+  mutate(
+    hh_19_ = if_else(hh_10_ == 0 & hh_18_ == 0, 0, hh_19_),
+    hh_31_ = if_else(hh_30_ == 0, 0, hh_31_),  # hh_30 conditional on hh_26 = 1
+    hh_33_ = if_else(hh_26_ == 0 & hh_32_ == 0, 0, hh_33_),
+    living_03 = if_else(living_02 == 0, 0, living_03),
+    #living_04 = 0,  # No condition provided
+    hh_12_1_ = if_else(hh_10_ == 0, 0, hh_12_1_),
+    hh_12_2_ = if_else(hh_10_ == 0, 0, hh_12_2_),
+    hh_12_3_ = if_else(hh_10_ == 0, 0, hh_12_3_), 
+    hh_12_4_ = if_else(hh_10_ == 0, 0, hh_12_4_),    
+    hh_12_5_ = if_else(hh_10_ == 0, 0, hh_12_5_),    
+    hh_12_6_ = if_else(hh_10_ == 0, 0, hh_12_6_),    
+    hh_12_7_ = if_else(hh_10_ == 0, 0, hh_12_7_),    
+    hh_12_8_ = if_else(hh_10_ == 0, 0, hh_12_8_)  
+    
+    
+     )
+#There's a lot of NAs present. Correcting for those by changing them to zero since the conditional fix didn't work
+
+matched_only_df <- matched_only_df %>%
+  mutate(
+    hh_19_ = if_else(is.na(hh_19_), 0, hh_19_),
+    hh_31_ = if_else(is.na(hh_31_), 0, hh_31_),
+    hh_33_ = if_else(is.na(hh_33_), 0, hh_33_),
+    living_03 = if_else(is.na(living_03), 0, living_03),
+    living_04 = if_else(is.na(living_04), 0, living_04),
+    hh_12_1_ = if_else(is.na(hh_12_1_), 0, hh_12_1_),
+    hh_12_1_ = if_else(is.na(hh_12_1_), 0, hh_12_1_),
+    hh_12_2_ = if_else(is.na(hh_12_2_), 0, hh_12_2_),
+    hh_12_3_ = if_else(is.na(hh_12_3_), 0, hh_12_3_),
+    hh_12_4_ = if_else(is.na(hh_12_4_), 0, hh_12_4_),
+    hh_12_5_ = if_else(is.na(hh_12_5_), 0, hh_12_5_),
+    hh_12_6_ = if_else(is.na(hh_12_6_), 0, hh_12_6_),
+    hh_12_7_ = if_else(is.na(hh_12_7_), 0, hh_12_7_),
+    hh_12_8_ = if_else(is.na(hh_12_8_), 0, hh_12_8_)
+  )
+
+
+#view(matched_only_df)
+names(matched_only_df)
+write_dta(matched_only_df, "Matched_Only_Features.dta")
 
 ```
+
 
 #Create relevant variables
 
@@ -98,54 +190,8 @@ matched_only_df <- matched_only_df %>%
     sm_egg_count = if_else(p1_avg > 0, p1_avg, p2_avg)
   )# %>%
 
-#Change variables to factors 
-
-# matched_only_df <- matched_only_df %>%
-#   mutate(
-#     health_5_3_2_ = as.factor(health_5_3_2_), 
-#     health_5_5_ = as.factor(health_5_5_),
-#     health_5_6_ = as.factor(health_5_6_),
-#     health_5_8_ = as.factor(health_5_8_),
-#     health_5_9_ = as.factor(health_5_9_),
-#     health_5_10_ = as.factor(health_5_10_)
-# )
-
-```
-
-#Cleaning 
-
-```{r}
-#turn NAs into zeros
-matched_only_df <- matched_only_df %>%
-  mutate(
-    hh_31_ = ifelse(is.na(hh_31_), 0, hh_31_),
-    hh_33_ = ifelse(is.na(hh_33_), 0, hh_33_),
-    health_5_4_ = ifelse(is.na(health_5_4_), 0, health_5_4_),
-    health_5_3_2_ = ifelse(is.na(health_5_3_2_), 0, health_5_3_2_)
-    )
-
-matched_only_df <- matched_only_df %>%
-  mutate(
-    hh_19_ = if_else(hh_19_ == 0 & hh_18_ == 0, 0, hh_19_),
-    hh_31_ = if_else(hh_30_ == 0 & hh_26_ == 0, 0, hh_31_),  # hh_30 conditional on hh_26 = 1
-    hh_33_ = if_else(hh_26_ == 0 & hh_32_ == 0, 0, hh_33_),
-    living_03 = if_else(living_02 == 0, 0, living_03),
-    living_04 = 0,  # No condition provided
-    hh_12_1_ = if_else(hh_10_ == 0, 0, hh_12_1_),
-    hh_12_2_ = if_else(hh_10_ == 0, 0, hh_12_2_),
-    hh_12_3_ = if_else(hh_10_ == 0, 0, hh_12_3_), 
-    hh_12_4_ = if_else(hh_10_ == 0, 0, hh_12_4_),    
-    hh_12_5_ = if_else(hh_10_ == 0, 0, hh_12_5_),    
-    hh_12_6_ = if_else(hh_10_ == 0, 0, hh_12_6_),    
-    hh_12_7_ = if_else(hh_10_ == 0, 0, hh_12_7_),    
-    hh_12_8_ = if_else(hh_10_ == 0, 0, hh_12_8_)  
-    
-    
-     )
 
 
-view(matched_only_df)
-names(matched_only_df)
 #Create total egg count: 
 matched_only_df <- matched_only_df %>%
   mutate(
@@ -171,9 +217,9 @@ matched_only_df <- matched_only_df %>%
     total_time = ifelse(is.na(total_time), 0, total_time),
     scaled = ifelse(is.na(scaled), 0, scaled))
 
-#view(matched_only_df)
 
 ```
+
 
 
 #EDA
@@ -242,10 +288,76 @@ categ_summary_l <- function(data_l, prefixes_l) {
 
 ####output
 
+
+##### create binaries 
+
+```{r}
+
+
+binary_df <- matched_only_df %>%
+  mutate(
+    # For hh_19_
+    hh_19_1 = if_else(hh_19_ == 1, 1, 0),
+    hh_19_2 = if_else(hh_19_ == 2, 1, 0),
+    hh_19_3 = if_else(hh_19_ == 3, 1, 0),
+    hh_19_4 = if_else(hh_19_ == 4, 1, 0),
+    hh_19_99 = if_else(hh_19_ == 99, 1, 0),
+
+    # For hh_31_
+    hh_31_1 = if_else(hh_31_ == 1, 1, 0),
+    hh_31_2 = if_else(hh_31_ == 2, 1, 0),
+    hh_31_3 = if_else(hh_31_ == 3, 1, 0),
+    hh_31_4 = if_else(hh_31_ == 4, 1, 0),
+    hh_31_5 = if_else(hh_31_ == 5, 1, 0),
+
+    # For hh_33_
+    hh_33_1 = if_else(hh_33_ == 1, 1, 0),
+    hh_33_2 = if_else(hh_33_ == 2, 1, 0),
+    hh_33_3 = if_else(hh_33_ == 3, 1, 0),
+
+    # For living_01
+    living_01_1 = if_else(living_01 == 1, 1, 0),
+    living_01_2 = if_else(living_01 == 2, 1, 0),
+    living_01_3 = if_else(living_01 == 3, 1, 0),
+    living_01_4 = if_else(living_01 == 4, 1, 0),
+    living_01_5 = if_else(living_01 == 5, 1, 0),
+    living_01_6 = if_else(living_01 == 6, 1, 0),
+    living_01_7 = if_else(living_01 == 7, 1, 0),
+    living_01_8 = if_else(living_01 == 8, 1, 0),
+    living_01_9 = if_else(living_01 == 9, 1, 0),
+    living_01_10 = if_else(living_01 == 10, 1, 0),
+    living_01_99 = if_else(living_01 == 99, 1, 0),
+
+    # For living_03
+    living_03_1 = if_else(living_03 == 1, 1, 0),
+    living_03_2 = if_else(living_03 == 2, 1, 0),
+    living_03_3 = if_else(living_03 == 3, 1, 0),
+    living_03_99 = if_else(living_03 == 99, 1, 0),
+
+    # For living_04
+    living_04_1 = if_else(living_04 == 1, 1, 0),
+    living_04_2 = if_else(living_04 == 2, 1, 0),
+    living_04_3 = if_else(living_04 == 3, 1, 0),
+    living_04_4 = if_else(living_04 == 4, 1, 0),
+    living_04_5 = if_else(living_04 == 5, 1, 0),
+    living_04_6 = if_else(living_04 == 6, 1, 0),
+    living_04_7 = if_else(living_04 == 7, 1, 0),
+    living_04_99 = if_else(living_04 == 99, 1, 0)
+  )
+
+
+```
+
+
+
+
+
+
+
 ```{r}
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path1 <- "C:/Users/Kateri/Downloads/SenegalGIT/Scripts/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/km978/Downloads/SenegalGIT/Scripts/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -256,95 +368,87 @@ if (dir.exists(path1)) {
 
 
 # Define the prefixes
-prefixes_categ <- c("hh_19_", "hh_31_", "hh_33_", "living_01", "living_03", "living_04")
+prefixes_categ <- c("hh_19_1", "hh_19_2", "hh_19_3", "hh_19_4", "hh_19_99",
+  "hh_31_1", "hh_31_2", "hh_31_3", "hh_31_4", "hh_31_5",
+  "hh_33_1", "hh_33_2", "hh_33_3",
+  "living_01_1", "living_01_2", "living_01_3", "living_01_4", "living_01_5", 
+  "living_01_6", "living_01_7", "living_01_8", "living_01_9", "living_01_10", "living_01_99",
+  "living_03_1", "living_03_2", "living_03_3", "living_03_99",
+  "living_04_1", "living_04_2", "living_04_3", "living_04_4", "living_04_5", 
+  "living_04_6", "living_04_7", "living_04_99")
 
-
-# Recode the values for the variables
-matched_only_df <- matched_only_df %>%
-  mutate(
-    hh_31_ = recode(
-      hh_31_,
-      `1` = "Graduated, studies completed",
-      `2` = "Moving to the next class",
-      `3` = "Failure, repetition",
-      `4` = "Failure, dismissal",
-      `5` = "Dropping out during the year"
-    ),
-    hh_33_ = recode(
-      hh_33_,
-      `1` = "Lower",
-      `2` = "About the same",
-      `3` = "Superior"
-    ),
-    living_01 = recode(
-      living_01,
-      `1` = "Interior tap",
-      `2` = "Public tap",
-      `3` = "Neighbor’s tap",
-      `4` = "Protected well",
-      `5` = "Unprotected well",
-      `6` = "Drill hole",
-      `7` = "Tanker service",
-      `8` = "Water seller",
-      `9` = "Source",
-      `10` = "Stream",
-      `99` = "Other"
-    ),
-    living_03 = recode(
-      living_03,
-      `1` = "Bleach/Aqua tabs",
-      `2` = "Boil",
-      `3` = "Filtration",
-      `99` = "Other (to be specified)"
-    ),
-    living_04 = recode(
-      living_04,
-      `0` = "None/outside",
-      `1` = "Flush with sewer",
-      `2` = "Toilet flush with septic tank",
-      `3` = "Bucket",
-      `4` = "Covered pit latrines",
-      `5` = "Uncovered pit latrines",
-      `6` = "Improved latrines",
-      `99` = "Others"
-    ),
-    hh_19_ = recode(
-      hh_19_,
-      `1` = "Lake",
-      `2` = "Pond",
-      `3` = "River",
-      `4` = "Irrigation channel",
-      `99` = "Other, give details"
-    )
-  )
 
 # Generate categorical summary
-output_categ <- as.data.frame(categ_summary_l(matched_only_df, prefixes_categ))
+output_categ <- as.data.frame(binary_summary_l(binary_df, prefixes_categ))
 rownames(output_categ) <- NULL
+output_categ
 
-# # Variable labels mapping
-# variable_labels <- c(
-#   "hh_19_" = "Source of water",
-#   "hh_31_" = "Result achieved in academic year",
-#   "hh_33_" = "Performance in class",
-#   "living_01" = "Source of drinking water",
-#   "living_03" = "How is water treated",
-#   "living_04" = "Main type of toilet used"
-# )
-# # Rename variables using the labels
-# Rename variables in the dataframe
+
 
 output_categ <- output_categ %>%
-  mutate(Variable = recode(Variable,
-    "hh_19_" = "Source of water",
-    "hh_31_" = "Result achieved in academic year",
-    "hh_33_" = "Performance in class",
-    "living_01" = "Source of drinking water",
-    "living_03" = "How is water treated",
-    "living_04" = "Main type of toilet used"
-  ))
+mutate(
+  Value = case_when(
+    Variable == "hh_19_1" & Value == 1 ~ "Lake",
+    Variable == "hh_19_2" & Value == 2 ~ "Pond",
+    Variable == "hh_19_3" & Value == 3 ~ "River",
+    Variable == "hh_19_4" & Value == 4 ~ "Irrigation channel",
+    Variable == "hh_19_99" & Value == 99 ~ "Other, give details",
+    
+    Variable == "hh_31_1" & Value == 1 ~ "Graduated, studies completed",
+    Variable == "hh_31_2" & Value == 2 ~ "Moving to the next class",
+    Variable == "hh_31_3" & Value == 3 ~ "Failure, repetition",
+    Variable == "hh_31_4" & Value == 4 ~ "Failure, dismissal",
+    Variable == "hh_31_5" & Value == 5 ~ "Dropping out during the year",
+    
+    Variable == "hh_33_1" & Value == 1 ~ "Lower",
+    Variable == "hh_33_2" & Value == 2 ~ "About the same",
+    Variable == "hh_33_3" & Value == 3 ~ "Superior",
+    
+    Variable == "living_01_1" & Value == 1 ~ "Interior tap",
+    Variable == "living_01_2" & Value == 2 ~ "Public tap",
+    Variable == "living_01_3" & Value == 3 ~ "Neighbor’s tap",
+    Variable == "living_01_4" & Value == 4 ~ "Protected well",
+    Variable == "living_01_5" & Value == 5 ~ "Unprotected well",
+    Variable == "living_01_6" & Value == 6 ~ "Drill hole",
+    Variable == "living_01_7" & Value == 7 ~ "Tanker service",
+    Variable == "living_01_8" & Value == 8 ~ "Water seller",
+    Variable == "living_01_9" & Value == 9 ~ "Source",
+    Variable == "living_01_10" & Value == 10 ~ "Stream",
+    Variable == "living_01_99" & Value == 99 ~ "Other",
+    
+    Variable == "living_03_1" & Value == 1 ~ "Bleach/Aqua tabs",
+    Variable == "living_03_2" & Value == 2 ~ "Boil",
+    Variable == "living_03_3" & Value == 3 ~ "Filtration",
+    Variable == "living_03_99" & Value == 99 ~ "Other (to be specified)",
+    
+    Variable == "living_04_1" & Value == 1 ~ "None/outside",
+    Variable == "living_04_2" & Value == 2 ~ "Flush with sewer",
+    Variable == "living_04_3" & Value == 3 ~ "Toilet flush with septic tank",
+    Variable == "living_04_4" & Value == 4 ~ "Bucket",
+    Variable == "living_04_5" & Value == 5 ~ "Covered pit latrines",
+    Variable == "living_04_6" & Value == 6 ~ "Uncovered pit latrines",
+    Variable == "living_04_7" & Value == 7 ~ "Improved latrines",
+    Variable == "living_04_99" & Value == 99 ~ "Others",
+    
+    TRUE ~ as.character(Value)  # Keep other values as they are
+  )
+) %>%
+  
+  filter(Value != 0) 
+      
+# Rename variables in the dataframe
 
+# output_categ <- output_categ %>%
+#   mutate(Variable = recode(Variable,
+#     "hh_19_" = "Source of water",
+#     "hh_31_" = "Result achieved in academic year",
+#     "hh_33_" = "Performance in class",
+#     "living_01" = "Source of drinking water",
+#     "living_03" = "How is water treated",
+#     "living_04" = "Main type of toilet used"
+#   ))
 
+#
 # output_categ <- output_categ %>%
 #   rename(
 #     `Missing` = prop_na
@@ -383,16 +487,16 @@ binary_func_l <- function(value) {
   return(binary_stats_l)
 }
 
-binary_summary_l <- function(baseline_data, prefixes) {
+binary_summary_l <- function(matched_only_df, prefixes) {
   # Loop over each prefix
   summaries_binary_l <- lapply(prefixes, function(prefix) {
     # Select the column that matches the prefix
-    selected_data <- baseline_data %>%
+    selected_data <- matched_only_df %>%
       select(starts_with(prefix))
     
     # Pull the column values and pass to binary_func_l
-    value <- selected_data[[1]]
-    summary_stats <- binary_func_l(value)
+    Value <- selected_data[[1]]
+    summary_stats <- binary_func_l(Value)
     
     # Add the prefix (variable name) to the summary
     summary_stats$Variable <- prefix

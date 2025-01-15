@@ -47,6 +47,7 @@ library(broom)
 
 ```
 
+#Run paths
 
 ```{r}
 
@@ -85,7 +86,7 @@ view(trained_data)
 
 
 
-
+#Create treatment arm variables
 
 ```{r}
 
@@ -124,15 +125,98 @@ head(trained_data)
 
 #view(trained_data)
 
-write.csv(trained_data, "trained_and_treatment_arms", row.names = TRUE)
+#write.csv(trained_data, "trained_and_treatment_arms", row.names = TRUE)
 
 
 ```
 
 
 
+#Summarize 
+
+```{r}
+
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Treatment_Arms"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Treatment_Arms"
+
+# set the working directory
+if (dir.exists(path1)) {
+  setwd(path1)
+} else if (dir.exists(path2)) {
+  setwd(path2)
+}
 
 
+
+# Function to calculate summary statistics for a single vector (variable)
+binary_func_l <- function(value) {
+
+  # Calculate summary statistics for 0s and 1s
+  binary_stats_l <- data.frame(
+    N = round(sum(!is.na(value)), 2),
+    Mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    SD = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)
+  )
+  
+  return(binary_stats_l)
+}
+
+binary_summary_l <- function(baseline_data, prefixes) {
+  # Loop over each prefix
+  summaries_binary_l <- lapply(prefixes, function(prefix) {
+    # Select the column that matches the prefix
+    selected_data <- baseline_data %>%
+      select(starts_with(prefix))
+    
+    # Pull the column values and pass to binary_func_l
+    value <- selected_data[[1]]
+    summary_stats <- binary_func_l(value)
+    
+    # Add the prefix (variable name) to the summary
+    summary_stats$Variable <- prefix
+    
+          # Reorder columns so Variable_l is first
+    summary_stats <- summary_stats %>%
+      select(Variable, everything())
+    
+    return(summary_stats)
+  })
+  
+  binary_sum_set_l <- bind_rows(summaries_binary_l)
+  return(binary_sum_set_l)
+}
+
+
+treatment_prefixes <- c("control", "public_health_trained", "private_benefits_trained", "public_and_private_trained")
+treat_output <- (binary_summary_l(trained_data, treatment_prefixes))
+
+
+treat_output <- treat_output %>%
+  mutate(Variable = recode(Variable,
+    "control" = "Control",
+    "public_health_trained" = "Public Benefits Treatment Arm",
+    "private_benefits_trained" = "Private Benefits Treatment Arm",
+    "public_and_private_trained" = "Public & Private Benefits Treatment Arm"
+  ))
+
+treat_output <- treat_output %>%
+  select(-prop_na)
+
+# Create the gt table
+treat_output_gt <- gt(treat_output) %>%
+  tab_header(
+    title = "Treatment Arm Variables"
+  )
+
+gtsave(treat_output_gt, "treatment_arm_vars.tex")
+treat_output_gt
+
+
+
+
+```
 
 
 

@@ -165,7 +165,7 @@ matched_only_df <- matched_only_df %>%
 
 #view(matched_only_df)
 names(matched_only_df)
-write_dta(matched_only_df, "Matched_Only_Features.dta")
+#write_dta(matched_only_df, "Matched_Only_Features.dta")
 
 ```
 
@@ -399,8 +399,8 @@ binary_df <- matched_only_df %>%
 
 ```{r}
 # Define possible paths
-path1 <- "C:/Users/Kateri/Downloads/SenegalGIT/Scripts/Latex_Output/Parasitological_Predictive_Analysis"
-path2 <- "C:/Users/km978/Downloads/SenegalGIT/Scripts/Latex_Output/Parasitological_Predictive_Analysis"
+path1 <- "C:/Users/Kateri/Downloads/SenegalGIT/Repo/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/km978/Downloads/SenegalGIT/Repo/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -551,70 +551,12 @@ output_categ_gt <- gt(output_categ) %>%
   )
 
 
-gtsave(output_categ_gt, "binary_summary_stats.tex")
+#gtsave(output_categ_gt, "binary_summary_stats.tex")
 
 output_categ_gt
 output_categ
 ```
 
-
-
-######old binary output(archive)
-
-```{r}
-# Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-
-# set the working directory
-if (dir.exists(path1)) {
-  setwd(path1)
-} else if (dir.exists(path2)) {
-  setwd(path2)
-}
-
-prefixes_binary <- c("hh_gender_", "health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_","health_5_9_", "hh_12_1_", "hh_12_2_", "hh_12_3_", "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_",  "hh_12_8_")
-
-output_bin <- binary_summary_l(matched_only_df, prefixes_binary)
-
-output_bin <- output_bin %>%
-  mutate(Variable = recode(Variable,
-    "hh_gender_" = "Gender",
-    "health_5_3_2_" = "Had Bilharzia past 12 months",
-    "health_5_5_" = "Received medication for Schisto past 12 months",
-    "health_5_6_" = "Ever diagnosed with schisto",
-    "health_5_8_" = "Blood in urine past 12 months?",
-    "health_5_9_" = "Blood in stool past 12 months?",
-    "hh_12_1_" = "Fetched water for HH",
-    "hh_12_1_" = "Fetched water for HH",
-    "hh_12_2_" = "Gave water to livestock",
-    "hh_12_3_" = "Fetched water for agriculture",
-    "hh_12_4_" = "Washed clothes",
-    "hh_12_5_" = "Did the dishes",
-    "hh_12_6_" = "Harvested aquatic vegetation",
-    "hh_12_7_" = "Swam/bathed",
-    "hh_12_8_" = "Played"
-  ))
-
-
-# output_bin <- output_bin %>%
-#   rename(
-#     `Missing` = prop_na
-#   )
-
-output_bin <- output_bin %>%
-  select(-prop_na)
-
-# Create the gt table
-output_bin_gt <- gt(output_bin) %>%
-  tab_header(
-    title = "Binary Variable Summary Statistics"
-  )
-
-gtsave(output_bin_gt, "binary_summary_stats_table.tex")
-output_bin_gt
-
-```
 
 ####output village
 
@@ -623,8 +565,8 @@ output_bin_gt
 
 #Village level co-variates
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Repo/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Repo/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -644,148 +586,42 @@ prefixes_binary_vil <- c("q_18", "q_19", "q_23", "q_24", "q_35_check", "q_39", "
 output_bin_vil <- binary_summary_l(village_level_data, prefixes_binary_vil)
 
 output_bin_vil <- output_bin_vil %>%
-  mutate(Variable = recode(Variable,
-    "q_18" = "Educational facilities",
-    "q_19" = "Health facilities",
-    "q_23" = "Running drinking water for drinking",
-    "q_24" = "Tap water system",
-    "q_35_check" = "Deworming treatment carried out?",
-    "q_39" = "Ongoing projects to reduce bilharzia?",
-    "schisto_indicator" =  "Snails found with schisto"
-     ))
-
-# 
-# output_bin_vil <- output_bin_vil %>%
-#   rename(
-#     `Missing` = prop_na
-#   )
+mutate(
+  Survey_Question = case_when(
+    str_detect(Variable, "^q_18") ~ "Educational facilities",
+    str_detect(Variable, "^q_19") ~ "Health facilities",
+    str_detect(Variable, "^q_23") ~ "Running drinking water for drinking",
+    str_detect(Variable, "^q_24") ~ "Of those with running water, do you have a tap water system",
+    str_detect(Variable, "^q_35_check") ~ "Was there any deworming treatment carried out by the Ministry of Health or another organization?",
+    str_detect(Variable, "^q_39") ~ "In the village, are there currently any ongoing projects aimed at reducing the prevalence of bilharzia?",
+    str_detect(Variable, "^schisto_indicator") ~ "Snails found with schisto",
+    TRUE ~ as.character(Variable)  # Keeps other values as they are
+  )
+) %>%
+  relocate(Survey_Question, .before = Variable) 
 
 output_bin_vil <- output_bin_vil %>%
   select(-prop_na)
 
-# Create the gt table
+# # Create the gt table
+# output_bin_vil_gt <- gt(output_bin_vil) %>%
+#   tab_header(
+#     title = "Village-level Binary Summary Statistics"
+#   )
+
+
 output_bin_vil_gt <- gt(output_bin_vil) %>%
   tab_header(
     title = "Village-level Binary Summary Statistics"
+  ) %>%
+  tab_style(
+    style = cell_borders(sides = "all", weight = px(1), color = "black"),
+    locations = cells_body()
   )
 
 gtsave(output_bin_vil_gt, "binary_vil_summary_stats.tex")
-output_bin_vil_gt
-
-```
-
-
-
-######almost binary (archive)
-
-```{r}
-
-# Function to calculate summary statistics for a single vector (variable)
-almost_binary_func_l <- function(value) {
-  
-  # Ensure we're working with values 0, 1, and 2 only
-  value <- value[value %in% c(0, 1, 2, -9)] 
-  
-  # Calculate summary statistics for 0s and 1s (exclude -9 and 2 for mean and SD)
-  almost_binary_stats_l <- data.frame(
-    N = round(sum(!is.na(value)), 2),  # N includes 0s, 1s, and 2s
-    Mean = round(mean(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s and -9 for mean
-    SD = round(sd(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s and -9 for SD
-    Prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)  # Proportion of NAs (-9)
-  )
-  
-  # Calculate proportion of 2s
-  proportion_dont_know <- data.frame(
-    proportion_dont_know = round(mean(value == 2, na.rm = TRUE), 2)  # Proportion of "Don't know" (2)
-  )
-  
-  # Combine results
-  almost_binary_combined_stats_l <- cbind(almost_binary_stats_l, proportion_dont_know)
-  
-  return(almost_binary_combined_stats_l)
-}
-
-# Function to summarize multiple sets of variables by prefix
-almost_binary_summary_l <- function(baseline_data, prefixes) {
-  # Loop over each prefix
-  summaries_almost_binary_l <- lapply(prefixes, function(prefix) {
-    # Select the column that matches the prefix
-    almost_binary_data_l <- baseline_data %>%
-      select(starts_with(prefix))
-    
-    # Ensure only one column is selected for each prefix
- #Pull the column values and pass to almost_binary_func_l
-    value <- almost_binary_data_l[[1]]
-    almost_binary_summary_stats_l <- almost_binary_func_l(value)
-    
-    # Add the prefix (variable name) to the summary
-    almost_binary_summary_stats_l$Variable <- prefix
-    
-        almost_binary_summary_stats_l <- almost_binary_summary_stats_l %>%
-      select(Variable, everything())
-    
-    return(almost_binary_summary_stats_l)
-  })
-  
-  # Combine all summaries into a single data frame
-  almost_binary_sum_set_l <- bind_rows(summaries_almost_binary_l)
-  return(almost_binary_sum_set_l)
-}
-
-```
-
-
-```{r}
-
-
-# Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-
-# set the working directory
-if (dir.exists(path1)) {
-  setwd(path1)
-} else if (dir.exists(path2)) {
-  setwd(path2)
-}
-
-prefixes_almost_binary <- c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_")
-
-output_alm_bin <- almost_binary_summary_l(matched_only_df, prefixes_almost_binary)
-
-
-output_alm_bin <- output_alm_bin %>%
-  mutate(Variable = recode(Variable,
-    "health_5_3_2_" = "Had Bilharzia past 12 months",
-    "health_5_5_" = "Received medication for Schisto past 12 months",
-    "health_5_6_" = "Ever diagnosed with schisto",
-    "health_5_8_" = "Blood in urine past 12 months?",
-    "health_5_9_" = "Blood in stool past 12 months?")
-  )
-
-
-output_alm_bin <- output_alm_bin %>%
-  rename(
-    `Missing` = Prop_na,
-    `Don't know` = proportion_dont_know
-  )
-
-output_alm_bin <- output_alm_bin %>%
-  select(-Missing)
-
-colnames(output_alm_bin)
-
-
-# Create the gt table
-output_alm_bin_gt <- gt(output_alm_bin) %>%
-  tab_header(
-    title = "Binary Summary Statistics with 'I don't Know'"
-  )
-
-gtsave(output_alm_bin_gt, "almost_binary_summary_stats.tex")
-output_alm_bin_gt
-
-
+ output_bin_vil_gt
+# output_bin_vil
 ```
 
 
@@ -843,8 +679,8 @@ numerical_summary_l <- function(baseline_data, prefixes) {
 
 ```{r}
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Repo/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Repo/Latex_Output/Parasitological_Predictive_Analysis"
 
 # set the working directory
 if (dir.exists(path1)) {
@@ -853,25 +689,25 @@ if (dir.exists(path1)) {
   setwd(path2)
 }
 
-prefixes_numerical <- c("wealthindex", "health_5_4_", "hh_age_")
+view(matched_only_df)
+
+prefixes_numerical <- c("hh_age_", "hh_age_resp","wealthindex", "health_5_4_")
 
 output_num <- numerical_summary_l(matched_only_df, prefixes_numerical)
+view(merged_df)
 
 
 output_num <- output_num %>%
-  mutate(Variable = recode(Variable,
-    "wealthindex" = "Wealth index",
-    "hh_age_" = "Age",
-    "health_5_4_" = "Number of school days missed",
-    "health_5_8_" = "Blood in urine past 12 months?",
-    "health_5_9_" = "Blood in stool past 12 months?")
-  )
-
-
-# output_num <- output_num %>%
-#   rename(
-#     `Missing` = prop_na
-#   )
+mutate(
+    Survey_Question = case_when(
+      str_detect(Variable, "^wealthindex") ~ "Wealth index",
+      str_detect(Variable, "^hh_age_") ~ "What is the age of the household head?",
+      str_detect(Variable, "hh_age_resp") ~ "Age of respondent",
+      str_detect(Variable, "^health_5_4_") ~ "How many days did he/she miss work/school due to illness or injury in the past month?",
+      TRUE ~ as.character(Variable)  # Keeps other values as they are
+    )
+  ) %>%
+  relocate(Survey_Question, .before = Variable) 
 
 output_num <- output_num %>%
   select(-prop_na)
@@ -1022,9 +858,9 @@ output of regression table
 ############################ Bivariate Logistic Regression #####################################
 
 # Define possible paths
-path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
-
+# Define possible paths
+path1 <- "C:/Users/km978/Downloads/SenegalGIT/Repo/Latex_Output/Parasitological_Predictive_Analysis"
+path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Repo/Latex_Output/Parasitological_Predictive_Analysis"
 # set the working directory
 if (dir.exists(path1)) {
   setwd(path1)
@@ -2547,5 +2383,181 @@ stargazer(CI_coeff_04_t,
 # stargazer(CI_coeff_04_t,
 #           type = "latex",
 #           out = "CI_coeff_04_t.tex")
+```
+
+
+
+
+```{r}
+# ######  almost binary (archive)
+
+# # Function to calculate summary statistics for a single vector (variable)
+# almost_binary_func_l <- function(value) {
+#   
+#   # Ensure we're working with values 0, 1, and 2 only
+#   value <- value[value %in% c(0, 1, 2, -9)] 
+#   
+#   # Calculate summary statistics for 0s and 1s (exclude -9 and 2 for mean and SD)
+#   almost_binary_stats_l <- data.frame(
+#     N = round(sum(!is.na(value)), 2),  # N includes 0s, 1s, and 2s
+#     Mean = round(mean(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s and -9 for mean
+#     SD = round(sd(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s and -9 for SD
+#     Prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)  # Proportion of NAs (-9)
+#   )
+#   
+#   # Calculate proportion of 2s
+#   proportion_dont_know <- data.frame(
+#     proportion_dont_know = round(mean(value == 2, na.rm = TRUE), 2)  # Proportion of "Don't know" (2)
+#   )
+#   
+#   # Combine results
+#   almost_binary_combined_stats_l <- cbind(almost_binary_stats_l, proportion_dont_know)
+#   
+#   return(almost_binary_combined_stats_l)
+# }
+# 
+# # Function to summarize multiple sets of variables by prefix
+# almost_binary_summary_l <- function(baseline_data, prefixes) {
+#   # Loop over each prefix
+#   summaries_almost_binary_l <- lapply(prefixes, function(prefix) {
+#     # Select the column that matches the prefix
+#     almost_binary_data_l <- baseline_data %>%
+#       select(starts_with(prefix))
+#     
+#     # Ensure only one column is selected for each prefix
+#  #Pull the column values and pass to almost_binary_func_l
+#     value <- almost_binary_data_l[[1]]
+#     almost_binary_summary_stats_l <- almost_binary_func_l(value)
+#     
+#     # Add the prefix (variable name) to the summary
+#     almost_binary_summary_stats_l$Variable <- prefix
+#     
+#         almost_binary_summary_stats_l <- almost_binary_summary_stats_l %>%
+#       select(Variable, everything())
+#     
+#     return(almost_binary_summary_stats_l)
+#   })
+#   
+#   # Combine all summaries into a single data frame
+#   almost_binary_sum_set_l <- bind_rows(summaries_almost_binary_l)
+#   return(almost_binary_sum_set_l)
+# }
+
+```
+
+
+```{r}
+
+
+# # Define possible paths
+# path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+# 
+# # set the working directory
+# if (dir.exists(path1)) {
+#   setwd(path1)
+# } else if (dir.exists(path2)) {
+#   setwd(path2)
+# }
+# 
+# prefixes_almost_binary <- c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_")
+# 
+# output_alm_bin <- almost_binary_summary_l(matched_only_df, prefixes_almost_binary)
+# 
+# 
+# output_alm_bin <- output_alm_bin %>%
+#   mutate(Variable = recode(Variable,
+#     "health_5_3_2_" = "Had Bilharzia past 12 months",
+#     "health_5_5_" = "Received medication for Schisto past 12 months",
+#     "health_5_6_" = "Ever diagnosed with schisto",
+#     "health_5_8_" = "Blood in urine past 12 months?",
+#     "health_5_9_" = "Blood in stool past 12 months?")
+#   )
+# 
+# 
+# output_alm_bin <- output_alm_bin %>%
+#   rename(
+#     `Missing` = Prop_na,
+#     `Don't know` = proportion_dont_know
+#   )
+# 
+# output_alm_bin <- output_alm_bin %>%
+#   select(-Missing)
+# 
+# colnames(output_alm_bin)
+# 
+# 
+# # Create the gt table
+# output_alm_bin_gt <- gt(output_alm_bin) %>%
+#   tab_header(
+#     title = "Binary Summary Statistics with 'I don't Know'"
+#   )
+# 
+# gtsave(output_alm_bin_gt, "almost_binary_summary_stats.tex")
+# output_alm_bin_gt
+
+
+```
+
+
+
+
+
+```{r}
+
+
+######old binary output(archive)
+# # Define possible paths
+# path1 <- "C:/Users/km978/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+# path2 <- "C:/Users/Kateri/Downloads/SenegalGIT/Latex_Output/Parasitological_Predictive_Analysis"
+# 
+# # set the working directory
+# if (dir.exists(path1)) {
+#   setwd(path1)
+# } else if (dir.exists(path2)) {
+#   setwd(path2)
+# }
+# 
+# prefixes_binary <- c("hh_gender_", "health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_","health_5_9_", "hh_12_1_", "hh_12_2_", "hh_12_3_", "hh_12_4_", "hh_12_5_", "hh_12_6_", "hh_12_7_",  "hh_12_8_")
+# 
+# output_bin <- binary_summary_l(matched_only_df, prefixes_binary)
+# 
+# output_bin <- output_bin %>%
+#   mutate(Variable = recode(Variable,
+#     "hh_gender_" = "Gender",
+#     "health_5_3_2_" = "Had Bilharzia past 12 months",
+#     "health_5_5_" = "Received medication for Schisto past 12 months",
+#     "health_5_6_" = "Ever diagnosed with schisto",
+#     "health_5_8_" = "Blood in urine past 12 months?",
+#     "health_5_9_" = "Blood in stool past 12 months?",
+#     "hh_12_1_" = "Fetched water for HH",
+#     "hh_12_1_" = "Fetched water for HH",
+#     "hh_12_2_" = "Gave water to livestock",
+#     "hh_12_3_" = "Fetched water for agriculture",
+#     "hh_12_4_" = "Washed clothes",
+#     "hh_12_5_" = "Did the dishes",
+#     "hh_12_6_" = "Harvested aquatic vegetation",
+#     "hh_12_7_" = "Swam/bathed",
+#     "hh_12_8_" = "Played"
+#   ))
+# 
+# 
+# # output_bin <- output_bin %>%
+# #   rename(
+# #     `Missing` = prop_na
+# #   )
+# 
+# output_bin <- output_bin %>%
+#   select(-prop_na)
+# 
+# # Create the gt table
+# output_bin_gt <- gt(output_bin) %>%
+#   tab_header(
+#     title = "Binary Variable Summary Statistics"
+#   )
+# 
+# gtsave(output_bin_gt, "binary_summary_stats_table.tex")
+# output_bin_gt
+
 ```
 

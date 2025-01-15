@@ -1,0 +1,63 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{pgfplots}
+\usepgfplotslibrary{external}
+\usepackage{amsmath}
+\usetikzlibrary{intersections}
+\usetikzlibrary{arrows}
+\usepackage{natbib}
+\usetikzlibrary{patterns}
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+\usepackage[margin=1in]{geometry}
+\usepackage{ mathrsfs }
+\pgfplotsset{compat=1.18, width = 9cm}
+\usepackage{titling}
+\setlength{\droptitle}{-5em}
+\usepackage{lipsum}
+\usepackage{csquotes}
+\usepackage{float} 
+\usepackage{subcaption}
+\usepackage{setspace} 
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{pdflscape}
+\usepackage{booktabs} 
+\usepackage{everypage}
+
+\newcounter{mypage}
+\setcounter{mypage}{1}
+
+
+
+\title{Paristological prediction draft}
+\renewcommand\maketitlehookc{\vspace{-7ex}}
+
+%\author{Kateri Mouawad}
+\author{ Molly Doruska \and Alexander Mills \and Kateri Mouawad}
+\renewcommand\maketitlehookc{\vspace{-3ex}} % Add space between author and date
+\date{\vspace{1ex}January 2025}
+
+
+%all of this is to ensure the longtable pages get a page number -.- 
+\makeatletter
+\AddEverypageHook{\stepcounter{mypage}%
+  \ifdim\ht\LT@foot>0pt
+    \dimen0=\ht\LT@foot
+    \global\setbox\LT@foot=\vbox to\dimen0{\centering % Centering the caption
+      \strut \caption*{\themypage}}%
+  \fi
+}
+\makeatother
+
+\begin{document}
+\maketitle
+
+\renewcommand{\arraystretch}{1.5}
+\input{Latex_Output/Parasitological_Predictive_Analysis/binary_summary_stats}
+
+
+
+
+\end{document}

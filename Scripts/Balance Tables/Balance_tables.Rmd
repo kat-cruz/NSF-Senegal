@@ -168,11 +168,50 @@ tables_df <- tables_df  %>%
 select(-starts_with("hh_12_r"), -starts_with("hh_12name_"), -starts_with("hh_12_calc_"), -starts_with("hh_12index_"), -starts_with("hh_education_level_o_"), -starts_with("hh_11_o_"), -starts_with("hh_education_skills_0_"),  -starts_with("hh_15_o_"), -starts_with("hh_gender_res"), -starts_with("hh_29_o")  
 )
 
-write_dta(matched_only_df, "balance_tables_data.dta")
+
+
+# Drop columns with numbered suffixes (1 to 55) for specific patterns
+cols_to_drop <- unlist(lapply(1:55, function(i) {
+  c(paste0("hh_education_skills_", i),
+    paste0("hh_12_", i),
+    paste0("health_5_3_", i))
+}))
+
+# Drop other specific patterns
+additional_cols_to_drop <- c(
+  grep("^hh_12_o", names(tables_df), value = TRUE),
+  grep("^hh_12_a", names(tables_df), value = TRUE),
+  grep("^hh_13_s", names(tables_df), value = TRUE),
+  grep("^hh_13_o", names(tables_df), value = TRUE),
+  grep("^health_5_3_o", names(tables_df), value = TRUE),
+  "living_01_o", "living_03_o", "living_04_o", "living_05_o",
+  "enum_03_o", "enum_04_o", "enum_05_o", "species_o"
+)
+
+# Combine all columns to drop
+all_cols_to_drop <- unique(c(cols_to_drop, additional_cols_to_drop))
+
+# Subset the tables_df by removing the columns
+tables_df <- tables_df[ , !(names(tables_df) %in% all_cols_to_drop)]
+
+# View the updated dataset
+colnames(tables_df)
+
+
+
+
+
+
+
+
+
+
+
+write_dta(tables_df, "balance_tables_data.dta")
 
 
 # head(tables_df)
-# view(tables_df)
+view(tables_df)
 # names(tables_df)
 # sapply(tables_df, class)
 ```
@@ -195,19 +234,53 @@ tables_df <- tables_df %>%
                   )
 
 
+# Generate a list of variable names
+for (i in 1:7) {
+  for (j in 1:55) {
+    # Construct old and new variable names
+    oldname <- paste0("hh_13_", j, "_", i)
+    newname <- paste0("hh_13_", i, "_", j)
+    
+    # Rename columns if the old variable exists
+    if (oldname %in% colnames(tables_df)) {
+      colnames(tables_df)[colnames(tables_df) == oldname] <- newname
+    }
+  }
+}
 
+
+# Reshape data from wide to long
 tables_df_long <- tables_df %>%
   pivot_longer(
-    cols = c("hh_gender_", "hh_age_", "hh_education_skills_", "hh_education_level_", 
-"hh_education_year_achieve_", "hh_number_", "hh_03_", "hh_10_", 
-"hh_11_", "hh_12_", "hh_13_", "hh_14_", "hh_15_", "hh_16_", 
-"hh_29_", "health_5_2_", "health_5_3_", "health_5_5_", "health_5_6_", 
-"health_5_7_"
-    ),  # Correct grouping of column selectors
-    names_to = "variable",            # Original column names go into 'variable'
-    values_to = "value"               # Values go into 'value'
+    cols = starts_with("hh_gender_") | 
+           starts_with("hh_age_") | 
+           starts_with("hh_education_skills_") |
+           starts_with("health_5_3_") | 
+           starts_with("hh_12_") | 
+           starts_with("hh_13_") | 
+           starts_with("hh_education_level_") | 
+           starts_with("hh_education_year_achieve_") | 
+           starts_with("hh_number_") | 
+           starts_with("hh_03_") | 
+           starts_with("hh_10_") | 
+           starts_with("hh_11_") | 
+           starts_with("hh_14_") | 
+           starts_with("hh_15_") | 
+           starts_with("hh_16_") | 
+           starts_with("hh_29_") | 
+           starts_with("health_5_2_") | 
+           starts_with("health_5_3_") | 
+           starts_with("health_5_5_") | 
+           starts_with("health_5_6_") | 
+           starts_with("health_5_7_"),
+    names_to = "id",  # Corresponds to `j(id)` in Stata
+    values_to = "value"  # The long-format values
   )
 
+# View the reshaped data
+view(tables_df_long)
+
+ 
 
 tables_df_long <- tables_df %>%
   pivot_longer(

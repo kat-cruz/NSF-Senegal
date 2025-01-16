@@ -35,6 +35,15 @@ else if "`c(username)'"=="km978" {
 *** additional file paths ***
 global data "$master\_CRDES_CleanData\Baseline\Identified"
 
+
+*** import all data *** 
+use "$data\DISES_Baseline_Complete_PII.dta", clear 
+
+*** keep gps data to merge into wide and long formats for midline *** 
+keep hhid gpd_datalatitude gpd_datalongitude gpd_dataaccuracy 
+
+save "$data\DISES_Baseline_HH_Locations.dta", replace 
+
 *** import individual IDs *** 
 use "$data\All_Villages_With_Individual_IDs.dta", clear 
 
@@ -44,15 +53,20 @@ keep hhid_village hhid hh_phone hh_head_name_complet hh_name_complet_resp hh_age
 *** reorder variables so all IDs are at the beginning *** 
 order hhid_village hhid individ, first 
 
+*** merge in location data *** 
+merge m:1 hhid using "$data\DISES_Baseline_HH_Locations"
+
+drop _merge 
+
 *** save long data *** 
-save "$data\Households_For_Midline_Long.dta"
+save "$data\Households_For_Midline_Long.dta" 
 
 export excel "$data\Households_For_Midline_Long.xlsx", firstrow(variables)
 
 *** reshape to wide data *** 
-reshape wide hh_full_name_calc_ hh_gender_ hh_age_ individ, i(hhid_village hhid hh_head_name_complet hh_name_complet_resp hh_age_resp hh_gender_resp hh_phone) j(individual)
+reshape wide hh_full_name_calc_ hh_gender_ hh_age_ individ, i(hhid_village hhid hh_head_name_complet hh_name_complet_resp hh_age_resp hh_gender_resp hh_phone gpd_datalatitude gpd_datalongitude gpd_dataaccuracy) j(individual)
 
 *** save wide data *** 
-save "$data\Households_For_Midline_Wide.dta"
+save "$data\Households_For_Midline_Wide.dta" 
 
-export excel "$data\Households_For_Midline_Wide.xlsx", firstrow(variables) 
+export excel "$data\Households_For_Midline_Wide.xlsx", firstrow(variables)

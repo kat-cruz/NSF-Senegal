@@ -224,7 +224,7 @@ for (i in 1:7) {
 # View the updated dataset
 colnames(tables_df)
 
-
+view(tables_df)
 
 
 

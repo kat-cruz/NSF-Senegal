@@ -2,9 +2,21 @@
 * Program: balance tables data tranformation
 * ==============================================================================
 * written by: Kateri Mouawad
-* additions made by: Kateri Mouawad (KRM), Molly Doruska (MJD)
-* Created: October 2024
+* additions made by: Kateri Mouawad
+* Created: December 2024
 * Updates recorded in GitHub 
+
+*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~~~ Read Me! ~~~~ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+	* This script merges selects, cleans, and orders the baseline data to setup the dataframe for analysis for the balance tables. 
+	* Step 1)
+		* Merge all deidentfied dataframes with relevant variables
+	* Step 2) Select variables we pre-decided on to check balances
+	* Step 3) Rename variables so correct indicies get transformed when we switch the data from wide to long
+	* Step 4) Remove useless/dumb variables
+	* Step 5) Wrangle data from wide to long for data accuracy and efficiency 
+	* Step 6) Reorder variables for clarity
+	* Step 7) Save as .csv so we can create the tables in R in the Balance_tables.rmd
 
 clear all
 set mem 100m
@@ -122,16 +134,15 @@ health_5_3_ health_5_5_ health_5_6_ health_5_7_, i(hhid) j(id)
 
 
 
-*********************************************************
+********************************************************* Reorder the variables *********************************************************
+drop id species health_5_3_ hh_number_
+
+order hhid hhid_village hh_numero hh_age_resp hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_ hh_education_year_achieve_ hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ health_5_5_ health_5_6_ health_5_7_ agri_6_15 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01 living_03 living_04 living_05 montant_02 montant_05 face_04 face_13 enum_03 enum_04 enum_05
 
 
-* Save the final dataset
-*save "${dataframe}\child_infection_dataframe.dta", replace
-save "${dataframe}\child_infection_dataframe_features.dta", replace
 
-********************* For rice analysis *********************
-*save "${output}\child_infection_dataframe_features.dta", replace
+********************************************************* Save the final dataset *********************************************************
 
-*erase "${dataframe}\temp_health_reshaped.dta"
+export delimited using "${dataOutput}\baseline_balance_tables_data.csv", replace
 
 

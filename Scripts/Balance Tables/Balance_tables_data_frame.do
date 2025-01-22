@@ -44,7 +44,7 @@ if "`c(username)'"=="Kateri" global git_path "C:\Users\km978\Downloads\GIT-Seneg
 global data "${box_path}\Data Management\_CRDES_CleanData\Baseline\Deidentified"
 
 ***** Data folders *****
-global dataOutput "${box_path}\Data Management\Output\Data Analysis" 
+global dataOutput "${box_path}\Data Management\Output\Data Analysis\Balance_Tables" 
 global latexOutput "$git_path\Latex_Output\Balance_Tables"
 
 use "$data\Complete_Baseline_Household_Roster.dta", clear 
@@ -139,10 +139,10 @@ drop id species health_5_3_ hh_number_
 
 order hhid hhid_village hh_numero hh_age_resp hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_ hh_education_year_achieve_ hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ health_5_5_ health_5_6_ health_5_7_ agri_6_15 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01 living_03 living_04 living_05 montant_02 montant_05 face_04 face_13 enum_03 enum_04 enum_05
 
-
+drop if missing(hh_gender_) & missing(hh_age_)
 
 ********************************************************* Save the final dataset *********************************************************
 
-export delimited using "${dataOutput}\baseline_balance_tables_data.csv", replace
+save "${dataOutput}\baseline_balance_tables_data.dta", replace
 
 

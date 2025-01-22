@@ -61,7 +61,7 @@ sum revisit
 * Step 10: Save weekly results for tracking
 save merged_hhids_weekly_revisit.dta, replace
 
-
+* can output as table?
 ***************************************************
 
 * For finding how many households are replaced: *
@@ -84,4 +84,6 @@ save merged_hhids_weekly_revisit.dta, replace
 ***************************************************
 
 * "C:\Users\km978\Box\NSF Senegal\Data Management\Output\Data Corrections\Treatments\Treated_variables_df.dta"
+
+* do we still want to do a geocoor
 

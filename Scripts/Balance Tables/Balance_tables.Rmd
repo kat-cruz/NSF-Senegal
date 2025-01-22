@@ -117,8 +117,8 @@ view(balance_df)
     
 
 # Specify the individual-level variables to scale
-individual_vars <- c("hh_education_year_achieve_", "hh_14_", "hh_16_", "agri_income_05") # Replace with the names of the variables to scale
-household_id <- "hhid"       # Replace with your household identifier column
+individual_vars <- c("hh_education_year_achieve_", "hh_14_", "hh_16_", "agri_income_05") 
+household_id <- "hhid"      
 
 # Create new variables in the original dataframe by scaling to household-level means
 balance_df <- balance_df %>%
@@ -129,6 +129,23 @@ balance_df <- balance_df %>%
     .names = "{.col}mean"
   )) %>%
   ungroup()
+
+################ binary ###############
+
+# Specify the individual-level variables to scale
+individual_vars <- c("hh_education_year_achieve_", "hh_14_", "hh_16_", "agri_income_05") 
+household_id <- "hhid"      
+
+# Create new variables in the original dataframe by scaling to household-level means
+balance_df <- balance_df %>%
+  group_by(!!sym(household_id)) %>%
+  mutate(across(
+    all_of(individual_vars), 
+    ~ mean(.x, na.rm = TRUE), 
+    .names = "{.col}mean"
+  )) %>%
+  ungroup()
+
 
 # View the updated dataframe
 print(balance_df)

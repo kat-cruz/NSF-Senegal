@@ -1,6 +1,16 @@
 *** DISES Midline Data Checks - Household Survey***
 *** File originally created By: Molly Doruska - Adapted by Kateri Mouawad & Alex Mills ***
 *** Updates recorded in GitHub ***
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+
+
+			*1)	Create a file with hhid, hh_phone, hh_head_name_complet, hh_name_complet_resp
+			*2)	Check for missing values [NOTE: Skip patterns are noted below in dependencies section]
+			*3)	Verify responses are reasonable values
+			*		After you runt the checks, you will need to ammend all of the outputs using the R2_Combine_Checks_Output.do file to export a complete list of issues for CRDES to correct. 
+			
+
 *==============================================================================
 clear all
 set mem 100m
@@ -20,29 +30,47 @@ if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 
 
-*** additional file paths ***
-global data "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
+**************************** data file paths ****************************
 
-global village_observations "$master\Data Quality Checks\Output\Village_Household_Identifiers"
-global household_roster "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Household_Roster"
-global knowledge "$master\Data Quality Checks\Output\Knowledge"
-global health "$master\Data Quality Checks\Output\Health" 
-global agriculture_inputs "$master\Data Quality Checks\Output\Agriculture_Inputs"
-global agriculture_production "$master\Data Quality Checks\Output\Agriculture_Production"
-global food_consumption "$master\Data Quality Checks\Output\Food_Consumption"
-global income "$master\Data Quality Checks\Output\Income"
-global standard_living "$master\Data Quality Checks\Output\Standard_Living"
-global beliefs "$master\Data Quality Checks\Output\Beliefs" 
-global public_goods "$master\Data Quality Checks\Output\Public_Goods"
-global enum_observations "$master\Data Quality Checks\Output\Enumerator_Observations"
+global testData "$master\NSF Senegal\Data Management\_CRDES_RawData\Midline\Pilot_Data\Household_Data"
 
-*** Import household data - update this every new data cleaning session ***
-import delimited "$data\DISES_enquete_ménage_FINALE_WIDE_6Feb24.csv", clear varnames(1) bindquote(strict)
+**************************** data file paths ****************************
 
-*** import community survey data ***
+global data "$master\Data Management\_CRDES_RawData\Midline\Household_Survey_Data"
+
+**************************** output file paths ****************************
+global village_observations "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global household_roster "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global knowledge "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global health "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs" 
+global agriculture_inputs "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global agriculture_production "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global food_consumption "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global income "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global standard_living "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global beliefs "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs" 
+global public_goods "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global enum_observations "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+
+**************************** DELETE LATER ****************************
+* Import PILOT household data - just to test the script 
+
+import delimited "$testData\DISES_Enquête ménage midline pilote_WIDE.csv", clear varnames(1) bindquote(strict)
+
+**************************** Import household data ****************************
+
+* Note: update this every new data cleaning session ***
+
+*import delimited "$data\UPDATE DATA FRAME HERE.csv", clear varnames(1) bindquote(strict)
+
+**************************** import community survey data ****************************
 
 
-*** label variables - location and respondent ***
+
+
+**************************** label variables ****************************
+* Note: we label location and respondents
+
 label variable village_select "Selectionnez le vilalge pour le questionnaire menage"
 label variable village_select_o "Nom du village"
 label variable hhid_village "Village ID"
@@ -758,27 +786,6 @@ label variable beliefs_07 "Dans quelle mesure etes-vous d'accord avec l'affirmat
 label variable beliefs_08 "Dans quelle mesure etes-vous d'accord avec l'affirmation suivante : Si je peche dans une source d'eau appartenant a la communaute, j'ai le droit d'utiliser les produits que j'ai obtenus par mon travail."
 label variable beliefs_09 "Dans quelle mesure êtes-vous d'accord avec l'affirmation suivante : Si je recolte des produits dans une source d'eau appartenant a la communaute, j'ai le droit d'utiliser les produits que j'ai obtenus par mon travail."
 
-*** Public Goods Games ***
-/*
-label variable game_intro "Avant d'entrer dans la maison, lancez une piece de monnaie. Notez le resultat ici"
-label variable game_01 "Y a-t-il des questions"
-label variable game_02 "Veuillez indiquer si vous etes pret a jouer a ce jeu"
-label variable consent_game_1 "Pourriez-vous s'il vous plaît reconnaitre que vous avez recu 1200 FCFA"
-label variable montant_02 "Montant verse par le repondant pour le jeu A"
-label variable game_03 "Y a-t-il des questions"
-label variable montant_05 "Montant verse par le repondant pour le jeu B"
-label variable montant_07 "Si le montant verse par le repondant pour le jeu B est inferieur a 200 : Pourriez-vous s'il vous plait reconnaitre que vous avez recu 1000 FCFA"
-label variable montant_08 "Si le montant verse par le repondant pour le jeu B est d'au moins a 200 : Pourriez-vous s'il vous plait reconnaitre que vous avez recu 1200 FCFA"
-label variable face_01 "Y a-t-il des questions"
-label variable face_02 "Veuillez indiquer si vous etes pret a jouer a ce jeu"
-label variable face_04 "Montant verse par le repondant pour le jeu B"
-label variable face_06 "Si le montant verse par le répondant pour le jeu B est inferieur a 200 : Pourriez-vous s'il vous plait reconnaitre que vous avez recu 1000 FCFA"
-label variable face_07 "Si le montant verse par le répondant pour le jeu B est d'au moins a 200 : Pourriez-vous s'il vous plait reconnaitre que vous avez reçu 1200 FCFA"
-label variable face_09 "Y a-t-il des questions"
-label variable face_10 "Veuillez indiquer si, compte tenu de ces instructions, vous etes pret a jouer a ce jeu"
-label variable face_11 "Pourriez-vous s'il vous plait reconnaitre que vous avez recu 1200 FCFA"
-label variable face_13 "Montant verse par le repondant pour le jeu A"
-*/
 
 *** Enumerator Observations ***
 label variable enum_01 "D'autres personnes que les repondants ont-elles suivi l'entretien"

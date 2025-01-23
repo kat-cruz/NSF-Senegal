@@ -16,9 +16,9 @@ if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box"
 if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box"
 if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
-if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box"
+if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 
-global schoolprincipal "$master\Data Quality Checks\Output\SchoolPrincipal_Issues"  /// Create \SchoolPrincip_Issues
+global schoolprincipal "$master\Data Quality Checks\Output\SchoolPrincipal_Issues"  /// Create \SchoolPrincipal_Issues
 global issues "$master\Data Quality Checks\Full Issues"
 
 global data "$master\Surveys\____" //// Update for Midline
@@ -27,19 +27,19 @@ global data "$master\Surveys\____" //// Update for Midline
 import delimited 
 
 *** import community survey data ***
-import delimited "$data\____", clear varnames(1) bindquote(strict)
+import delimited "$data\____", clear varnames(1) bindquote(strict)  /// update for midline
 
 *** drop test data ***
-drop if strmatch(date, "DATE")
+drop if strmatch(date, "DATE")   /// insert date
 
 *** label variables ***
-label variable consent_obtain "Etes-vous d'accord de participer afin que je puisse poursuivre avec nos questions ?"
-label variable consent_notes "Si \"non\", precisez pourquoi ils ont dit NON au consentement"
+label variable consent_obtain "Etes-vous d'accord de participer afin que je puisse poursuivre avec nos questions ?" 
+label variable consent_notes "Si NON, precisez pourquoi ils ont dit NON au consentement" 
 label variable respondent_is_director "La personne que vous interrogez occupe-t-elle la fonction de directeur/directrice de l'école ?"
 label variable respondent_is_not_director "Pourquoi n'êtes-vous pas en mesure d'interviewer le directeur de l'école ?"
 
 label variable respondent_other_role "Qui est la personne que vous interviewez ?"
-label variable respondent_other_role_o "Autre a precise"
+label variable respondent_other_role_o "Autre à préciser"
 label variable respondent_name "Nom du répondant"
 label variable respondent_phone_primary "Numéro de téléphone principal du répondant"
 label variable respondent_phone_secondary "Numéro de téléphone secondaire du répondant"
@@ -49,11 +49,11 @@ label variable director_experience_general "Depuis combien de temps travaillez-v
 label variable director_experience_specific "Depuis combien de temps travaillez-vous en tant que directeur a cette ecole?"
 
 label variable school_water_main "Quelle est la principale source d'eau de l'école ?"
-label variable school_water_main_o "Autre a precise"
+// label variable school_water_main_o "Autre à préciser" 
 label variable school_distance_river "À quelle distance se trouve l'école du point d'accès communautaire le plus proche pour collecter de l'eau de surface (par exemple, rivière, lac ou canal) ?"
 label variable school_children_water_collection "L'école envoie-t-elle parfois des enfants à la rivière, au lac ou au canal pour collecter de l'eau de surface ?"
 label variable school_water_use "SI OUI, à quoi sert l'eau de surface ?"
-label variable school_water_use_o "Autre a precise"
+// label variable school_water_use_o "Autre à préciser"
 label variable school_reading_french "L'école dispose-t-elle de matériels de lecture en français pour les élèves des classes de 1re à 3e année ?"
 label variable school_reading_local "L'école dispose-t-elle de matériels de lecture en [langue locale] pour les élèves des classes de 1re à 3e année ?"
 label variable school_computer_access "L'école dispose-t-elle d'équipements informatiques accessibles aux élèves ?"
@@ -69,17 +69,17 @@ label variable council_chief_involvement "Le chef du village siège-t-il au cons
 
 label variable grade_loop "Combien de niveaux scolaires ont été enseignés à l'école l'année dernière ?"
 label variable classroom_loop "Combien de salles de classe y avait-il dans la classe de ${grade} ?"
-label variable enrollment_2024_male "Combien d'élèves étaient inscrits dans la classe de ${grade}, salle ${room} qui sont homme?"
+label variable enrollment_2024_total "L'année dernière (2023/24), combien d'élèves étaient inscrits dans la classe de ${grade_loop_name}, salle ${classroom_index}  <b> qui sont femme </b> ?"
 label variable enrollment_2024_female "Combien d'élèves étaient inscrits dans la classe de ${grade}, salle ${room}  qui sont femme?"
-label variable passing_2024_male "Combien d'élèves ont réussi dans la classe de ${grade}, salle ${room} qui sont homme?"
-label variable passing_2024_female "Combien d'élèves ont réussi dans la classe de ${grade}, salle ${room} qui sont femme?"
-label variable photo_enrollment_2024 "Prenez une photo du registre des inscriptions pour la classe de ${grade}, salle ${room}."
-label variable grade_loop_2025 "Combien de niveaux scolaires sont enseignés à l'école cette année ?"
-label variable classroom_loop_2025 "Combien de salles de classe y a-t-il dans la classe de ${grade} ?"
-label variable enrollment_2025_male "Combien d'élèves sont inscrits dans la classe de ${grade}, salle ${room} qui sont homme ?"
-label variable enrollment_2025_female "Combien d'élèves sont inscrits dans la classe de ${grade}, salle ${room} qui sont femme?"
-label variable photo_enrollment_2025 "Prenez une photo du registre des inscriptions pour la classe de ${grade}, salle ${room}."
-label variable attendence_regularly "Les enseignants enregistrent-ils la présence des élèves régulièrement ?"
+label variable passing_2024_total "L'année dernière (2023/24), combien d'élèves ont réussi dans la classe de ${grade_loop_name}, salle ${classroom_index} au <b> total </b>?"
+label variable passing_2024_female "L'année dernière (2023/24), combien d'élèves ont réussi dans la classe de ${grade_loop_name}, salle ${classroom_index} <b> qui sont femme </b> ?"
+label variable photo_enrollment_2024 "L'année dernière (2023/24), prenez une photo du registre des inscriptions pour la classe de ${grade_loop_name}, salle ${classroom_index}."
+label variable grade_loop_2025 "Cette année (2024/25), combien de niveaux scolaires sont enseignés à l'école cette année ?"
+label variable classroom_loop_2025 "Cette année (2024/25), combien de salles de classe y a-t-il dans la classe de ${grade_loop_name_2025} ?"
+label variable enrollment_2025_total "Cette année (2024/25), combien d'élèves sont inscrits dans la classe de ${grade_loop_name_2025}, salle ${classroom_index_2025} au total ?"
+label variable enrollment_2025_female "Cette année (2024/25), combien d'élèves sont inscrits dans la classe de ${grade_loop_name_2025}, salle ${classroom_index_2025} <b> qui sont femme </b>?"
+label variable photo_enrollment_2025 "Cette année (2024/25), prenez une photo du registre des inscriptions pour la classe de ${grade_loop_name_2025}, salle ${classroom_index_2025}."
+label variable attendence_regularly "Cette année (2024/25), les enseignants enregistrent-ils la présence des élèves régulièrement ?"
 
 label variable absenteeism_problem "Pensez-vous que l'absentéisme des élèves est un problème dans votre école (parmi les enfants déjà inscrits) ?"
 label variable main_absenteeism_reasons "Quelles sont les principales raisons de l'absentéisme des élèves dans votre école ? [Sélectionnez plusieurs réponses]"
@@ -156,8 +156,7 @@ misstable summarize, generate(missing)
 ********************* SHOULD THIS LOOP BE KEPT? *******************************
 *******************************************************************************
 
-*foreach var of varlist village_select village_select_o region departement commune village ///
-*            sup date arrondissement gps_collectLatitude gps_collectLongitude gps_collectAltitude gps_collectAccuracy description_village consent_obtain consent_notes respondent_is_director respondent_is_not_director respondent_other_role respondent_name respondent_phone_primary respondent_phone_secondary respondent_gender respondent_age director_experience_general director_experience_specific school_water_main school_distance_river school_children_water_collection school_water_use school_reading_french school_reading_local school_computer_access school_meal_program school_teachers school_staff_paid_non_teaching school_staff_volunteers school_council council_school_staff council_community_members council_women council_chief_involvement grade_loop classroom_loop enrollment_2024_male enrollment_2024_female passing_2024_male passing_2024_female photo_enrollment_2024 grade_loop_2025 classroom_loop_2025 enrollment_2025_male enrollment_2025_female photo_enrollment_2025 attendence_regularly absenteeism_problem main_absenteeism_reasons absenteeism_top_reason schistosomiasis_problem peak_schistosomiasis_month schistosomiasis_primary_effect schistosomiasis_sources schistosomiasis_treatment_ministry schistosomiasis_treatment_date {
+*foreach var of varlist consent_obtain consent_notes respondent_is_director respondent_is_not_director respondent_other_role respondent_name respondent_phone_primary respondent_phone_secondary respondent_gender respondent_age director_experience_general director_experience_specific school_water_main school_distance_river school_children_water_collection school_water_use school_reading_french school_reading_local school_computer_access school_meal_program school_teachers school_staff_paid_non_teaching school_staff_volunteers school_council council_school_staff council_community_members council_women council_chief_involvement grade_loop classroom_loop enrollment_2024_total enrollment_2024_female passing_2024_total passing_2024_female photo_enrollment_2024 grade_loop_2025 classroom_loop_2025 enrollment_2025_total enrollment_2025_female photo_enrollment_2025 attendence_regularly absenteeism_problem main_absenteeism_reasons absenteeism_top_reason schistosomiasis_problem peak_schistosomiasis_month schistosomiasis_primary_effect schistosomiasis_sources schistosomiasis_treatment_ministry schistosomiasis_treatment_date {
     * Check if there are any missing values for the current variable
 *    qui count if missing(`var')
 *    if r(N) == 0 continue
@@ -280,7 +279,7 @@ foreach var of varlist main_absenteeism_reasons absenteeism_top_reason {
     restore
 }
 
-foreach var of varlist school_teachers school_staff_paid_non_teaching school_staff_volunteers council_school_staff council_community_members council_women enrollment_2024_male enrollment_2024_female enrollment_2025_male enrollment_2025_female passing_2024_male passing_2024_female passing_2025_male passing_2025_female {
+foreach var of varlist school_teachers school_staff_paid_non_teaching school_staff_volunteers council_school_staff council_community_members council_women enrollment_2024_total enrollment_2024_female enrollment_2025_total enrollment_2025_female passing_2024_total passing_2024_female passing_2025_total passing_2025_female {
     preserve
     gen ind_issue = .
     replace ind_issue = 1 if `var' < 0 & `var' != -9
@@ -326,7 +325,7 @@ foreach var of varlist school_water_main respondent_other_role main_absenteeism_
 foreach var of varlist school_teachers school_staff_paid_non_teaching school_staff_volunteers council_school_staff council_community_members council_women {
     preserve
     gen ind_issue = .
-    replace ind_issue = 1 if `var' < -9 | (`var' > (enrollment_2024_male + enrollment_2024_female) & `var' != -9)
+    replace ind_issue = 1 if `var' < -9 | (`var' > enrollment_2024_total & `var' != -9)
     keep if ind_issue == 1
     
     * Generate issue variables
@@ -343,30 +342,32 @@ foreach var of varlist school_teachers school_staff_paid_non_teaching school_sta
 
 *** Ensure students passing is not greater than student enrollment ***
 
-foreach var_male of varlist passing_2024_male passing_2025_male {
-    local enroll_var_male = subinstr("`var_male'", "passing", "enrollment", .)
+foreach var of varlist passing_2024_total passing_2025_total {
+    local enroll_var_female = subinstr("`var_female'", "passing", "enrollment", .)
     preserve
     gen ind_issue = .
-    replace ind_issue = 1 if `var_male' > `enroll_var_male'
+    replace ind_issue = 1 if `var' ' > enrollment_2024_total
     keep if ind_issue == 1
 
     * Generate issue variables
-    generate issue = "Invalid value: Passing exceeds enrollment for males"
-    generate issue_variable_name = "`var_male'"
-    rename `var_male' print_issue
+    generate issue = "Invalid value: Passing exceeds enrollment"
+    generate issue_variable_name = "`var_female'"
+    rename `var_female' print_issue
 
     * Export flagged issues
     if _N > 0 {
-        save "$schoolprincipal\Issue_SchoolPrincipal_`var_male'_exceed_enrollment.dta", replace
+        save "$schoolprincipal\Issue_SchoolPrincipal_`var'_exceed_enrollment.dta", replace
     }
     restore
 }
 
-foreach var_female of varlist passing_2024_female passing_2025_female {
+*** Ensure students passing is not greater than student enrollment ***
+
+foreach var of varlist passing_2024_female passing_2025_female {
     local enroll_var_female = subinstr("`var_female'", "passing", "enrollment", .)
     preserve
     gen ind_issue = .
-    replace ind_issue = 1 if `var_female' > `enroll_var_female'
+    replace ind_issue = 1 if `var' ' > enrollment_2024_female
     keep if ind_issue == 1
 
     * Generate issue variables
@@ -376,7 +377,7 @@ foreach var_female of varlist passing_2024_female passing_2025_female {
 
     * Export flagged issues
     if _N > 0 {
-        save "$schoolprincipal\Issue_SchoolPrincipal_`var_female'_exceed_enrollment.dta", replace
+        save "$schoolprincipal\Issue_SchoolPrincipal_`var'_exceed_enrollment.dta", replace
     }
     restore
 }
@@ -407,7 +408,7 @@ replace ind_issue = 1 if respondent_age < director_experience_general | responde
 keep if ind_issue == 1
 
 * Generate issue variables
-generate issue = "Invalid value: Age inconsistent with experience or out of range (18-120)"
+generate issue = "Invalid value: Age inconsistent with experience or out of range (18-100)"
 generate issue_variable_name = "respondent_age"
 rename respondent_age print_issue
 
@@ -529,5 +530,5 @@ foreach file in `issue_files' {
 }
 
 **************** UPDATE DATE IN FILE NAME ***********************
-*export excel using "$issues\Community_Issues_6Feb2024.xlsx", firstrow(variables)  
-export excel using "$issues\SchoolPrincipal_Issues_Combined_6Jan2025.xlsx", firstrow(variables) replace
+*export excel using "$issues\____", firstrow(variables)  
+export excel using "$issues\______", firstrow(variables) replace

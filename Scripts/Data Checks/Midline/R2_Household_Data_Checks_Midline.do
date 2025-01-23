@@ -38,24 +38,44 @@ global testData "$master\NSF Senegal\Data Management\_CRDES_RawData\Midline\Pilo
 
 global data "$master\Data Management\_CRDES_RawData\Midline\Household_Survey_Data"
 
+
+
 **************************** output file paths ****************************
+/*
 global village_observations "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
-global household_roster "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
-global knowledge "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
-global health "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs" 
+global household_roster "$master\Data Management\Output\Data Quality Checks\Midline\R2_Food_Consumption"
+global knowledge "$master\Data Management\Output\Data Quality Checks\Midline\R2_Health"
+global health "$master\Data Management\Output\Data Quality Checks\Midline\R2_Household_Roster" 
+global agriculture_inputs "$master\Data Management\Output\Data Quality Checks\Midline\R2_Income"
+global agriculture_production "$master\Data Management\Output\Data Quality Checks\Midline\R2_Knowledge"
+global food_consumption "$master\Data Management\Output\Data Quality Checks\Midline\R2_Public_Goods"
+global income "$master\Data Management\Output\Data Quality Checks\Midline\R2_Standard_Living"
+global standard_living "$master\Data Management\Output\Data Quality Checks\Midline\R2_Enumerator_Observations"
+global beliefs "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs" 
+global public_goods "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global enum_observations "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+*/
+
+
+*global village_observations "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global household_roster "$master\Data Management\Output\Data Quality Checks\Midline\R2_Household_Roster"
+global knowledge "$master\Data Management\Output\Data Quality Checks\Midline\R2_Knowledge"
+global health "$master\Data Management\Output\Data Quality Checks\Midline\R2_Health" 
 global agriculture_inputs "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
-global agriculture_production "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
-global food_consumption "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
-global income "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
-global standard_living "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
+global agriculture_production "$master\Data Management\Output\Data Quality Checks\Midline\R2_Knowledge"
+global food_consumption "$master\Data Management\Output\Data Quality Checks\Midline\R2_Public_Goods"
+global income "$master\Data Management\Output\Data Quality Checks\Midline\R2_Standard_Living"
+global standard_living "$master\Data Management\Output\Data Quality Checks\Midline\R2_Enumerator_Observations"
 global beliefs "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs" 
 global public_goods "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
 global enum_observations "$master\Data Management\Output\Data Quality Checks\Midline\R2_Agriculture_Inputs"
 
+
+
 **************************** DELETE LATER ****************************
 * Import PILOT household data - just to test the script 
 
-import delimited "$testData\DISES_Enquête ménage midline pilote_WIDE.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Enquête ménage midline VF_WIDE.csv", clear varnames(1) bindquote(strict)
 
 **************************** Import household data ****************************
 

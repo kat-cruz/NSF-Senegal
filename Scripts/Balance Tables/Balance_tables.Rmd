@@ -81,7 +81,7 @@ balance_df <- read_dta(file_path_balance_tables_df)
 
 
 
-filter by treatment group
+###filter by treatment group
 
 ```{r}
 
@@ -106,6 +106,10 @@ view(balance_df)
 
 ```
 
+#Archive 
+
+
+####aggregate to hh level
 
 
 ```{r}
@@ -114,11 +118,31 @@ view(balance_df)
 # for individual-level variables, these need to be scaled to the household level
     # 1) Understand the Variable: Is it continuous, binary, or categorical? What does it represent?
     # 2) Decide What’s Meaningful: What summary statistic (mean, max, proportion) best represents the household for your analysis goals?
-    
+
+# Filter rows to keep only 1s and 0s in the specified variables
+binary_vars <- c()
+
+
+balance_df <- balance_df %>%
+  filter(across(all_of(binary_vars), ~ . %in% c(0, 1))) 
+
+   
 
 # Specify the individual-level variables to scale
-individual_vars <- c("hh_education_year_achieve_", "hh_14_", "hh_16_", "agri_income_05") 
-household_id <- "hhid"      
+individual_vars <- c("hh_education_year_achieve_", 
+                     "hh_14_", 
+                     "hh_16_", 
+                     "agri_income_05", 
+                     "hh_numero", 
+                     "hh_03_", 
+                     "hh_10_", 
+                     "hh_14_",
+                     "hh_16_"
+                         ) 
+
+household_id <- "hhid"  
+
+
 
 # Create new variables in the original dataframe by scaling to household-level means
 balance_df <- balance_df %>%
@@ -130,25 +154,201 @@ balance_df <- balance_df %>%
   )) %>%
   ungroup()
 
-################ binary ###############
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+#categorical vars to transform
+###create binaries from categorical variables
+
+#hh_education_level, hh_11, hh_12, hh_15, species living_05 enum_03 enum_04 enum_05
+
+
+# #create binary variables
+# balance_df <- balance_df %>%
+#   mutate(
+#     
+#     
+#     hh_education_level_0 = if_else(hh_education_level_ == 0, 1, 0),
+#     hh_education_level_1 = if_else(hh_education_level_ == 1, 1, 0),
+#     hh_education_level_2 = if_else(hh_education_level_ == 2, 1, 0),
+#     hh_education_level_3 = if_else(hh_education_level_ == 3, 1, 0),
+#     hh_education_level_4 = if_else(hh_education_level_ == 4, 1, 0),
+#     hh_education_level_99 = if_else(hh_education_level_ == 99, 1, 0),
+#     
+#     hh_11_1 = if_else(hh_11_ == 1, 1, 0),
+#     hh_11_2 = if_else(hh_11_ == 2, 1, 0),
+#     hh_11_3 = if_else(hh_11_ == 3, 1, 0),
+#     hh_11_4 = if_else(hh_11_ == 4, 1, 0),
+#     hh_11_99 = if_else(hh_11_ == 99, 1, 0),
+#     
+#     hh_15_1 = if_else(hh_15_ == 1, 1, 0),
+#     hh_15_2 = if_else(hh_15_ == 2, 1, 0),
+#     hh_15_3 = if_else(hh_15_ == 3, 1, 0),
+#     hh_15_4 = if_else(hh_15_ == 4, 1, 0),
+#     hh_15_5 = if_else(hh_15_ == 5, 1, 0),
+#     hh_15_99 = if_else(hh_15_ == 99, 1, 0),
+#     
+#     
+#     living_01_1 = if_else(living_01 == 1, 1, 0),
+#     living_01_2 = if_else(living_01 == 2, 1, 0),
+#     living_01_3 = if_else(living_01 == 3, 1, 0),
+#     living_01_4 = if_else(living_01 == 4, 1, 0),
+#     living_01_5 = if_else(living_01 == 5, 1, 0),
+#     living_01_6 = if_else(living_01 == 6, 1, 0),
+#     living_01_7 = if_else(living_01 == 7, 1, 0),
+#     living_01_8 = if_else(living_01 == 8, 1, 0),
+#     living_01_9 = if_else(living_01 == 9, 1, 0),
+#     living_01_10 = if_else(living_01 == 10, 1, 0),
+#     living_01_99 = if_else(living_01 == 99, 1, 0),
+#  
+#  
+#     living_03_1 = if_else(living_03 == 1, 1, 0),
+#     living_03_2 = if_else(living_03 == 2, 1, 0),
+#     living_03_3 = if_else(living_03 == 3, 1, 0),
+#     living_03_99 = if_else(living_03 == 99, 1, 0),
+# 
+#     living_04_1 = if_else(living_04 == 1, 1, 0),
+#     living_04_2 = if_else(living_04 == 2, 1, 0),
+#     living_04_3 = if_else(living_04 == 3, 1, 0),
+#     living_04_4 = if_else(living_04 == 4, 1, 0),
+#     living_04_5 = if_else(living_04 == 5, 1, 0),
+#     living_04_6 = if_else(living_04 == 6, 1, 0),
+#     living_04_7 = if_else(living_04 == 7, 1, 0),
+#     living_04_99 = if_else(living_04 == 99, 1, 0),
+#  
+#     living_05_1 = if_else(living_05 == 1, 1, 0),
+#     living_05_2 = if_else(living_05 == 2, 1, 0),
+#     living_05_3 = if_else(living_05 == 3, 1, 0),
+#     living_05_4 = if_else(living_05 == 4, 1, 0),
+#     living_05_5 = if_else(living_05 == 5, 1, 0),
+#     living_05_6 = if_else(living_05 == 6, 1, 0),
+#     living_05_7 = if_else(living_05 == 7, 1, 0),
+#     living_05_99 = if_else(living_05 == 99, 1, 0), 
+#  
+#     enum_03_1 = if_else(enum_03 == 1, 1, 0), 
+#     enum_03_2 = if_else(enum_03 == 2, 1, 0), 
+#     enum_03_3 = if_else(enum_03 == 3, 1, 0), 
+#     enum_03_4 = if_else(enum_03 == 4, 1, 0), 
+#     enum_03_99 = if_else(enum_03 == 99, 1, 0), 
+#  
+#  
+#     enum_04_1 = if_else(enum_04 == 1, 1, 0), 
+#     enum_04_2 = if_else(enum_04 == 2, 1, 0), 
+#     enum_04_3 = if_else(enum_04 == 3, 1, 0), 
+#     enum_04_4 = if_else(enum_04 == 4, 1, 0), 
+#     enum_04_5 = if_else(enum_04 == 5, 1, 0), 
+#     enum_04_6 = if_else(enum_04 == 6, 1, 0), 
+#     enum_04_99 = if_else(enum_04 == 99, 1, 0),  
+#  
+#  
+#     enum_05_1 = if_else(enum_05 == 1, 1, 0), 
+#     enum_05_2 = if_else(enum_05 == 2, 1, 0), 
+#     enum_05_3 = if_else(enum_05 == 3, 1, 0), 
+#     enum_05_4 = if_else(enum_05 == 4, 1, 0), 
+#     enum_05_5 = if_else(enum_05 == 5, 1, 0), 
+#     enum_05_99 = if_else(enum_05 == 99, 1, 0),
+#     
+#  ) %>%
+#   mutate(hh_gender_ = recode(hh_gender_, `2` = 0, .default = hh_gender_))
+# 
+
+
+
+```
+
+
+
+
+
+
+```{r}
+####aggregate to hh level
+
+# for individual-level variables, these need to be scaled to the household level
+    # 1) Understand the Variable: Is it continuous, binary, or categorical? What does it represent?
+    # 2) Decide What’s Meaningful: What summary statistic (mean, max, proportion) best represents the household for your analysis goals?
+# Specify the individual-level variables to scale
+
+   
 
 # Specify the individual-level variables to scale
-individual_vars <- c("hh_education_year_achieve_", "hh_14_", "hh_16_", "agri_income_05") 
-household_id <- "hhid"      
-
-# Create new variables in the original dataframe by scaling to household-level means
-balance_df <- balance_df %>%
-  group_by(!!sym(household_id)) %>%
-  mutate(across(
-    all_of(individual_vars), 
-    ~ mean(.x, na.rm = TRUE), 
-    .names = "{.col}mean"
-  )) %>%
-  ungroup()
-
-
-# View the updated dataframe
-print(balance_df)
+# individual_vars <- c("hh_education_year_achieve_", 
+#                      "hh_14_", 
+#                      "hh_16_", 
+#                      "agri_income_05", 
+#                      "hh_numero", 
+#                      "hh_03_", 
+#                      "hh_10_", 
+#                      "hh_14_",
+#                      "hh_16_",
+#                      select(matches("^hh_education_skills_[0-9]+$")),  
+#                      select(matches("^hh_education_level_[0-9]+$")),  
+#                      select(matches("^hh_11_[0-9]+$")), 
+#                      select(matches("^hh_15_[0-9]+$")), 
+#                      select(matches("^hh_13_[0-9]+$")), 
+#                      select(matches("^living_01_[0-9]+$")), 
+#                      select(matches("^living_03_[0-9]+$")), 
+#                      select(matches("^living_04_[0-9]+$")), 
+#                      select(matches("^living_05_[0-9]+$")), 
+#                      select(matches("^enum_03_[0-9]+$")),  
+#                      select(matches("^enum_04_[0-9]+$")), 
+#                      select(matches("^enum_05_[0-9]+$")),
+#                                           ) 
+# household_id <- "hhid"  
+# 
+# # Filter rows to keep only 1s and 0s in the specified variables
+# balance_df <- balance_df %>%
+#   filter(across(all_of(individual_vars), ~ . %in% c(0, 1))) 
+# 
+# # Create new variables in the original dataframe by scaling to household-level means
+# balance_df <- balance_df %>%
+#   group_by(!!sym(household_id)) %>%
+#   mutate(across(
+#     all_of(individual_vars), 
+#     ~ mean(.x, na.rm = TRUE), 
+#     .names = "{.col}mean"
+#   )) %>%
+#   ungroup()
 
 
 

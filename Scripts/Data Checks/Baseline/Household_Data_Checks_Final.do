@@ -12,18 +12,20 @@ set maxvar 20000
 **** Master file path  ****
 
 if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
+                global master "C:\Users\km978\Box\NSF Senegal\Data Management"
 }
 else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Baseline Data Collection"
+                global master "C:\Users\km978\Box\NSF Senegal\Data Management"
 				
 }
+
+
 
 *global master "C:\Users\kateri\Box\NSF Senegal\Baseline Data Collection"
 *global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
 
 *** additional file paths ***
-global data "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
+global data "$master\_CRDES_RawData\Baseline"
 
 global village_observations "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Village_Household_Identifiers"
 global household_roster "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Household_Roster"

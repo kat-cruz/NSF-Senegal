@@ -19,53 +19,6 @@ if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 
-
-***************************************************
-
-* For computing attrition/revisit rates: *
-
-***************************************************
-
-*  Load the baseline dataset
-use baseline_data.dta, clear
-
-*  Keep only the HHID variable
-keep hhid
-
-*  Sort and save the baseline HHIDs
-gen in_baseline = 1
-save baseline_hhids.dta, replace
-
-* Load the updated weekly midline dataset
-use midline_weekly.dta, clear
-
-*  Keep only the HHID variable
-keep hhid
-
-* Sort and save the weekly midline HHIDs
-gen in_midline = 1
-save midline_hhids_weekly.dta, replace
-
-* Merge baseline and weekly midline HHIDs
-merge 1:1 hhid using baseline_hhids.dta
-
-*  Label merge results for clarity
-label define merge_labels 1 "In Both (Revisited)" 2 "In Midline Only (New)" 3 "In Baseline Only (Not Yet Revisited)"
-label values _merge merge_labels
-
-*  Track progress for revisit rates
-gen revisit = (_merge == 1)  // 1 if HH revisited, 0 otherwise
-tab _merge
-sum revisit
-
-* Step 10: Save weekly results for tracking
-save merged_hhids_weekly_revisit.dta, replace
-
-* can output as table?
-***************************************************
-
-
-ALEX
 * Define the master folder path
 global master "$box_path\Data Management"
 
@@ -81,9 +34,6 @@ global individ "$master\_CRDES_CleanData\Baseline\Identified\All_Villages_With_I
 ***************************************************
 
 * For computing attrition/revisit rates: *
-
-
-***************************************************
 
 * Step 1: Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
@@ -135,57 +85,27 @@ di "Revisit Rate for Midline Households: `revisit_rate'%"
 
 ***************************************************
 
+* Step 1: Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
 
-* Keep relevant variables and rename respondent name
-keep hh_name_complet_resp
-rename hh_name_complet_resp individ
+* Step 2: Generate indicator for different respondent
+gen different_respondent = (hh_name_complet_resp == "999")
 
-* Save the processed midline respondent data
-save "$dailyupdates\Processed_Midline_Respondents.dta", replace
+* Step 3: Count total households retained
+count
+local total_households = r(N)
 
-use "$individ", clear
+* Step 4: Count households with a different respondent
+count if different_respondent == 1
+local total_different_respondent = r(N)
 
-* Keep only rows where hh_name_complet_resp == hh_full_name_calc_
-keep if hh_name_complet_resp == hh_full_name_calc_
-keep individ
+* Step 5: Calculate share of households with a different respondent
+local share_different_respondent = (`total_different_respondent' / `total_households') * 100
 
-* Save the processed baseline respondent data
-save "$dailyupdates\Processed_Baseline_Respondents.dta", replace
-
-use "$dailyupdates\Processed_Baseline_Respondents.dta", clear
-merge 1:m individ using "$dailyupdates\Processed_Midline_Respondents.dta"
-gen in_midline = (_merge == 2 | _merge == 3)   // Households in midline or both
-
-* Check merge results
-tab _merge
-
-* Explanation of _merge values:
-* 1 = In baseline only
-* 2 = In midline only
-* 3 = In both midline and baseline
-
-* Calculate share of unmatched individuals in midline
-
-* Generate unmatched variable
-gen unmatched = (_merge == 2 & in_midline == 1)   // Individuals in midline but not in baseline
-
-* Summarize unmatched respondents
-summarize unmatched if in_midline == 1
-local unmatched_share = r(mean) * 100
-
-* Total unmatched respondents
-count if unmatched == 1
-local total_unmatched = r(N)
-
-* Total midline respondents
-count if in_midline == 1
-local total_midline = r(N)
-
-* Display results
-di "Total Midline Respondents: `total_midline'"
-di "Total Unmatched Respondents: `total_unmatched'"
-di "Share of Unmatched Respondents: `unmatched_share'%"
+* Step 6: Display results
+di "Total Households Retained: `total_households'"
+di "Households with Different Respondent: `total_different_respondent'"
+di "Share of Households with Different Respondent: `share_different_respondent'%"
 
 ***************************************************
 
@@ -200,6 +120,8 @@ di "Share of Unmatched Respondents: `unmatched_share'%"
 * For responses to training questions *
 
 ***************************************************
+import delimited "$data", clear varnames(1) bindquote(strict)
+
 
 
 ***************************************************
@@ -211,4 +133,3 @@ di "Share of Unmatched Respondents: `unmatched_share'%"
 * "C:\Users\km978\Box\NSF Senegal\Data Management\Output\Data Corrections\Treatments\Treated_variables_df.dta"
 
 * do we still want to do a geocoor
-

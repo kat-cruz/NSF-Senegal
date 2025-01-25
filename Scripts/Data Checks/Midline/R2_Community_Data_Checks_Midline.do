@@ -227,6 +227,9 @@ generate issue = "Unreasonable value"
 	
 * Generate name of variable issue 
 gen issue_variable_name = "number_hh"
+
+* Generate question text variable 
+gen question = "Nombre de ménages dans le village:"
 	
 * Rename variable with issue 
 rename number_hh print_issue
@@ -250,6 +253,9 @@ generate issue = "Unreasonable value"
 	
 * Generate name of variable issue 
 gen issue_variable_name = "number_total"
+
+* Generate question text variable 
+gen question = "Population du village (# personnes):"
 	
 * Rename variable with issue 
 rename number_total print_issue
@@ -470,6 +476,7 @@ preserve
 	keep if ind_var == 1 
 	generate issue = "Missing"
 	generate issue_variable_name = "q_36"
+	gen question = "Quelle organisation l'a mis en place?"
 	rename q_36 print_issue
 	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
     if _N > 0 {
@@ -486,6 +493,7 @@ preserve
 	keep if ind_var == 1 
 	generate issue = "Missing"
 	generate issue_variable_name = "q_35"
+	gen question = "Quelle est la date du dernier traitement vermifuge effectué par le ministère de la santé ou une autreorganisation ?"
 	rename q_35 print_issue
 	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
 	if _N > 0 {
@@ -548,6 +556,7 @@ preserve
 	keep if ind_var == 1
 	generate issue = "Missing" 
 	generate issue_variable_name = "q62_o"
+	gen question = "Autre à préciser"
 	rename q62_o print_issue 
 	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name	
 	if _N > 0 {
@@ -600,6 +609,8 @@ forvalues i = 1/10 {
 	generate issue = "Unreasonable value" 
 		
 	generate issue_variable_name = "q64"
+	
+	gen question = "Combien un ouvrier agricole du village gagne-t-il en moyenne par jour pendant la récolte la plus recent?"
 		
 	rename q64 print_issue
 	
@@ -627,6 +638,8 @@ forvalues i = 1/10 {
 	generate issue = "Unreasonable value" 
 		
 	generate issue_variable_name = "q65"
+	
+	gen question = "Combien un technicien agricole du village gagne-t-il en moyenne par jour à l’heure actuelle ?"
 		
 	rename q65 print_issue
 	
@@ -654,6 +667,8 @@ forvalues i = 1/10 {
 	generate issue = "Unreasonable value" 
 		
 	generate issue_variable_name = "q66"
+	
+	gen question = "Combien un ouvrier non-agricole du village gagne-t-il en moyenne par jour à l’heure actuelle ?"
 		
 	rename q66 print_issue
 	
@@ -675,12 +690,11 @@ forvalues i = 1/11 {
 	
 	* generate indciator variable 
 	gen ind_var = 0 
-	replace ind_var = 1 if unit_convert_`i' < 0 
+	replace ind_var = 1 if unit_convert_`i' < 1 
 	replace ind_var = 1 if unit_convert_`i' > 1000
 	replace ind_var = 1 if unit_convert_`i' == 9 
 	replace ind_var = 1 if unit_convert_`i' == 99
 	replace ind_var = 1 if unit_convert_`i' == 999
-	replace ind_var = 1 if unit_convert_`i' == 0.9 
 	
 	* Keep and add variables to export 
 	keep if ind_var == 1 
@@ -717,6 +731,9 @@ forvalues i = 1/20 {
 	* Generate name of variable issue 
 	gen issue_variable_name = "wealth_stratum_02_`i'"
 	
+	* Generate quesiton variable 
+	gen question = "Pouvez classer ce ménage dans les catégories de richesse au-dessus/en dessous de la médiane"
+	
 	* Rename variable with issue 
 	rename wealth_stratum_02_`i' print_issue
   
@@ -743,6 +760,9 @@ forvalues i = 1/20 {
 	
 	* Generate name of variable issue 
 	gen issue_variable_name = "wealth_stratum_03_`i'"
+	
+	* Generate question variable 
+	gen question = "Est-ce que le répondant et son ménage vivent toujours dans le village?"
 	
 	* Rename variable with issue 
 	rename wealth_stratum_03_`i' print_issue
@@ -771,6 +791,9 @@ forvalues i = 1/3 {
 	* Generate name of variable issue 
 	gen issue_variable_name = "new_household_1_`i'"
 	
+	* Generate quesiton variable 
+	gen question = "Pour les ménages plus riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ?"
+	
 	* Rename variable with issue 
 	rename new_household_1_`i' print_issue
   
@@ -794,6 +817,9 @@ forvalues i = 1/3 {
 	
 	* Generate name of variable issue 
 	gen issue_variable_name = "new_household_2_`i'"
+	
+	* Generate quesiton variable 
+	gen question = "Pour les ménages moins riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ?"
 	
 	* Rename variable with issue 
 	rename new_household_2_`i' print_issue
@@ -825,5 +851,5 @@ append using "$community\Issue_Community_unit_convert_9.dta"
 append using "$community\Issue_Community_unit_convert_11.dta"
 
 **************** UPDATE DATE IN FILE NAME ***********************
-export excel using "$community\Community_Issues_24Jan2025.xlsx", firstrow(variables)  
+export excel using "$community\Community_Issues_24Jan2025.xlsx", firstrow(variables) replace  
 

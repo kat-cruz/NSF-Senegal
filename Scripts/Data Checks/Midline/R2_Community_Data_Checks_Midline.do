@@ -13,23 +13,22 @@ set more off
 **************************************************
 
 * Set base Box path for each user
-if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box"
+if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box\NSF Senegal"
 if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box"
 if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 
 
-global community "$master\Data Quality Checks\Output\Community_Issues"
-global issues "$master\Data Quality Checks\Full Issues"
+global community "$box_path\Data Management\Output\Data Quality Checks\Midline\R2_Community_Issues"
 
-global data "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
+global data "$box_path\Data Management\_CRDES_RawData\Midline\Community_Survey_Data"
 
 *** import community survey data ***
-import delimited "$data\Questionnaire Communautaire - NSF DISES_WIDE_6Feb24.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_24Jan.csv", clear varnames(1) bindquote(strict)
 
-*** drop test data ***
-drop if strmatch(date, "Jan 10, 2024")
+*** rename variables to distinguish from baseline *** 
+rename q52 q52_a 
 
 *** label variables *** variables removed for midline commented out
 label variable number_hh "Nombre de menages dans le village"
@@ -78,7 +77,7 @@ label variable q_48 "A quelle distance se trouve l'arret de bus le plus proche (
 label variable q_49 "A quelle distance se trouve le point d'eau le plus proche (en kilometres)"
 label variable q_50 "A quelle distance se trouve la route bitumee la plus proche le plus proche (en kilometres)"
 label variable q_51 "A quelle distance se trouve l'infrastructure de sante la plus proche (en kilometres)"
-// label variable q_52 "Quelle est la distance a l'ecole primaire publique la plus proche desservant cette communaute (en kilometre)"
+label variable q52_a "Combien d'ecoles primaires y a-t-il dans le village?"
 // label variable q_53 "Combien de salles de classe y a-t-il dans l'ecole primaire publique la plus proche"
 // label variable q_54 "Dans cette ecole, combien de salles de classe ne sont pas construites en briques avec des toits en tole ou avec d'autres materiaux de construction permanents"
 // label variable q_55 "Combien d'eleves fréquentent regulierement l'ecole primaire publique la plus proche"
@@ -102,14 +101,43 @@ label variable q64 "Combien un ouvrier agricole du village gagne-t-il en moyenne
 label variable q65 "Combien un technicien agricole du village gagne-t-il en moyenne par jour a l'heure actuelle "
 label variable q66 "Combien un ouvrier non-agricole du village gagne-t-il en moyenne par jour a l'heure actuelle"
 label variable q67 "Y a-t-il autre chose que nous devons savoir sur votre village"
+label variable unit_convert_1 "Combien de kilograms pèse un sac large de fumier ?"
+label variable unit_convert_2 "Combien de kilograms pèse un sac moyen de fumier ?"
+label variable unit_convert_3 "Combien de kilograms pèse un sac petit de fumier ?"
+label variable unit_convert_4 "Combien de kilograms pèse un chariot a ane de fumier ?"
+label variable unit_convert_5 "Combien de kilograms pèse un chariot a vaches de fumier ?"
+label variable unit_convert_6 "Combien de kilograms pèse un sac a dos de fumier ?"
+label variable unit_convert_7 "Combien de kilograms pèse un corbeille de fumier ?"
+label variable unit_convert_8 "Combien de kilograms pèse un sac de Uree ?"
+label variable unit_convert_9 "Combien de kilograms pèse un sac de Phosphates ?"
+label variable unit_convert_10 "Combien de kilograms pèse un sac de NPK/Formule unqiue ?"
+label variable unit_convert_11 "Combien de kilograms pèse un sac d'autres engrais chimiques ?"
+
+forvalues i = 1/20 {
+	label variable wealth_stratum_02_`i' "Pouvez classer ce ménage dans les catégories de richesse au-dessus/en dessous de la médiane EN JANVIER 2024!(PAS MAINTENANT)?"
+	label variable wealth_stratum_03_`i'"Est-ce que le répondant et son ménage vivent toujours dans le village?"
+}
+
+label variable new_household_1_1 "Pour les ménages plus riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 1"
+label variable new_household_1_2 "Pour les ménages plus riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 2"
+label variable new_household_1_3 "Pour les ménages plus riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 3"
+label variable new_household_1_4 "Pour les ménages plus riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 4"
+label variable new_household_1_5 "Pour les ménages plus riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 5"
+label variable new_household_2_1 "Pour les ménages moins riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 1"
+label variable new_household_2_2 "Pour les ménages moins riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 2"
+label variable new_household_2_3 "Pour les ménages moins riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 3"
+label variable new_household_2_4 "Pour les ménages moins riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 4"
+label variable new_household_2_5 "Pour les ménages moins riches que la médiane en janvier 2024 (PAS MAINTENANT), pouvez-vous nommer 3 à 5ménages supplémentaires dans le village que nous pourrions interroger ? Menage 5"
 
 *** define value labels ***
 label define yesno 1 "Oui" 0 "Non"
 label define aliment 1 "Mais" 2 "Riz" 3 "Ble" 4 "Pommes de terr" 5 "Manoic" 6 "Soja" 7 "Patates douces" 8 "Ignames" 9 "Sorgho" 10 "Plantain" -95 "Autre" -9 "Ne sais pas/Ne reponds pas"
+label define wealth 1 "Plus riche" 2 "Moins riche"
 
 *** add value labels to variables ***
-label values q_24 q_25 q_26 q_27 q_28 q_29 q_30 q_31 q_32 q_33 q_34 q_35_check q_37 q_39 q_41 yesno
+label values q_24 q_25 q_26 q_27 q_28 q_29 q_30 q_31 q_32 q_33 q_34 q_35_check q_37 q_39 q_41 wealth_stratum_03_1 wealth_stratum_03_2 wealth_stratum_03_3 wealth_stratum_03_4 wealth_stratum_03_5 wealth_stratum_03_6 wealth_stratum_03_7 wealth_stratum_03_8 wealth_stratum_03_9 wealth_stratum_03_10 wealth_stratum_03_11 wealth_stratum_03_12 wealth_stratum_03_13 wealth_stratum_03_14 wealth_stratum_03_15 wealth_stratum_03_16 wealth_stratum_03_17 wealth_stratum_03_18 wealth_stratum_03_19 wealth_stratum_03_20 yesno
 label values q62 aliment
+label values wealth_stratum_02_1 wealth_stratum_02_2 wealth_stratum_02_3 wealth_stratum_02_4 wealth_stratum_02_5 wealth_stratum_02_6 wealth_stratum_02_7 wealth_stratum_02_8 wealth_stratum_02_9 wealth_stratum_02_10 wealth_stratum_02_11 wealth_stratum_02_12 wealth_stratum_02_13 wealth_stratum_02_14 wealth_stratum_02_15 wealth_stratum_02_16 wealth_stratum_02_17 wealth_stratum_02_18 wealth_stratum_02_19 wealth_stratum_02_20 wealth 
 
 
 *** Value Checks ***
@@ -122,7 +150,7 @@ misstable summarize, generate(missing)
 *********************** ONLY RUN THOSE WITH MISSING VALUES ***************************
 ************************ CURRENTLY NONE SO THIS LOOP IS COMMENTED OUT ****************
 *foreach var of varlist village_select village_select_o hhid_village region departement commune village ///
-*            sup date arrondissement gps_collectLatitude gps_collectLongitude gps_collectAltitude gps_collectAccuracy description_village number_hh number_total ///
+*            sup_label date arrondissement gps_collectLatitude gps_collectLongitude gps_collectAltitude gps_collectAccuracy description_village number_hh number_total ///
 *            city_near q_24 q_25 q_26 q_27 q_28 q_29 q_30 ///
 *            q_31 q_32 q_33 q_34 q_35_check q_37 q_39 q_41 q_43 q_44 q_45 q_46 q_47 q_48 q_49 ///
 *            q_50 q_51 q62 q63_1 q63_2 q63_3 q63_4 q63_5 ///
@@ -132,7 +160,7 @@ misstable summarize, generate(missing)
 *    keep if missing`var' == 1
   
     * Keep relevant variables
- *   keep village_select sup full_name phone_resp `var'
+ *   keep village_select sup_label full_name phone_resp `var'
   
     * Generate an "issue" variable
 *    generate issue = "Missing"
@@ -154,7 +182,7 @@ misstable summarize, generate(missing)
 *******************************************************************************
 
 *foreach var of varlist village_select village_select_o hhid_village region departement commune village ///
-*            sup date arrondissement gps_collectlatitude gps_collectlongitude gps_collectaltitude gps_collectaccuracy description_village number_hh number_total ///
+*            sup_label date arrondissement gps_collectlatitude gps_collectlongitude gps_collectaltitude gps_collectaccuracy description_village number_hh number_total ///
 *            city_near q_24 q_25 q_26 q_27 q_28 q_29 q_30 ///
 *            q_31 q_32 q_33 q_34 q_35_check q_37 q_39 q_41 q_43 q_44 q_45 q_46 q_47 q_48 q_49 ///
 *            q_50 q_51 q_52 q_53 q_54 q_55 q_57 q_58 q60 q61 q62 q63_1 q63_2 q63_3 q63_4 q63_5 ///
@@ -168,7 +196,7 @@ misstable summarize, generate(missing)
 *    keep if missing`var' == 1
   
     * Keep relevant variables
-*    keep village_select sup full_name phone_resp `var'
+*    keep village_select sup_label full_name phone_resp `var'
   
     * Generate an "issue" variable
 *    generate issue = "Missing"
@@ -187,7 +215,51 @@ misstable summarize, generate(missing)
 *    restore
 *}
 
+*** check if the number of households is less than 1000 *** 
+preserve 
 
+keep if number_hh < 0 | number_hh > 1000 
+
+keep hhid_village sup_label full_name phone_resp number_hh 
+
+* Generate an "issue" variable
+generate issue = "Unreasonable value"
+	
+* Generate name of variable issue 
+gen issue_variable_name = "number_hh"
+	
+* Rename variable with issue 
+rename number_hh print_issue
+  
+* Export the dataset to Excel
+if _N > 0 {
+	save "$community\Issue_Community_number_hh.dta", replace
+	}
+
+restore
+
+*** check if the number of residents is less than than 10000 ***
+preserve 
+
+keep if number_hh < 0 | number_hh > 10000 
+
+keep hhid_village sup_label full_name phone_resp number_total 
+
+* Generate an "issue" variable
+generate issue = "Unreasonable value"
+	
+* Generate name of variable issue 
+gen issue_variable_name = "number_total"
+	
+* Rename variable with issue 
+rename number_total print_issue
+  
+* Export the dataset to Excel
+if _N > 0 {
+	save "$community\Issue_Community_number_total.dta", replace
+	}
+
+restore
 
 *** b. Check if the values of these variables are 0 or 1 ***
 
@@ -195,9 +267,9 @@ foreach var of varlist q_24 q_25 q_26 q_27 q_28 ///
                        q_29 q_30 q_31 q_32 q_33 q_34 q_35_check q_37 q_39 q_41 { 
 	preserve	
 
-    keep if `var' < 0 & `var' > 1
+    keep if `var' < 0 | `var' > 1
 	
-	keep hhid_village sup full_name phone_resp `var'
+	keep hhid_village sup_label full_name phone_resp `var'
   
     * Generate an "issue" variable
     generate issue = "Not zero or one"
@@ -210,7 +282,7 @@ foreach var of varlist q_24 q_25 q_26 q_27 q_28 ///
   
     * Export the dataset to Excel
 	if _N > 0 {
-    save "$community\Issue_Community_`var'.dta" if _N > 0, replace
+    save "$community\Issue_Community_`var'.dta", replace
 	}
     restore
 	
@@ -229,7 +301,7 @@ foreach var of varlist q_43 q_44 {
 	
     *keep if `var' < 0 | `var' > 45 | `var' != -9
 	
-	keep hhid_village sup full_name phone_resp `var'
+	keep hhid_village sup_label full_name phone_resp `var'
   
     * Generate an "issue" variable
     generate issue = "Unreasonable Value"
@@ -258,7 +330,7 @@ foreach var of varlist q_45 q_46 {
 	replace ind_issue = 1 if `var' > 300
 	keep if ind_issue == 1 
 	
-	keep hhid_village sup full_name phone_resp `var'
+	keep hhid_village sup_label full_name phone_resp `var'
   
     * Generate an "issue" variable
     generate issue = "Unreasonable Value"
@@ -287,7 +359,7 @@ foreach var of varlist q_47 q_48 q_50 q_51{
 	replace ind_issue = 1 if `var' > 100
 	keep if ind_issue == 1 
 
-	keep hhid_village sup full_name phone_resp `var'
+	keep hhid_village sup_label full_name phone_resp `var'
   
     * Generate an "issue" variable
     generate issue = "Unreasonable Value"
@@ -315,7 +387,7 @@ foreach var of varlist q_47 q_48 q_50 q_51{
 	replace ind_issue = 1 if q_49 > 10
 	keep if ind_issue == 1
 	
-	keep hhid_village sup full_name phone_resp q_49 
+	keep hhid_village sup_label full_name phone_resp q_49 
   
     * Generate an "issue" variable
     generate issue = "Unreasonable Value"
@@ -332,62 +404,6 @@ foreach var of varlist q_47 q_48 q_50 q_51{
 	}
     restore
 	
-*** i. q_24 should be answered when q_23 = 1, response should be 0 or 1 ***
-
-*** Part 01: Check if there are any accidental answers for q_24 ***
-	*Note:
-		* The expression q_23 == 1 & (q_24 != 0 & q_24 != 1) assigns a value of 1 to ind_var if q_23 is equal to 1 and q_24 is not equal to 0 and not equal to 1. 
-		* Otherwise, ind_var will be assigned a value of 0.
-preserve
-* Step 1: Generate the indicator variable
-generate ind_var = (q_23 != 1 & (q_24 == 0 | q_24 == 1))
-
-
-* Step 2: Export to Excel only if there are observations meeting the conditions
-if ind_var == 1 {
-	
-	* Rename variable with issue 
-	rename q_23 print_issue
-  
-  	* Generate name of variable issue 
-	gen issue_variable_name = "q_23 and q_24"
-	
-	* Note issue type 
-	generate issue = "Incorreclty answered q_24"
-	
-	keep hhid_village sup full_name phone_resp issue issue_variable_name print_issue
-    save "$community\Issue_Community_q_24_incorrectresponse.dta", replace
-} 
-
- restore 
- 
-*** Part 02: Check if there are any missing answers for q_24 ***
-
-preserve
-
-* Step 1: Generate the indicator variable
-generate ind_var = missing(q_24)
-
-* Step 2: Export to Excel only if there are observations meeting the conditions
-if _N > 0 {
-    
-    * Rename variable with issue 
-    rename q_24 print_issue 
-    
-    * Generate name of variable issue 
-    gen issue_variable_name = "q_24"
-    
-    * Describe issue 
-    generate issue = "Missing q_24"
-    
-    keep hhid_village sup full_name phone_resp issue print_issue issue_variable_name
-    save "$community\Issue_Community_q_24_noresponse.dta", replace
-}
-
-restore
-
- 
-
 *** k.	q_28a, 29a, 30a, 31a, 32a, 33a should be answered when q_28 29 30 31 32 33 = 1, response should be between 0 and 2000 or -9  ***
 
  *** PART 01 ***
@@ -408,7 +424,7 @@ restore
 		
 	rename q_`num'a print_issue
 	
-	keep hhid_village sup full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
 	
      *Step 2: Export to Excel only if there are observations meeting the conditions
     if _N > 0 {
@@ -435,15 +451,13 @@ foreach num of numlist 28 29 30 31 32 33{
 		
 	rename q_`num'a print_issue
 	
-	keep hhid_village sup full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
     if _N > 0 {
         save "$community\Issue_Community_q_`num'a_extraresponse.dta", replace
     }
     
      restore
 }
-
-
 
 *** i.	Q_36 should be answered when q_35_check = 1, response should be text ***
 
@@ -457,7 +471,7 @@ preserve
 	generate issue = "Missing"
 	generate issue_variable_name = "q_36"
 	rename q_36 print_issue
-	keep hhid_village sup full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
     if _N > 0 {
         save "$community\Issue_Community_q36.dta", replace
     }
@@ -473,7 +487,7 @@ preserve
 	generate issue = "Missing"
 	generate issue_variable_name = "q_35"
 	rename q_35 print_issue
-	keep hhid_village sup full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
 	if _N > 0 {
     save "$community\Issue_Community_q35_noresponse.dta", replace
 	}
@@ -494,7 +508,7 @@ restore
 	generate issue = "Missing"
 	generate issue_variable_name = "`var1'"
 	rename q_`num' print_issue 
-	keep hhid_village sup full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
     if _N > 0 {
     save "$community\Issue_Community_`var1'_norespone.dta", replace
 }
@@ -515,7 +529,7 @@ restore
 	generate issue = "Extra response" 
 	generate issue_variable_name = "`var1'"
 	rename q_`num' print_issue 
-	keep hhid_village sup full_name phone_resp issue print_issue issue_variable_name	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name	
 	if _N > 0 {
     save "$community\Issue_Community_`var1'_extraresponse.dta", replace
 }
@@ -527,31 +541,289 @@ restore
 
 preserve 
 
+	tostring q62_o, replace 
+	
 	gen ind_var = 0
     replace ind_var = 1 if q62 == -95 & length(trim(q62_o )) == 0
 	keep if ind_var == 1
 	generate issue = "Missing" 
 	generate issue_variable_name = "q62_o"
 	rename q62_o print_issue 
-	keep hhid_village sup full_name phone_resp issue print_issue issue_variable_name	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name	
 	if _N > 0 {
         save "$community\Issue_Community_q62_noresponse.dta", replace
     }
 	
 restore 
 
+*** question 63's should be less than or equal to 5000 *** 
+forvalues i = 1/10 {
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_`i' < 0 & q63_`i' != -9
+	replace ind_var = 1 if q63_`i' > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_`i'"
+		
+	rename q63_`i' print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_`i'.dta", replace
+    }
+    
+     restore
+}
+
+
+*** question 64 should be less than or equal to 5000 *** 
+
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q64 < 0 & q64 != -9
+	replace ind_var = 1 if q64 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q64"
+		
+	rename q64 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q64.dta", replace
+    }
+    
+	restore
+	
+*** question 65 should be less than or equal to 5000 *** 
+
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q65 < 0 & q65 != -9
+	replace ind_var = 1 if q65 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q65"
+		
+	rename q65 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q65.dta", replace
+    }
+    
+	restore
+
+*** question 66 should be less than or equal to 5000 *** 
+
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q66 < 0 & q66 != -9
+	replace ind_var = 1 if q66 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q66"
+		
+	rename q66 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q66.dta", replace
+    }
+    
+	restore
+	
+*** check that unit conversions are between 0 and 1000 *** 
+*** want to keep any -9s or 9's, 0.9's, 99's or 999's ***
+*** cannot have missing values here *** 
+
+forvalues i = 1/11 {
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_`i' < 0 
+	replace ind_var = 1 if unit_convert_`i' > 1000
+	replace ind_var = 1 if unit_convert_`i' == 9 
+	replace ind_var = 1 if unit_convert_`i' == 99
+	replace ind_var = 1 if unit_convert_`i' == 999
+	replace ind_var = 1 if unit_convert_`i' == 0.9 
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_`i'"
+		
+	rename unit_convert_`i' print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_`i'.dta", replace
+    }
+    
+     restore
+}
+		
+	
+*** check if wealth_stratum_02 is 1 or 2 *** 	
+forvalues i = 1/20 {
+
+	preserve	
+
+    keep if wealth_stratum_02_`i' < 1 | wealth_stratum_02_`i' > 2
+	
+	keep hhid_village sup_label full_name phone_resp wealth_stratum_02_`i'
+  
+    * Generate an "issue" variable
+    generate issue = "Not one or two"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "wealth_stratum_02_`i'"
+	
+	* Rename variable with issue 
+	rename wealth_stratum_02_`i' print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_wealth_stratum_02_`i'.dta", replace
+	}
+    restore
+
+}
+
+	
+*** check if wealth_stratum_03 is 0 or 1 *** 
+forvalues i = 1/20 {
+
+	preserve	
+
+    keep if wealth_stratum_03_`i' < 0 | wealth_stratum_03_`i' > 1
+	
+	keep hhid_village sup_label full_name phone_resp wealth_stratum_03_`i'
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "wealth_stratum_03_`i'"
+	
+	* Rename variable with issue 
+	rename wealth_stratum_03_`i' print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_wealth_stratum_03_`i'.dta", replace
+	}
+    restore
+
+}
+
+*** check that replacement households are entered ***
+*** at least three in each category ***  
+forvalues i = 1/3 {
+	
+	preserve 
+	
+	keep if new_household_1_`i' == ""
+	
+	keep hhid_village sup_label full_name phone_resp new_household_1_`i'
+  
+    * Generate an "issue" variable
+    generate issue = "Missing replacement hosuehold"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "new_household_1_`i'"
+	
+	* Rename variable with issue 
+	rename new_household_1_`i' print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_new_household_1_`i'.dta", replace
+	}
+    restore
+}	
+
+forvalues i = 1/3 {
+	
+	preserve 
+	
+	keep if new_household_2_`i' == ""
+	
+	keep hhid_village sup_label full_name phone_resp new_household_2_`i'
+  
+    * Generate an "issue" variable
+    generate issue = "Missing replacement hosuehold"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "new_household_2_`i'"
+	
+	* Rename variable with issue 
+	rename new_household_2_`i' print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_new_household_2_`i'.dta", replace
+	}
+    restore
+}	
 **** create one output issue file ***
 
 ****************** LOOK IN FOLDER AND SEE WHICH OUTPUT ISSUE FILES THERE ARE *******
 ****************** INCLUDE ALL NEW FILES IN THE FOLDER BELOW *************
 
-use "$community\Issue_Community_q_31a_noresponse.dta", clear 
+use "$community\Issue_Community_number_hh.dta", clear 
+append using "$community\Issue_Community_number_total.dta" 
 append using "$community\Issue_Community_q_43.dta"
-append using "$community\Issue_Community_q_44.dta" 
-append using "$community\Issue_Community_q_45.dta" 
-append using "$community\Issue_Community_q_49.dta" 
-append using "$community\Issue_Community_q_58.dta" 
+append using "$community\Issue_Community_q64.dta"
+append using "$community\Issue_Community_q66.dta"
+append using "$community\Issue_Community_unit_convert_1.dta"
+append using "$community\Issue_Community_unit_convert_2.dta"
+append using "$community\Issue_Community_unit_convert_3.dta"
+append using "$community\Issue_Community_unit_convert_4.dta"
+append using "$community\Issue_Community_unit_convert_5.dta"
+append using "$community\Issue_Community_unit_convert_6.dta"
+append using "$community\Issue_Community_unit_convert_7.dta"
+append using "$community\Issue_Community_unit_convert_9.dta"
+append using "$community\Issue_Community_unit_convert_11.dta"
 
 **************** UPDATE DATE IN FILE NAME ***********************
-*export excel using "$issues\Community_Issues_6Feb2024.xlsx", firstrow(variables)  
+export excel using "$community\Community_Issues_24Jan2025.xlsx", firstrow(variables)  
 

@@ -53,7 +53,7 @@ global enum_observations "$master\Data Management\Output\Data Quality Checks\Mid
 **************************** DELETE LATER ****************************
 * Import PILOT household data - just to test the script 
 
-import delimited "$data\DISES_Enquête ménage midline VF_WIDE.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Enquête ménage midline VF_WIDE - Copy.csv", clear varnames(1) bindquote(strict)
 
 **************************** Import household data ****************************
 
@@ -71,9 +71,19 @@ import delimited "$data\DISES_Enquête ménage midline VF_WIDE.csv", clear varna
 rename hh_size_actual _household_roster_count
 rename hhid_village villageid
 rename hh_global_id hhid
+
+foreach i of numlist 1/3 {
+    capture rename goodsindex_`i' goodsinex_`i' 
+}
+
 foreach i of numlist 1/55 {
     capture rename age_`i' hh_age_`i'
 }
+
+
+************************** drop missing consents *************************
+
+drop if consent == 2 
 
 **************************** capture label variables ****************************
 * Note: we label location and respondents
@@ -869,66 +879,40 @@ restore
 
 *need to confirm these dropped vars 
 
-/*
+
+
+*** Locate HHs with missing hhids
 
 forvalues i=1/28 {
 
     preserve 
 
 	*** drop no consent households *** 
-	drop if consent == 0 
+	keep if consent == 0 
 	
+    local hh_age hh_age_`i'
+	*** generate indicator variable ***
 	gen ind_var = 0
-    replace ind_var = 1 if hh_name_`i' == "."  
+    replace ind_var = 1  if `hh_age' < 0 | `hh_age' > 90    
  	replace ind_var = 0 if _household_roster_count < `i'
    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
-	generate issue =  "Missing value"
-	generate issue_variable_name = "hh_name_`i'"
-	rename hh_name_`i' print_issue 
+	generate issue =  "Unreasonable value"
+	generate issue_variable_name = "hh_age_`i'"
+	rename `hh_age' print_issue 
 	tostring(print_issue), replace
 	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
-        save "$household_roster\Issue_Household_hh_name_`i'.dta", replace
+        save "$household_roster\Issue_Household_`hh_age'.dta", replace
     }
   
     restore
 }
-*/
 
-/*
-forvalues i=1/28 {
 
-    preserve 
-
-	*** drop no consent households *** 
-	drop if consent == 0 
-	 
-	tostring(hh_surname_`i'), replace 
-	
-	gen ind_var = 0
-    replace ind_var = 1 if hh_surname_`i' == "."  
- 	replace ind_var = 0 if _household_roster_count < `i'
-   
-    	* keep and add variables to export *
-	keep if ind_var == 1 	
-	generate issue =  "Missing value"
-	generate issue_variable_name = "hh_surname_`i'"
-	rename hh_surname_`i' print_issue 
-	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-	
-    * Export the dataset to Excel conditional on there being an issue
-    if _N > 0 {
-        save "$household_roster\Issue_Household_hh_surname_`i'.dta", replace
-    }
-  
-    restore
-}
-*/
 
 ***	i.	Age needs to be between 0 and 90 ***
 *** I realized these checks were picking up the household that did not give consent ***
@@ -1625,8 +1609,8 @@ preserve
 }
 
 *** viii.	agri_income_23 should be between 0 and 1000000000 *** 
-
-forvalues i = 1/4 {
+*Note: check max i value
+forvalues i = 1/3 {
 	preserve
      
     keep if agri_income_23_`i' < 0 | agri_income_23_`i' > 1000000000
@@ -1799,87 +1783,6 @@ if _N > 0 {
 		save "$income\Issue_expenses_goods_t", replace
 }
 
-restore
-
-****************************************** PUBLIC GOODS GAME ***********************************
-
-***	i.	montant_02 should be less than 1200 ***
-***	ii.	face_13 should be less than 1200 ***
-
-foreach var of varlist montant_02 face_13  {
-preserve
-    keep if `var' != . & `var' > 1200
-	generate issue = "Unreasonable value"
-	generate issue_variable_name = "`var'"
-	rename `var' print_issue 
-	tostring(print_issue), replace
-	if _N > 0 {
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-		save "$public_goods\Issue_`var'", replace
-}
-restore
-}
-
-
-***	iii. montant_05 should be less than 1000 ***
-***	iv.	face_04 should be less 1000 ***
-
-foreach var of varlist montant_05 face_04 {
-preserve
-
-	keep if `var' != . & `var' > 1000
-	generate issue = "Unreasonable value"
-	generate issue_variable_name = "`var'"
-	rename `var' print_issue 
-	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-	if _N > 0 {
-		save "$public_goods\Issue_`var'", replace
-}
-restore
-}
-
-***  4.	QUESTIONS WITH DEPENDENCIES
-***	a.	starting information ***
-***	i.	sup_text should be answered when sup = -777, response should be text ***
-
-preserve
- 
-	gen ind_var = 0
-	tostring(sup), replace
-	
-    replace ind_var = 1 if sup == "-777" & missing(sup_txt)
-	keep if ind_var == 1 
-	
-	generate issue = "Missing" 
-	generate issue_variable_name = "sup_txt"
-	rename sup_txt print_issue 
-	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-	if _N > 0 {
-		save "$village_observations\Issue_sup_txt_missing", replace
-}
-restore
-
-
-***	ii.	enqu_text should be answered when enqu = -777, response should be text 
-**# Bookmark #4 - verify if changing enqu_txt to a string is OK
-
-preserve 
-	gen ind_var = 0
-	tostring(enqu), replace
-	tostring(enqu_txt), replace
-	
-	
-    replace ind_var = 1 if enqu == "-777" & missing(enqu_txt) 
-	keep if ind_var == 1 
-	generate issue_variable_name = "enqu_txt"
-	rename enqu_txt print_issue 
-	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-	if _N > 0 {
-		save "$village_observations\Issue_enqu_txt_missing", replace
-}
 restore
 
 
@@ -2232,8 +2135,8 @@ restore
 *** The questions are for each activity in the water and should be checked ***
 *** in separate files for unreasonable values individually for presentation *** 
 
-
-forvalues i = 1/28 {
+*Note: check max i value
+forvalues i = 1/6 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2365,6 +2268,8 @@ restore
 
 }
 
+*KRM - missing hh_13_`i'_7
+/*
 forvalues i = 1/28 {
     preserve
     local hh_10 hh_10_`i'
@@ -2386,6 +2291,7 @@ forvalues i = 1/28 {
 restore
 
 }
+*/
 
 ***	xv.	hh_13_o should be answered when hh_12_a = 1, should be between 0 and 168 or -9 ***
 
@@ -2715,8 +2621,7 @@ restore
 
 
 *** xxvii.	hh_21 should be answered when hh_10 is greater than 0, should be between 0 and 168 or -9 ***  
-**# Bookmark #1  again, double nested loop, just want you to look through it:))
-*** I also decided to break this one up so we have different files for each sub part *** 
+
 
 forvalues i = 1/28 {
     preserve
@@ -2850,6 +2755,9 @@ restore
 
 }
 
+*KRM - missing hh_21_`i'_7
+
+/*
 forvalues i = 1/28 {
     preserve
     local hh_10 hh_10_`i'
@@ -2871,6 +2779,7 @@ forvalues i = 1/28 {
 restore
 
 }
+*/
 
 
 ***	xxviii.	hh_21_o should be answered when hh_20_a = 1
@@ -3067,6 +2976,8 @@ restore
 
 }
 
+
+
 *** 3.	hh_29 should be answered when hh_26 = 1 ***
 
 forvalues i = 1/28 {
@@ -3114,6 +3025,8 @@ preserve
 restore
 
 }
+
+
 
 *** 5.	hh_30 should be answered when hh_26 = 1 ***
 
@@ -3163,6 +3076,7 @@ restore
 
 }
 
+
 ***	7.	hh_32 should be answered when hh_26 = 1 ***
 
 
@@ -3191,7 +3105,8 @@ restore
 
 
 ***	8.	hh_33 should be answered when hh_26 = 1 and hh_32 = 1 ***
-
+* KRM - hh_33_ not present 
+/*
 forvalues i = 1/28 {
 preserve
 	local hh_33 hh_33_`i'
@@ -3215,6 +3130,30 @@ preserve
 restore
 
 }
+*/
+
+*** Block 3: hh_34 should be answered when hh_32 = 2 ***
+forvalues i = 1/28 {
+    preserve
+    local hh_34 hh_34_`i'
+    local hh_32 hh_32_`i'
+
+    gen ind_var = 0
+    keep if `hh_32' == 2
+    replace ind_var = 1 if missing(`hh_34')
+    keep if ind_var == 1
+
+    generate issue = "Missing"
+    generate issue_variable_name = "`hh_34'"
+    rename `hh_34' print_issue
+    tostring(print_issue), replace
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+    if _N > 0 {
+        save "$household_roster/Issue_`hh_34'", replace
+    }
+    restore
+}
+
 
 *** 9.	hh_34 should be answered when hh_32 = 0 ***
 
@@ -3415,54 +3354,19 @@ forvalues i = 1/28 {
     restore
 }
 
-*** Block 2: hh_29_o should be answered when hh_29 = 99 ***
-forvalues i = 1/28 {
-    preserve
-    local hh_29 hh_29_`i'
-    local hh_29_o hh_29_o_`i'
-
-    gen ind_var = 0
-    keep if `hh_29' == 99
-    replace ind_var = 1 if missing(`hh_29_o')
-    keep if ind_var == 1
-
-    generate issue = "Missing"
-    generate issue_variable_name = "`hh_29_o'"
-    rename `hh_29_o' print_issue
-    tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-    if _N > 0 {
-        save "$household_roster/Issue_`hh_29_o'", replace
-    }
-    restore
-}
-
-*** Block 3: hh_34 should be answered when hh_32 = 2 ***
-forvalues i = 1/28 {
-    preserve
-    local hh_34 hh_34_`i'
-    local hh_32 hh_32_`i'
-
-    gen ind_var = 0
-    keep if `hh_32' == 2
-    replace ind_var = 1 if missing(`hh_34')
-    keep if ind_var == 1
-
-    generate issue = "Missing"
-    generate issue_variable_name = "`hh_34'"
-    rename `hh_34' print_issue
-    tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-    if _N > 0 {
-        save "$household_roster/Issue_`hh_34'", replace
-    }
-    restore
-}
-
-
+*Issue - hh_23_3 has a value it shouldn't 
 *** 1. hh_35 should be answered when hh_23 = 1 ***
+/*
 forvalues i = 1/28 {
     preserve
+	
+	destring hh_23_`i', replace
+
+    forvalues j = 1/5 {
+        cap destring hh_23_`j'_`i', replace
+    }
+	
+	cap destring hh_23_3, replace 
     local hh_35 hh_35_`i'
     local hh_23 hh_23_`i'
 
@@ -3481,6 +3385,9 @@ forvalues i = 1/28 {
     }
     restore
 }
+*/
+
+
 
 *** 2. hh_43 should be answered when hh_42 = 1 ***
 forvalues i = 1/28 {
@@ -3570,71 +3477,30 @@ forvalues i = 1/28 {
     restore
 }
 
-*** 6. hh_36 should be answered when hh_32 = 1 ***
+*KRM - idk about this so double check
+*** 6. hh_47_oth should be answered when hh_47_g_ is selected ***
 forvalues i = 1/28 {
     preserve
-    local hh_36 hh_36_`i'
-    local hh_32 hh_32_`i'
+    local hh_47_oth hh_47_oth_`i'
+    local hh_47_g hh_47_g_`i'
 
     gen ind_var = 0
-    keep if `hh_32' == 1
-    replace ind_var = 1 if missing(`hh_36')
+	drop if missing(`hh_47_g')
+    keep if `hh_47_g' != 0
+    replace ind_var = 1 if missing(`hh_47_oth')
     keep if ind_var == 1
 
     generate issue = "Missing"
-    generate issue_variable_name = "`hh_36'"
-    rename `hh_36' print_issue
+    generate issue_variable_name = "`hh_47_oth'"
+    rename `hh_47_oth' print_issue
     tostring(print_issue), replace
     keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
     if _N > 0 {
-        save "$household_roster\Issue_`hh_36'", replace
+        save "$household_roster\Issue_`hh_47_oth'", replace
     }
     restore
 }
 
-*** 7. hh_31 should be answered when hh_30 = 1 ***
-forvalues i = 1/28 {
-    preserve
-    local hh_31 hh_31_`i'
-    local hh_30 hh_30_`i'
-
-    gen ind_var = 0
-    keep if `hh_30' == 1
-    replace ind_var = 1 if missing(`hh_31')
-    keep if ind_var == 1
-
-    generate issue = "Missing"
-    generate issue_variable_name = "`hh_31'"
-    rename `hh_31' print_issue
-    tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-    if _N > 0 {
-        save "$household_roster\Issue_`hh_31'", replace
-    }
-    restore
-}
-
-*** 8. hh_28 should be answered when hh_27 = 1 ***
-forvalues i = 1/28 {
-    preserve
-    local hh_28 hh_28_`i'
-    local hh_27 hh_27_`i'
-
-    gen ind_var = 0
-    keep if `hh_27' == 1
-    replace ind_var = 1 if missing(`hh_28')
-    keep if ind_var == 1
-
-    generate issue = "Missing"
-    generate issue_variable_name = "`hh_28'"
-    rename `hh_28' print_issue
-    tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-    if _N > 0 {
-        save "$household_roster\Issue_`hh_28'", replace
-    }
-    restore
-}
 
 
 
@@ -4167,34 +4033,6 @@ forvalues i=1/28 {
     restore
 }
 
-********** DROPPED VAR **************
-
-// forvalues i=1/28 {
-//
-//     preserve 
-//
-// 	*** drop no consent households *** 
-// 	drop if consent == 0 
-//	
-// 	gen ind_var = 0
-//     replace ind_var = 1 if health_5_7_`i' == .  
-//  	replace ind_var = 0 if _household_roster_count < `i'
-//   
-//     	* keep and add variables to export *
-// 	keep if ind_var == 1 	
-// 	generate issue =  "Missing value"
-// 	generate issue_variable_name = "health_5_7_`i'"
-// 	rename health_5_7_`i' print_issue 
-// 	tostring(print_issue), replace
-// 	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-//	
-//     * Export the dataset to Excel conditional on there being an issue
-//     if _N > 0 {
-//         save "$health\Issue_Household_health_5_7_`i'.dta", replace
-//     }
-//  
-//     restore
-// }
 
 forvalues i=1/28 {
 
@@ -7511,9 +7349,10 @@ preserve
 restore
 
 *** check that agri_income_13 is not missing ***
-*UPDATE
-/*
-forvalues i = 1/5 {
+*Note: check max i value 
+
+
+forvalues i = 1/2 {
 	preserve 
 
 	tostring(agri_income_13_`i'), replace 
@@ -7536,12 +7375,13 @@ forvalues i = 1/5 {
 
 	restore
 } 
-*/
+
+
 
 
 *** xx.	agri_income_13_o should be answered when animals_sales_o = 1 ***
 * UPDATE
-/*
+
 preserve 
 
 	*** generate indicator variable ***
@@ -8251,34 +8091,6 @@ forvalues i = 1/1 {
 
 	restore
 }
-
-*** DROPPED VAR ***
-
-// *** check if agri_income_44 is missing ***
-// forvalues i = 1/2 {
-// 	preserve 
-//
-// 	*** limit sample to agri_income_40 = 1 ***
-// 	keep if agri_income_40 == 1  
-//
-// 	*** generate indicator variable ***
-// 	gen ind_var = 0 
-// 	replace ind_var = 1 if agri_income_44_`i' == .
-// 	replace ind_var = 0 if loanindex_`i' == . 
-//
-// 	*** keep and add variables to export ***
-// 	keep if ind_var == 1 
-// 	generate issue = "Missing"
-// 	generate issue_variable_name = "agri_income_44_`i'"
-// 	rename agri_income_44_`i' print_issue 
-// 	tostring(print_issue), replace 
-// 	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-// 	if _N > 0 {
-// 		save "$income\Issue_agri_income_44_`i'.dta", replace 
-// 	}
-//
-// 	restore
-// }
 
 *** check if product_divers is missing ***
 

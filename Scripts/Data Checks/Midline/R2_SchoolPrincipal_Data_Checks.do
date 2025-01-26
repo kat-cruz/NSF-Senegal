@@ -30,7 +30,7 @@ global data "$master\_CRDES_RawData\Midline\Principal_Survey_Data"
 *** Import school principal survey data ***
 **************************************************
 
-import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_23Jan.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_26Jan.csv", clear varnames(1) bindquote(strict)
 
 *** label variables ***
 label variable consent_obtain "Etes-vous d'accord de participer afin que je puisse poursuivre avec nos questions ?" 
@@ -130,11 +130,11 @@ label define absenteeism_reasons 1 "Mauvaise santé" 2 "Tâches ménagères (non
 
 *** add value labels to variables ***
 label values consent_obtain respondent_is_director school_children_water_collection school_reading_french school_reading_local school_computer_access school_meal_program school_council council_chief_involvement  schistosomiasis_treatment_minist yesno
-label values respondent_is_director not_director
+label values respondent_is_not_director not_director
 label values respondent_other_role respondent_position
 label values respondent_gender gender
 label values school_water_main water_source
-label values main_absenteeism_reasons absenteeism_top_reason absenteeism_reasons
+// label values main_absenteeism_reasons absenteeism_top_reason absenteeism_reasons
 label values schistosomiasis_problem absenteeism_problem likert_scale
 label values peak_schistosomiasis_month months
 label values schistosomiasis_primary_effect schisto_impact
@@ -154,7 +154,7 @@ misstable summarize, generate(missing_)
 local required_vars village_select sup consent_obtain respondent_is_director ///
     geo_locaccuracy geo_localtitude geo_loclatitude geo_loclongitude ///
     respondent_name respondent_phone_primary respondent_gender respondent_age ///
-    director_experience_general director_experience_specific school_water_main ///
+    school_water_main ///
     school_distance_river school_children_water_collection ///
     school_reading_french school_reading_local school_computer_access ///
     school_meal_program school_teachers school_staff_paid_non_teaching ///
@@ -398,7 +398,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if respondent_is_director == 1 & missing(director_experience_general)
 keep if ind_issue == 1
-generate issue = "Missing general director experience"
+generate issue = "Missing general experience as director when respondent is a director"
 generate issue_variable_name = "director_experience_general"
 rename director_experience_general print_issue
 
@@ -408,12 +408,12 @@ if _N > 0 {
 }
 restore
 
-* 7. Check if "director_experience_specific" is missing or inconsistent when "respondent_is_director" = 1
+* 7. Check if "director_experience_specific" is missing when "respondent_is_director" = 1
 preserve
 gen ind_issue = .
-replace ind_issue = 1 if respondent_is_director == 1 & (missing(director_experience_specific) | director_experience_specific > director_experience_general)
+replace ind_issue = 1 if respondent_is_director == 1 & missing(director_experience_specific)
 keep if ind_issue == 1
-generate issue = "Missing or inconsistent specific director experience"
+generate issue = "Missing specific experience at this school when respondent is a director"
 generate issue_variable_name = "director_experience_specific"
 rename director_experience_specific print_issue
 
@@ -422,6 +422,23 @@ if _N > 0 {
     save "$schoolprincipal\Issue_SchoolPrincipal_SpecificExperienceMissing.dta", replace
 }
 restore
+
+* 8. Check if "director_experience_specific" exceeds "director_experience_general"
+preserve
+gen ind_issue = .
+replace ind_issue = 1 if respondent_is_director == 1 & director_experience_specific > director_experience_general
+keep if ind_issue == 1
+generate issue = "Specific experience exceeds general experience for director"
+generate issue_variable_name = "director_experience_specific"
+rename director_experience_specific print_issue
+
+* Export flagged data
+if _N > 0 {
+    save "$schoolprincipal\Issue_SchoolPrincipal_SpecificExperienceExceedsGeneral.dta", replace
+}
+restore
+
+
 
 **************************************************
 *** SCHOOL FACILITIES SECTION CHECKS ***
@@ -584,8 +601,7 @@ restore
 **************************************************
 *** STUDENT ENROLLMENT SECTION CHECKS ***
 **************************************************
-
-* 1. Check if grade_loop variables are missing
+* Check if grade_loop variables are missing
 foreach var in grade_loop grade_loop_1 grade_loop_2 grade_loop_3 grade_loop_4 grade_loop_5 grade_loop_6 {
     preserve
     gen ind_issue = .
@@ -602,11 +618,11 @@ foreach var in grade_loop grade_loop_1 grade_loop_2 grade_loop_3 grade_loop_4 gr
     restore
 }
 
-* 2. Check if classroom counts are missing or invalid
+* Check if classroom counts are missing or invalid
 foreach var in classroom_count_1 classroom_count_2 classroom_count_3 classroom_count_4 classroom_count_5 classroom_count_6 {
     preserve
     gen ind_issue = .
-    replace ind_issue = 1 if missing(`var') | `var' <= 0
+    replace ind_issue = 1 if missing(`var') | `var' < 0
     keep if ind_issue == 1
     generate issue = "Missing or invalid classroom count"
     generate issue_variable_name = "`var'"
@@ -619,13 +635,29 @@ foreach var in classroom_count_1 classroom_count_2 classroom_count_3 classroom_c
     restore
 }
 
-* 3. Check enrollment and passing totals
+* Check enrollment and passing totals, considering zero classroom/grade counts
 foreach grade in 1 2 3 4 5 6 {
+    local classroom_count_var = "classroom_count_`grade'"
+    local grade_loop_var = "grade_loop_`grade'"
+
+    preserve
+    * Skip if both classroom count and grade loop are zero
+    drop if (`classroom_count_var' == 0 & `grade_loop_var' == 0)
+
     foreach class in 1 2 {
-        * Check enrollment_2024_total
         preserve
+        * Check classroom count to ensure valid range for this grade/class combination
+        keep if `class' <= `classroom_count_var' // Only keep observations where classroom count permits this class
+
+        * Skip checks for classes beyond the declared classroom count
+        if _N == 0 {
+            restore
+            continue
+        }
+
+        * Check enrollment_2024_total
         gen ind_issue = .
-        replace ind_issue = 1 if missing(enrollment_2024_total_`grade'_`class') | enrollment_2024_total_`grade'_`class' < 0
+        replace ind_issue = 1 if missing(enrollment_2024_total_`grade'_`class') & `classroom_count_var' > 0
         keep if ind_issue == 1
         generate issue = "Missing or invalid enrollment total"
         generate issue_variable_name = "enrollment_2024_total_`grade'_`class'"
@@ -640,7 +672,8 @@ foreach grade in 1 2 3 4 5 6 {
         * Check enrollment_2024_female
         preserve
         gen ind_issue = .
-        replace ind_issue = 1 if missing(enrollment_2024_female_`grade'_`class') | enrollment_2024_female_`grade'_`class' < 0 | enrollment_2024_female_`grade'_`class' > enrollment_2024_total_`grade'_`class'
+        replace ind_issue = 1 if missing(enrollment_2024_female_`grade'_`class') & `classroom_count_var' > 0
+        replace ind_issue = 1 if enrollment_2024_female_`grade'_`class' < 0 | enrollment_2024_female_`grade'_`class' > enrollment_2024_total_`grade'_`class'
         keep if ind_issue == 1
         generate issue = "Missing or invalid female enrollment count"
         generate issue_variable_name = "enrollment_2024_female_`grade'_`class'"
@@ -655,7 +688,8 @@ foreach grade in 1 2 3 4 5 6 {
         * Check passing_2024_total
         preserve
         gen ind_issue = .
-        replace ind_issue = 1 if missing(passing_2024_total_`grade'_`class') | passing_2024_total_`grade'_`class' < 0 | passing_2024_total_`grade'_`class' > enrollment_2024_total_`grade'_`class'
+        replace ind_issue = 1 if missing(passing_2024_total_`grade'_`class') & `classroom_count_var' > 0
+        replace ind_issue = 1 if passing_2024_total_`grade'_`class' < 0 | passing_2024_total_`grade'_`class' > enrollment_2024_total_`grade'_`class'
         keep if ind_issue == 1
         generate issue = "Missing or invalid passing total"
         generate issue_variable_name = "passing_2024_total_`grade'_`class'"
@@ -667,56 +701,28 @@ foreach grade in 1 2 3 4 5 6 {
         }
         restore
 
-        * Check passing_2024_female
-        preserve
-        gen ind_issue = .
-        replace ind_issue = 1 if missing(passing_2024_female_`grade'_`class') | passing_2024_female_`grade'_`class' < 0 | passing_2024_female_`grade'_`class' > passing_2024_total_`grade'_`class' | passing_2024_female_`grade'_`class' > enrollment_2024_female_`grade'_`class'
-        keep if ind_issue == 1
-        generate issue = "Missing or invalid female passing count"
-        generate issue_variable_name = "passing_2024_female_`grade'_`class'"
-        rename passing_2024_female_`grade'_`class' print_issue
-
-        * Export flagged data
-        if _N > 0 {
-            save "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G`grade'_C`class'.dta", replace
-        }
-        restore
-
-        * Check photo_enrollment_2024
-        preserve
-        gen ind_issue = .
-        replace ind_issue = 1 if missing(photo_enrollment_2024_`grade'_`class')
-        keep if ind_issue == 1
-        generate issue = "Missing photo of enrollment log"
-        generate issue_variable_name = "photo_enrollment_2024_`grade'_`class'"
-        rename photo_enrollment_2024_`grade'_`class' print_issue
-
-        * Export flagged data
-        if _N > 0 {
-            save "$schoolprincipal\Issue_StudentEnrollment_PhotoEnrollmentMissing_G`grade'_C`class'.dta", replace
-        }
-        restore
-    }
-}
-
-* 4. Check attendance for 2025
+* Check passing_2024_female
 foreach grade in 1 2 3 4 5 6 {
+    local classroom_count_var = "classroom_count_`grade'"
     foreach class in 1 2 {
         preserve
         gen ind_issue = .
-        replace ind_issue = 1 if missing(attendence_regularly_`grade'_`class') | (attendence_regularly_`grade'_`class' != 0 & attendence_regularly_`grade'_`class' != 1)
+        replace ind_issue = 1 if missing(passing_2024_female_`grade'_`class') & `classroom_count_var' > 0
+        replace ind_issue = 1 if passing_2024_female_`grade'_`class' < 0 | passing_2024_female_`grade'_`class' > passing_2024_total_`grade'_`class' | passing_2024_female_`grade'_`class' > enrollment_2024_female_`grade'_`class'
         keep if ind_issue == 1
-        generate issue = "Missing or invalid attendance recording indicator"
-        generate issue_variable_name = "attendence_regularly_`grade'_`class'"
-        rename attendence_regularly_`grade'_`class' print_issue
-
-        * Export flagged data
         if _N > 0 {
-            save "$schoolprincipal\Issue_StudentEnrollment_AttendanceRecordingInvalid_G`grade'_C`class'.dta", replace
+            generate issue = "Missing or invalid female passing count"
+            generate issue_variable_name = "passing_2024_female_`grade'_`class'"
+            rename passing_2024_female_`grade'_`class' print_issue
+
+            * Export flagged data
+            save "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G`grade'_C`class'.dta", replace
         }
         restore
     }
 }
+
+
 
 **************************************************
 *** SCHISTOSOMIASIS SECTION CHECKS ***

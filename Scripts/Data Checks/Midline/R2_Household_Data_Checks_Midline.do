@@ -53,7 +53,7 @@ global enum_observations "$master\Data Management\Output\Data Quality Checks\Mid
 **************************** DELETE LATER ****************************
 * Import PILOT household data - just to test the script 
 
-import delimited "$data\DISES_Enquête ménage midline VF_WIDE - Copy.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Enquête ménage midline VF_WIDE_27Jan.csv", clear varnames(1) bindquote(strict)
 
 **************************** Import household data ****************************
 
@@ -84,6 +84,23 @@ foreach i of numlist 1/55 {
 ************************** drop missing consents *************************
 
 drop if consent == 2 
+
+
+
+************************** check for missing hh members *************************
+
+
+*think of better check here
+/*
+gen missing_person = 0 // Initialize an error flag
+replace missing_person = 1 if age == . & fu_mem_id_4 > household_size // Flag unexpected missing values
+
+
+replace error_flag = 1 if left_household == 1 // Exclude individuals no longer in the household
+ */
+
+
+
 
 **************************** capture label variables ****************************
 * Note: we label location and respondents

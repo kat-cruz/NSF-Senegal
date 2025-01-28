@@ -105,14 +105,14 @@ duplicates drop
 
 * Save the list of midline `hhid_village`
 tempfile midline_villages
-save `midline_villages'
+save `midline_villages', replace
 
 import delimited "$data", clear varnames(1) bindquote(strict)
 rename hh_global_id hhid
 keep hhid attend_training who_attended_training
 drop if missing(hhid)
 tempfile midline_trained
-save `midline_trained'
+save `midline_trained', replace
 
 * Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
@@ -190,24 +190,69 @@ local hh_ratio = (`total_attend_hh' / `total_trained_hh') * 100
 ***************************************************
 * Export Results to Excel
 ***************************************************
+putexcel set "$dailyupdates\DISES_DailyChecks_27Jan.xlsx", replace
 
-* Initialize Excel file in the specified path
-putexcel set "$dailyupdates\DISES_DailyChecks.xlsx", replace
-
-* Write headers
+* Write headers for Revisit and Attrition Rates
 putexcel A1 = "Metric" B1 = "Value"
 
-* Write results
-putexcel A2 = "Total Trained Individuals (Baseline)" B2 = `total_trained_indiv'
-putexcel A3 = "Total Trained Individuals (Midline)" B3 = `total_training_id'
-putexcel A4 = "Individual-Level Ratio (%)" B4 = `indiv_ratio'
+* Load midline data
+import delimited "$data", clear varnames(1) bindquote(strict)
 
-putexcel A6 = "Total Trained Households (Baseline)" B6 = `total_trained_hh'
-putexcel A7 = "Total Trained Households with Attendance (Midline)" B7 = `total_attend_hh'
-putexcel A8 = "Household-Level Ratio (%)" B8 = `hh_ratio'
+egen midline_count = count(hh_global_id), by(hhid_village)
 
-* Confirm file saved
-di "Results saved to: $dailyupdates\DrBarrettDailyChecks.xlsx"
+* Create a variable counting households per village
+gen one = 1
+collapse (sum) one, by(hhid_village)
+rename one midline_count
 
+* Calculate revisit and attrition rates for each village
+gen revisit_rate = (midline_count / 20) * 100
+gen attrition_rate = 100 - revisit_rate
 
+* Calculate totals
+* Total households surveyed at midline
+egen total_midline = sum(midline_count)
+
+* Total revisit rate (overall)
+gen total_baseline = _N * 20  // Baseline households (20 per village)
+gen total_revisit_rate = (total_midline / total_baseline) * 100
+gen total_attrition_rate = 100 - total_revisit_rate
+
+* Export results to Excel
+putexcel A2 = "Total Households Surveyed at Midline" B2 = total_midline[1]
+putexcel A3 = "Total Revisit Rate (%)" B3 = total_revisit_rate[1]
+putexcel A4 = "Total Attrition Rate (%)" B4 = total_attrition_rate[1]
+
+* Load midline data
+import delimited "$data", clear varnames(1) bindquote(strict)
+
+* Generate indicator for different respondent
+gen different_respondent = (hh_name_complet_resp == "999")
+
+* Count total households retained
+count
+local total_households = r(N)
+
+* Count households with a different respondent
+count if different_respondent == 1
+local total_different_respondent = r(N)
+
+* Calculate share of households with a different respondent
+local share_different_respondent = (`total_different_respondent' / `total_households') * 100
+
+* Export results to Excel
+putexcel A6 = "Total Households Retained" B6 = `total_households'
+putexcel A7 = "Households with Different Respondent" B7 = `total_different_respondent'
+putexcel A8 = "Share of Households with Different Respondent (%)" B8 = `share_different_respondent'
+
+* Add the training attendance calculations here
+* Include individual-level and household-level ratios
+* Export their results after appending to the above Excel file
+putexcel A10 = "Total Trained Individuals (Baseline)" B10 = `total_trained_indiv'
+putexcel A11 = "Total Trained Individuals (Midline)" B11 = `total_training_id'
+putexcel A12 = "Individual-Level Ratio (%)" B12 = `indiv_ratio'
+
+putexcel A14 = "Total Individuals in Trained Households (Baseline)" B14 = `total_trained_hh'
+putexcel A15 = "Total Individuals in Trained Households Reporting Attendance (Midline)" B15 = `total_attend_hh'
+putexcel A16 = "Household-Level Ratio (%)" B16 = `hh_ratio'
 

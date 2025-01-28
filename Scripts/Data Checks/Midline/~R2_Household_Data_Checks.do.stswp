@@ -66,6 +66,7 @@ drop if status_consent_no == 2
 **************************** rename variables ****************************
 
 
+
 rename hh_size_actual _household_roster_count
 rename hhid_village villageid
 rename hh_global_id hhid

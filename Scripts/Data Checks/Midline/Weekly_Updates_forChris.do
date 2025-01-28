@@ -1,5 +1,4 @@
-*** File originally created By: Molly Doruska ***
-      *** Adapted by Kateri Mouawad & Alexander Mills***
+*** Created by Alexander Mills***
 	*** Updates recorded in GitHub ***
 *==============================================================================
 clear all
@@ -41,16 +40,16 @@ import delimited "$data", clear varnames(1) bindquote(strict)
 egen midline_count = count(hh_global_id), by(hhid_village)
 
 
-* Step 1: Create a variable counting households per village
+* Create a variable counting households per village
 gen one = 1
 collapse (sum) one, by(hhid_village)
 rename one midline_count
 
-* Step 2: Calculate revisit and attrition rates for each village
+* Calculate revisit and attrition rates for each village
 gen revisit_rate = (midline_count / 20) * 100
 gen attrition_rate = 100 - revisit_rate
 
-* Step 3: Calculate totals
+* Calculate totals
 * Total households surveyed at midline
 egen total_midline = sum(midline_count)
 
@@ -59,60 +58,72 @@ gen total_baseline = _N * 20  // Baseline households (20 per village)
 gen total_revisit_rate = (total_midline / total_baseline) * 100
 gen total_attrition_rate = 100 - total_revisit_rate
 
-* Step 4: Display the results
+* Display the results
 list hhid_village midline_count revisit_rate attrition_rate, sep(0)
 
-* Step 5: Display totals
+* Display totals
 di "Total Households Surveyed at Midline: " total_midline[1]
 di "Total Revisit Rate: " total_revisit_rate[1] "%"
 di "Total Attrition Rate: " total_attrition_rate[1] "%"
-
-
 
 ***************************************************
 
 * What share of households retained have a different respondent: *
 
 ***************************************************
-
-* Step 1: Load midline data
+* Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
 
-* Step 2: Generate indicator for different respondent
+* Generate indicator for different respondent
 gen different_respondent = (hh_name_complet_resp == "999")
 
-* Step 3: Count total households retained
+* Count total households retained
 count
 local total_households = r(N)
 
-* Step 4: Count households with a different respondent
+* Count households with a different respondent
 count if different_respondent == 1
 local total_different_respondent = r(N)
 
-* Step 5: Calculate share of households with a different respondent
+* Calculate share of households with a different respondent
 local share_different_respondent = (`total_different_respondent' / `total_households') * 100
 
-* Step 6: Display results
+* Display results
 di "Households with Different Respondent: `total_different_respondent'"
 di "Share of Households with Different Respondent: `share_different_respondent'%"
 
 ***************************************************
-
-* For responses to training questions *
-
+* Tracking Training Attendance Limited to Midline Villages
 ***************************************************
 
-* Step 1: Load midline data
+* Load midline data
+import delimited "$data", clear varnames(1) bindquote(strict)
+
+* Keep unique `hhid_village`
+keep hhid_village
+duplicates drop
+
+* Save the list of midline `hhid_village`
+tempfile midline_villages
+save `midline_villages'
+
+import delimited "$data", clear varnames(1) bindquote(strict)
+rename hh_global_id hhid
+keep hhid attend_training who_attended_training
+drop if missing(hhid)
+tempfile midline_trained
+save `midline_trained'
+
+* Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
 
 * Rename hh_global_id to hhid for consistency
 rename hh_global_id hhid
 
-* Filter only relevant training records
-keep if attend_training == 1 | who_attended_training == 1
+drop if missing(training_id)
 
 * Keep relevant variables
-keep hhid_village hhid training_id_* attend_training who_attended_training training_id training_id_*
+keep hhid training_id_* training_id training_id_*
 
 * Reshape training_id_* variables to long format
 reshape long training_id_, i(hhid) j(individ) string
@@ -125,136 +136,78 @@ rename individ_upper individ
 * Keep only records where training_id matches individ
 keep if training_id == individ
 
-* Save reshaped and filtered midline data
-save "$dailyupdates\reshaped_midline_trained_temp.dta", replace
-
-* Step 2: Filter baseline-trained for surveyed villages
-
-* Load baseline training data
-use "$training", clear
-
-* Filter for trained individuals
-keep if trained_indiv == 1
+merge 1:1 individ using "$training"
 
 * Create hhid_village by extracting the first 4 characters of hhid
 gen hhid_village = substr(hhid, 1, 4)
 
-* Save baseline-trained individuals
-save "$dailyupdates\baseline_trained_indiv.dta", replace
+* Rename the first _merge variable to preserve it
+rename _merge merge_individ
 
-* Load midline data to extract surveyed villages
-import delimited "$data", clear varnames(1) bindquote(strict)
+* Merge with midline `hhid_village`
+merge m:1 hhid_village using `midline_villages'
 
-* Keep unique hhid_village
-keep hhid_village
-duplicates drop
-
-* Save surveyed villages
-save "$dailyupdates\midline_surveyed_villages.dta", replace
-
-* Load baseline-trained individuals
-use "$dailyupdates\baseline_trained_indiv.dta", clear
-
-* Merge with midline-surveyed villages to filter trained individuals in surveyed villages
-merge m:1 hhid_village using "$dailyupdates\midline_surveyed_villages.dta"
-
-* Keep only matched records (baseline-trained individuals from surveyed villages)
+* Keep only matched rows (hhid_village that appear in midline)
 keep if _merge == 3
 drop _merge
 
-* Save filtered baseline-trained individuals
-save "$dailyupdates\baseline_trained_in_surveyed_villages.dta", replace
+* Rename the second _merge variable to preserve it
+//rename _merge merge_individ
 
-* Step 3: Compare baseline-trained with midline-trained individuals
-
-* Load reshaped midline-trained data
-use "$dailyupdates\reshaped_midline_trained_temp.dta", clear
-
-* Merge with baseline-trained individuals in surveyed villages
-merge m:1 individ using "$dailyupdates\baseline_trained_in_surveyed_villages.dta"
-
-* Generate match indicator
-gen match_training = (_merge == 3 & training_id_ == 1)
-
-* Calculate total matches
-count if match_training == 1
-local total_matches = r(N)
-
-* Calculate total baseline-trained individuals in surveyed villages
-use "$dailyupdates\baseline_trained_in_surveyed_villages.dta", clear
-count
-local total_baseline_trained = r(N)
-
-* Calculate match percentage
-local match_percentage = (`total_matches' / `total_baseline_trained') * 100
-
-* Step 4: Display results
-
-di "Total Baseline-Trained Individuals in Surveyed Villages: `total_baseline_trained'"
-di "Total Matches in Midline: `total_matches'"
-di "Match Percentage: `match_percentage'%"
+merge m:1 hhid using `midline_trained' 
 
 ***************************************************
-
-* Tracking Trained Households *
-
+* Calculate Individual-Level Ratio
 ***************************************************
 
-* Step 1: Load Baseline Training Data
-use "$training", clear
+* Count baseline-trained individuals
+count if trained_indiv == 1
+local total_trained_indiv = r(N)
 
-* Create `hhid_village` by extracting the first 4 characters of `hhid`
-gen hhid_village = substr(hhid, 1, 4)
+* Count baseline-trained individuals who reported midline training
+count if trained_indiv == 1 & training_id_ == 1
+local total_training_id = r(N)
 
-* Collapse to summarize training status at the household level
-collapse (max) trained_hh, by(hhid)
-
-* Save baseline-trained households
-save "$dailyupdates\baseline_trained_hh.dta", replace
-
-***************************************************
-
-* Step 2: Load Midline Data
-import delimited "$data", clear varnames(1) bindquote(strict)
-
-* Rename `hh_global_id` for consistency
-rename hh_global_id hhid
-
-* Save midline training data
-save "$dailyupdates\midline_training_hh.dta", replace
+* Calculate individual-level ratio
+local indiv_ratio = (`total_training_id' / `total_trained_indiv') * 100
 
 ***************************************************
-
-* Step 3: Merge and Generate Match Indicators
-* Load baseline-trained households
-use "$dailyupdates\baseline_trained_hh.dta", clear
-
-* Merge baseline with midline training data
-merge 1:m hhid using "$dailyupdates\midline_training_hh.dta"
-
+* Calculate Household-Level Ratio
 ***************************************************
 
-* Step 3: Generate Match Indicator
-* Trained at baseline and attended training at midline
-gen match_training_hh = (trained_hh == 1 & (attend_training == 1 | who_attended_training == 1))
+* Count baseline-trained households
+count if trained_hh == 1
+local total_trained_hh = r(N)
+
+* Count baseline-trained households with midline attendance
+count if trained_hh == 1 & (attend_training == 1 | who_attended_training == 1)
+local total_attend_hh = r(N)
+
+* Calculate household-level ratio
+local hh_ratio = (`total_attend_hh' / `total_trained_hh') * 100
+
 
 ***************************************************
-
-* Step 4: Calculate Ratios
-* Count households trained at baseline and attended training at midline
-count if match_training_hh == 1
-local num_trained_attended = r(N)
-
-* Count households trained at baseline but did NOT attend training at midline
-count if trained_hh == 1 & (attend_training == 0 & who_attended_training == 0)
-local num_trained_not_attended = r(N)
-
-* Calculate the ratio
-local ratio = (`num_trained_attended' / (`num_trained_attended' + `num_trained_not_attended')) * 100
-
+* Export Results to Excel
 ***************************************************
 
-* Step 5: Display Results
-di "Households Trained at Baseline and Attended Training at Midline: `num_trained_attended'"
-di "Households Trained at Baseline and Did NOT Attend Training at Midline: `num_trained_not_attended'"
-di "Ratio of Attended to Total Trained: `ratio'%" 
+* Initialize Excel file in the specified path
+putexcel set "$dailyupdates\DISES_DailyChecks.xlsx", replace
+
+* Write headers
+putexcel A1 = "Metric" B1 = "Value"
+
+* Write results
+putexcel A2 = "Total Trained Individuals (Baseline)" B2 = `total_trained_indiv'
+putexcel A3 = "Total Trained Individuals (Midline)" B3 = `total_training_id'
+putexcel A4 = "Individual-Level Ratio (%)" B4 = `indiv_ratio'
+
+putexcel A6 = "Total Trained Households (Baseline)" B6 = `total_trained_hh'
+putexcel A7 = "Total Trained Households with Attendance (Midline)" B7 = `total_attend_hh'
+putexcel A8 = "Household-Level Ratio (%)" B8 = `hh_ratio'
+
+* Confirm file saved
+di "Results saved to: $dailyupdates\DrBarrettDailyChecks.xlsx"
+
+
+

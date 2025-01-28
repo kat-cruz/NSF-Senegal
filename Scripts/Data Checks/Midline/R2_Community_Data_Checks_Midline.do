@@ -268,121 +268,615 @@ if _N > 0 {
 restore
 
 *** b. Check if the values of these variables are 0 or 1 ***
-
-foreach var of varlist q_24 q_25 q_26 q_27 q_28 ///
-                       q_29 q_30 q_31 q_32 q_33 q_34 q_35_check q_37 q_39 q_41 { 
+*** q_24 
 	preserve	
 
-    keep if `var' < 0 | `var' > 1
+    keep if q_24 < 0 | q_24 > 1
 	
-	keep hhid_village sup_label full_name phone_resp `var'
+	keep hhid_village sup_label full_name phone_resp q_24
   
     * Generate an "issue" variable
     generate issue = "Not zero or one"
 	
 	* Generate name of variable issue 
-	gen issue_variable_name = "`var'"
+	gen issue_variable_name = "q_24"
+	
+	* Generate question variable 
+	gen question = "Système d'eau par robinet"
 	
 	* Rename variable with issue 
-	rename `var' print_issue
+	rename q_24 print_issue
   
     * Export the dataset to Excel
 	if _N > 0 {
-    save "$community\Issue_Community_`var'.dta", replace
+    save "$community\Issue_Community_q_24.dta", replace
 	}
     restore
 	
+*** q_25 
+	preserve	
+
+    keep if q_25 < 0 | q_25 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_25
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_25"
+	
+	* Generate question variable 
+	gen question = "Electricité du réseau"
+	
+	* Rename variable with issue 
+	rename q_25 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_24.dta", replace
 	}
+    restore
 
+*** q_26 
+	preserve	
 
+    keep if q_26 < 0 | q_26 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_26
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_26"
+	
+	* Generate question variable 
+	gen question = "Latrines publiques"
+	
+	* Rename variable with issue 
+	rename q_26 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_26.dta", replace
+	}
+    restore
+	
+*** q_27 
+	preserve	
+
+    keep if q_27 < 0 | q_27 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_27
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_27"
+	
+	* Generate question variable 
+	gen question = "Décharge d'ordures"
+	
+	* Rename variable with issue 
+	rename q_27 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_27.dta", replace
+	}
+    restore
+	
+*** q_28 
+	preserve	
+
+    keep if q_28 < 0 | q_28 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_28
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_28"
+	
+	* Generate question variable 
+	gen question = "Groupement(s) agricole / paysan"
+	
+	* Rename variable with issue 
+	rename q_28 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_28.dta", replace
+	}
+    restore
+	
+*** q_29 
+	
+	preserve	
+
+    keep if q_29 < 0 | q_29 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_29
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_29"
+	
+	* Generate question variable 
+	gen question = "Groupement(s) d’entreprises"
+	
+	* Rename variable with issue 
+	rename q_29 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_29.dta", replace
+	}
+    restore
+
+*** q_30 
+	
+	preserve	
+
+    keep if q_30 < 0 | q_30 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_30
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_30"
+	
+	* Generate question variable 
+	gen question = "Groupement(s) de crédit / financier / d'entraide"
+	
+	* Rename variable with issue 
+	rename q_30 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_30.dta", replace
+	}
+    restore
+	
+*** q_31 
+	
+	preserve	
+
+    keep if q_31 < 0 | q_31 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_31
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_31"
+	
+	* Generate question variable 
+	gen question = "Groupement(s) de femmes"
+	
+	* Rename variable with issue 
+	rename q_31 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_31.dta", replace
+	}
+    restore	
+
+*** q_32  
+	
+	preserve	
+
+    keep if q_32 < 0 | q_32 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_32
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_32"
+	
+	* Generate question variable 
+	gen question = "Groupement(s) de jeunes"
+	
+	* Rename variable with issue 
+	rename q_32 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_32.dta", replace
+	}
+    restore	
+
+*** q_33 
+	
+	preserve	
+
+    keep if q_33 < 0 | q_33 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_33
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_33"
+	
+	* Generate question variable 
+	gen question = "Groupement(s) de religieux"
+	
+	* Rename variable with issue 
+	rename q_33 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_33.dta", replace
+	}
+    restore	
+	
+*** q_34 
+	
+	preserve	
+
+    keep if q_34 < 0 | q_34 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_34
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_34"
+	
+	* Generate question variable 
+	gen question = "Service de vulgarisation agricole"
+	
+	* Rename variable with issue 
+	rename q_34 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_34.dta", replace
+	}
+    restore	
+	
+*** q_35_check 
+	
+	preserve	
+
+    keep if q_35_check < 0 | q_35_check > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_35_check
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_35_check"
+	
+	* Generate question variable 
+	gen question = "Est-ce qu'il y a eu un traitement vermifuge effectué par le ministère de la santé ou une autre organisation?"
+	
+	* Rename variable with issue 
+	rename q_35_check print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_35_check.dta", replace
+	}
+    restore	
+
+*** q_37 
+	preserve	
+
+    keep if q_37 < 0 | q_37 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_37
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_37"
+	
+	* Generate question variable 
+	gen question = "Dans le village, y a-t-il actuellement des projets de développement en cours visant à stimuler la productivitéagricole ou de l'élevage?"
+	
+	* Rename variable with issue 
+	rename q_37 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_37.dta", replace
+	}
+    restore	
+	
+*** q_39 q_41 
+	
+	preserve	
+
+    keep if q_39 < 0 | q_39 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_39
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_39"
+	
+	* Generate question variable 
+	gen question = "Dans le village, y a-t-il actuellement des projets en cours visant à réduire la prévalence de la bilharziose?"
+	
+	* Rename variable with issue 
+	rename q_39 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_39.dta", replace
+	}
+    restore		
+
+*** q_41 
+	
+	preserve	
+
+    keep if q_41 < 0 | q_41 > 1
+	
+	keep hhid_village sup_label full_name phone_resp q_41
+  
+    * Generate an "issue" variable
+    generate issue = "Not zero or one"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_41"
+	
+	* Generate question variable 
+	gen question = "Dans le village, y a-t-il actuellement des projets en cours visant à améliorer la gestion de l'eau?"
+	
+	* Rename variable with issue 
+	rename q_41 print_issue
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_41.dta", replace
+	}
+    restore	
+	
 *** c. For q_43 and q_44 verify response is between 0 and 45 or -9 ***
 
-foreach var of varlist q_43 q_44 {
 	preserve 
 	
 	gen ind_issue = . 
-	replace ind_issue = 1 if `var' < 0 & `var' != -9
-	replace ind_issue = 1 if `var' > 45
+	replace ind_issue = 1 if q_43 < 0 & q_43 != -9
+	replace ind_issue = 1 if q_43 > 45
 	keep if ind_issue == 1 
 	
     *keep if `var' < 0 | `var' > 45 | `var' != -9
 	
-	keep hhid_village sup_label full_name phone_resp `var'
+	keep hhid_village sup_label full_name phone_resp q_43
   
     * Generate an "issue" variable
     generate issue = "Unreasonable Value"
 	
 	* Generate name of variable issue 
-	gen issue_variable_name = "`var'"
+	gen issue_variable_name = "q_43"
+	
+	* Generate question variable 
+	gen question = "Combien de minutes faut-il pour aller au magasin le plus proche (celui où vous pouvez acheter du riz) à pied ?"
 	
 	* Rename variable with issue 
-	rename `var' print_issue
+	rename q_43 print_issue
   	
-  
     * Export the dataset to Excel
 	if _N > 0 {
-    save "$community\Issue_Community_`var'.dta", replace
+    save "$community\Issue_Community_q_43.dta", replace
 	}
     restore
+
+	preserve 
+	
+	gen ind_issue = . 
+	replace ind_issue = 1 if q_44 < 0 & q_44 != -9
+	replace ind_issue = 1 if q_44 > 45
+	keep if ind_issue == 1 
+	
+    *keep if `var' < 0 | `var' > 45 | `var' != -9
+	
+	keep hhid_village sup_label full_name phone_resp q_44
+  
+    * Generate an "issue" variable
+    generate issue = "Unreasonable Value"
+	
+	* Generate name of variable issue 
+	gen issue_variable_name = "q_44"
+	
+	* Generate question variable 
+	gen question = "Combien de minutes faut-il pour aller au magasin le plus proche (celui où vous pouvez acheter du riz) envoiture/moto?"
+	
+	* Rename variable with issue 
+	rename q_44 print_issue
+  	
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_44.dta", replace
 	}
+    restore
 
 *** d.	For q_45 and q_46 verify response is between 0 and 300 or -9 ***
 
-foreach var of varlist q_45 q_46 {
 	preserve 
 	
 	gen ind_issue = . 
-	replace ind_issue = 1 if `var' < 0 & `var' != -9
-	replace ind_issue = 1 if `var' > 300
+	replace ind_issue = 1 if q_45 < 0 & q_45 != -9
+	replace ind_issue = 1 if q_45 > 300
 	keep if ind_issue == 1 
 	
-	keep hhid_village sup_label full_name phone_resp `var'
+	keep hhid_village sup_label full_name phone_resp q_45
   
     * Generate an "issue" variable
     generate issue = "Unreasonable Value"
 	
 	* Rename variable with issue 
-	rename `var' print_issue
+	rename q_45 print_issue
   
   	* Generate name of variable issue 
-	gen issue_variable_name = "`var'"
+	gen issue_variable_name = "q_45"
 	
+	* Generate question variable 
+	gen question = "Combien de minutes faut-il pour aller au médecin le plus proche à pied?"
   
     * Export the dataset to Excel
 	if _N > 0 {
-    save "$community\Issue_Community_`var'.dta", replace
+    save "$community\Issue_Community_q_45.dta", replace
 	}
     restore
-	}
 
+	preserve 
+	
+	gen ind_issue = . 
+	replace ind_issue = 1 if q_46 < 0 & q_46 != -9
+	replace ind_issue = 1 if q_46 > 300
+	keep if ind_issue == 1 
+	
+	keep hhid_village sup_label full_name phone_resp q_46
+  
+    * Generate an "issue" variable
+    generate issue = "Unreasonable Value"
+	
+	* Rename variable with issue 
+	rename q_46 print_issue
+  
+  	* Generate name of variable issue 
+	gen issue_variable_name = "q_46"
+	
+	* Generate question variable 
+	gen question = "Combien de minutes faut-il pour aller au médecin le plus proche en voiture/moto?"
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_46.dta", replace
+	}
+    restore
+	
 *** f.	For q_47, q_48, q_50, q_51 verify response is between 0 and 100 or -9 ***
 
-foreach var of varlist q_47 q_48 q_50 q_51{
 	preserve 
 	
 	gen ind_issue = . 
-	replace ind_issue = 1 if `var' < 0 & `var' != -9
-	replace ind_issue = 1 if `var' > 100
+	replace ind_issue = 1 if q_47 < 0 & q_47 != -9
+	replace ind_issue = 1 if q_47 > 100
 	keep if ind_issue == 1 
 
-	keep hhid_village sup_label full_name phone_resp `var'
+	keep hhid_village sup_label full_name phone_resp q_47
   
     * Generate an "issue" variable
     generate issue = "Unreasonable Value"
 	
 	* Rename variable with issue 
-	rename `var' print_issue
+	rename q_47 print_issue
   
   	* Generate name of variable issue 
-	gen issue_variable_name = "`var'"
+	gen issue_variable_name = "q_47"
 	
+	* Generate question variable 
+	gen question = "A quelle distance est le marché hebdomadaire le plus proche (en kilomètres)?"
   
     * Export the dataset to Excel
 	if _N > 0 {
-    save "$community\Issue_Community_`var'.dta", replace
+    save "$community\Issue_Community_q_47.dta", replace
 	}
     restore
+
+	preserve 
+	
+	gen ind_issue = . 
+	replace ind_issue = 1 if q_48 < 0 & q_48 != -9
+	replace ind_issue = 1 if q_48 > 100
+	keep if ind_issue == 1 
+
+	keep hhid_village sup_label full_name phone_resp q_48
+  
+    * Generate an "issue" variable
+    generate issue = "Unreasonable Value"
+	
+	* Rename variable with issue 
+	rename q_48 print_issue
+  
+  	* Generate name of variable issue 
+	gen issue_variable_name = "q_48"
+	
+	* Generate question variable 
+	gen question = "À quelle distance se trouve l'arrêt de bus le plus proche (en kilomètres)?"
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_48.dta", replace
 	}
+    restore
+	
+	preserve 
+	
+	gen ind_issue = . 
+	replace ind_issue = 1 if q_50 < 0 & q_50 != -9
+	replace ind_issue = 1 if q_50 > 100
+	keep if ind_issue == 1 
+
+	keep hhid_village sup_label full_name phone_resp q_50
+  
+    * Generate an "issue" variable
+    generate issue = "Unreasonable Value"
+	
+	* Rename variable with issue 
+	rename q_50 print_issue
+  
+  	* Generate name of variable issue 
+	gen issue_variable_name = "q_50"
+	
+	* Generate question variable 
+	gen question = "À quelle distance se trouve la route bitumée la plus proche le plus proche (en kilomètres) ?"
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_50.dta", replace
+	}
+    restore	
+
+	preserve 
+	
+	gen ind_issue = . 
+	replace ind_issue = 1 if q_51 < 0 & q_51 != -9
+	replace ind_issue = 1 if q_51 > 100
+	keep if ind_issue == 1 
+
+	keep hhid_village sup_label full_name phone_resp q_51
+  
+    * Generate an "issue" variable
+    generate issue = "Unreasonable Value"
+	
+	* Rename variable with issue 
+	rename q_51 print_issue
+  
+  	* Generate name of variable issue 
+	gen issue_variable_name = "q_51"
+	
+	* Generate question variable 
+	gen question = "À quelle distance se trouve l'infrastructure de santé la plus proche (en kilomètres) ?"
+  
+    * Export the dataset to Excel
+	if _N > 0 {
+    save "$community\Issue_Community_q_51.dta", replace
+	}
+    restore	
 	
 *** h.	For q_49, verify response is between 0 and 10 or -9 ***
 
@@ -413,33 +907,169 @@ foreach var of varlist q_47 q_48 q_50 q_51{
 *** k.	q_28a, 29a, 30a, 31a, 32a, 33a should be answered when q_28 29 30 31 32 33 = 1, response should be between 0 and 2000 or -9  ***
 
  *** PART 01 ***
-  foreach num of numlist 28 29 30 31 32 33{
-	 preserve
+
+	preserve
 
     * Step 1: Generate the indicator variable
     generate ind_var = 0
-	replace ind_var = 1 if q_`num' == 1 & q_`num'a < 0 & q_`num'a != -9
-	replace ind_var = 1 if q_`num' == 1 & q_`num'a > 2000
+	replace ind_var = 1 if q_28 == 1 & q_28a < 0 & q_28a != -9
+	replace ind_var = 1 if q_28 == 1 & q_28a > 2000
 	
 	* Keep and add variables to export 
 	keep if ind_var == 1 
 	
 	generate issue = "Unreasonable value" 
 		
-	generate issue_variable_name = "q_`num'a"
-		
-	rename q_`num'a print_issue
+	generate issue_variable_name = "q_28a"
 	
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	gen question = "Groupement(s) agricole / paysan nombre de participants"
+		
+	rename q_28a print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
 	
      *Step 2: Export to Excel only if there are observations meeting the conditions
     if _N > 0 {
-        save "$community\Issue_Community_q_`num'a_noresponse.dta", replace
+        save "$community\Issue_Community_q_28a_noresponse.dta", replace
     }
     
      restore
-}
+	 
+	preserve
 
+    * Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q_29 == 1 & q_29a < 0 & q_29a != -9
+	replace ind_var = 1 if q_29 == 1 & q_29a > 2000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q_29a"
+	
+	gen question = "Groupement(s) d’entreprises nombre de participants"
+		
+	rename q_29a print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q_29a_noresponse.dta", replace
+    }
+    
+     restore	 
+
+	preserve
+
+    * Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q_30 == 1 & q_30a < 0 & q_30a != -9
+	replace ind_var = 1 if q_30 == 1 & q_30a > 2000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q_30a"
+	
+	gen question = "Groupement(s) de crédit / financier / d'entraide nombre de participants"
+		
+	rename q_30a print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q_30a_noresponse.dta", replace
+    }
+    
+     restore
+
+	preserve
+
+    * Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q_31 == 1 & q_31a < 0 & q_31a != -9
+	replace ind_var = 1 if q_31 == 1 & q_31a > 2000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q_31a"
+	
+	gen question = "Groupement(s) de femmes nombre de participants"
+		
+	rename q_31a print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q_31a_noresponse.dta", replace
+    }
+    
+     restore
+
+	preserve
+
+    * Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q_32 == 1 & q_32a < 0 & q_32a != -9
+	replace ind_var = 1 if q_32 == 1 & q_32a > 2000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q_32a"
+	
+	gen question = "Groupement(s) de jeunes nombre de participants"
+		
+	rename q_32a print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q_32a_noresponse.dta", replace
+    }
+    
+     restore
+
+	preserve
+
+    * Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q_33 == 1 & q_33a < 0 & q_33a != -9
+	replace ind_var = 1 if q_33 == 1 & q_33a > 2000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q_33a"
+	
+	gen question = "Groupement(s) religieux nombre de participants"
+		
+	rename q_33a print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q_33a_noresponse.dta", replace
+    }
+    
+     restore	 
+	 
 *** PART 02 ***
 
 
@@ -478,7 +1108,7 @@ preserve
 	generate issue_variable_name = "q_36"
 	gen question = "Quelle organisation l'a mis en place?"
 	rename q_36 print_issue
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
     if _N > 0 {
         save "$community\Issue_Community_q36.dta", replace
     }
@@ -495,7 +1125,7 @@ preserve
 	generate issue_variable_name = "q_35"
 	gen question = "Quelle est la date du dernier traitement vermifuge effectué par le ministère de la santé ou une autreorganisation ?"
 	rename q_35 print_issue
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
 	if _N > 0 {
     save "$community\Issue_Community_q35_noresponse.dta", replace
 	}
@@ -505,24 +1135,51 @@ restore
  *** j. When q_37, q_39, q_41 = 1, q_38, q_40, q_42 should be answered with text ***
  *** PART ONE ***
  
-  foreach num of numlist 38 40 42{
  preserve
-    local var1 q_`num'
-    local var2 q_`=`num'-1'
 	
 	gen ind_var = 0
-	replace ind_var = 1 if `var2' == 1 & length(trim(`var1')) == 0
+	replace ind_var = 1 if q_37 == 1 & length(trim(q_38)) == 0
 	keep if ind_var == 1 
 	generate issue = "Missing"
-	generate issue_variable_name = "`var1'"
-	rename q_`num' print_issue 
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	generate issue_variable_name = "q_38"
+	rename q_38 print_issue 
+	gen question = "Si oui, quelle organisation l'a mis en place?"
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
     if _N > 0 {
-    save "$community\Issue_Community_`var1'_norespone.dta", replace
+    save "$community\Issue_Community_q_38_norespone.dta", replace
 }
 	 restore
-	}
+
+	 preserve
 	
+	gen ind_var = 0
+	replace ind_var = 1 if q_39 == 1 & length(trim(q_40)) == 0
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "q_40"
+	rename q_40 print_issue 
+	gen question = "Si oui, quelle organisation l'a mis en place?"
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+    if _N > 0 {
+    save "$community\Issue_Community_q_40_norespone.dta", replace
+}
+	 restore
+
+	preserve
+	
+	gen ind_var = 0
+	replace ind_var = 1 if q_41 == 1 & length(trim(q_42)) == 0
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "q_42"
+	rename q_42 print_issue 
+	gen question = "Si oui, quelle organisation l'a mis en place?"
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+    if _N > 0 {
+    save "$community\Issue_Community_q_42_norespone.dta", replace
+}
+	 restore
+	 
 *** PART TWO ***
 
   foreach num of numlist 38 40 42{
@@ -558,7 +1215,7 @@ preserve
 	generate issue_variable_name = "q62_o"
 	gen question = "Autre à préciser"
 	rename q62_o print_issue 
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 	
 	if _N > 0 {
         save "$community\Issue_Community_q62_noresponse.dta", replace
     }
@@ -566,34 +1223,277 @@ preserve
 restore 
 
 *** question 63's should be less than or equal to 5000 *** 
-forvalues i = 1/10 {
+
 	preserve 
 	
 	* Step 1: Generate the indicator variable
     generate ind_var = 0
-	replace ind_var = 1 if q63_`i' < 0 & q63_`i' != -9
-	replace ind_var = 1 if q63_`i' > 5000
+	replace ind_var = 1 if q63_1 < 0 & q63_1 != -9
+	replace ind_var = 1 if q63_1 > 5000
 	
 	* Keep and add variables to export 
 	keep if ind_var == 1 
 	
 	generate issue = "Unreasonable value" 
 		
-	generate issue_variable_name = "q63_`i'"
-		
-	rename q63_`i' print_issue
+	generate issue_variable_name = "q63_1"
 	
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	gen question = "Prix Uree"
+		
+	rename q63_1 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
 	
      *Step 2: Export to Excel only if there are observations meeting the conditions
     if _N > 0 {
-        save "$community\Issue_Community_q63_`i'.dta", replace
+        save "$community\Issue_Community_q63_1.dta", replace
     }
     
      restore
-}
 
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_2 < 0 & q63_2 != -9
+	replace ind_var = 1 if q63_2 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_2"
+	
+	gen question = "Prix Fumier"
+		
+	rename q63_2 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_2.dta", replace
+    }
+    
+     restore
 
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_3 < 0 & q63_3 != -9
+	replace ind_var = 1 if q63_3 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_3"
+	
+	gen question = "Prix Riz"
+		
+	rename q63_3 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_3.dta", replace
+    }
+    
+     restore	
+
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_4 < 0 & q63_4 != -9
+	replace ind_var = 1 if q63_4 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_4"
+	
+	gen question = "Prix Mais"
+		
+	rename q63_4 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_4.dta", replace
+    }
+    
+     restore	 
+
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_5 < 0 & q63_5 != -9
+	replace ind_var = 1 if q63_5 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_5"
+	
+	gen question = "Prix Mil"
+		
+	rename q63_5 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_5.dta", replace
+    }
+    
+     restore	 
+	 
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_6 < 0 & q63_6 != -9
+	replace ind_var = 1 if q63_6 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_6"
+	
+	gen question = "Prix Sorgho"
+		
+	rename q63_6 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_6.dta", replace
+    }
+    
+     restore
+	 
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_7 < 0 & q63_7 != -9
+	replace ind_var = 1 if q63_7 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_7"
+	
+	gen question = "Prix Niebe"
+		
+	rename q63_7 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_7.dta", replace
+    }
+    
+     restore
+	 
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_8 < 0 & q63_8 != -9
+	replace ind_var = 1 if q63_8 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_8"
+	
+	gen question = "Prix Tomates"
+		
+	rename q63_8 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_8.dta", replace
+    }
+    
+     restore
+	 
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_9 < 0 & q63_9 != -9
+	replace ind_var = 1 if q63_9 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_9"
+	
+	gen question = "Prix Oignons"
+		
+	rename q63_9 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_9.dta", replace
+    }
+    
+     restore
+	 
+	preserve 
+	
+	* Step 1: Generate the indicator variable
+    generate ind_var = 0
+	replace ind_var = 1 if q63_10 < 0 & q63_10 != -9
+	replace ind_var = 1 if q63_10 > 5000
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Unreasonable value" 
+		
+	generate issue_variable_name = "q63_10"
+	
+	gen question = "Prix Arachides"
+		
+	rename q63_10 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_q63_10.dta", replace
+    }
+    
+     restore	 
+	 
 *** question 64 should be less than or equal to 5000 *** 
 
 	preserve 
@@ -614,7 +1514,7 @@ forvalues i = 1/10 {
 		
 	rename q64 print_issue
 	
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
 	
      *Step 2: Export to Excel only if there are observations meeting the conditions
     if _N > 0 {
@@ -643,7 +1543,7 @@ forvalues i = 1/10 {
 		
 	rename q65 print_issue
 	
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
 	
      *Step 2: Export to Excel only if there are observations meeting the conditions
     if _N > 0 {
@@ -672,7 +1572,7 @@ forvalues i = 1/10 {
 		
 	rename q66 print_issue
 	
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
 	
      *Step 2: Export to Excel only if there are observations meeting the conditions
     if _N > 0 {
@@ -685,37 +1585,336 @@ forvalues i = 1/10 {
 *** want to keep any -9s or 9's, 0.9's, 99's or 999's ***
 *** cannot have missing values here *** 
 
-forvalues i = 1/11 {
 	preserve 
 	
 	* generate indciator variable 
 	gen ind_var = 0 
-	replace ind_var = 1 if unit_convert_`i' < 1 
-	replace ind_var = 1 if unit_convert_`i' > 1000
-	replace ind_var = 1 if unit_convert_`i' == 9 
-	replace ind_var = 1 if unit_convert_`i' == 99
-	replace ind_var = 1 if unit_convert_`i' == 999
+	replace ind_var = 1 if unit_convert_1 < 1 
+	replace ind_var = 1 if unit_convert_1 > 1000
+	replace ind_var = 1 if unit_convert_1 == 9 
+	replace ind_var = 1 if unit_convert_1 == 99
+	replace ind_var = 1 if unit_convert_1 == 999
 	
 	* Keep and add variables to export 
 	keep if ind_var == 1 
 	
 	generate issue = "Missing or Unreasonable value" 
 		
-	generate issue_variable_name = "unit_convert_`i'"
-		
-	rename unit_convert_`i' print_issue
+	generate issue_variable_name = "unit_convert_1"
 	
-	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name
+	gen question = "Combien de kilograms pèse un sac large de fumier ?"
+		
+	rename unit_convert_1 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
 	
      *Step 2: Export to Excel only if there are observations meeting the conditions
     if _N > 0 {
-        save "$community\Issue_Community_unit_convert_`i'.dta", replace
+        save "$community\Issue_Community_unit_convert_1.dta", replace
     }
     
      restore
-}
-		
+
+	preserve 
 	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_2 < 1 
+	replace ind_var = 1 if unit_convert_2 > 1000
+	replace ind_var = 1 if unit_convert_2 == 9 
+	replace ind_var = 1 if unit_convert_2 == 99
+	replace ind_var = 1 if unit_convert_2 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_2"
+	
+	gen question = "Combien de kilograms pèse un sac moyen de fumier ?"
+		
+	rename unit_convert_2 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_2.dta", replace
+    }
+    
+     restore
+	 
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_3 < 1 
+	replace ind_var = 1 if unit_convert_3 > 1000
+	replace ind_var = 1 if unit_convert_3 == 9 
+	replace ind_var = 1 if unit_convert_3 == 99
+	replace ind_var = 1 if unit_convert_3 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_3"
+	
+	gen question = "Combien de kilograms pèse un sac petit de fumier ?"
+		
+	rename unit_convert_3 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_3.dta", replace
+    }
+    
+     restore	 
+	 
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_4 < 1 
+	replace ind_var = 1 if unit_convert_4 > 1000
+	replace ind_var = 1 if unit_convert_4 == 9 
+	replace ind_var = 1 if unit_convert_4 == 99
+	replace ind_var = 1 if unit_convert_4 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_4"
+	
+	gen question = "Combien de kilograms pèse un chariot a ane de fumier ?"
+		
+	rename unit_convert_4 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_4.dta", replace
+    }
+    
+     restore	 
+
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_5 < 1 
+	replace ind_var = 1 if unit_convert_5 > 1000
+	replace ind_var = 1 if unit_convert_5 == 9 
+	replace ind_var = 1 if unit_convert_5 == 99
+	replace ind_var = 1 if unit_convert_5 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_5"
+	
+	gen question = "Combien de kilograms pèse un chariot a vache de fumier ?"
+		
+	rename unit_convert_5 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_5.dta", replace
+    }
+    
+     restore	
+	 
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_6 < 1 
+	replace ind_var = 1 if unit_convert_6 > 1000
+	replace ind_var = 1 if unit_convert_6 == 9 
+	replace ind_var = 1 if unit_convert_6 == 99
+	replace ind_var = 1 if unit_convert_6 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_6"
+	
+	gen question = "Combien de kilograms pèse un sac a dos de fumier ?"
+		
+	rename unit_convert_6 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_6.dta", replace
+    }
+    
+     restore
+	 
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_7 < 1 
+	replace ind_var = 1 if unit_convert_7 > 1000
+	replace ind_var = 1 if unit_convert_7 == 9 
+	replace ind_var = 1 if unit_convert_7 == 99
+	replace ind_var = 1 if unit_convert_7 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_7"
+	
+	gen question = "Combien de kilograms pèse un corbeille de fumier ?"
+		
+	rename unit_convert_7 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_7.dta", replace
+    }
+    
+     restore	 
+
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_8 < 1 
+	replace ind_var = 1 if unit_convert_8 > 1000
+	replace ind_var = 1 if unit_convert_8 == 9 
+	replace ind_var = 1 if unit_convert_8 == 99
+	replace ind_var = 1 if unit_convert_8 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_8"
+	
+	gen question = "Combien de kilograms pèse un sac de Uree ?"
+		
+	rename unit_convert_8 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_8.dta", replace
+    }
+    
+     restore
+
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_9 < 1 
+	replace ind_var = 1 if unit_convert_9 > 1000
+	replace ind_var = 1 if unit_convert_9 == 9 
+	replace ind_var = 1 if unit_convert_9 == 99
+	replace ind_var = 1 if unit_convert_9 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_9"
+	
+	gen question = "Combien de kilograms pèse un sac de Phosphates ?"
+		
+	rename unit_convert_9 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_9.dta", replace
+    }
+    
+     restore	
+	 
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_10 < 1 
+	replace ind_var = 1 if unit_convert_10 > 1000
+	replace ind_var = 1 if unit_convert_10 == 9 
+	replace ind_var = 1 if unit_convert_10 == 99
+	replace ind_var = 1 if unit_convert_10 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_10"
+	
+	gen question = "Combien de kilograms pèse un sac de NPK/Formule unique ?"
+		
+	rename unit_convert_10 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_10.dta", replace
+    }
+    
+     restore	
+	 
+	preserve 
+	
+	* generate indciator variable 
+	gen ind_var = 0 
+	replace ind_var = 1 if unit_convert_11 < 1 
+	replace ind_var = 1 if unit_convert_11 > 1000
+	replace ind_var = 1 if unit_convert_11 == 9 
+	replace ind_var = 1 if unit_convert_11 == 99
+	replace ind_var = 1 if unit_convert_11 == 999
+	
+	* Keep and add variables to export 
+	keep if ind_var == 1 
+	
+	generate issue = "Missing or Unreasonable value" 
+		
+	generate issue_variable_name = "unit_convert_11"
+	
+	gen question = "Combien de kilograms pèse un sac d'autres engrais chimiques ?"
+		
+	rename unit_convert_11 print_issue
+	
+	keep hhid_village sup_label full_name phone_resp issue print_issue issue_variable_name question 
+	
+     *Step 2: Export to Excel only if there are observations meeting the conditions
+    if _N > 0 {
+        save "$community\Issue_Community_unit_convert_11.dta", replace
+    }
+    
+     restore
+	 
 *** check if wealth_stratum_02 is 1 or 2 *** 	
 forvalues i = 1/20 {
 

@@ -81,62 +81,6 @@ foreach i of numlist 1/55 {
 }
 
 
-************************** duplicates check ********************************
-
-*duplicates tag 
-
-
-
-************************** filter dropped houshold members  *************************
-
-/*
-
-	reshape long still_member_, ///
-				i(hhid) j(id)
-
-gen still_member_var = 0  // Initialize the indicator variable as 0
-
-forvalues i = 1/57 {
-    replace still_member_var = 1 if still_member_`i' == 0
-}
-
-
-
-
-forvalues i = 1/57 {
-  
-    tab still_member_`i'  // Generate a frequency table for still_member_`i'
-}
-
-
-gen still_member_var = 0  // Initialize the indicator variable as 0 for all households
-
-forvalues i = 1/57 {
-    by hhid (still_member_`i'), sort: replace still_member_var = 1 if still_member_`i' == 0
-}
-
-
-
-drop if still_member_var == 1
-
-
-
-gen keep_obs = 0 // Initialize a flag variable
-
-// Loop through still_member_1 to still_member_57
-forvalues i = 1/55 {
-    // Check if still_member_i is empty (missing) and update the flag
-    replace keep_obs = 1 if missing(hh_age_`i') & missing(still_member_`i')
-}
-
-// Keep only observations where at least one variable is missing
-keep if keep_obs == 1
-
-**# Bookmark #1
-drop keep_obs
-*/
- */
-
 **************************** capture label variables ****************************
 * Note: we label location and respondents
 
@@ -937,11 +881,13 @@ forvalues i = 1/55 {
 	*** drop no consent households *** 
 	keep if consent == 0 
 	
+	
     local hh_age hh_age_`i'
 	*** generate indicator variable ***
 	gen ind_var = 0
     replace ind_var = 1  if `hh_age' < 0 | `hh_age' > 90    
  	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
@@ -976,7 +922,7 @@ forvalues i = 1/55 {
 	gen ind_var = 0
     replace ind_var = 1  if `hh_age' < 0 | `hh_age' > 90    
  	replace ind_var = 0 if _household_roster_count < `i'
-   
+    drop if still_member_`i' == 0
     	* keep and add variables to export *
 	keep if ind_var == 1 	
 	generate issue =  "Unreasonable value"
@@ -1005,8 +951,7 @@ forvalues i = 1/55 {
 	*** generate indicator variable ***
 	gen ind_var = 0
     replace ind_var = 1  if hh_age_resp < 0 | hh_age_resp > 90    
- 	*replace ind_var = 0 if _household_roster_count < `i'
-   
+ 
     	* keep and add variables to export *
 	keep if ind_var == 1 	
 	generate issue =  "Unreasonable value"
@@ -1073,6 +1018,9 @@ forvalues i = 1/57 {
 	drop if `hh_education_level' == 99
 	replace ind_var = 1 if `hh_education_level' > 2 
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
+	
+	
   	
 	* keep and add variables to export *
 	keep if ind_var == 1
@@ -1103,6 +1051,7 @@ forvalues i = 1/57 {
     gen ind_var = 0
     replace ind_var = 1 if `hh_education_level ' > `hh_age' & `hh_education_level' != .
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
 
 	* keep and add variables to export *
 	keep if ind_var == 1 
@@ -1130,6 +1079,7 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if hh_03_`i' == .  
  	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
@@ -1167,6 +1117,8 @@ forvalues i = 1/57 {
 	replace ind_var = 1 if hh_01_`i' < 0 & hh_01_`i' != -9
 	replace ind_var = 1 if hh_01_`i' > 168
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
+	
 	keep if ind_var == 1 
 	
 	generate issue = "Unreasonable value"
@@ -1194,6 +1146,7 @@ forvalues i = 1/57 {
 	replace ind_var = 1 if hh_02_`i' < 0 & hh_02_`i' != -9
 	replace ind_var = 1 if hh_02_`i' > 168
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
 	keep if ind_var == 1 
 	
 	generate issue = "Unreasonable value"
@@ -1267,6 +1220,7 @@ forvalues i = 1/57 {
 	replace ind_var = 1 if hh_08_`i' < 0 & hh_08_`i' != -9
 	replace ind_var = 1 if hh_08_`i' > 168
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
 
 	
 	keep if ind_var == 1 
@@ -1298,6 +1252,7 @@ forvalues i = 1/57 {
 	replace ind_var = 1 if hh_09_`i' < 0 & hh_09_`i' != -9
 	replace ind_var = 1 if hh_09_`i' > 168
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
 	keep if ind_var == 1 
 	
 	generate issue = "Unreasonable value"
@@ -1324,6 +1279,8 @@ forvalues i = 1/57 {
 	replace ind_var = 1 if hh_10_`i' < 0 & hh_10_`i' != -9
 	replace ind_var = 1 if 	hh_10_`i' > 168
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
+	
 	keep if ind_var == 1 
 	
 	generate issue = "Unreasonable value"
@@ -1355,7 +1312,9 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0 
 	replace ind_var = 1 if hh_13_`i'_total > hh_10_`i' 
-	replace ind_var = 0 if _household_roster_count < `i'	
+	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
+	
 	keep if ind_var == 1 
 	
 	generate issue = "Unreasonable values'"
@@ -1388,6 +1347,8 @@ forvalues i = 1/57 {
 	generate ind_var = 0
 	replace ind_var = 1 if hh_21_`i'_total > hh_18_`i'
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
+	
 	keep if ind_var == 1 
      
 	generate issue = "Missing" 
@@ -1989,6 +1950,8 @@ preserve
 	keep if `hh_relation_with' == 12 | `hh_relation_with' == 13 
 	replace ind_var = 1 if missing(`hh_relation_with_o') 
 	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
+	
 	keep if ind_var == 1 
 	
 		
@@ -4071,6 +4034,7 @@ forvalues i=1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if health_5_2_`i' == .  
  	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
@@ -4182,6 +4146,7 @@ forvalues i=1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if health_5_5_`i' == .  
  	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
@@ -4210,6 +4175,7 @@ forvalues i=1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if health_5_6_`i' == .  
  	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
@@ -4239,6 +4205,7 @@ forvalues i=1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if health_5_8_`i' == .  
  	replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
@@ -4415,6 +4382,7 @@ forvalues i=1/57 {
     gen ind_var = 0
     replace ind_var = 1 if health_5_7_1_`i' == .  
     replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
 
     * Keep and add variables to export *
     keep if ind_var == 1 
@@ -4442,6 +4410,7 @@ forvalues i=1/57 {
     gen ind_var = 0
     replace ind_var = 1 if health_5_9_`i' == .  
     replace ind_var = 0 if _household_roster_count < `i'
+	drop if still_member_`i' == 0
 
     * Keep and add variables to export *
     keep if ind_var == 1 
@@ -7433,7 +7402,7 @@ restore
 
 ** agri_income_13_1 is a string 
 *Note: confirm max
-forvalues i = 1/2 {
+forvalues i = 1/4 {
 	preserve 
 	
 	*** make sure it is a string ***
@@ -7458,7 +7427,7 @@ forvalues i = 1/2 {
 }
 
 *** check that agri_income_11 is not missing ***
-forvalues i = 1/2 {
+forvalues i = 1/4 {
 	preserve 
 
 
@@ -7558,7 +7527,7 @@ restore
 *Note: check max i value 
 
 
-forvalues i = 1/2 {
+forvalues i = 1/10{
 	preserve 
 
 	tostring(agri_income_13_`i'), replace 

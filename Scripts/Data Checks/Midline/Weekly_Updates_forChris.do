@@ -3,7 +3,7 @@
 	*** Updates recorded in GitHub ***
 *==============================================================================
 clear all
-set mem 100m
+set mem 2000m
 set maxvar 30000
 set matsize 11000
 set more off
@@ -25,59 +25,49 @@ global master "$box_path\Data Management"
 * Define specific paths for output and input data
 global dailyupdates "$master\Output\Data Quality Checks\Midline\R2_Daily_Updates"
 
-global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_23Jan.csv"
+global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_27Jan.csv"
 
 global baselinedata "$master\_CRDES_CleanData\Baseline\Identified\DISES_Baseline_Complete_PII.dta"
 
-global individ "$master\_CRDES_CleanData\Baseline\Identified\All_Villages_With_Individual_IDs.dta"
+global training "$master\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 
 ***************************************************
 
 * For computing attrition/revisit rates: *
 
-* Step 1: Load midline data
+* Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
 
-* Step 2: Keep relevant identifier and rename
-keep hh_global_id
-rename hh_global_id hhid
+egen midline_count = count(hh_global_id), by(hhid_village)
 
-* Step 3: Save the processed midline data temporarily
-save "$dailyupdates\Processed_Midline_HHID_23Jan.dta", replace
 
-* Step 4: Load baseline data
-use "$baselinedata", clear
+* Step 1: Create a variable counting households per village
+gen one = 1
+collapse (sum) one, by(hhid_village)
+rename one midline_count
 
-* Step 5: Merge baseline data with processed midline data
-merge 1:m hhid using "$dailyupdates\Processed_Midline_HHID_23Jan.dta"
+* Step 2: Calculate revisit and attrition rates for each village
+gen revisit_rate = (midline_count / 20) * 100
+gen attrition_rate = 100 - revisit_rate
 
-* Step 6: Check the merge results
-tab _merge
+* Step 3: Calculate totals
+* Total households surveyed at midline
+egen total_midline = sum(midline_count)
 
-* Explanation of _merge values:
-* 1 = In baseline only
-* 2 = In midline only (not expected if baseline is the primary dataset)
-* 3 = In both baseline and midline
+* Total revisit rate (overall)
+gen total_baseline = _N * 20  // Baseline households (20 per village)
+gen total_revisit_rate = (total_midline / total_baseline) * 100
+gen total_attrition_rate = 100 - total_revisit_rate
 
-* Step 7: Calculate total households in midline
-gen in_midline = (_merge == 2 | _merge == 3)   // Households in midline or both
-summarize in_midline
-local total_midline = r(sum)
+* Step 4: Display the results
+list hhid_village midline_count revisit_rate attrition_rate, sep(0)
 
-* Step 8: Calculate attrition rate for midline households
-gen unmatched = (_merge == 2)   // Households in midline only
-summarize unmatched if in_midline == 1
-local attrition_rate = r(mean) * 100
+* Step 5: Display totals
+di "Total Households Surveyed at Midline: " total_midline[1]
+di "Total Revisit Rate: " total_revisit_rate[1] "%"
+di "Total Attrition Rate: " total_attrition_rate[1] "%"
 
-* Step 9: Calculate revisit rate for midline households
-gen matched = (_merge == 3)     // Households in both baseline and midline
-summarize matched if in_midline == 1
-local revisit_rate = r(mean) * 100
 
-* Step 10: Display results
-di "Total Households Surveyed at Midline: `total_midline'"
-di "Attrition Rate for Midline Households: `attrition_rate'%"
-di "Revisit Rate for Midline Households: `revisit_rate'%"
 
 ***************************************************
 
@@ -103,24 +93,106 @@ local total_different_respondent = r(N)
 local share_different_respondent = (`total_different_respondent' / `total_households') * 100
 
 * Step 6: Display results
-di "Total Households Retained: `total_households'"
 di "Households with Different Respondent: `total_different_respondent'"
 di "Share of Households with Different Respondent: `share_different_respondent'%"
-
-***************************************************
-
-* For finding how many households are replaced: *
-
-***************************************************
-
-
 
 ***************************************************
 
 * For responses to training questions *
 
 ***************************************************
+
+* Step 1: Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
+
+* Rename hh_global_id to hhid for consistency
+rename hh_global_id hhid
+
+* Filter only relevant training records
+keep if attend_training == 1 | who_attended_training == 1
+
+* Keep relevant variables
+keep hhid_village hhid training_id_* attend_training who_attended_training training_id training_id_*
+
+* Reshape training_id_* variables to long format
+reshape long training_id_, i(hhid) j(individ) string
+
+* Standardize individ to uppercase for comparison
+gen individ_upper = upper(individ)
+drop individ
+rename individ_upper individ
+
+* Keep only records where training_id matches individ
+keep if training_id == individ
+
+* Save reshaped and filtered midline data
+save "$dailyupdates\reshaped_midline_trained_temp.dta", replace
+
+* Step 2: Filter baseline-trained for surveyed villages
+
+* Load baseline training data
+use "$training", clear
+
+* Filter for trained individuals
+keep if trained_indiv == 1
+
+* Create hhid_village by extracting the first 4 characters of hhid
+gen hhid_village = substr(hhid, 1, 4)
+
+* Save baseline-trained individuals
+save "$dailyupdates\baseline_trained_indiv.dta", replace
+
+* Load midline data to extract surveyed villages
+import delimited "$data", clear varnames(1) bindquote(strict)
+
+* Keep unique hhid_village
+keep hhid_village
+duplicates drop
+
+* Save surveyed villages
+save "$dailyupdates\midline_surveyed_villages.dta", replace
+
+* Load baseline-trained individuals
+use "$dailyupdates\baseline_trained_indiv.dta", clear
+
+* Merge with midline-surveyed villages to filter trained individuals in surveyed villages
+merge m:1 hhid_village using "$dailyupdates\midline_surveyed_villages.dta"
+
+* Keep only matched records (baseline-trained individuals from surveyed villages)
+keep if _merge == 3
+drop _merge
+
+* Save filtered baseline-trained individuals
+save "$dailyupdates\baseline_trained_in_surveyed_villages.dta", replace
+
+* Step 3: Compare baseline-trained with midline-trained individuals
+
+* Load reshaped midline-trained data
+use "$dailyupdates\reshaped_midline_trained_temp.dta", clear
+
+* Merge with baseline-trained individuals in surveyed villages
+merge m:1 individ using "$dailyupdates\baseline_trained_in_surveyed_villages.dta"
+
+* Generate match indicator
+gen match_training = (_merge == 3 & training_id_ == 1)
+
+* Calculate total matches
+count if match_training == 1
+local total_matches = r(N)
+
+* Calculate total baseline-trained individuals in surveyed villages
+use "$dailyupdates\baseline_trained_in_surveyed_villages.dta", clear
+count
+local total_baseline_trained = r(N)
+
+* Calculate match percentage
+local match_percentage = (`total_matches' / `total_baseline_trained') * 100
+
+* Step 4: Display results
+
+di "Total Baseline-Trained Individuals in Surveyed Villages: `total_baseline_trained'"
+di "Total Matches in Midline: `total_matches'"
+di "Match Percentage: `match_percentage'%"
 
 
 
@@ -129,7 +201,8 @@ import delimited "$data", clear varnames(1) bindquote(strict)
 * For responses to "yes, attended training" *
 
 ***************************************************
+import delimited "$data", clear varnames(1) bindquote(strict)
 
-* "C:\Users\km978\Box\NSF Senegal\Data Management\Output\Data Corrections\Treatments\Treated_variables_df.dta"
+sum attend_training who_attended_training heard_training
 
-* do we still want to do a geocoor
+

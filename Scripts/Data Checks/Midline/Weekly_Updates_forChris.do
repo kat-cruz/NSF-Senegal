@@ -194,15 +194,67 @@ di "Total Baseline-Trained Individuals in Surveyed Villages: `total_baseline_tra
 di "Total Matches in Midline: `total_matches'"
 di "Match Percentage: `match_percentage'%"
 
+***************************************************
 
+* Tracking Trained Households *
 
 ***************************************************
 
-* For responses to "yes, attended training" *
+* Step 1: Load Baseline Training Data
+use "$training", clear
+
+* Create `hhid_village` by extracting the first 4 characters of `hhid`
+gen hhid_village = substr(hhid, 1, 4)
+
+* Collapse to summarize training status at the household level
+collapse (max) trained_hh, by(hhid)
+
+* Save baseline-trained households
+save "$dailyupdates\baseline_trained_hh.dta", replace
 
 ***************************************************
+
+* Step 2: Load Midline Data
 import delimited "$data", clear varnames(1) bindquote(strict)
 
-sum attend_training who_attended_training heard_training
+* Rename `hh_global_id` for consistency
+rename hh_global_id hhid
 
+* Save midline training data
+save "$dailyupdates\midline_training_hh.dta", replace
 
+***************************************************
+
+* Step 3: Merge and Generate Match Indicators
+* Load baseline-trained households
+use "$dailyupdates\baseline_trained_hh.dta", clear
+
+* Merge baseline with midline training data
+merge 1:m hhid using "$dailyupdates\midline_training_hh.dta"
+
+***************************************************
+
+* Step 3: Generate Match Indicator
+* Trained at baseline and attended training at midline
+gen match_training_hh = (trained_hh == 1 & (attend_training == 1 | who_attended_training == 1))
+
+***************************************************
+
+* Step 4: Calculate Ratios
+* Count households trained at baseline and attended training at midline
+count if match_training_hh == 1
+local num_trained_attended = r(N)
+
+* Count households trained at baseline but did NOT attend training at midline
+count if trained_hh == 1 & (attend_training == 0 & who_attended_training == 0)
+local num_trained_not_attended = r(N)
+
+* Calculate the ratio
+local ratio = (`num_trained_attended' / (`num_trained_attended' + `num_trained_not_attended')) * 100
+
+***************************************************
+
+* Step 5: Display Results
+di "Households Trained at Baseline and Attended Training at Midline: `num_trained_attended'"
+di "Households Trained at Baseline and Did NOT Attend Training at Midline: `num_trained_not_attended'"
+di "Ratio of Attended to Total Trained: `ratio'%" 

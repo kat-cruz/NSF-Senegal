@@ -21,11 +21,11 @@ if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 
 
 global community "$box_path\Data Management\Output\Data Quality Checks\Midline\R2_Community_Issues"
-
+global communityOriginal "$box_path\Data Management\Output\Data Quality Checks\Midline\_Original_Issues_Output"
 global data "$box_path\Data Management\_CRDES_RawData\Midline\Community_Survey_Data"
 
 *** import community survey data ***
-import delimited "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_24Jan.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_29Jan.csv", clear varnames(1) bindquote(strict)
 
 *** rename variables to distinguish from baseline *** 
 rename q52 q52_a 
@@ -2031,13 +2031,18 @@ forvalues i = 1/3 {
 }	
 **** create one output issue file ***
 
-****************** LOOK IN FOLDER AND SEE WHICH OUTPUT ISSUE FILES THERE ARE *******
-****************** INCLUDE ALL NEW FILES IN THE FOLDER BELOW *************
+****************** APPEND ALL DATA FRAMES THAT HAVE BEEN OUTPUTED ******************
+
+** Look in folder and see which output issue files there are
+** Include all new files in the folder below 
 
 use "$community\Issue_Community_number_hh.dta", clear 
-append using "$community\Issue_Community_number_total.dta" 
+append using "$community\Issue_Community_number_hh.dta"
+append using "$community\Issue_Community_number_total.dta"
 append using "$community\Issue_Community_q_43.dta"
+append using "$community\Issue_Community_q_49.dta"
 append using "$community\Issue_Community_q64.dta"
+append using "$community\Issue_Community_q65.dta"
 append using "$community\Issue_Community_q66.dta"
 append using "$community\Issue_Community_unit_convert_1.dta"
 append using "$community\Issue_Community_unit_convert_2.dta"
@@ -2049,6 +2054,21 @@ append using "$community\Issue_Community_unit_convert_7.dta"
 append using "$community\Issue_Community_unit_convert_9.dta"
 append using "$community\Issue_Community_unit_convert_11.dta"
 
-**************** UPDATE DATE IN FILE NAME ***********************
-export excel using "$community\Community_Issues_24Jan2025.xlsx", firstrow(variables) replace  
+
+	* merge in previous data frames 
+	merge m:m hhid_village using "$communityOriginal\Community_Issues_24Jan2025.dta"
+
+	*filter recent updates by last_update
+	keep if last_update == ""
+	*set new date 
+	replace last_update = "Sent on Jan 29 25"
+
+
+**************** EXPORT DATA  ***********************
+** UPDATE DATE IN FILE NAME 
+
+	export excel using "$community\Community_Issues_29Jan2025.xlsx", firstrow(variables) replace  
+	export excel using "$communityOriginal\Community_Issues_29Jan2025.xlsx", firstrow(variables) replace  
+	save "$communityOriginal\Community_Issues_29Jan2025.dta"
+
 

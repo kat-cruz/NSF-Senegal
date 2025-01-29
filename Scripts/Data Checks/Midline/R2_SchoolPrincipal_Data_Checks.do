@@ -926,6 +926,26 @@ if _N > 0 {
 }
 restore
 
+    * Identify cases where grade_loop_X is 1 but classroom_count_X is 0 or missing
+    replace ind_issue = 1 if grade_loop_`grade' == 1 & (classroom_count_`grade' == 0 | missing(classroom_count_`grade'))
+    
+    * Keep only problematic cases
+    keep if ind_issue == 1
+    
+    * Generate issue description
+    generate issue = "Inconsistency: grade_loop_`grade' is 1 but classroom_count_`grade' is 0 or missing"
+    generate issue_variable_name = "grade_loop_`grade', classroom_count_`grade'"
+    
+    * Display issues for debugging
+    list grade_loop_`grade' classroom_count_`grade' if ind_issue == 1
+
+    * Export flagged data if issues found
+    if _N > 0 {
+        save "$schoolprincipal/Issue_GradeLoop_ClassroomCount_Mismatch_G`grade'.dta", replace
+    }
+    restore
+}
+
 **************************************************
 *** END OF CHECKS ***
 **************************************************

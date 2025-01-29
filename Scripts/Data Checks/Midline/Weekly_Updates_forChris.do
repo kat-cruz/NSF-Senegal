@@ -30,6 +30,8 @@ global baselinedata "$master\_CRDES_CleanData\Baseline\Identified\DISES_Baseline
 
 global training "$master\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 
+global individ "$master\_CRDES_CleanData\Baseline\Identified\All_Villages_With_Individual_IDs.dta"
+
 ***************************************************
 
 * For computing attrition/revisit rates: *
@@ -68,29 +70,84 @@ di "Total Attrition Rate: " total_attrition_rate[1] "%"
 
 ***************************************************
 
-* What share of households retained have a different respondent: *
+* What share of households retained have a different respondent than the baseline household list: *
 
 ***************************************************
-* Load midline data
+
 import delimited "$data", clear varnames(1) bindquote(strict)
 
 * Generate indicator for different respondent
-gen different_respondent = (hh_name_complet_resp == "999")
+gen total_new_member_respondent = (hh_name_complet_resp == "999")
 
 * Count total households retained
 count
 local total_households = r(N)
 
 * Count households with a different respondent
-count if different_respondent == 1
-local total_different_respondent = r(N)
+count if total_new_member_respondent == 1
+local total_new_member_respondent = r(N)
 
 * Calculate share of households with a different respondent
+local share_new_member_respondent = (`total_new_member_respondent' / `total_households') * 100
+
+* Display results
+di "Households with New Member Respondent: `total_new_member_respondent'"
+di "Share of Households with New Member Respondent: `share_new_member_respondent'%"
+
+***************************************************
+* Step 2: Identify Households That Retained the Same Respondent
+***************************************************
+
+* Load baseline individual dataset and keep relevant observations
+use "$individ", clear
+keep if hh_name_complet_resp == hh_full_name_calc_
+drop hh_head_name_complet
+
+* Convert individ to string to ensure compatibility
+tostring individ, replace force
+replace individ = trim(individ)
+replace individ = upper(individ)
+
+* Save cleaned dataset
+save temp_individ.dta, replace
+
+* Load midline data again
+import delimited "$data", clear varnames(1) bindquote(strict)
+
+* Drop missing or invalid names
+drop if missing(hh_name_complet_resp)
+drop if hh_name_complet_resp == "999"
+
+* Rename for merging consistency
+rename hh_name_complet_resp individ
+
+* Convert individ to string format
+tostring individ, replace force
+replace individ = trim(individ)
+replace individ = upper(individ)
+
+* Merge with baseline respondents
+merge 1:1 individ using temp_individ.dta
+
+* Check merge results
+tab _merge
+
+* Generate indicator for same respondent retained
+gen same_respondent = (_merge == 3)  // Matched cases where the same respondent was found in baseline
+
+* Count households where the same respondent was retained
+count if same_respondent == 1
+local total_same_respondent = r(N)
+
+* Compute number of households with a different respondent
+local total_different_respondent = `total_households' - `total_same_respondent'
+
+* Compute share of households that had a different respondent
 local share_different_respondent = (`total_different_respondent' / `total_households') * 100
 
 * Display results
-di "Households with Different Respondent: `total_different_respondent'"
-di "Share of Households with Different Respondent: `share_different_respondent'%"
+di "Households with a Different Respondent: `total_different_respondent'"
+di "Share of Households with a Different Respondent: `share_different_respondent' %"
 
 ***************************************************
 * Tracking Training Attendance Limited to Midline Villages
@@ -224,35 +281,21 @@ putexcel A3 = "Total Revisit Rate (%)" B3 = total_revisit_rate[1]
 putexcel A4 = "Total Attrition Rate (%)" B4 = total_attrition_rate[1]
 
 * Load midline data
-import delimited "$data", clear varnames(1) bindquote(strict)
+* Export respondent retention results
+putexcel A6 = "Households with New  Member Respondent" B6 = `total_new_member_respondent'
+putexcel A7 = "Share of Households with New Household Member Respondent (%)" B7 = `share_new_member_respondent'
 
-* Generate indicator for different respondent
-gen different_respondent = (hh_name_complet_resp == "999")
+putexcel A8 = "Households with a Different Respondent" B8 = `total_different_respondent'
+putexcel A9 = "Share of Households with a Different Respondent (%)" B9 = `share_different_respondent'
 
-* Count total households retained
-count
-local total_households = r(N)
+***************************************************
+* Export Training Attendance Results
+***************************************************
 
-* Count households with a different respondent
-count if different_respondent == 1
-local total_different_respondent = r(N)
+putexcel A11 = "Total Trained Individuals (Baseline)" B11 = `total_trained_indiv'
+putexcel A12 = "Total Trained Individuals (Midline)" B12 = `total_training_id'
+putexcel A13 = "Individual-Level Training Attendance (%)" B13 = `indiv_ratio'
 
-* Calculate share of households with a different respondent
-local share_different_respondent = (`total_different_respondent' / `total_households') * 100
-
-* Export results to Excel
-putexcel A6 = "Total Households Retained" B6 = `total_households'
-putexcel A7 = "Households with Different Respondent" B7 = `total_different_respondent'
-putexcel A8 = "Share of Households with Different Respondent (%)" B8 = `share_different_respondent'
-
-* Add the training attendance calculations here
-* Include individual-level and household-level ratios
-* Export their results after appending to the above Excel file
-putexcel A10 = "Total Trained Individuals (Baseline)" B10 = `total_trained_indiv'
-putexcel A11 = "Total Trained Individuals (Midline)" B11 = `total_training_id'
-putexcel A12 = "Individual-Level Ratio (%)" B12 = `indiv_ratio'
-
-putexcel A14 = "Total Individuals in Trained Households (Baseline)" B14 = `total_trained_hh'
-putexcel A15 = "Total Individuals in Trained Households Reporting Attendance (Midline)" B15 = `total_attend_hh'
-putexcel A16 = "Household-Level Ratio (%)" B16 = `hh_ratio'
-
+putexcel A15 = "Total Trained Households (Baseline)" B15 = `total_trained_hh'
+putexcel A16 = "Total Trained Households Reporting Attendance (Midline)" B16 = `total_attend_hh'
+putexcel A17 = "Household-Level Training Attendance (%)" B17 = `hh_ratio'

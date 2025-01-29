@@ -950,12 +950,22 @@ restore
 *** END OF CHECKS ***
 **************************************************
 
-**** create one output issue file ***
+**** Create one output issue file ***
 
 ****************** LOOK IN FOLDER AND SEE WHICH OUTPUT ISSUE FILES THERE ARE *******
 ****************** INCLUDE ALL NEW FILES IN THE FOLDER BELOW *************
 
+* Start with the first issue file
+use "$schoolprincipal\Issue_Community_number_hh.dta", clear 
 
+* Append all relevant issue files
+local issue_files "Issue_GradeLoop_ClassroomCount_Mismatch_G1.dta Issue_GradeLoop_ClassroomCount_Mismatch_G2.dta Issue_GradeLoop_ClassroomCount_Mismatch_G3.dta Issue_GradeLoop_ClassroomCount_Mismatch_G4.dta Issue_GradeLoop_ClassroomCount_Mismatch_G5.dta Issue_GradeLoop_ClassroomCount_Mismatch_G6.dta"
+
+foreach file in `issue_files' {
+    capture append using "$schoolprincipal\`file'"
+}
 
 **************** UPDATE DATE IN FILE NAME ***********************
-*export excel using "$issues\", firstrow(variables)  
+
+* Export to Excel
+export excel using "$schoolprincipal\SchoolPrincipal_Issues_28Jan2025.xlsx", firstrow(variables) replace  

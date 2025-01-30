@@ -303,7 +303,7 @@ capture label variable knowledge_23_o "Autre raison"
 
 *** health module indiviudals - this is for member index 1 ***
 *** verify maximum number in data set ****
-forvalues i=1/57 {
+forvalues i = 1/57 {
     capture label variable health_5_2_`i' "Est-ce que [health-name] est tombe malade au cours des 12 derniers mois"
 	capture label variable health_5_3_`i' "De quel type de maladie ou de blessure a-t-il/elle souffert"
 	capture label variable health_5_3_1_`i' "Paludisme"
@@ -881,24 +881,29 @@ forvalues i = 1/57 {
 	
 	
     local hh_age hh_age_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+	
 	*** generate indicator variable ***
 	gen ind_var = 0
     replace ind_var = 1  if `hh_age' < 0 | `hh_age' > 90    
  	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
-   
+    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
 	generate issue =  "Unreasonable value"
 	generate issue_variable_name = "hh_age_`i'"
 	rename `hh_age' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     * Export the dataset to Excel conditional on there being an issue
+
     if _N > 0 {
         save "$household_roster\Issue_Household_`hh_age'.dta", replace
     }
+
   
     restore
 }
@@ -916,6 +921,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	
     local hh_age hh_age_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
 	*** generate indicator variable ***
 	gen ind_var = 0
     replace ind_var = 1  if `hh_age' < 0 | `hh_age' > 90    
@@ -925,9 +932,10 @@ forvalues i = 1/57 {
 	keep if ind_var == 1 	
 	generate issue =  "Unreasonable value"
 	generate issue_variable_name = "hh_age_`i'"
+	
 	rename `hh_age' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1012,6 +1020,9 @@ forvalues i = 1/57 {
 	
     local hh_age hh_age_`i'
 	local hh_education_level hh_education_level_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+	
     gen ind_var = 0
     keep if `hh_age' < 18 
 	drop if `hh_education_level' == 99
@@ -1027,7 +1038,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_education_level_`i'"
 	rename `hh_education_level' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     if _N > 0 {
         save "$household_roster\Issue_Household_`hh_education_level'.dta", replace
@@ -1047,7 +1058,10 @@ forvalues i = 1/57 {
 
     local hh_age hh_age_`i'
 	local hh_education_level hh_education_year_achieve_`i'
-    gen ind_var = 0
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
+	gen ind_var = 0
     replace ind_var = 1 if `hh_education_level ' > `hh_age' & `hh_education_level' != .
 	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
@@ -1058,7 +1072,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_education_year_achieve_`i'"
 	rename hh_education_year_achieve_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
 	
     if _N > 0 {
@@ -1074,6 +1088,9 @@ forvalues i = 1/57 {
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
     replace ind_var = 1 if hh_03_`i' == .  
@@ -1086,7 +1103,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_03_`i'"
 	rename hh_03_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1111,6 +1128,9 @@ forvalues i = 1/57 {
 	
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0 
 	replace ind_var = 1 if hh_01_`i' < 0 & hh_01_`i' != -9
@@ -1124,7 +1144,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_01_`i'"
 	rename hh_01_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
     
 	if _N > 0 {
@@ -1139,6 +1159,8 @@ forvalues i = 1/57 {
 	
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	
 	gen ind_var = 0 
@@ -1152,7 +1174,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_02_`i'"
 	rename hh_02_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
     
 	if _N > 0 {
@@ -1169,6 +1191,8 @@ forvalues i = 1/57 {
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 
 	gen ind_var = 0 
@@ -1184,8 +1208,8 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_08_`i'"
 	rename hh_08_`i' print_issue 
 	tostring(print_issue), replace
-	*keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone  hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue  hh_member_name
 
     
 	if _N > 0 {
@@ -1202,6 +1226,8 @@ forvalues i = 1/57 {
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 	
 	
 	gen ind_var = 0 
 	replace ind_var = 1 if hh_09_`i' < 0 & hh_09_`i' != -9
@@ -1214,7 +1240,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_09_`i'"
 	rename hh_09_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
     
 	if _N > 0 {
@@ -1229,6 +1255,8 @@ forvalues i = 1/57 {
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0 
 	replace ind_var = 1 if hh_10_`i' < 0 & hh_10_`i' != -9
@@ -1242,7 +1270,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_10_`i'"
 	rename hh_10_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
     
 	if _N > 0 {
@@ -1262,6 +1290,8 @@ forvalues i = 1/57 {
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	egen hh_13_`i'_total = rowtotal(hh_13_`i'_1  hh_13_`i'_2  hh_13_`i'_3 hh_13_`i'_4  hh_13_`i'_5 hh_13_`i'_6 )
 	
@@ -1277,7 +1307,7 @@ forvalues i = 1/57 {
 	
 	rename hh_13_`i'_total print_issue
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	  if _N > 0 {
         save "$household_roster\Issue_hh_13_`i'_total_unreasonable.dta", replace
     }
@@ -1294,7 +1324,8 @@ forvalues i = 1/57 {
 
 	*** drop no consent households *** 
 	drop if consent == 0 
-
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	egen hh_21_`i'_total = rowtotal ( hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3  hh_21_`i'_4  hh_21_`i'_5  hh_21_`i'_6  )
         
@@ -1310,7 +1341,7 @@ forvalues i = 1/57 {
    	generate issue_variable_name = "Issue found: Sum of hh_21_`i' and hh_21_o_`i' is more than hh_18_`i'"
 	rename  hh_21_`i'_total print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
 	if _N > 0 {
         save "$household_roster\Issue_Household_sum_less_than_hh_18_`i'.dta", replace
@@ -1327,6 +1358,8 @@ forvalues i = 1/57 {
 preserve
     local hh_ethnicity hh_ethnicity_`i'
 	local hh_ethnicity_o hh_ethnicity_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_ethnicity' == 99 & missing(`hh_ethnicity_o') 
@@ -1336,7 +1369,7 @@ preserve
 	generate issue_variable_name = "`hh_ethnicity_o'"
 	rename `hh_ethnicity_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_ethnicity_o'_missing", replace
 }
@@ -1353,6 +1386,8 @@ forvalues i = 1/57 {
 preserve
     local hh_relation_with hh_relation_with_`i'
 	local hh_relation_with_o hh_relation_with_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
 	keep if `hh_relation_with' == 12 | `hh_relation_with' == 13 
@@ -1367,7 +1402,7 @@ preserve
 	generate issue_variable_name = "`hh_relation_with_o'"
 	rename `hh_relation_with_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_relation_with_o'_missing", replace
 }
@@ -1382,6 +1417,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_education_level hh_education_level_`i'
     local hh_education_level_o hh_education_level_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_education_level' == 99 &  missing(`hh_education_level_o') 
@@ -1391,7 +1428,7 @@ preserve
 	generate issue_variable_name = "`hh_education_level_o'"
 	rename `hh_education_level_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_education_level_o'_missing", replace
 }
@@ -1406,6 +1443,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_main_activity hh_main_activity_`i'
     local hh_main_activity_o hh_main_activity_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_main_activity' == 99 &  missing(`hh_main_activity_o') 
@@ -1415,7 +1454,7 @@ preserve
 	generate issue_variable_name = "`hh_main_activity_o'"
 	rename `hh_main_activity_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_main_activity_o'_missing", replace
 }
@@ -1430,6 +1469,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_04 hh_04_`i'
     local hh_03 hh_03_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     keep if `hh_03' == 1 
@@ -1442,7 +1483,7 @@ preserve
 	generate issue_variable_name = "`hh_04'"
 	rename `hh_04' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_04_`i'", replace
 }
@@ -1458,6 +1499,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_05 hh_05_`i'
     local hh_03 hh_03_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     keep if `hh_03' == 1 
@@ -1470,7 +1513,7 @@ preserve
 	generate issue_variable_name = "`hh_05'"
 	rename `hh_05' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_05_`i'", replace
 }
@@ -1485,6 +1528,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_06 hh_06_`i'
     local hh_03 hh_03_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0    
 	keep if `hh_03' == 1 
@@ -1497,7 +1542,7 @@ preserve
 	generate issue_variable_name = "`hh_06'"
 	rename `hh_06' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_06_`i'", replace
 }
@@ -1511,6 +1556,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_07 hh_07_`i'
     local hh_03 hh_03_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0    
 	keep if `hh_03' == 1 
@@ -1523,7 +1570,7 @@ preserve
 	generate issue_variable_name = "`hh_07'"
 	rename `hh_07' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_07_`i'", replace
 }
@@ -1537,6 +1584,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_11 hh_11_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_10' > 0 & `hh_10' != . & `hh_11' == .
@@ -1547,7 +1596,7 @@ preserve
 	generate issue_variable_name = "`hh_11'"
 	rename `hh_11' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_11_`i'", replace
 }
@@ -1563,6 +1612,8 @@ forvalues i = 1/57 {
 preserve	
     local hh_11 hh_11_`i'
 	local hh_11_o hh_11_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_11' == 99 & missing(`hh_11_o') 
@@ -1573,7 +1624,7 @@ preserve
 	generate issue_variable_name = "`hh_11_o'"
 	rename `hh_11_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_11_o_`i'", replace
 }
@@ -1591,6 +1642,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	tostring(hh_12_`i'), replace 
     gen ind_var = 0  
@@ -1602,7 +1655,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_12_`i'"
 	rename hh_12_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_12_`i'", replace
 }
@@ -1617,6 +1670,8 @@ forvalues i = 1/57 {
 preserve	
     local hh_12_a hh_12_a_`i'
 	local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_10' > 0 & `hh_10' != . & `hh_12_a' == .
@@ -1626,7 +1681,7 @@ preserve
 	generate issue_variable_name = "`hh_12_a'"
 	rename `hh_12_a' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_12_a_`i'", replace
 }
@@ -1641,6 +1696,8 @@ forvalues i = 1/57 {
 preserve	
     local hh_12_a hh_12_a_`i'
 	local hh_12_o hh_12_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	tostring(`hh_12_o'), replace 
 	
@@ -1653,7 +1710,7 @@ preserve
 	generate issue_variable_name = "`hh_12_o'"
 	rename `hh_12_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_12_o_`i'", replace
 }
@@ -1673,6 +1730,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -1684,7 +1743,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_1"
 	rename hh_13_`i'_1 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_1_unreasonable", replace
 }
@@ -1696,6 +1755,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -1707,8 +1768,8 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_2"
 	rename hh_13_`i'_2 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
-	if _N > 0 {
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	if _N > 0 { 
 		save "$household_roster\Issue_hh_13_`i'_2_unreasonable", replace
 }
 restore
@@ -1719,6 +1780,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -1730,7 +1793,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_3"
 	rename hh_13_`i'_3 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_3_unreasonable", replace
 }
@@ -1742,6 +1805,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -1753,7 +1818,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_4"
 	rename hh_13_`i'_4 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_4_unreasonable", replace
 }
@@ -1765,6 +1830,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -1776,7 +1843,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_5"
 	rename hh_13_`i'_5 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_5_unreasonable", replace
 }
@@ -1788,6 +1855,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -1799,7 +1868,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_6"
 	rename hh_13_`i'_6 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_6_unreasonable", replace
 }
@@ -1812,6 +1881,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -1823,7 +1894,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_7"
 	rename hh_13_`i'_7 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_7_unreasonable", replace
 }
@@ -1839,6 +1910,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_12_a hh_12_a_`i'
     local hh_13_o hh_13_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
 	keep if `hh_12_a' == 1
@@ -1850,7 +1923,7 @@ preserve
 	generate issue_variable_name = "`hh_13_o'"
 	rename `hh_13_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_13_o_`i''", replace
 }
@@ -1870,6 +1943,8 @@ forvalues i = 1/57 {
     local hh_14 hh_14_`i'
     local hh_12 hh_12_6_`i' 
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
     gen ind_var = 0
 	keep if `hh_10' > 0 & `hh_10' != . & `hh_12' == 1 
@@ -1881,7 +1956,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_14'"
 	rename `hh_14' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_14_`i'", replace
 }
@@ -1897,6 +1972,8 @@ forvalues i = 1/57 {
     local hh_15 hh_15_`i'
     local hh_12 hh_12_6_`i' 
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
     gen ind_var = 0
 	keep if `hh_10' > 0 & `hh_10' != . & `hh_12' == 6 
@@ -1907,7 +1984,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_15'"
 	rename `hh_15' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_15'", replace
 }
@@ -1922,6 +1999,8 @@ forvalues i = 1/57 {
     preserve	
     
 	keep if hh_15_`i' == 99
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 
 	tostring(hh_15_o_`i'), replace 
 	
@@ -1933,7 +2012,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_15_o_`i'"
 	rename hh_15_o_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_15_o_`i'", replace
 }
@@ -1947,6 +2026,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_16 hh_16_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     keep if  `hh_10' > 0 & `hh_10' != . 
@@ -1958,7 +2039,7 @@ preserve
 	generate issue_variable_name = "`hh_16'"
 	rename `hh_16' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_16'", replace
 }
@@ -1973,6 +2054,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_17 hh_17_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     keep if `hh_10' > 0 & `hh_10' != . 
@@ -1984,7 +2067,7 @@ preserve
 	generate issue_variable_name = "`hh_17'"
 	rename `hh_17' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_17'", replace
 }
@@ -2000,6 +2083,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_18 hh_18_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
 	keep if `hh_10' > 0 & `hh_10' != . 
@@ -2011,7 +2096,7 @@ preserve
 	generate issue_variable_name = "`hh_18'"
 	rename `hh_18' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_18'", replace
 }
@@ -2028,6 +2113,8 @@ preserve
 	local hh_19 hh_19_`i'
 	local hh_18 hh_18_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     keep if `hh_10' > 0 & `hh_10' != . 
@@ -2040,7 +2127,7 @@ preserve
 	generate issue_variable_name = "`hh_19'"
 	rename `hh_19' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_19'", replace
 }
@@ -2055,6 +2142,8 @@ forvalues i = 1/57 {
 preserve
     local hh_19 hh_19_`i'
 	local hh_19_o hh_19_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     keep if `hh_19' == 99 
@@ -2065,7 +2154,7 @@ preserve
 	generate issue_variable_name = "`hh_19_o'"
 	rename `hh_19_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_19_o'", replace
 }
@@ -2081,6 +2170,8 @@ preserve
 	local hh_20 hh_20_`i'
 	local hh_18 hh_18_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	tostring `hh_20', replace
 	gen ind_var = 0
@@ -2094,7 +2185,7 @@ preserve
 	generate issue_variable_name = "`hh_20'"
 	rename `hh_20' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_20'", replace
 }
@@ -2109,6 +2200,8 @@ preserve
 	local hh_20_a hh_20_a_`i'
 	local hh_18 hh_18_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
     keep if `hh_10' > 0 & `hh_10' != .
@@ -2121,7 +2214,7 @@ preserve
 	generate issue_variable_name = "`hh_20_a'"
 	rename `hh_20_a' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_20_a'", replace
 }
@@ -2136,6 +2229,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_20_o hh_20_o_`i'
 	local hh_20_a hh_20_a_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
   	
 	**in case any value in in hh_20_o is not a string 
 	tostring `hh_20_o', replace
@@ -2149,7 +2244,7 @@ preserve
 	generate issue_variable_name = "`hh_20_o'"
 	rename `hh_20_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_20_o'", replace
 }
@@ -2165,6 +2260,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -2176,7 +2273,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_1"
 	rename hh_21_`i'_1 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_1_unreasonable", replace
 }
@@ -2188,6 +2285,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -2199,7 +2298,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_2"
 	rename hh_21_`i'_2 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_2_unreasonable", replace
 }
@@ -2211,6 +2310,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -2222,7 +2323,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_3"
 	rename hh_21_`i'_3 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_3_unreasonable", replace
 }
@@ -2234,6 +2335,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -2245,7 +2348,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_4"
 	rename hh_21_`i'_4 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_4_unreasonable", replace
 }
@@ -2257,6 +2360,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -2268,7 +2373,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_5"
 	rename hh_21_`i'_5 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_5_unreasonable", replace
 }
@@ -2280,6 +2385,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -2291,7 +2398,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_6"
 	rename hh_21_`i'_6 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_6_unreasonable", replace
 }
@@ -2305,6 +2412,8 @@ restore
 forvalues i = 1/57 {
     preserve
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	keep if `hh_10' > 0 & `hh_10' != . 
     gen ind_var = 0 
@@ -2316,7 +2425,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_7"
 	rename hh_21_`i'_7 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_7_unreasonable", replace
 }
@@ -2333,6 +2442,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_21_o hh_21_o_`i'
 	local hh_20_a hh_20_a_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
   	
 	**in case any value in in hh_20_o is not a string 
 	*tostring `hh_20_o', replace
@@ -2346,7 +2457,7 @@ preserve
     generate issue_variable_name = "`hh_21_o'"
 	rename `hh_21_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_21_o'", replace
 }
@@ -2363,6 +2474,8 @@ preserve
 	local hh_22 hh_22_`i'
 	local hh_18 hh_18_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0
 	keep if `hh_10' > 0 & `hh_10' != .
@@ -2376,7 +2489,7 @@ preserve
 	generate issue_variable_name = "`hh_22'"
 	rename `hh_22' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_22'", replace
 }
@@ -2395,6 +2508,8 @@ preserve
 	local hh_20 hh_20_6_`i'
 	local hh_18 hh_18_`i'
     local hh_10 hh_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	tostring `hh_23', replace
 	
@@ -2410,7 +2525,7 @@ preserve
 	generate issue_variable_name = "`hh_23'"
 	rename `hh_23' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_23'", replace
 }
@@ -2424,6 +2539,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_23 hh_23_99_`i'
 	local hh_23_o hh_23_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
     
 	tostring `hh_23_o', replace
 		
@@ -2436,7 +2553,7 @@ preserve
 	generate issue_variable_name = "`hh_23_o'"
 	rename `hh_23_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_23_o'", replace
 }
@@ -2457,6 +2574,8 @@ forvalues i = 1/57 {
 	preserve 
 	
 	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	gen ind_var = 0 
 	replace ind_var = 1 if hh_26_`i' == . 
@@ -2466,7 +2585,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_26_`i'"
 	rename hh_26_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_hh_26_`i'_missing", replace
 }
@@ -2480,6 +2599,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_27 hh_27_`i'
 	local hh_26 hh_26_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
   	
 	**in case any value in in hh_27 is not a string 
 	*tostring `hh_27', replace
@@ -2493,7 +2614,7 @@ preserve
 	generate issue_variable_name = "`hh_27'"
 	rename `hh_27' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_27'", replace
 }
@@ -2506,6 +2627,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_28 hh_28_`i'
 	local hh_27 hh_27_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
   	
 	gen ind_var = 0
 	keep if  `hh_27' == 1
@@ -2517,7 +2640,7 @@ preserve
 	generate issue_variable_name = "`hh_28'"
 	rename `hh_28' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_28'", replace
 }
@@ -2534,6 +2657,8 @@ preserve
 	local hh_29 hh_29_`i'
 	local hh_26 hh_26_`i'
 	local hh_32 hh_32_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
   	
 	gen ind_var = 0
 	keep if `hh_26' == 1
@@ -2545,7 +2670,7 @@ preserve
 	generate issue_variable_name = "`hh_29'"
 	rename `hh_29' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_29'", replace
 }
@@ -2559,6 +2684,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_29 hh_29_`i'
 	local hh_29_o hh_29_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
   	
 	gen ind_var = 0
 	keep if `hh_29' == 99
@@ -2569,7 +2696,7 @@ preserve
 	generate issue_variable_name = "`hh_29_o'"
 	rename `hh_29_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_29_o'", replace
 }
@@ -2585,7 +2712,9 @@ forvalues i = 1/57 {
 preserve
 	local hh_30 hh_30_`i'
 	local hh_26 hh_26_`i'
-  	
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
+	
 	gen ind_var = 0
    	keep if  `hh_26' == 1 
 	replace ind_var = 1 if `hh_30' == .
@@ -2595,7 +2724,7 @@ preserve
 	generate issue_variable_name = "`hh_30'"
 	rename `hh_30' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_30'", replace
 }
@@ -2609,6 +2738,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_31 hh_31_`i'
 	local hh_30 hh_30_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	  	
 	gen ind_var = 0
     keep if `hh_30' == 1 
@@ -2619,7 +2750,7 @@ preserve
 	generate issue_variable_name = "`hh_31'"
 	rename `hh_31' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_31'", replace
 }
@@ -2636,6 +2767,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_32 hh_32_`i'
 	local hh_26 hh_26_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	  	
 	gen ind_var = 0
     keep if `hh_26' == 1 
@@ -2646,7 +2779,7 @@ preserve
 	generate issue_variable_name = "`hh_32'"
 	rename `hh_32' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_32'", replace
 }
@@ -2662,6 +2795,8 @@ forvalues i = 1/57 {
     preserve
     local hh_34 hh_34_`i'
     local hh_32 hh_32_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 
     gen ind_var = 0
     keep if `hh_32' == 2
@@ -2672,7 +2807,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_34'"
     rename `hh_34' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster/Issue_`hh_34'", replace
     }
@@ -2687,6 +2822,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_34 hh_34_`i'
 	local hh_32 hh_32_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 	
 	  	
 	gen ind_var = 0
@@ -2699,7 +2836,7 @@ preserve
 	generate issue_variable_name = "`hh_34'"
 	rename `hh_34' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_34'", replace
 }
@@ -2714,6 +2851,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_35 hh_35_`i'
 	local hh_32 hh_32_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 		  	
 	gen ind_var = 0
 	keep if `hh_32' == 1
@@ -2725,7 +2864,7 @@ preserve
 	generate issue_variable_name = "`hh_35'"
 	rename `hh_35' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_35'", replace
 }
@@ -2740,18 +2879,22 @@ forvalues i = 1/57 {
 preserve
 	local hh_36 hh_36_`i'
 	local hh_32 hh_32_`i'
-		  	
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	gen ind_var = 0
 	keep if `hh_32' == 1 
     replace ind_var = 1 if `hh_36' == .
 	keep if ind_var == 1
+	
 
 		
 	generate issue = "Missing"
 	generate issue_variable_name = "`hh_36'"
-	rename `hh_36' print_issue 
+	rename `hh_36' print_issue
+	
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_36'", replace
 }
@@ -2766,6 +2909,8 @@ forvalues i = 1/57 {
 preserve
 	local hh_37 hh_37_`i'
 	local hh_32 hh_32_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
 		  	
 	gen ind_var = 0
 	keep if `hh_32' == 1 
@@ -2777,7 +2922,7 @@ preserve
 	generate issue_variable_name = "`hh_37'"
 	rename `hh_37' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_37'", replace
 }
@@ -2793,6 +2938,9 @@ forvalues i = 1/57 {
 preserve
 	local hh_38 hh_38_`i'
 	local hh_32 hh_32_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 		  	
 	gen ind_var = 0
 	keep if `hh_32' == 1 
@@ -2805,7 +2953,7 @@ preserve
 	generate issue_variable_name = "`hh_38'"
 	rename `hh_38' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_38'", replace
 }
@@ -2819,6 +2967,9 @@ forvalues i = 1/57 {
     preserve
     local hh_39 hh_39_`i'
     local hh_age hh_age_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     keep if `hh_age' >= 4 & `hh_age' <= 18
@@ -2829,7 +2980,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_39'"
     rename `hh_39' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster\Issue_`hh_39'", replace
     }
@@ -2842,6 +2993,9 @@ forvalues i = 1/57 {
     preserve
     local hh_40 hh_40_`i'
     local hh_age hh_age_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     keep if `hh_age' >= 4 & `hh_age' <= 18
@@ -2852,7 +3006,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_40'"
     rename `hh_40' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster\Issue_`hh_40'", replace
     }
@@ -2866,6 +3020,9 @@ forvalues i = 1/57 {
     preserve
     local hh_41 hh_41_`i'
     local hh_26 hh_26_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     keep if `hh_26' == 1
@@ -2876,7 +3033,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_41'"
     rename `hh_41' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster/Issue_`hh_41'", replace
     }
@@ -2893,6 +3050,9 @@ forvalues i = 1/57 {
 	
     local hh_35 hh_35_`i'
     local hh_32 hh_32_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     keep if `hh_32' == 1
@@ -2903,7 +3063,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_35'"
     rename `hh_35' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster\Issue_`hh_35'", replace
     }
@@ -2920,6 +3080,9 @@ forvalues i = 1/57 {
     preserve
     local hh_43 hh_43_`i'
     local hh_42 hh_42_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     keep if `hh_42' == 1
@@ -2930,7 +3093,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_43'"
     rename `hh_43' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster\Issue_`hh_43'", replace
     }
@@ -2944,6 +3107,9 @@ forvalues i = 1/57 {
     preserve
     local hh_44 hh_44_`i'
     local hh_42 hh_42_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     keep if `hh_42' == 2
@@ -2954,7 +3120,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_44'"
     rename `hh_44' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster\Issue_`hh_44'", replace
     }
@@ -2967,6 +3133,8 @@ forvalues i = 1/57 {
     preserve
     local hh_45 hh_45_`i'
     local hh_44 hh_44_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
 
     gen ind_var = 0
     keep if `hh_44' == 1
@@ -2977,7 +3145,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_45'"
     rename `hh_45' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster\Issue_`hh_45'", replace
     }
@@ -2990,6 +3158,9 @@ forvalues i = 1/57 {
     preserve
     local hh_46 hh_46_`i'
     local hh_42 hh_42_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     keep if `hh_42' == 2
@@ -3000,7 +3171,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_46'"
     rename `hh_46' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
     if _N > 0 {
         save "$household_roster\Issue_`hh_46'", replace
     }
@@ -3950,17 +4121,21 @@ restore
 
 *** check for missing values in health_5_2 *** 
 *Note: check max i value
-forvalues i=1/57 {
+forvalues i = 1/57 {
 
     preserve 
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
 	
 	gen ind_var = 0
     replace ind_var = 1 if health_5_2_`i' == .  
  	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
+
+
    
     	* keep and add variables to export *
 	keep if ind_var == 1 	
@@ -3968,7 +4143,7 @@ forvalues i=1/57 {
 	generate issue_variable_name = "health_5_2_`i'"
 	rename health_5_2_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -3985,6 +4160,8 @@ forvalues i = 1/57 {
 preserve
 
 	local health_5_2 health_5_2_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
 		
 	tostring(health_5_3_`i'), replace
 	
@@ -3996,7 +4173,7 @@ preserve
 	generate issue_variable_name = "health_5_3_`i'"
 	rename health_5_3_`i' print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
  if _N > 0 {
         save "$health\issue_household_health_5_3_`i'.dta", replace
     }
@@ -4012,6 +4189,9 @@ forvalues i = 1/57 {
 preserve
 	local health_5_3 health_5_3_99_`i'
 	local health_5_3_o health_5_3_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
 	tostring `health_5_3_o', replace
@@ -4023,7 +4203,7 @@ preserve
 	generate issue_variable_name = "health_5_3_o"
 	rename `health_5_3_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$health\Issue_`health_5_3_o'", replace
 }
@@ -4040,6 +4220,9 @@ preserve
 
 	local health_5_4 health_5_4_`i'
 	local health_5_2 health_5_2_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
 	
@@ -4051,7 +4234,7 @@ preserve
 	generate issue_variable_name = "health_5_4"
 	rename `health_5_4' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$health\Issue_`health_5_4'", replace
 }
@@ -4062,12 +4245,15 @@ restore
 
 *** check for missing values in health_5_5, health_5_6, health_5_7, health_5_8 *** 
 *Note: check max i value
-forvalues i=1/57 {
+forvalues i = 1/57 {
 
     preserve 
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
     replace ind_var = 1 if health_5_5_`i' == .  
@@ -4080,7 +4266,7 @@ forvalues i=1/57 {
 	generate issue_variable_name = "health_5_5_`i'"
 	rename health_5_5_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -4091,12 +4277,15 @@ forvalues i=1/57 {
 }
 
 *Note: check max i value
-forvalues i=1/57 {
+forvalues i = 1/57 {
 
     preserve 
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
     replace ind_var = 1 if health_5_6_`i' == .  
@@ -4109,7 +4298,7 @@ forvalues i=1/57 {
 	generate issue_variable_name = "health_5_6_`i'"
 	rename health_5_6_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -4121,12 +4310,15 @@ forvalues i=1/57 {
 
 
 *Note: check max i value
-forvalues i=1/57 {
+forvalues i = 1/57 {
 
     preserve 
 
 	*** drop no consent households *** 
 	drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
     replace ind_var = 1 if health_5_8_`i' == .  
@@ -4139,7 +4331,7 @@ forvalues i=1/57 {
 	generate issue_variable_name = "health_5_8_`i'"
 	rename health_5_8_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -4156,6 +4348,9 @@ preserve
 
 	local health_5_11 health_5_11_`i'
 	local health_5_10 health_5_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
 	
@@ -4168,7 +4363,7 @@ preserve
 	generate issue_variable_name = "health_5_11"
 	rename `health_5_11' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$health\Issue_`health_5_11'", replace
 }
@@ -4186,6 +4381,9 @@ preserve
 
 	local health_5_11 health_5_11_`i'
 	local health_5_11_o health_5_11_o_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
 	
@@ -4197,7 +4395,7 @@ preserve
 	generate issue_variable_name = "health_5_11_o"
 	rename `health_5_11_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$health\Issue_`health_5_11_o'", replace
 }
@@ -4213,6 +4411,9 @@ preserve
 
 	local health_5_12 health_5_12_`i'
 	local health_5_10 health_5_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 	
 	gen ind_var = 0
 	
@@ -4225,7 +4426,7 @@ preserve
 	generate issue_variable_name = "health_5_12"
 	rename `health_5_12' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	if _N > 0 {
 		save "$health\Issue_`health_5_12'", replace
 }
@@ -4300,10 +4501,13 @@ restore
 
 *** Check for missing values in health_5_7_1 ***
 *Note: check max i value
-forvalues i=1/57 {
+forvalues i = 1/57 {
     preserve 
     *** Drop households without consent ***
     drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     replace ind_var = 1 if health_5_7_1_`i' == .  
@@ -4316,7 +4520,7 @@ forvalues i=1/57 {
     generate issue_variable_name = "health_5_7_1_`i'"
     rename health_5_7_1_`i' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -4328,10 +4532,13 @@ forvalues i=1/57 {
 
 *** Check for missing values in health_5_9 ***
 *Note: check max i value
-forvalues i=1/57 {
+forvalues i = 1/57 {
     preserve 
     *** Drop households without consent ***
     drop if consent == 0 
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     replace ind_var = 1 if health_5_9_`i' == .  
@@ -4344,7 +4551,7 @@ forvalues i=1/57 {
     generate issue_variable_name = "health_5_9_`i'"
     rename health_5_9_`i' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -4356,10 +4563,13 @@ forvalues i=1/57 {
 
 *** Check for unreasonable values in health_5_12 ***
 *Note: check max i value
-forvalues i=1/57 {
+forvalues i = 1/57 {
     preserve
     local health_5_12 health_5_12_`i'
     local health_5_10 health_5_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
 
     gen ind_var = 0
     keep if `health_5_10' == 1
@@ -4371,7 +4581,7 @@ forvalues i=1/57 {
     generate issue_variable_name = "`health_5_12'"
     rename `health_5_12' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
     if _N > 0 {
         save "$health\Issue_`health_5_12'", replace
@@ -4381,56 +4591,56 @@ forvalues i=1/57 {
 
 *** Check for missing values in health_5_14_a ***
 preserve
-gen ind_var = 0
-keep if health_5_13 == 1
-replace ind_var = 1 if health_5_14_a == . 
-keep if ind_var == 1 
+	gen ind_var = 0
+	keep if health_5_13 == 1
+	replace ind_var = 1 if health_5_14_a == . 
+	keep if ind_var == 1 
 
-generate issue = "Missing value"
-generate issue_variable_name = "health_5_14_a"
-rename health_5_14_a print_issue 
-tostring(print_issue), replace
-keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	generate issue = "Missing value"
+	generate issue_variable_name = "health_5_14_a"
+	rename health_5_14_a print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
 
-if _N > 0 {
-    save "$health\Issue_health_5_14_a", replace
-}
+	if _N > 0 {
+		save "$health\Issue_health_5_14_a", replace
+	}
 restore
 
 *** Check for missing values in health_5_14_b ***
 preserve
-gen ind_var = 0
-keep if health_5_13 == 1
-replace ind_var = 1 if health_5_14_b == . 
-keep if ind_var == 1 
+	gen ind_var = 0
+	keep if health_5_13 == 1
+	replace ind_var = 1 if health_5_14_b == . 
+	keep if ind_var == 1 
 
-generate issue = "Missing value"
-generate issue_variable_name = "health_5_14_b"
-rename health_5_14_b print_issue 
-tostring(print_issue), replace
-keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	generate issue = "Missing value"
+	generate issue_variable_name = "health_5_14_b"
+	rename health_5_14_b print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
 
-if _N > 0 {
-    save "$health\Issue_health_5_14_b", replace
-}
+	if _N > 0 {
+		save "$health\Issue_health_5_14_b", replace
+	}
 restore
 
 *** Check for missing values in health_5_14_c ***
 preserve
-gen ind_var = 0
-keep if health_5_13 == 1
-replace ind_var = 1 if health_5_14_c == . 
-keep if ind_var == 1 
+	gen ind_var = 0
+	keep if health_5_13 == 1
+	replace ind_var = 1 if health_5_14_c == . 
+	keep if ind_var == 1 
 
-generate issue = "Missing value"
-generate issue_variable_name = "health_5_14_c"
-rename health_5_14_c print_issue 
-tostring(print_issue), replace
-keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	generate issue = "Missing value"
+	generate issue_variable_name = "health_5_14_c"
+	rename health_5_14_c print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
 
-if _N > 0 {
-    save "$health\Issue_health_5_14_c", replace
-}
+	if _N > 0 {
+		save "$health\Issue_health_5_14_c", replace
+	}
 restore
 
 

@@ -30,7 +30,7 @@ global data "$master\_CRDES_RawData\Midline\Principal_Survey_Data"
 *** Import school principal survey data ***
 **************************************************
 
-import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_26Jan.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_29Jan.csv", clear varnames(1) bindquote(strict)
 
 *** label variables ***
 label variable consent_obtain "Etes-vous d'accord de participer afin que je puisse poursuivre avec nos questions ?" 
@@ -141,45 +141,8 @@ label values schistosomiasis_primary_effect schisto_impact
 label values schistosomiasis_sources_* schisto_source
 
 *** Value Checks ***
-*** Drop observations where consent is not provided ***
-drop if consent_obtain == 0
-
-**************************************************
-*** STEP 1: CHECK FOR MISSING VALUES ***
-**************************************************
 
 misstable summarize, generate(missing_)
-
-* List of required variables
-local required_vars village_select sup consent_obtain respondent_is_director ///
-    geo_locaccuracy geo_localtitude geo_loclatitude geo_loclongitude ///
-    respondent_name respondent_phone_primary respondent_gender respondent_age ///
-    school_water_main ///
-    school_distance_river school_children_water_collection ///
-    school_reading_french school_reading_local school_computer_access ///
-    school_meal_program school_teachers school_staff_paid_non_teaching ///
-    school_staff_volunteers school_council ///
-    absenteeism_problem main_absenteeism_reasons absenteeism_top_reason ///
-    schistosomiasis_problem peak_schistosomiasis_month ///
-    schistosomiasis_primary_effect schistosomiasis_sources ///
-    schistosomiasis_treatment_minist schistosomiasis_treatment_date ///
-
-* Loop through each variable and check for missing values
-foreach var of local required_vars {
-    preserve
-    gen ind_issue = .
-    replace ind_issue = 1 if missing(`var')
-    keep if ind_issue == 1
-    generate issue = "Missing value detected"
-    generate issue_variable_name = "`var'"
-    rename `var' print_issue
-
-    * Export flagged data if there are missing values
-    if _N > 0 {
-        save "$schoolprincipal\Issue_SchoolPrincipal_`var'_missing.dta", replace
-    }
-    restore
-}
 
 **************************************************
 *** STEP 2: CHECK FOR APPROPRIATE VALUES ***
@@ -192,11 +155,13 @@ foreach var of varlist consent_obtain respondent_is_director school_children_wat
     gen ind_issue = .
     replace ind_issue = 1 if `var' != 0 & `var' != 1
     keep if ind_issue == 1
+	keep hhid_village sup_name respondent_name respondent_phone_primary `var'
     
     * Generate issue variables
     generate issue = "Value out of range (should be 0 or 1)"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
+
     
     * Export flagged issues
     if _N > 0 {
@@ -206,7 +171,7 @@ foreach var of varlist consent_obtain respondent_is_director school_children_wat
 }
 
 **************************************************
-*** CONSENT ***
+*** CONSENT CHECKS ***
 **************************************************
 
 * 2.1 Check for consent (must be obtained for survey to proceed)
@@ -214,11 +179,12 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if consent_obtain == 0
 keep if ind_issue == 1
+	keep hhid_village sup_name respondent_name respondent_phone_primary consent_obtain
+
 generate issue = "Consent not obtained; survey should end"
 generate issue_variable_name = "consent_obtain"
 rename consent_obtain print_issue
 
-* Export flagged data if consent not obtained
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolPrincipal_ConsentNotObtained.dta", replace
 }
@@ -229,26 +195,34 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if consent_obtain == 0 & missing(consent_notes)
 keep if ind_issue == 1
+	keep hhid_village sup_name respondent_name respondent_phone_primary consent_obtain consent_notes
+
 generate issue = "Missing reason for lack of consent"
 generate issue_variable_name = "consent_notes"
 rename consent_notes print_issue
 
-* Export flagged data
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolPrincipal_ConsentNotesMissing.dta", replace
 }
 restore
+
+**************************************************
+*** RESPONDENT ROLE CHECKS ***
+**************************************************
 
 * 2.3 Check if "respondent_is_not_director" is provided when "respondent_is_director" is 0
 preserve
 gen ind_issue = .
 replace ind_issue = 1 if respondent_is_director == 0 & missing(respondent_is_not_director)
 keep if ind_issue == 1
+	keep hhid_village sup_name respondent_name respondent_phone_primary respondent_is_director respondent_is_not_director 
+
 generate issue = "Missing reason for not interviewing school director"
 generate issue_variable_name = "respondent_is_not_director"
 rename respondent_is_not_director print_issue
 
-* Export flagged data
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolPrincipal_NotDirectorReasonMissing.dta", replace
 }
@@ -259,26 +233,37 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if respondent_other_role == 99 & missing(respondent_other_role_o)
 keep if ind_issue == 1
+* Retain key metadata fields before exporting
+keep hhid_village sup_name respondent_name respondent_phone_primary respondent_other_role respondent_other_role_o
+
 generate issue = "Missing specification for 'Other' role of respondent"
 generate issue_variable_name = "respondent_other_role_o"
 rename respondent_other_role_o print_issue
 
-* Export flagged data
+
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolPrincipal_OtherRoleMissing.dta", replace
 }
 restore
+
+**************************************************
+*** CHECKS FOR GPS, DATE, AND TIME ***
+**************************************************
 
 * 1. Ensure GPS coordinates are collected
 preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(geo_locaccuracy) | missing(geo_loclatitude) | missing(geo_loclongitude)
 keep if ind_issue == 1
+* Retain key metadata fields before exporting
+keep hhid_village sup_name respondent_name respondent_phone_primary geo_locaccuracy geo_loclatitude geo_loclongitude
 generate issue = "Missing GPS coordinates"
 generate issue_variable_name = "geo_locaccuracy/geo_loclatitude/geo_loclongitude"
 rename geo_locaccuracy print_issue
 
-* Export flagged data if GPS coordinates are missing
+
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolPrincipal_MissingGPSCoordinates.dta", replace
 }
@@ -289,11 +274,14 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(date)
 keep if ind_issue == 1
+* Retain key metadata fields before exporting
+keep hhid_village sup_name respondent_name respondent_phone_primary date
+
 generate issue = "Date not recorded"
 generate issue_variable_name = "date"
 rename date print_issue
 
-* Export flagged data if date is missing
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolPrincipal_MissingDate.dta", replace
 }
@@ -304,140 +292,18 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(time)
 keep if ind_issue == 1
+* Retain key metadata fields before exporting
+keep hhid_village sup_name respondent_name respondent_phone_primary time
+
 generate issue = "Time not recorded"
 generate issue_variable_name = "time"
 rename time print_issue
 
-* Export flagged data if time is missing
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolPrincipal_MissingTime.dta", replace
 }
 restore
-
-**************************************************
-*** RESPONDENT DETAILS SECTION CHECKS ***
-**************************************************
-
-* 1. Check if "respondent_other_role_o" is completed when "respondent_other_role" = 99 (Other)
-preserve
-gen ind_issue = .
-replace ind_issue = 1 if respondent_other_role == 99 & missing(respondent_other_role_o)
-keep if ind_issue == 1
-generate issue = "Missing specification for 'Other' role of respondent"
-generate issue_variable_name = "respondent_other_role_o"
-rename respondent_other_role_o print_issue
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolPrincipal_OtherRoleMissing.dta", replace
-}
-restore
-
-* 2. Check if "respondent_name" is missing
-preserve
-gen ind_issue = .
-replace ind_issue = 1 if missing(respondent_name)
-keep if ind_issue == 1
-generate issue = "Respondent's full name is missing"
-generate issue_variable_name = "respondent_name"
-rename respondent_name print_issue
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolPrincipal_NameMissing.dta", replace
-}
-restore
-
-* 3. Check if "respondent_phone_primary" is missing
-preserve
-gen ind_issue = .
-replace ind_issue = 1 if missing(respondent_phone_primary)
-keep if ind_issue == 1
-generate issue = "Primary contact number of respondent is missing"
-generate issue_variable_name = "respondent_phone_primary"
-rename respondent_phone_primary print_issue
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolPrincipal_PrimaryPhoneMissing.dta", replace
-}
-restore
-
-* 4. Check if "respondent_gender" is missing
-preserve
-gen ind_issue = .
-replace ind_issue = 1 if missing(respondent_gender)
-keep if ind_issue == 1
-generate issue = "Respondent's gender is missing"
-generate issue_variable_name = "respondent_gender"
-rename respondent_gender print_issue
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolPrincipal_GenderMissing.dta", replace
-}
-restore
-
-* 5. Check if "respondent_age" is missing
-preserve
-gen ind_issue = .
-replace ind_issue = 1 if missing(respondent_age)
-keep if ind_issue == 1
-generate issue = "Respondent's age is missing"
-generate issue_variable_name = "respondent_age"
-rename respondent_age print_issue
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolPrincipal_AgeMissing.dta", replace
-}
-restore
-
-* 6. Check if "director_experience_general" is missing when "respondent_is_director" = 1
-preserve
-gen ind_issue = .
-replace ind_issue = 1 if respondent_is_director == 1 & missing(director_experience_general)
-keep if ind_issue == 1
-generate issue = "Missing general experience as director when respondent is a director"
-generate issue_variable_name = "director_experience_general"
-rename director_experience_general print_issue
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolPrincipal_GeneralExperienceMissing.dta", replace
-}
-restore
-
-* 7. Check if "director_experience_specific" is missing when "respondent_is_director" = 1
-preserve
-gen ind_issue = .
-replace ind_issue = 1 if respondent_is_director == 1 & missing(director_experience_specific)
-keep if ind_issue == 1
-generate issue = "Missing specific experience at this school when respondent is a director"
-generate issue_variable_name = "director_experience_specific"
-rename director_experience_specific print_issue
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolPrincipal_SpecificExperienceMissing.dta", replace
-}
-restore
-
-* 8. Check if "director_experience_specific" exceeds "director_experience_general"
-preserve
-gen ind_issue = .
-replace ind_issue = 1 if respondent_is_director == 1 & director_experience_specific > director_experience_general
-keep if ind_issue == 1
-generate issue = "Specific experience exceeds general experience for director"
-generate issue_variable_name = "director_experience_specific"
-rename director_experience_specific print_issue
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolPrincipal_SpecificExperienceExceedsGeneral.dta", replace
-}
-restore
-
 
 
 **************************************************
@@ -449,11 +315,12 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_water_main)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_water_main
 generate issue = "Missing main source of water for the school"
 generate issue_variable_name = "school_water_main"
 rename school_water_main print_issue
 
-* Export flagged data
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolFacilities_WaterMainMissing.dta", replace
 }
@@ -462,13 +329,15 @@ restore
 * 2. Check if "school_distance_river" is missing
 preserve
 gen ind_issue = .
-replace ind_issue = 1 if missing(school_distance_river)
+replace ind_issue = 1 if missing(school_distance_river) | school_distance_river == 0
 keep if ind_issue == 1
-generate issue = "Missing distance from school to nearest water access point"
+keep hhid_village sup_name respondent_name respondent_phone_primary school_distance_river
+
+generate issue = "Missing or invalid distance from school to nearest water access point"
 generate issue_variable_name = "school_distance_river"
 rename school_distance_river print_issue
 
-* Export flagged data
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolFacilities_DistanceRiverMissing.dta", replace
 }
@@ -479,11 +348,14 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_children_water_collection)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection
+
 generate issue = "Missing indicator for school sending children to collect water"
 generate issue_variable_name = "school_children_water_collection"
 rename school_children_water_collection print_issue
 
-* Export flagged data
+
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolFacilities_ChildrenWaterCollectionMissing.dta", replace
 }
@@ -494,11 +366,13 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if school_children_water_collection == 1 & missing(school_water_use)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection school_water_use
 generate issue = "Missing use of water collected by children"
 generate issue_variable_name = "school_water_use"
 rename school_water_use print_issue
 
-* Export flagged data
+
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolFacilities_WaterUseMissing.dta", replace
 }
@@ -510,11 +384,13 @@ foreach var in school_reading_french school_reading_local school_computer_access
     gen ind_issue = .
     replace ind_issue = 1 if missing(`var')
     keep if ind_issue == 1
+    keep hhid_village sup_name respondent_name respondent_phone_primary `var'
     generate issue = "Missing value for `var'"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
-    
-    * Export flagged data
+
+
+
     if _N > 0 {
         save "$schoolprincipal\Issue_SchoolFacilities_`var'Missing.dta", replace
     }
@@ -526,11 +402,140 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_teachers)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_teachers
 generate issue = "Missing number of teachers at the school"
 generate issue_variable_name = "school_teachers"
 rename school_teachers print_issue
 
-* Export flagged data
+
+
+if _N > 0 {
+    save "$schoolprincipal\Issue_SchoolFacilities_TeachersMissing.dta", replace
+}
+restore
+
+* 7. Check if "council_women" does not exceed total members
+preserve
+gen ind_issue = .
+replace ind_issue = 1 if school_council == 1 & council_women > council_school_staff + council_community_members
+keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_council council_women council_school_staff council_community_members
+generate issue = "Number of women in council exceeds total council members"
+generate issue_variable_name = "council_women"
+rename council_women print_issue
+
+
+
+if _N > 0 {
+    save "$schoolprincipal\Issue_SchoolFacilities_WomenCountExceedsTotal.dta", replace
+}
+restore
+
+
+**************************************************
+*** SCHOOL FACILITIES SECTION CHECKS ***
+**************************************************
+
+* 1. Check if "school_water_main" is missing
+preserve
+gen ind_issue = .
+replace ind_issue = 1 if missing(school_water_main)
+keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_water_main
+generate issue = "Missing main source of water for the school"
+generate issue_variable_name = "school_water_main"
+rename school_water_main print_issue
+
+
+
+if _N > 0 {
+    save "$schoolprincipal\Issue_SchoolFacilities_WaterMainMissing.dta", replace
+}
+restore
+
+* 2. Check if "school_distance_river" is missing or invalid (<= 0)
+preserve
+gen ind_issue = .
+replace ind_issue = 1 if missing(school_distance_river) | school_distance_river <= 0
+keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_distance_river
+
+generate issue = "Missing or invalid distance from school to nearest water access point"
+generate issue_variable_name = "school_distance_river"
+rename school_distance_river print_issue
+
+
+
+if _N > 0 {
+    save "$schoolprincipal\Issue_SchoolFacilities_DistanceRiverMissing.dta", replace
+}
+restore
+
+* 3. Check if "school_children_water_collection" is missing
+preserve
+gen ind_issue = .
+replace ind_issue = 1 if missing(school_children_water_collection)
+keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection
+
+generate issue = "Missing indicator for school sending children to collect water"
+generate issue_variable_name = "school_children_water_collection"
+rename school_children_water_collection print_issue
+
+
+if _N > 0 {
+    save "$schoolprincipal\Issue_SchoolFacilities_ChildrenWaterCollectionMissing.dta", replace
+}
+restore
+
+* 4. Check if "school_water_use" is missing when "school_children_water_collection" = 1
+preserve
+gen ind_issue = .
+replace ind_issue = 1 if school_children_water_collection == 1 & missing(school_water_use)
+keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection school_water_use
+generate issue = "Missing use of water collected by children"
+generate issue_variable_name = "school_water_use"
+rename school_water_use print_issue
+
+
+
+if _N > 0 {
+    save "$schoolprincipal\Issue_SchoolFacilities_WaterUseMissing.dta", replace
+}
+restore
+
+* 5. Check for missing yes/no variables: reading materials, computer access, meal program, council presence
+foreach var in school_reading_french school_reading_local school_computer_access school_meal_program school_council {
+    preserve
+    gen ind_issue = .
+    replace ind_issue = 1 if missing(`var')
+    keep if ind_issue == 1
+    keep hhid_village sup_name respondent_name respondent_phone_primary `var'
+    generate issue = "Missing value for `var'"
+    generate issue_variable_name = "`var'"
+    rename `var' print_issue
+
+
+
+    if _N > 0 {
+        save "$schoolprincipal\Issue_SchoolFacilities_`var'Missing.dta", replace
+    }
+    restore
+}
+
+* 6. Check if "school_teachers" is missing
+preserve
+gen ind_issue = .
+replace ind_issue = 1 if missing(school_teachers)
+keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_teachers
+generate issue = "Missing number of teachers at the school"
+generate issue_variable_name = "school_teachers"
+rename school_teachers print_issue
+
+
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolFacilities_TeachersMissing.dta", replace
 }
@@ -541,11 +546,13 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_staff_paid_non_teaching)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_staff_paid_non_teaching
 generate issue = "Missing number of paid non-teaching staff"
 generate issue_variable_name = "school_staff_paid_non_teaching"
 rename school_staff_paid_non_teaching print_issue
 
-* Export flagged data
+
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolFacilities_PaidStaffMissing.dta", replace
 }
@@ -556,11 +563,13 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_staff_volunteers)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary school_staff_volunteers
 generate issue = "Missing number of unpaid volunteers"
 generate issue_variable_name = "school_staff_volunteers"
 rename school_staff_volunteers print_issue
 
-* Export flagged data
+
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolFacilities_VolunteersMissing.dta", replace
 }
@@ -572,11 +581,13 @@ foreach var in council_school_staff council_community_members council_women coun
     gen ind_issue = .
     replace ind_issue = 1 if school_council == 1 & missing(`var')
     keep if ind_issue == 1
+    keep hhid_village sup_name respondent_name respondent_phone_primary `var'
     generate issue = "Missing value for `var' when school council exists"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
 
-    * Export flagged data
+
+
     if _N > 0 {
         save "$schoolprincipal\Issue_SchoolFacilities_`var'Missing.dta", replace
     }
@@ -588,11 +599,13 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if school_council == 1 & council_women > council_school_staff + council_community_members
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary council_women
 generate issue = "Number of women in council exceeds total council members"
 generate issue_variable_name = "council_women"
 rename council_women print_issue
 
-* Export flagged data
+
+
 if _N > 0 {
     save "$schoolprincipal\Issue_SchoolFacilities_WomenCountExceedsTotal.dta", replace
 }
@@ -601,12 +614,14 @@ restore
 **************************************************
 *** STUDENT ENROLLMENT SECTION CHECKS ***
 **************************************************
+
 * Check if grade_loop variables are missing
 foreach var in grade_loop grade_loop_1 grade_loop_2 grade_loop_3 grade_loop_4 grade_loop_5 grade_loop_6 {
     preserve
     gen ind_issue = .
     replace ind_issue = 1 if missing(`var')
     keep if ind_issue == 1
+	keep hhid_village sup_name respondent_name respondent_phone_primary `var'  
     generate issue = "Missing grade loop variable"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
@@ -624,6 +639,7 @@ foreach var in classroom_count_1 classroom_count_2 classroom_count_3 classroom_c
     gen ind_issue = .
     replace ind_issue = 1 if missing(`var') | `var' < 0
     keep if ind_issue == 1
+	keep hhid_village sup_name respondent_name respondent_phone_primary `var'  
     generate issue = "Missing or invalid classroom count"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
@@ -635,31 +651,47 @@ foreach var in classroom_count_1 classroom_count_2 classroom_count_3 classroom_c
     restore
 }
 
-* Check enrollment and passing totals, considering zero classroom/grade counts
-foreach grade in 1 2 3 4 5 6 {
-    local classroom_count_var = "classroom_count_`grade'"
-    local grade_loop_var = "grade_loop_`grade'"
+**************************************************
+*** CHECK GRADE LOOP AND CLASSROOM COUNT CONSISTENCY ***
+**************************************************
 
+foreach grade in 1 2 3 4 5 6 {
+    local grade_loop_var "grade_loop_`grade'"
+    local classroom_count_var "classroom_count_`grade'"
+
+    * Check if grade_loop requires a positive classroom count
     preserve
-    * Skip if both classroom count and grade loop are zero
-    drop if (`classroom_count_var' == 0 & `grade_loop_var' == 0)
+    gen ind_issue = .
+    replace ind_issue = 1 if `grade_loop_var' == `grade' & `classroom_count_var' < `grade'
+    keep if ind_issue == 1
+	keep hhid_village sup_name respondent_name respondent_phone_primary `classroom_count_var'  
+    generate issue = "Classroom count does not match required grade level"
+    generate issue_variable_name = "`classroom_count_var'"
+    rename `classroom_count_var' print_issue
+
+    * Export flagged data
+    if _N > 0 {
+        save "$schoolprincipal\Issue_StudentEnrollment_GradeLoop_ClassroomMismatch_G`grade'.dta", replace
+    }
+    restore
+}
+
+**************************************************
+*** CHECK ENROLLMENT TOTAL BASED ON CLASSROOM COUNT ***
+**************************************************
+
+foreach grade in 1 2 3 4 5 6 {
+    local classroom_count_var "classroom_count_`grade'"
 
     foreach class in 1 2 {
         preserve
-        * Check classroom count to ensure valid range for this grade/class combination
-        keep if `class' <= `classroom_count_var' // Only keep observations where classroom count permits this class
-
-        * Skip checks for classes beyond the declared classroom count
-        if _N == 0 {
-            restore
-            continue
-        }
-
-        * Check enrollment_2024_total
+        * Check if total enrollment is valid when a classroom exists
         gen ind_issue = .
-        replace ind_issue = 1 if missing(enrollment_2024_total_`grade'_`class') & `classroom_count_var' > 0
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & missing(enrollment_2024_total_`grade'_`class')
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & enrollment_2024_total_`grade'_`class' <= 0
         keep if ind_issue == 1
-        generate issue = "Missing or invalid enrollment total"
+		keep hhid_village sup_name respondent_name respondent_phone_primary enrollment_2024_total_`grade'_`class'
+        generate issue = "Invalid or missing enrollment total"
         generate issue_variable_name = "enrollment_2024_total_`grade'_`class'"
         rename enrollment_2024_total_`grade'_`class' print_issue
 
@@ -668,14 +700,25 @@ foreach grade in 1 2 3 4 5 6 {
             save "$schoolprincipal\Issue_StudentEnrollment_EnrollmentTotalInvalid_G`grade'_C`class'.dta", replace
         }
         restore
+    }
+}
 
-        * Check enrollment_2024_female
+**************************************************
+*** CHECK FEMALE ENROLLMENT BASED ON CLASSROOM COUNT ***
+**************************************************
+
+foreach grade in 1 2 3 4 5 6 {
+    local classroom_count_var "classroom_count_`grade'"
+
+    foreach class in 1 2 {
         preserve
+        * Ensure female enrollment exists and is within total enrollment bounds
         gen ind_issue = .
-        replace ind_issue = 1 if missing(enrollment_2024_female_`grade'_`class') & `classroom_count_var' > 0
-        replace ind_issue = 1 if enrollment_2024_female_`grade'_`class' < 0 | enrollment_2024_female_`grade'_`class' > enrollment_2024_total_`grade'_`class'
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & missing(enrollment_2024_female_`grade'_`class')
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & enrollment_2024_female_`grade'_`class' > enrollment_2024_total_`grade'_`class'
         keep if ind_issue == 1
-        generate issue = "Missing or invalid female enrollment count"
+		keep hhid_village sup_name respondent_name respondent_phone_primary enrollment_2024_female_`grade'_`class'
+        generate issue = "Invalid or missing female enrollment"
         generate issue_variable_name = "enrollment_2024_female_`grade'_`class'"
         rename enrollment_2024_female_`grade'_`class' print_issue
 
@@ -684,14 +727,26 @@ foreach grade in 1 2 3 4 5 6 {
             save "$schoolprincipal\Issue_StudentEnrollment_EnrollmentFemaleInvalid_G`grade'_C`class'.dta", replace
         }
         restore
+    }
+}
 
-        * Check passing_2024_total
+**************************************************
+*** CHECK PASSING TOTAL BASED ON ENROLLMENT ***
+**************************************************
+
+foreach grade in 1 2 3 4 5 6 {
+    local classroom_count_var "classroom_count_`grade'"
+
+    foreach class in 1 2 {
         preserve
+        * Ensure passing total is within enrollment limits
         gen ind_issue = .
-        replace ind_issue = 1 if missing(passing_2024_total_`grade'_`class') & `classroom_count_var' > 0
-        replace ind_issue = 1 if passing_2024_total_`grade'_`class' < 0 | passing_2024_total_`grade'_`class' > enrollment_2024_total_`grade'_`class'
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & missing(passing_2024_total_`grade'_`class')
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_total_`grade'_`class' < 0
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_total_`grade'_`class' > enrollment_2024_total_`grade'_`class'
         keep if ind_issue == 1
-        generate issue = "Missing or invalid passing total"
+		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_total_`grade'_`class'
+        generate issue = "Invalid or missing passing total"
         generate issue_variable_name = "passing_2024_total_`grade'_`class'"
         rename passing_2024_total_`grade'_`class' print_issue
 
@@ -700,28 +755,37 @@ foreach grade in 1 2 3 4 5 6 {
             save "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G`grade'_C`class'.dta", replace
         }
         restore
+    }
+}
 
-* Check passing_2024_female
+**************************************************
+*** CHECK FEMALE PASSING TOTAL BASED ON FEMALE ENROLLMENT ***
+**************************************************
+
 foreach grade in 1 2 3 4 5 6 {
-    local classroom_count_var = "classroom_count_`grade'"
+    local classroom_count_var "classroom_count_`grade'"
+
     foreach class in 1 2 {
         preserve
+        * Ensure female passing total is within valid enrollment range
         gen ind_issue = .
-        replace ind_issue = 1 if missing(passing_2024_female_`grade'_`class') & `classroom_count_var' > 0
-        replace ind_issue = 1 if passing_2024_female_`grade'_`class' < 0 | passing_2024_female_`grade'_`class' > passing_2024_total_`grade'_`class' | passing_2024_female_`grade'_`class' > enrollment_2024_female_`grade'_`class'
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & missing(passing_2024_female_`grade'_`class')
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' < 0
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' > passing_2024_total_`grade'_`class'
+        replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' > enrollment_2024_female_`grade'_`class'
         keep if ind_issue == 1
-        if _N > 0 {
-            generate issue = "Missing or invalid female passing count"
-            generate issue_variable_name = "passing_2024_female_`grade'_`class'"
-            rename passing_2024_female_`grade'_`class' print_issue
+		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_female_`grade'_`class'
+        generate issue = "Invalid or missing female passing count"
+        generate issue_variable_name = "passing_2024_female_`grade'_`class'"
+        rename passing_2024_female_`grade'_`class' print_issue
 
-            * Export flagged data
+        * Export flagged data
+        if _N > 0 {
             save "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G`grade'_C`class'.dta", replace
         }
         restore
     }
 }
-
 
 
 **************************************************
@@ -733,6 +797,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(absenteeism_problem) | absenteeism_problem < 1 | absenteeism_problem > 5
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary absenteeism_problem
 generate issue = "Missing or invalid response for absenteeism problem"
 generate issue_variable_name = "absenteeism_problem"
 rename absenteeism_problem print_issue
@@ -748,6 +813,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(main_absenteeism_reasons)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary main_absenteeism_reasons
 generate issue = "Missing main reasons for absenteeism"
 generate issue_variable_name = "main_absenteeism_reasons"
 rename main_absenteeism_reasons print_issue
@@ -763,6 +829,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(absenteeism_top_reason) | absenteeism_top_reason < 1 | absenteeism_top_reason > 99
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary absenteeism_top_reason
 generate issue = "Missing or invalid top reason for absenteeism"
 generate issue_variable_name = "absenteeism_top_reason"
 rename absenteeism_top_reason print_issue
@@ -778,6 +845,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_problem) | schistosomiasis_problem < 1 | schistosomiasis_problem > 5
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_problem
 generate issue = "Missing or invalid response for schistosomiasis problem"
 generate issue_variable_name = "schistosomiasis_problem"
 rename schistosomiasis_problem print_issue
@@ -793,6 +861,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(peak_schistosomiasis_month) | peak_schistosomiasis_month < 1 | peak_schistosomiasis_month > 12
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary peak_schistosomiasis_month
 generate issue = "Missing or invalid peak schistosomiasis month"
 generate issue_variable_name = "peak_schistosomiasis_month"
 rename peak_schistosomiasis_month print_issue
@@ -808,6 +877,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_primary_effect) | schistosomiasis_primary_effect < 1 | schistosomiasis_primary_effect > 2
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_primary_effect
 generate issue = "Missing or invalid primary effect of schistosomiasis"
 generate issue_variable_name = "schistosomiasis_primary_effect"
 rename schistosomiasis_primary_effect print_issue
@@ -823,6 +893,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_sources)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_sources
 generate issue = "Missing sources of schistosomiasis"
 generate issue_variable_name = "schistosomiasis_sources"
 rename schistosomiasis_sources print_issue
@@ -838,6 +909,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_treatment_minist) | (schistosomiasis_treatment_minist != 0 & schistosomiasis_treatment_minist != 1)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_treatment_minist
 generate issue = "Missing or invalid Ministry of Health treatment indicator"
 generate issue_variable_name = "schistosomiasis_treatment_ministry"
 rename schistosomiasis_treatment_minist print_issue
@@ -853,6 +925,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_treatment_date)
 keep if ind_issue == 1
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_treatment_date
 generate issue = "Missing treatment date for schistosomiasis"
 generate issue_variable_name = "schistosomiasis_treatment_date"
 rename schistosomiasis_treatment_date print_issue
@@ -863,66 +936,50 @@ if _N > 0 {
 }
 restore
 
-**************************************************
-*** VERIFICATION PRESENCE SCOLAIRE CHECKS ***
-**************************************************
+foreach grade in 1 2 3 4 5 6 {
+    preserve
+    gen ind_issue = .
+    
+    * Ensure grade_loop_X is properly accounted for classroom_count_X
+    replace ind_issue = 1 if grade_loop_`grade' > 0 & (missing(classroom_count_`grade') | classroom_count_`grade' == 0)
+    
+    * Keep only problematic cases
+    keep if ind_issue == 1
+    keep hhid_village sup_name respondent_name respondent_phone_primary classroom_count_`grade'
+    
+    * Generate issue description
+    generate issue = "Mismatch: grade_loop_`grade' exists but classroom_count_`grade' is missing or zero"
+    generate issue_variable_name = "grade_loop_`grade', classroom_count_`grade'"
+    
+    * Rename for clarity
+    rename classroom_count_`grade' print_issue
+    
+    * Export flagged data if issues found
+    if _N > 0 {
+        save "$schoolprincipal\Issue_GradeLoop_ClassroomCountMismatch_G`grade'.dta", replace
+    }
+    restore
+}
 
-* 1. Check if school_repeat_count matches hh_size_load
+
+
 preserve
 gen ind_issue = .
-replace ind_issue = 1 if school_repeat_count != hh_size_load
+replace ind_issue = 1 if missing(school_name)
+
+* Keep only problematic cases
 keep if ind_issue == 1
-generate issue = "Mismatch between school_repeat_count and hh_size_load"
-generate issue_variable_name = "school_repeat_count, hh_size_load"
+keep hhid_village sup_name respondent_name respondent_phone_primary school_name
 
-* Export flagged data
+* Generate issue description
+generate issue = "School name is missing"
+generate issue_variable_name = "school_name"
+drop school_name 
+gen print_issue = 0  // Rename for clarity
+
+* Export flagged data if issues found
 if _N > 0 {
-    save "$schoolprincipal\Issue_SchoolRepeat_vs_HHSizeLoad.dta", replace
-}
-restore
-
-* 2. Check that required data is recorded for all fu_mem_id iterations
-preserve
-gen ind_issue = .
-gen ind_missing = .
-forval i = 1/`=school_repeat_count' {
-    gen check_`i' = !missing(pull_fu_mem_id_`i') & !missing(pull_hh_full_name_calc__`i')
-    replace ind_missing = 1 if check_`i' == 0
-}
-replace ind_issue = 1 if ind_missing == 1
-keep if ind_issue == 1
-generate issue = "Missing required data for fu_mem_id iteration"
-generate issue_variable_name = "fu_mem_id_`i', pull_hh_full_name_calc__`i'"
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_FuMemID_RequiredDataMissing.dta", replace
-}
-restore
-
-* 3. Check for logical inconsistencies (unenrolled student being present or having a grade)
-preserve
-gen ind_issue = .
-gen ind_inconsistent = 0
-
-forval i = 1/`=school_repeat_count' {
-    gen unenrolled_`i' = (info_eleve_2_`i' == 0)   // Check if student is unenrolled
-    gen present_`i' = (info_eleve_7_`i' == 1)      // Check if student is present
-    gen grade_assigned_`i' = !missing(info_eleve_3_`i') // Check if grade is assigned
-
-    * Logical inconsistency checks
-    replace ind_inconsistent = 1 if unenrolled_`i' & present_`i'
-    replace ind_inconsistent = 1 if unenrolled_`i' & grade_assigned_`i'
-}
-
-replace ind_issue = 1 if ind_inconsistent == 1
-keep if ind_issue == 1
-generate issue = "Logical inconsistency: Unenrolled student marked as present or has a grade"
-generate issue_variable_name = "info_eleve_2_`i', info_eleve_7_`i', info_eleve_3_`i'"
-
-* Export flagged data
-if _N > 0 {
-    save "$schoolprincipal\Issue_LogicalInconsistencies.dta", replace
+    save "$schoolprincipal\Issue_SchoolFacilities_SchoolNameMissing.dta", replace
 }
 restore
 
@@ -930,12 +987,44 @@ restore
 *** END OF CHECKS ***
 **************************************************
 
-**** create one output issue file ***
+**** Create one output issue file ***
 
 ****************** LOOK IN FOLDER AND SEE WHICH OUTPUT ISSUE FILES THERE ARE *******
 ****************** INCLUDE ALL NEW FILES IN THE FOLDER BELOW *************
 
-
-
+* Start with the first issue file
+use "$schoolprincipal\Issue_SchoolFacilities_SchoolNameMissing", clear
+append using "$schoolprincipal\Issue_GradeLoop_ClassroomCountMismatch_G2"
+append using "$schoolprincipal\Issue_SchoolFacilities_DistanceRiverMissing"
+append using "$schoolprincipal\Issue_SchoolFacilities_DistanceRiverMissing.dta"
+append using "$schoolprincipal\Issue_SchoolFacilities_DistanceRiverMissing"
+append using "$schoolprincipal\Issue_StudentEnrollment_EnrollmentTotalInvalid_G6_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G1_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G1_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G2_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G2_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G3_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G3_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G4_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G4_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G5_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G5_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G6_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingFemaleInvalid_G6_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G1_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G1_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G2_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G2_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G3_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G3_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G4_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G4_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G5_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G5_C2"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G6_C1"
+append using "$schoolprincipal\Issue_StudentEnrollment_PassingTotalInvalid_G6_C2"
 **************** UPDATE DATE IN FILE NAME ***********************
-*export excel using "$issues\", firstrow(variables)  
+
+* Export to Excel
+export excel using "$schoolprincipal\SchoolPrincipal_Issues_29Jan2025.xlsx", firstrow(variables) replace  
+

@@ -55,7 +55,7 @@ global baseline "$master\Data Management\_CRDES_CleanData\Baseline\Identified"
 
 
 global issues "$master\Data Management\External_Corrections\Issues for Justin and Amina\Midline\Issues"
-global issuesOriginal "$master\Data Management\Output\Data Quality Checks\Midline\Original_Issues_Output"
+global issuesOriginal "$master\Data Management\Output\Data Quality Checks\Midline\_Original_Issues_Output"
 
 
 ********************** COMBINE FILES INTO SECTION FILES **********************
@@ -380,23 +380,27 @@ merge m:m hhid individ using "$baseline\All_Villages_With_Individual_IDs_Selecte
 		replace hh_name_complet_resp = hh_name_complet_resp_new if hh_individ_complet_resp == "999"
 		drop hh_name_complet_resp_new
 		gen last_update = "Sent on Jan2825" if _merge != .
+		rename _merge _merge_Jan28
 
-
-		order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name last_update _merge
-
+		order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name last_update _merge_Jan28
 ************* EXPORT COMBINED HOUSEHOLD CHECKS DATA FILE ************* 
 
 
+* update to bring in suvey questions
+/*
+
 import excel using "$issues\Household_Data_Issues_28Jan2025_surveyquestions.xlsx", sheet("Sheet1") firstrow clear
+keep SurveyQuestion issue_variable_name
 
+merge m:m issue_variable_name using "$issuesOriginal\Household_Data_Issues_28Jan2025.dta"
 
-
-
+	order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name SurveyQuestion last_update _merge_Jan28
+*/
 
 
 *Note - please update DATE on export!:) 
 export excel using "$issues\Household_Data_Issues_28Jan2025.xlsx", firstrow(variables) replace 
 *keep original for version control 
 export excel using "$issuesOriginal\Household_Data_Issues_28Jan2025.xlsx", firstrow(variables) replace 
-save "$issuesOriginal\test_data.dta", replace 
-*/
+save "$issuesOriginal\Household_Data_Issues_28Jan2025.dta", replace 
+

@@ -1,8 +1,8 @@
 *** DISES Midline Data Checks - Household Survey***
-*** File originally created By: Molly Doruska - Adapted by Kateri Mouawad & Alex Mills ***
+*** File originally created By: Kateri Mouawad  ***
 *** Updates recorded in GitHub ***
 
-*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+*>>>>>>>>>>**--*--*--*--*--*--*--*--** READ ME **--*--*--*--*--*--*--*--**<<<<<<<<<<<*
 
 
 			*1)	Go to the following file path:
@@ -14,7 +14,8 @@
 				*\Data Management\External_Corrections\Issues for Justin and Amina\Midline\Issues
 			
 
-*==============================================================================
+*--*--*--*--*--*--*--*--**--*--*--*--*--*--*--*--**--*--*--*--*--*--*--*--**--*--*--*--*--*--*--*--*
+
 clear all
 set mem 100m
 set maxvar 30000
@@ -66,154 +67,107 @@ global issuesOriginal "$master\Data Management\Output\Data_Quality_Checks\Midlin
 ************************* COMBINE HOUSEHOLD ROSTER FILES *****************
 * Note: check to see what was output
 
-use "$household_roster\Issue_hh_13_10_total_unreasonable.dta", clear 
-append using "$household_roster\Issue_hh_13_9_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_8_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_7_total_unreasonable.dta"
+use "$household_roster\Issue_hh_13_6_total_unreasonable.dta", clear 
 append using "$household_roster\Issue_hh_13_6_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_5_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_4_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_3_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_2_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_1_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_12_o_1.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_19.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_16.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_13.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_12.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_11.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_10.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_9.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_8.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_7.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_6.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_5.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_4.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_3.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_2.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_1.dta"
-append using "$household_roster\Issue_Household_hh_education_level_13.dta"
-append using "$household_roster\Issue_Household_hh_education_level_6.dta"
-append using "$household_roster\Issue_Household_hh_education_level_5.dta"
-append using "$household_roster\Issue_Household_hh_education_level_4.dta"
-append using "$household_roster\Issue_Household_hh_education_level_3.dta"
-append using "$household_roster\Issue_Household_hh_education_level_2.dta"
-append using "$household_roster\Issue_Household_hh_education_level_1.dta"
-append using "$household_roster\Issue_Household_hh_age_19.dta"
-append using "$household_roster\Issue_Household_hh_age_12.dta"
-append using "$household_roster\Issue_Household_hh_age_10.dta"
-append using "$household_roster\Issue_Household_hh_age_8.dta"
-append using "$household_roster\Issue_Household_hh_age_7.dta"
-append using "$household_roster\Issue_Household_hh_age_6.dta"
-append using "$household_roster\Issue_Household_hh_age_5.dta"
-append using "$household_roster\Issue_Household_hh_age_3.dta"
-append using "$household_roster\Issue_Household_hh_age_2.dta"
-append using "$household_roster\Issue_Household_hh_age_1.dta"
-append using "$household_roster\Issue_Household_hh_10_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_03_19.dta"
-append using "$household_roster\Issue_Household_hh_03_12.dta"
-append using "$household_roster\Issue_Household_hh_03_10.dta"
-append using "$household_roster\Issue_Household_hh_03_7.dta"
-append using "$household_roster\Issue_Household_hh_03_5.dta"
-append using "$household_roster\Issue_Household_hh_02_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_5_unreasonable.dta"
-append using "$household_roster\Issue_HH_Roster_hh_age_resp.dta"
-append using "$household_roster\Issue_hh_47_oth_21.dta"
-append using "$household_roster\Issue_hh_47_oth_11.dta"
-append using "$household_roster\Issue_hh_47_oth_8.dta"
-append using "$household_roster\Issue_hh_47_oth_7.dta"
-append using "$household_roster\Issue_hh_47_oth_3.dta"
-append using "$household_roster\Issue_hh_47_oth_1.dta"
-append using "$household_roster\Issue_hh_46_10.dta"
-append using "$household_roster\Issue_hh_46_9.dta"
-append using "$household_roster\Issue_hh_46_7.dta"
-append using "$household_roster\Issue_hh_46_6.dta"
-append using "$household_roster\Issue_hh_46_5.dta"
-append using "$household_roster\Issue_hh_46_4.dta"
-append using "$household_roster\Issue_hh_46_2.dta"
-append using "$household_roster\Issue_hh_46_1.dta"
-append using "$household_roster\Issue_hh_44_10.dta"
-append using "$household_roster\Issue_hh_44_9.dta"
-append using "$household_roster\Issue_hh_44_7.dta"
-append using "$household_roster\Issue_hh_44_6.dta"
-append using "$household_roster\Issue_hh_44_5.dta"
-append using "$household_roster\Issue_hh_44_4.dta"
-append using "$household_roster\Issue_hh_44_2.dta"
-append using "$household_roster\Issue_hh_44_1.dta"
-append using "$household_roster\Issue_hh_43_24.dta"
-append using "$household_roster\Issue_hh_43_23.dta"
-append using "$household_roster\Issue_hh_43_22.dta"
-append using "$household_roster\Issue_hh_43_21.dta"
-append using "$household_roster\Issue_hh_43_20.dta"
-append using "$household_roster\Issue_hh_43_19.dta"
-append using "$household_roster\Issue_hh_43_18.dta"
-append using "$household_roster\Issue_hh_43_17.dta"
-append using "$household_roster\Issue_hh_43_16.dta"
-append using "$household_roster\Issue_hh_43_15.dta"
-append using "$household_roster\Issue_hh_43_14.dta"
-append using "$household_roster\Issue_hh_43_13.dta"
-append using "$household_roster\Issue_hh_43_12.dta"
-append using "$household_roster\Issue_hh_43_11.dta"
-append using "$household_roster\Issue_hh_43_10.dta"
-append using "$household_roster\Issue_hh_43_9.dta"
-append using "$household_roster\Issue_hh_43_8.dta"
-append using "$household_roster\Issue_hh_43_7.dta"
-append using "$household_roster\Issue_hh_43_6.dta"
-append using "$household_roster\Issue_hh_43_5.dta"
-append using "$household_roster\Issue_hh_43_4.dta"
-append using "$household_roster\Issue_hh_43_3.dta"
-append using "$household_roster\Issue_hh_43_2.dta"
-append using "$household_roster\Issue_hh_43_1.dta"
-append using "$household_roster\Issue_hh_41_24.dta"
-append using "$household_roster\Issue_hh_41_23.dta"
-append using "$household_roster\Issue_hh_41_22.dta"
-append using "$household_roster\Issue_hh_41_21.dta"
-append using "$household_roster\Issue_hh_41_20.dta"
-append using "$household_roster\Issue_hh_41_19.dta"
-append using "$household_roster\Issue_hh_41_18.dta"
-append using "$household_roster\Issue_hh_41_17.dta"
-append using "$household_roster\Issue_hh_41_16.dta"
-append using "$household_roster\Issue_hh_41_15.dta"
-append using "$household_roster\Issue_hh_41_14.dta"
-append using "$household_roster\Issue_hh_41_13.dta"
-append using "$household_roster\Issue_hh_41_12.dta"
-append using "$household_roster\Issue_hh_41_11.dta"
-append using "$household_roster\Issue_hh_41_10.dta"
-append using "$household_roster\Issue_hh_41_9.dta"
-append using "$household_roster\Issue_hh_41_8.dta"
-append using "$household_roster\Issue_hh_41_7.dta"
-append using "$household_roster\Issue_hh_41_6.dta"
-append using "$household_roster\Issue_hh_41_5.dta"
-append using "$household_roster\Issue_hh_41_4.dta"
-append using "$household_roster\Issue_hh_41_3.dta"
-append using "$household_roster\Issue_hh_41_2.dta"
-append using "$household_roster\Issue_hh_41_1.dta"
-append using "$household_roster\Issue_hh_13_14_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_13_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_12_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_7_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_8_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_9_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_10_total_unreasonable.dta"
 append using "$household_roster\Issue_hh_13_11_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_12_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_13_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_14_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_44_1.dta"
+append using "$household_roster\Issue_hh_44_2.dta"
+append using "$household_roster\Issue_hh_44_4.dta"
+append using "$household_roster\Issue_hh_44_5.dta"
+append using "$household_roster\Issue_hh_44_6.dta"
+append using "$household_roster\Issue_hh_44_7.dta"
+append using "$household_roster\Issue_hh_44_9.dta"
+append using "$household_roster\Issue_hh_44_10.dta"
+append using "$household_roster\Issue_hh_46_1.dta"
+append using "$household_roster\Issue_hh_46_2.dta"
+append using "$household_roster\Issue_hh_46_4.dta"
+append using "$household_roster\Issue_hh_46_5.dta"
+append using "$household_roster\Issue_hh_46_6.dta"
+append using "$household_roster\Issue_hh_46_7.dta"
+append using "$household_roster\Issue_hh_46_9.dta"
+append using "$household_roster\Issue_hh_46_10.dta"
+append using "$household_roster\Issue_hh_47_oth_1.dta"
+append using "$household_roster\Issue_hh_47_oth_3.dta"
+append using "$household_roster\Issue_hh_47_oth_7.dta"
+append using "$household_roster\Issue_hh_47_oth_8.dta"
+append using "$household_roster\Issue_hh_47_oth_11.dta"
+append using "$household_roster\Issue_hh_47_oth_21.dta"
+append using "$household_roster\Issue_HH_Roster_hh_age_resp.dta"
+append using "$household_roster\Issue_Household_hh_01_5_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_01_7_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_01_10_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_01_12_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_01_19_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_02_5_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_02_7_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_02_10_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_02_12_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_02_19_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_03_5.dta"
+append using "$household_roster\Issue_Household_hh_03_7.dta"
+append using "$household_roster\Issue_Household_hh_03_10.dta"
+append using "$household_roster\Issue_Household_hh_03_12.dta"
+append using "$household_roster\Issue_Household_hh_03_19.dta"
+append using "$household_roster\Issue_Household_hh_08_5_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_08_7_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_08_10_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_08_12_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_08_19_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_09_5_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_09_7_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_09_10_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_09_12_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_09_19_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_10_5_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_10_7_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_10_10_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_10_12_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_10_19_unreasonable.dta"
+append using "$household_roster\Issue_Household_hh_age_1.dta"
+append using "$household_roster\Issue_Household_hh_age_2.dta"
+append using "$household_roster\Issue_Household_hh_age_3.dta"
+append using "$household_roster\Issue_Household_hh_age_5.dta"
+append using "$household_roster\Issue_Household_hh_age_6.dta"
+append using "$household_roster\Issue_Household_hh_age_7.dta"
+append using "$household_roster\Issue_Household_hh_age_8.dta"
+append using "$household_roster\Issue_Household_hh_age_10.dta"
+append using "$household_roster\Issue_Household_hh_age_12.dta"
+append using "$household_roster\Issue_Household_hh_age_19.dta"
+append using "$household_roster\Issue_Household_hh_education_level_1.dta"
+append using "$household_roster\Issue_Household_hh_education_level_2.dta"
+append using "$household_roster\Issue_Household_hh_education_level_3.dta"
+append using "$household_roster\Issue_Household_hh_education_level_4.dta"
+append using "$household_roster\Issue_Household_hh_education_level_5.dta"
+append using "$household_roster\Issue_Household_hh_education_level_6.dta"
+append using "$household_roster\Issue_Household_hh_education_level_13.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_1.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_2.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_3.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_4.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_5.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_6.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_7.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_8.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_9.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_10.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_11.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_12.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_13.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_16.dta"
+append using "$household_roster\Issue_Household_sum_less_than_hh_18_19.dta"
+append using "$household_roster\Issue_hh_12_o_1.dta"
+append using "$household_roster\Issue_hh_13_1_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_2_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_3_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_4_total_unreasonable.dta"
+append using "$household_roster\Issue_hh_13_5_total_unreasonable.dta"
 
 
 
@@ -443,59 +397,67 @@ save "$income\Income_Issues.dta", replace
 		*append using "$enum_observations\Enumerator_Issues.dta"
 
 		
-		rename hh_name_complet_resp individ 
+		rename hh_name_complet_resp hh_individ_complet_resp 
 	
 	
-	** Left off here. Need to merge in questions, then old isses to filter the new set of issues to send over. when i tried merging, it was dropping variables so you need to look into that
-*Bring in HH head names from baseline 
-
-*KRM - leaving this here for reference
-
-		/*
-		use "$baseline\All_Villages_With_Individual_IDs.dta", clear 
-		rename hhid_village villageid
-		keep hhid villageid individ hh_head_name_complet hh_name_complet_resp
-
-		save "$baseline\All_Villages_With_Individual_IDs_Selected_Vars.dta", replace 
-		*/
-
-		** merge baseline data 
+*1) *--*--*--*--*--*--*--*--* merge in baseline data *--*--*--*--*--*--*--*--*
+				*1.1) **>>>>>>>>> we do this to grab the hh_head_name_complet variable and the corresponding names to hh_individ_complet_resp <<<<<<<<<<**
 		
+		merge m:m hh_individ_complet_resp using "$baseline\All_Villages_With_Individual_IDs_Selected_Vars.dta"
+		drop if sup & sup_name == . 
+		drop _merge
 
-		** cleaning 
-/*
-		drop if villageid == ""
-		drop if sup == . 
-*/
-		rename individ hh_individ_complet_resp
+
+*2) *--*--*--*--*--*--*--*--* merge in the previous output to filter for new errors: *--*--*--*--*--*--*--*--*
+				*2.1) **>>>>>>>>> filter by the last_update variable <<<<<<<<<<**
+
+		merge m:m hhid using "$issuesOriginal\Household_Data_Issues_28Jan2025.dta"
+		keep if last_update == ""
+		
+	*Note: update the _merge var for record since we will need to drop it if we don't for the next merge 
+		rename _merge _mergeFeb03
 		replace hh_name_complet_resp = hh_name_complet_resp_new if hh_individ_complet_resp == "999"
-		drop hh_name_complet_resp_new
-		gen last_update = "Sent on Jan 31 25" 
+		drop hh_name_complet_resp_new _merge_Jan28
+		replace last_update = "Sent on Feb 03"
 		
+*3) *--*--*--*--*--*--*--*--* bring in survey questions - merge on issue_variable_name *--*--*--*--*--*--*--*--*
 		
-/*
-		if _merge != .
-		rename _merge _merge_Jan28
-*/
+		merge m:m issue_variable_name using "$issuesOriginal\R2_Survey_Questions.dta"
+		
+				*3.1) **>>>>>>>>> filter on villageid == empty  <<<<<<<<<<**
+	
+		drop if villageid == ""
 
-		order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name last_update _merge_Jan28
+*4) *--*--*--*--*--*--*--*--* order and clean up *--*--*--*--*--*--*--*--*
+	
+		order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name last_update _mergeFeb03
 		
-		
-				
-merge m:m hhid individ using "$issuesOriginal\Household_Data_Issues_28Jan2025.dta", force 
-
-merge m:m issue_variable_name using "$issuesOriginal\R2_Survey_Questions.dta"		
-
- drop _merge 
- drop if villageid == ""
-		
-		
+	
 		
 		
 ************* EXPORT COMBINED HOUSEHOLD CHECKS DATA FILE ************* 
 
 
-* update to bring in suvey questions
+*Note - please update DATE on export!:) 
+/*
+export excel using "$issues\Household_Data_Issues_03Feb2025.xlsx", firstrow(variables) replace 
+save "$issues\Household_Data_Issues_03Feb2025.dta", replace 
+*/
+
+
+*keep original for version control 
+export excel using "$issuesOriginal\Household_Data_Issues_03Feb2025.xlsx", firstrow(variables) replace 
+save "$issuesOriginal\Household_Data_Issues_03Feb2025.dta", replace 
+
+
+** end of .do file
+
+
+
+
+************************************ Archive ************************************ 
+
+* KRM - update to bring in suvey questions. Leaving for record - I needed to merge on 
 /*
 
 import excel using "$issues\Household_Data_Issues_28Jan2025_surveyquestions.xlsx", sheet("Sheet1") firstrow clear
@@ -506,10 +468,35 @@ merge m:m issue_variable_name using "$issuesOriginal\Household_Data_Issues_28Jan
 	order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name SurveyQuestion last_update _merge_Jan28
 */
 
-use "$issuesOriginal\Household_Data_Issues_28Jan2025.dta", clear
-*Note - please update DATE on export!:) 
-export excel using "$issues\Household_Data_Issues_28Jan2025.xlsx", firstrow(variables) replace 
-*keep original for version control 
-export excel using "$issuesOriginal\Household_Data_Issues_28Jan2025.xlsx", firstrow(variables) replace 
-save "$issuesOriginal\Household_Data_Issues_28Jan2025.dta", replace 
+
+*KRM - leaving this here for reference
+		/*
+		
+		use "$baseline\All_Villages_With_Individual_IDs.dta", clear 
+		rename hhid_village villageid
+		gen hh_individ_complet_resp = individ 
+		label var hh_individ_complet_resp "This is the same as individ, but since we merge on hh_individ_complet_resp for the other dfs, this saves a st"
+		keep hhid villageid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp
+
+		save "$baseline\All_Villages_With_Individual_IDs_Selected_Vars.dta", replace 
+		*/
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

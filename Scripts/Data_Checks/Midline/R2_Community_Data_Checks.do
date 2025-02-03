@@ -897,6 +897,9 @@ restore
   
   	* Generate name of variable issue 
 	gen issue_variable_name = "q_49"
+	
+	* Generate question variable 
+	gen question = "À quelle distance se trouve le point d'eau le plus proche (en kilomètres) ?"
   
     * Export the dataset to Excel
 	if _N > 0 {

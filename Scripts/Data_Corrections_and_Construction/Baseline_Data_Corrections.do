@@ -7,8 +7,9 @@
 							* HouseholdIDs_8Feb24.xlsx
 							* DISES_enquete_ménage_FINALE_WIDE_27Feb24.csv
   
- *** This Do File CREATES:* R19_Livelihooods_individual (for individual file)
-                           
+ *** This Do File CREATES:* DISES_Baseline_Community_Corrected_PII
+						  * DISES_Baseline_Additional16_Corrected_PII
+						  * DISES_Baseline_Household_Corrected_PII
 
 clear all 
 

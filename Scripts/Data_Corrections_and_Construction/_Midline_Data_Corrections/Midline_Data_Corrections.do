@@ -1,13 +1,12 @@
 *** Household Data Corrections *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Kateri Mouawad ***
-*** File Last Updated On: May 31, 2024 ***
+*** Updates on GitHub ***
 
  *** This Do File PROCESSES: 
-							* HouseholdIDs_8Feb24.xlsx
-							* DISES_enquete_ménage_FINALE_WIDE_27Feb24.csv
+							* 
   
- *** This Do File CREATES:* R19_Livelihooods_individual (for individual file)
+ *** This Do File CREATES:* 
                            
 
 clear all 

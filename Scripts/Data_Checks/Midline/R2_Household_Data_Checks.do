@@ -53,7 +53,7 @@ global enum_observations "$master\Data Management\Output\Data_Quality_Checks\Mid
 
 * Note: update this every new data cleaning session ***
 
-import delimited "$data\DISES_Enquête ménage midline VF_WIDE_31Jan.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Enquête ménage midline VF_WIDE_04Feb.csv", clear varnames(1) bindquote(strict)
 
 
 ************************** drop missing consents *************************
@@ -254,7 +254,7 @@ forvalues i = 1/57{
 	capture label variable hh_51_`i' "Comment cet enfant va-t'il à cette école?"	
 	capture label variable hh_52_`i' "Quel est le nom de l'école?"	
 	
-}
+	}
 
 
 

@@ -248,6 +248,7 @@ save "$enum_observations\Enum_Observations_Issues.dta", replace
 
 ************** COMBINE SECTION FILES INTO ONE HOUSEHOLD ISSUES FILE *************
 
+*Note - not all files exist, please verify each round 
 
 		use "$household_roster\Roster_Issues.dta", replace
 		*append using "$knowledge\Knoweldge_Issues.dta"
@@ -274,7 +275,7 @@ save "$enum_observations\Enum_Observations_Issues.dta", replace
 *2) *--*--*--*--*--*--*--*--* merge in the previous output to filter for new errors: *--*--*--*--*--*--*--*--*
 				*2.1) **>>>>>>>>> filter by the last_update variable <<<<<<<<<<**
 
-		merge m:m hhid using "$issuesOriginal\Household_Data_Issues_28Jan2025.dta"
+		merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\Household_Data_Issues_28Jan2025.dta"
 		keep if last_update == ""
 		
 	*Note: update the _merge var for record since we will need to drop it if we don't for the next merge 
@@ -309,7 +310,7 @@ save "$issues\Household_Data_Issues_03Feb2025.dta", replace
 
 
 *keep original for version control 
-export excel using "$issuesOriginal\Household_Data_Issues_03Feb2025.xlsx", firstrow(variables) replace 
+export excel using "$issuesOriginal\Household_Data_Issues_03Feb2025_test.xlsx", firstrow(variables) replace 
 save "$issuesOriginal\Household_Data_Issues_03Feb2025.dta", replace 
 
 
@@ -320,7 +321,7 @@ save "$issuesOriginal\Household_Data_Issues_03Feb2025.dta", replace
 
 ************************************ Archive ************************************ 
 
-* KRM - update to bring in suvey questions. Leaving for record - I needed to merge on 
+* KRM -  Leaving for record - I needed to update the survey questions for the first round of checks
 /*
 
 import excel using "$issues\Household_Data_Issues_28Jan2025_surveyquestions.xlsx", sheet("Sheet1") firstrow clear

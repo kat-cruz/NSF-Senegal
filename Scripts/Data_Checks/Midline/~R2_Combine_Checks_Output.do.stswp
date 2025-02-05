@@ -248,7 +248,7 @@ save "$enum_observations\Enum_Observations_Issues.dta", replace
 
 ************** COMBINE SECTION FILES INTO ONE HOUSEHOLD ISSUES FILE *************
 
-
+*Note - not all files exist, please verify each round
 		use "$household_roster\Roster_Issues.dta", replace
 		*append using "$knowledge\Knoweldge_Issues.dta"
 		append using "$health\Health_Issues.dta"
@@ -320,7 +320,7 @@ save "$issuesOriginal\Household_Data_Issues_03Feb2025.dta", replace
 
 ************************************ Archive ************************************ 
 
-* KRM - update to bring in suvey questions. Leaving for record - I needed to merge on 
+* KRM -  Leaving for record - I needed to update the survey questions for the first round of checks
 /*
 
 import excel using "$issues\Household_Data_Issues_28Jan2025_surveyquestions.xlsx", sheet("Sheet1") firstrow clear

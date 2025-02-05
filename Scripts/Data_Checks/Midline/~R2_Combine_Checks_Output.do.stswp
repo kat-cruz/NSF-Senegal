@@ -65,170 +65,62 @@ global issuesOriginal "$master\Data Management\Output\Data_Quality_Checks\Midlin
 
 
 ************************* COMBINE HOUSEHOLD ROSTER FILES *****************
-* Note: check to see what was output
+* Note: check to see what was output before running just to ensure things look good 
 
-use "$household_roster\Issue_hh_13_6_total_unreasonable.dta", clear 
-append using "$household_roster\Issue_hh_13_6_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_7_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_8_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_9_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_10_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_11_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_12_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_13_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_14_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_44_1.dta"
-append using "$household_roster\Issue_hh_44_2.dta"
-append using "$household_roster\Issue_hh_44_4.dta"
-append using "$household_roster\Issue_hh_44_5.dta"
-append using "$household_roster\Issue_hh_44_6.dta"
-append using "$household_roster\Issue_hh_44_7.dta"
-append using "$household_roster\Issue_hh_44_9.dta"
-append using "$household_roster\Issue_hh_44_10.dta"
-append using "$household_roster\Issue_hh_46_1.dta"
-append using "$household_roster\Issue_hh_46_2.dta"
-append using "$household_roster\Issue_hh_46_4.dta"
-append using "$household_roster\Issue_hh_46_5.dta"
-append using "$household_roster\Issue_hh_46_6.dta"
-append using "$household_roster\Issue_hh_46_7.dta"
-append using "$household_roster\Issue_hh_46_9.dta"
-append using "$household_roster\Issue_hh_46_10.dta"
-append using "$household_roster\Issue_hh_47_oth_1.dta"
-append using "$household_roster\Issue_hh_47_oth_3.dta"
-append using "$household_roster\Issue_hh_47_oth_7.dta"
-append using "$household_roster\Issue_hh_47_oth_8.dta"
-append using "$household_roster\Issue_hh_47_oth_11.dta"
-append using "$household_roster\Issue_hh_47_oth_21.dta"
-append using "$household_roster\Issue_HH_Roster_hh_age_resp.dta"
-append using "$household_roster\Issue_Household_hh_01_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_01_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_02_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_03_5.dta"
-append using "$household_roster\Issue_Household_hh_03_7.dta"
-append using "$household_roster\Issue_Household_hh_03_10.dta"
-append using "$household_roster\Issue_Household_hh_03_12.dta"
-append using "$household_roster\Issue_Household_hh_03_19.dta"
-append using "$household_roster\Issue_Household_hh_08_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_08_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_09_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_5_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_7_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_10_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_12_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_10_19_unreasonable.dta"
-append using "$household_roster\Issue_Household_hh_age_1.dta"
-append using "$household_roster\Issue_Household_hh_age_2.dta"
-append using "$household_roster\Issue_Household_hh_age_3.dta"
-append using "$household_roster\Issue_Household_hh_age_5.dta"
-append using "$household_roster\Issue_Household_hh_age_6.dta"
-append using "$household_roster\Issue_Household_hh_age_7.dta"
-append using "$household_roster\Issue_Household_hh_age_8.dta"
-append using "$household_roster\Issue_Household_hh_age_10.dta"
-append using "$household_roster\Issue_Household_hh_age_12.dta"
-append using "$household_roster\Issue_Household_hh_age_19.dta"
-append using "$household_roster\Issue_Household_hh_education_level_1.dta"
-append using "$household_roster\Issue_Household_hh_education_level_2.dta"
-append using "$household_roster\Issue_Household_hh_education_level_3.dta"
-append using "$household_roster\Issue_Household_hh_education_level_4.dta"
-append using "$household_roster\Issue_Household_hh_education_level_5.dta"
-append using "$household_roster\Issue_Household_hh_education_level_6.dta"
-append using "$household_roster\Issue_Household_hh_education_level_13.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_1.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_2.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_3.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_4.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_5.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_6.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_7.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_8.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_9.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_10.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_11.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_12.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_13.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_16.dta"
-append using "$household_roster\Issue_Household_sum_less_than_hh_18_19.dta"
-append using "$household_roster\Issue_hh_12_o_1.dta"
-append using "$household_roster\Issue_hh_13_1_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_2_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_3_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_4_total_unreasonable.dta"
-append using "$household_roster\Issue_hh_13_5_total_unreasonable.dta"
+clear
+local folder "$household_roster"  
 
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
 
 
 save "$household_roster\Roster_Issues.dta", replace 
+
+
 
 ***  ***
 *************************  COMBINE KNOWLEDGE FILES *****************
 * Note: check to see what was output
 
+/*
+clear
+local folder "$knowledge"  
+
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
+
+
+
+
+save "$knowledge\Knowledge_Issues.dta", replace 
+*/
+
 
 ************************* COMBINE HEALTH FILES *****************
 * Note: check to see what was output
 
-use "$health\Issue_Household_health_5_8_7.dta", clear 
+clear
+local folder "$health"  
 
-append using "$health\Issue_Household_health_5_8_10.dta"
-append using "$health\Issue_Household_health_5_8_12.dta"
-append using "$health\Issue_Household_health_5_8_19.dta"
-append using "$health\Issue_Household_health_5_9_5.dta"
-append using "$health\Issue_Household_health_5_9_7.dta"
-append using "$health\Issue_Household_health_5_9_10.dta"
-append using "$health\Issue_Household_health_5_9_12.dta"
-append using "$health\Issue_Household_health_5_9_19.dta"
-append using "$health\health_issue_health_5_7_1_5.dta"
-append using "$health\health_issue_health_5_7_1_7.dta"
-append using "$health\health_issue_health_5_7_1_10.dta"
-append using "$health\health_issue_health_5_7_1_12.dta"
-append using "$health\health_issue_health_5_7_1_19.dta"
-append using "$health\Health_Issues.dta"
-append using "$health\Issue_health_5_12_1.dta"
-append using "$health\Issue_health_5_12_2.dta"
-append using "$health\Issue_health_5_12_3.dta"
-append using "$health\Issue_health_5_12_4.dta"
-append using "$health\Issue_health_5_12_5.dta"
-append using "$health\Issue_health_5_12_7.dta"
-append using "$health\Issue_health_5_12_8.dta"
-append using "$health\Issue_health_5_12_9.dta"
-append using "$health\Issue_health_5_12_10.dta"
-append using "$health\Issue_health_5_12_11.dta"
-append using "$health\Issue_health_5_12_12.dta"
-append using "$health\Issue_Household_health_5_2_5.dta"
-append using "$health\Issue_Household_health_5_2_7.dta"
-append using "$health\Issue_Household_health_5_2_10.dta"
-append using "$health\Issue_Household_health_5_2_12.dta"
-append using "$health\Issue_Household_health_5_2_19.dta"
-append using "$health\Issue_Household_health_5_5_5.dta"
-append using "$health\Issue_Household_health_5_5_7.dta"
-append using "$health\Issue_Household_health_5_5_10.dta"
-append using "$health\Issue_Household_health_5_5_12.dta"
-append using "$health\Issue_Household_health_5_5_19.dta"
-append using "$health\Issue_Household_health_5_6_5.dta"
-append using "$health\Issue_Household_health_5_6_7.dta"
-append using "$health\Issue_Household_health_5_6_10.dta"
-append using "$health\Issue_Household_health_5_6_12.dta"
-append using "$health\Issue_Household_health_5_6_19.dta"
-append using "$health\Issue_Household_health_5_7_1_5.dta"
-append using "$health\Issue_Household_health_5_7_1_7.dta"
-append using "$health\Issue_Household_health_5_7_1_10.dta"
-append using "$health\Issue_Household_health_5_7_1_12.dta"
-append using "$health\Issue_Household_health_5_7_1_19.dta"
-append using "$health\Issue_Household_health_5_8_5.dta"
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
+
+
 
 
 save "$health\Health_Issues.dta", replace 
@@ -237,151 +129,122 @@ save "$health\Health_Issues.dta", replace
 ************************* COMBINE AGRICULTURE INPUTS FILES *****************
 * Note: check to see what was output
 
-use "$agriculture_inputs\Issue_agri_6_28_4_missing.dta", clear 
 
-append using "$agriculture_inputs\Issue_agri_6_38_a_1_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_38_a_code_1_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_38_a_code_2_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_38_a_code_3_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_38_a_code_4_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_39_a_1_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_39_a_2_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_39_a_code_1_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_39_a_code_2_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_39_a_code_3_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_39_a_code_4_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_39_a_code_5_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_40_a_1_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_40_a_2_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_40_a_3_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_40_a_code_1_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_40_a_code_2_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_40_a_code_3_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_40_a_code_4_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_41_a_1_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_41_a_2_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_41_a_code_1_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_41_a_code_2_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_41_a_code_3_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_41_a_code_4_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_41_a_code_5_missing.dta"
-append using "$agriculture_inputs\Issue_agriculture__actif_number_5.dta"
-append using "$agriculture_inputs\Issue_agri_6_15_unreasonable.dta"
-append using "$agriculture_inputs\Issue_agri_6_28_1_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_28_2_missing.dta"
-append using "$agriculture_inputs\Issue_agri_6_28_3_missing.dta"
+clear
+local folder "$agriculture_inputs"  
+
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
+
 
 save "$agriculture_inputs\Ag_Inputs_Issues.dta", replace 
+
 
 ************************* COMBINE AGRICULTURE PRODUCITON FILES *****************
 * Note: check to see what was output
 
+clear
+local folder "$agriculture_production"  
 
-use "$agriculture_production\Issue_cereals_03_1_unreasonable.dta", clear
-append using "$agriculture_production\Issue_cereals_03_3_unreasonable.dta"
-append using "$agriculture_production\Issue_cereals_04_1_unreasonable.dta"
-append using "$agriculture_production\Issue_cereals_05_1_unreasonable.dta"
-append using "$agriculture_production\Issue_cereals_05_5_unreasonable.dta"
-append using "$agriculture_production\Issue_cereals_05_6_unreasonable.dta"
-append using "$agriculture_production\Issue_farines_01_1_unreasonable.dta"
-append using "$agriculture_production\Issue_farines_01_2_unreasonable.dta"
-append using "$agriculture_production\Issue_farines_02_1_unreasonable.dta"
-append using "$agriculture_production\Issue_farines_02_2_unreasonable.dta"
-append using "$agriculture_production\Issue_farines_05_1_unreasonable.dta"
-append using "$agriculture_production\Issue_farines_05_2_unreasonable.dta"
-append using "$agriculture_production\Issue_farines_05_4_unreasonable.dta"
-append using "$agriculture_production\Issue_farines_05_6_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_01_1_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_01_3_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_01_4_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_02_1_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_02_2_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_02_3_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_02_4_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_02_6_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_03_3_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_04_1_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_04_4_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_05_1_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_05_3_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_05_4_unreasonable.dta"
-append using "$agriculture_production\Issue_legumes_05_6_unreasonable.dta"
-append using "$agriculture_production\Issue_legumineuses_01_5_unreasonable.dta"
-append using "$agriculture_production\Issue_legumineuses_02_5_unreasonable.dta"
-append using "$agriculture_production\Issue_legumineuses_05_1_unreasonable.dta"
-append using "$agriculture_production\Issue_legumineuses_05_2_unreasonable.dta"
-append using "$agriculture_production\Issue_legumineuses_05_3_unreasonable.dta"
-append using "$agriculture_production\Issue_legumineuses_05_4_unreasonable.dta"
-append using "$agriculture_production\Issue_legumineuses_05_5_unreasonable.dta"
-append using "$agriculture_production\Issue_o_culture_01_unreasonable.dta"
-append using "$agriculture_production\Issue_o_culture_04_unreasonable.dta"
-append using "$agriculture_production\Issue_o_culture_05_unreasonable.dta"
-append using "$agriculture_production\Issue_aquatique_01_unreasonable.dta"
-append using "$agriculture_production\Issue_aquatique_02_unreasonable.dta"
-append using "$agriculture_production\Issue_aquatique_05_unreasonable.dta"
-append using "$agriculture_production\Issue_cereals_01_1_unreasonable.dta"
-append using "$agriculture_production\Issue_cereals_01_3_unreasonable.dta"
-append using "$agriculture_production\Issue_cereals_02_1_unreasonable.dta"
-append using "$agriculture_production\Issue_cereals_02_5_unreasonable.dta"
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
 
 
-
-save "$agriculture_production\Ag_Production_Issues.dta", replace 
+save "$agriculture_production\Ag_Inputs_Issues.dta", replace 
 
 
 ************************* COMBINE FOOD CONSUMPTION ISSUE FILES *****************
 * Note: check to see what was output
 
+ * KRM - none this round, commented out 
+
+/*
+
+clear
+local folder "$food_consumption"  
+
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
+
+
+save "$food_consumption\Food_Consumption_Issues.dta", replace 
+*/
+
 
 ************************* COMBINE INCOME ISSUE FILES *****************
 * Note: check to see what was output
+* R2 - none this round 
+clear
+local folder "$income"  
 
-use "$income\Issue_agri_income_08_2_unreasonable.dta", clear
-append using "$income\Issue_agri_income_08_3_unreasonable.dta"
-append using "$income\Issue_agri_income_08_4_unreasonable.dta"
-append using "$income\Issue_agri_income_08_o_unreasonable.dta"
-append using "$income\Issue_agri_income_10_1_unreasonable.dta"
-append using "$income\Issue_agri_income_11_1_unreasonable.dta"
-append using "$income\Issue_agri_income_11_2_unreasonable.dta"
-append using "$income\Issue_agri_income_12_1_unreasonable.dta"
-append using "$income\Issue_agri_income_12_2_unreasonable.dta"
-append using "$income\Issue_agri_income_19_unreasonable.dta"
-append using "$income\Issue_agri_income_23_1_unreasonable.dta"
-append using "$income\Issue_agri_income_23_2_unreasonable.dta"
-append using "$income\Issue_agri_income_23_o_unreasonable.dta"
-append using "$income\Issue_agri_income_29_unreasonable.dta"
-append using "$income\Issue_agri_income_33_unreasonable.dta"
-append using "$income\Issue_agri_income_36_1_unreasonable.dta"
-append using "$income\Issue_agri_income_36_2_unreasonable.dta"
-append using "$income\Issue_agri_income_41_1_unreasonable.dta"
-append using "$income\Issue_agri_income_42_1_unreasonable.dta"
-append using "$income\Issue_agri_income_45_1.dta"
-append using "$income\Issue_agri_income_45_2.dta"
-append using "$income\Issue_agri_income_45_3.dta"
-append using "$income\Issue_agri_income_45_4.dta"
-append using "$income\Issue_agri_income_45_5.dta"
-append using "$income\Issue_agri_income_45_6.dta"
-append using "$income\Issue_agri_income_45_7.dta"
-append using "$income\Issue_agri_income_45_8.dta"
-append using "$income\Issue_agri_income_45_10.dta"
-append using "$income\Issue_agri_income_47_1.dta"
-append using "$income\Issue_agri_income_47_2.dta"
-append using "$income\Issue_agri_income_48_2.dta"
-append using "$income\Issue_animals_sales_o.dta"
-append using "$income\Issue_agri_income_03_unreasonable.dta"
-append using "$income\Issue_agri_income_05_unreasonable.dta"
-append using "$income\Issue_agri_income_06_unreasonable.dta"
-append using "$income\Issue_agri_income_07_2_unreasonable.dta"
-append using "$income\Issue_agri_income_07_o_unreasonable.dta"
-append using "$income\Issue_agri_income_08_1_unreasonable.dta"
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
+
 
 save "$income\Income_Issues.dta", replace 
 
+
+
 ************************* COMBINE STANDARD OF LIVING ISSUE FILES  *****************
 * Note: check to see what was output
+* R2 - none this round 
+/*
+clear
+local folder "$standard_living"  
+
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
+
+
+save "$standard_living\Standard_Living_Issues.dta", replace 
+*/
+
+
 
 ************************* COMBINE ENUMERATOR OBSERVATION ISSUE FILES *****************
 * Note: check to see what was output
+* R2 - none this round 
+
+/*
+clear
+local folder "$enum_observations"  
+
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
+
+
+save "$enum_observations\Enum_Observations_Issues.dta", replace 
+*/
 
 ************** COMBINE SECTION FILES INTO ONE HOUSEHOLD ISSUES FILE *************
 
@@ -411,7 +274,7 @@ save "$income\Income_Issues.dta", replace
 *2) *--*--*--*--*--*--*--*--* merge in the previous output to filter for new errors: *--*--*--*--*--*--*--*--*
 				*2.1) **>>>>>>>>> filter by the last_update variable <<<<<<<<<<**
 
-		merge m:m hhid using "$issuesOriginal\Household_Data_Issues_28Jan2025.dta"
+		merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\Household_Data_Issues_28Jan2025.dta"
 		keep if last_update == ""
 		
 	*Note: update the _merge var for record since we will need to drop it if we don't for the next merge 
@@ -434,11 +297,7 @@ save "$income\Income_Issues.dta", replace
 	
 		order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name last_update _mergeFeb03
 		
-		keep if print_issue == ""
-		
-		duplicates drop value, force
-		export excel using "$issuesOriginal\Household_Data_Issues_03Feb2025_ForMolly.xlsx", firstrow(variables) replace 
-		
+				
 ************* EXPORT COMBINED HOUSEHOLD CHECKS DATA FILE ************* 
 
 
@@ -450,7 +309,7 @@ save "$issues\Household_Data_Issues_03Feb2025.dta", replace
 
 
 *keep original for version control 
-export excel using "$issuesOriginal\Household_Data_Issues_03Feb2025.xlsx", firstrow(variables) replace 
+export excel using "$issuesOriginal\Household_Data_Issues_03Feb2025_test.xlsx", firstrow(variables) replace 
 save "$issuesOriginal\Household_Data_Issues_03Feb2025.dta", replace 
 
 

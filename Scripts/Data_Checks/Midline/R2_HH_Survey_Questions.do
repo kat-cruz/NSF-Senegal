@@ -29,7 +29,6 @@ if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 
-
 *==============================================================================
 
 global issuesOriginal "$master\Data Management\Output\Data_Quality_Checks\Midline\_Original_Issues_Output"
@@ -40,27 +39,29 @@ clear
 tempname temp
 postfile `temp' str50 variable_name str200 value using temp.dta, replace
 
-* Note: we label location and respondents
+
+**************************** generate variables with survey questions ****************************
 
 	gen village_select = "Selectionnez le vilalge pour le questionnaire menage"
 	gen village_select_o = "Nom du village"
 	gen hhid_village = "Village ID"
-	gen training_id = "Qui a assiste a la formation (selectionnez de la liste du membres du menage)." 
 	gen consent = "Acceptez-vous de faire l'interview et de participier a l'etude"
 	gen hh_numero = "Nombre de membres dans le menage"
 	gen hh_phone = "Numero de telephone du menage (ou numero de telephone d'un membre du menage)"
 	gen hh_head_name_complet = "Nom et prenom du chef du menage"
 	gen hh_name_complet_resp = "Nom et prenom du repondant"
-	gen hh_name_complet_resp_new_`i' = "Nouveau membre"
-
 	gen hh_age_resp = "Age du repondant"
 	gen hh_gender_resp = "Sexe du repondant"
 	gen attend_training = "Avez-vous assisté à la formation que notre équipe a organisée en [MOIS] 2024 sur l'élimination de la plante aquatique cerat"
 	gen who_attended_training = "Est-ce que une autre membre de ce menage a assiste a la formation que notre équipe a organisée en [MOIS] 2024 sur l'élimination de la plante aquatique cerato [REMPLACER par le nom local, naithe ?] ?"
 	gen training_id = "Qui a assiste a la formation (selectionnez de la liste du membres du menage)"
 	gen heard_training = "Avez-vous entendu parler de la formation menées par le projet ?"
-	gen hh_date = "Date"
-	gen hh_time = "Heure"
+	gen hh_gpslatitude = "Date"
+	gen hh_gpslongitude = "Heure"
+	gen hh_gpsaltitude = "Heure"
+	gen hh_gpsaccuracy  = "Heure"
+	gen count_chefs = "HH Head Count"
+	
 
 *** labels for household members - loop through all member numbers ***
 *** check the data to ensure this is the maximum number of members in a household ***
@@ -72,10 +73,12 @@ forvalues i = 1/57{
 	gen hh_surname_`i' = "Surnom"
 */
 	gen hh_full_name_calc_`i' = "Full Name"
-	gen hh_name_complet_resp_`i' = "Nom et prénom du répondant"
+	gen hh_name_complet_resp_`i' = "Nom et prénom du répondant" 
+	capture label hh_name_complet_resp_new_`i' = "Nouveau membre" 
    	capture label still_member_`i'  = "Cette personne fait-elle toujours partie du ménage ?"
 	capture label still_member_whynot_`i'  = "Pourquoi il/elle n´est plus membre du ménage? ?"
 	capture label still_member_whynot_o_`i' = "Autre raison"
+	capture label newmem_why_`i' = "Pourquoi il/elle n'était pas enregistré(e) comme membre de votre ménage lors de la dernière collecte ?" 
 	capture label add_new_`i' = "Y a-t-il d'autres personnes dans le ménage ?"
 	gen hh_gender_`i' = "Genre"
 	gen hh_age_`i' = "Age"
@@ -135,6 +138,8 @@ forvalues i = 1/57{
 	*gen hh_13_`i'_7 = "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	gen hh_13_o_`i' = "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a [hh_12_o] pres de (< 1 m) ou dans la/les source(s) d'eau"
 	gen hh_14_`i' = "Au cours des 12 derniers mois, combien de vegetation aquatique a-t-il/elle recolte pres de (< 1 m) ou dans la/les source(s) d'eau par semaine, en moyenne (en kg)"
+	gen hh_14_a_`i' = "Au cours des 12 derniers mois, combien de fois a-t-il/elle recolté de végétation aquatique près de (< 1 m) ou dans la/les source(s) d'eau?"
+	gen hh_14_b_`i' = "Pour chaque fois, en moyenne, combien de végétation aquatique a-t-il/elle recolté près de (< 1 m) ou dans la/les source(s) d'eau? (1= kg Tipha, 2= kg autre)"
 	gen hh_15_`i' = "Comment a-t-il utilise la vegetation aquatique"
 	gen hh_15_o_`i' = "Autre a preciser"
 	gen hh_16_`i' = "Au cours des 12 derniers mois combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a la production d'engrais, son achat, ou son application sur le champ"
@@ -204,19 +209,15 @@ forvalues i = 1/57{
 	gen hh_47_g_`i' = "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autres (préciser ?"
 	gen hh_47_oth_`i' = "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autre à préciser ?"
 	gen hh_48_`i' = "[NOM] a-t-il été testé pour la bilharziose à l'école ?"
-	gen hh_49_`i' = "Consentement pour la vérification de la fréquentation scolaire"
+	gen hh_49_`i' = "Cet enfant fréquente-t-il actuellement une école située dans cette communauté ?"	
 	gen hh_50_`i' = "Quel est le nom de l'école?"	
 	gen hh_51_`i' = "Comment cet enfant va-t'il à cette école?"	
 	gen hh_52_`i' = "Quel est le nom de l'école?"	
 	
-	gen hh_21_total_`i' = "Issue found: Sum of hh_21_1 and hh_21_o_1 is more than hh_18_1"
-	gen hh_13_`i'_total = "Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_6 is more than hh_10_`i'"
-
+	gen hh_21_total_`i' = "Generated variable: Issue found: Sum of hh_21_1 and hh_21_o_1 is more than hh_18_1"
+	gen hh_13_`i'_total = "Generated variable: Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_6 is more than hh_10_`i'"
 	
-	
-	}
-
-
+}
 
 
 *** knowledge section ***
@@ -805,7 +806,6 @@ forvalues i=1/15{
 	gen enum_06 = "Comment evaluez-vous la comprehension globale des questions par le repondant"
 	gen enum_07 = "Veuillez indiquer les parties difficiles"
 	gen enum_08 = "Veuillez donner votre avis sur le revenu du menage"
-
 
 
 *======================================================================* switch from wide to long *======================================================================*
@@ -832,8 +832,12 @@ set obs 10
 	gen who_attended_training = "Est-ce que une autre membre de ce menage a assiste a la formation que notre équipe a organisée en [MOIS] 2024 sur l'élimination de la plante aquatique cerato [REMPLACER par le nom local, naithe ?] ?"
 	gen training_id = "Qui a assiste a la formation (selectionnez de la liste du membres du menage)"
 	gen heard_training = "Avez-vous entendu parler de la formation menées par le projet ?"
-	gen hh_date = "Date"
-	gen hh_time = "Heure"
+	gen hh_gpslatitude = "Date"
+	gen hh_gpslongitude = "Heure"
+	gen hh_gpsaltitude = "Heure"
+	gen hh_gpsaccuracy  = "Heure"
+	gen count_chefs = "HH Head Count"
+	
 
 *** labels for household members - loop through all member numbers ***
 *** check the data to ensure this is the maximum number of members in a household ***
@@ -845,9 +849,12 @@ forvalues i = 1/57{
 	gen hh_surname_`i' = "Surnom"
 */
 	gen hh_full_name_calc_`i' = "Full Name"
+	gen hh_name_complet_resp_`i' = "Nom et prénom du répondant" 
+	capture label hh_name_complet_resp_new_`i' = "Nouveau membre" 
    	capture label still_member_`i'  = "Cette personne fait-elle toujours partie du ménage ?"
 	capture label still_member_whynot_`i'  = "Pourquoi il/elle n´est plus membre du ménage? ?"
 	capture label still_member_whynot_o_`i' = "Autre raison"
+	capture label newmem_why_`i' = "Pourquoi il/elle n'était pas enregistré(e) comme membre de votre ménage lors de la dernière collecte ?" 
 	capture label add_new_`i' = "Y a-t-il d'autres personnes dans le ménage ?"
 	gen hh_gender_`i' = "Genre"
 	gen hh_age_`i' = "Age"
@@ -907,6 +914,8 @@ forvalues i = 1/57{
 	*gen hh_13_`i'_7 = "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	gen hh_13_o_`i' = "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a [hh_12_o] pres de (< 1 m) ou dans la/les source(s) d'eau"
 	gen hh_14_`i' = "Au cours des 12 derniers mois, combien de vegetation aquatique a-t-il/elle recolte pres de (< 1 m) ou dans la/les source(s) d'eau par semaine, en moyenne (en kg)"
+	gen hh_14_a_`i' = "Au cours des 12 derniers mois, combien de fois a-t-il/elle recolté de végétation aquatique près de (< 1 m) ou dans la/les source(s) d'eau?"
+	gen hh_14_b_`i' = "Pour chaque fois, en moyenne, combien de végétation aquatique a-t-il/elle recolté près de (< 1 m) ou dans la/les source(s) d'eau? (1= kg Tipha, 2= kg autre)"
 	gen hh_15_`i' = "Comment a-t-il utilise la vegetation aquatique"
 	gen hh_15_o_`i' = "Autre a preciser"
 	gen hh_16_`i' = "Au cours des 12 derniers mois combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a la production d'engrais, son achat, ou son application sur le champ"
@@ -976,16 +985,16 @@ forvalues i = 1/57{
 	gen hh_47_g_`i' = "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autres (préciser ?"
 	gen hh_47_oth_`i' = "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autre à préciser ?"
 	gen hh_48_`i' = "[NOM] a-t-il été testé pour la bilharziose à l'école ?"
-	gen hh_49_`i' = "Consentement pour la vérification de la fréquentation scolaire"	
+	gen hh_49_`i' = "Cet enfant fréquente-t-il actuellement une école située dans cette communauté ?"	
 	gen hh_50_`i' = "Quel est le nom de l'école?"	
 	gen hh_51_`i' = "Comment cet enfant va-t'il à cette école?"	
 	gen hh_52_`i' = "Quel est le nom de l'école?"	
 	
-	gen hh_21_total_`i' = "Issue found: Sum of hh_21_1 and hh_21_o_1 is more than hh_18_1"
-	gen hh_13_`i'_total = "Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_6 is more than hh_10_`i'"
+	gen hh_21_total_`i' = "Generated variable: Issue found: Sum of hh_21_1 and hh_21_o_1 is more than hh_18_1"
+	gen hh_13_`i'_total = "Generated variable: Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_6 is more than hh_10_`i'"
+	
 }
 
-	
 
 *** knowledge section ***
 	gen knowledge_01 = "Avez-vous deja entendu parler de la bilharziose"
@@ -1573,6 +1582,7 @@ forvalues i=1/15{
 	gen enum_06 = "Comment evaluez-vous la comprehension globale des questions par le repondant"
 	gen enum_07 = "Veuillez indiquer les parties difficiles"
 	gen enum_08 = "Veuillez donner votre avis sur le revenu du menage"
+
 
 
 

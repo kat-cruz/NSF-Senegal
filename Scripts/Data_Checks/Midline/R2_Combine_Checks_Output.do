@@ -428,16 +428,13 @@ save "$income\Income_Issues.dta", replace
 				*3.1) **>>>>>>>>> filter on villageid == empty  <<<<<<<<<<**
 	
 		drop if villageid == ""
+		drop _merge
 
 *4) *--*--*--*--*--*--*--*--* order and clean up *--*--*--*--*--*--*--*--*
 	
 		order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name last_update _mergeFeb03
 		
-		keep if print_issue == "-9"
-		
-		duplicates drop value, force
-		
-		
+				
 ************* EXPORT COMBINED HOUSEHOLD CHECKS DATA FILE ************* 
 
 

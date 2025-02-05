@@ -32,7 +32,7 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 *==============================================================================
 
-global issuesOriginal "$master\Data Management\Output\Data Quality Checks\Midline\_Original_Issues_Output"
+global issuesOriginal "$master\Data Management\Output\Data_Quality_Checks\Midline\_Original_Issues_Output"
 
 *==============================================================================
 **************************** generate variables ****************************
@@ -45,11 +45,14 @@ postfile `temp' str50 variable_name str200 value using temp.dta, replace
 	gen village_select = "Selectionnez le vilalge pour le questionnaire menage"
 	gen village_select_o = "Nom du village"
 	gen hhid_village = "Village ID"
+	gen training_id = "Qui a assiste a la formation (selectionnez de la liste du membres du menage)." 
 	gen consent = "Acceptez-vous de faire l'interview et de participier a l'etude"
 	gen hh_numero = "Nombre de membres dans le menage"
 	gen hh_phone = "Numero de telephone du menage (ou numero de telephone d'un membre du menage)"
 	gen hh_head_name_complet = "Nom et prenom du chef du menage"
 	gen hh_name_complet_resp = "Nom et prenom du repondant"
+	gen hh_name_complet_resp_new_`i' = "Nouveau membre"
+
 	gen hh_age_resp = "Age du repondant"
 	gen hh_gender_resp = "Sexe du repondant"
 	gen attend_training = "Avez-vous assisté à la formation que notre équipe a organisée en [MOIS] 2024 sur l'élimination de la plante aquatique cerat"
@@ -69,6 +72,7 @@ forvalues i = 1/57{
 	gen hh_surname_`i' = "Surnom"
 */
 	gen hh_full_name_calc_`i' = "Full Name"
+	gen hh_name_complet_resp_`i' = "Nom et prénom du répondant"
    	capture label still_member_`i'  = "Cette personne fait-elle toujours partie du ménage ?"
 	capture label still_member_whynot_`i'  = "Pourquoi il/elle n´est plus membre du ménage? ?"
 	capture label still_member_whynot_o_`i' = "Autre raison"
@@ -200,9 +204,19 @@ forvalues i = 1/57{
 	gen hh_47_g_`i' = "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autres (préciser ?"
 	gen hh_47_oth_`i' = "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autre à préciser ?"
 	gen hh_48_`i' = "[NOM] a-t-il été testé pour la bilharziose à l'école ?"
-}
+	gen hh_49_`i' = "Consentement pour la vérification de la fréquentation scolaire"
+	gen hh_50_`i' = "Quel est le nom de l'école?"	
+	gen hh_51_`i' = "Comment cet enfant va-t'il à cette école?"	
+	gen hh_52_`i' = "Quel est le nom de l'école?"	
+	
+	gen hh_21_total_`i' = "Issue found: Sum of hh_21_1 and hh_21_o_1 is more than hh_18_1"
+	gen hh_13_`i'_total = "Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_6 is more than hh_10_`i'"
 
-	gen hh_49_`i' = "Consentement pour la vérification de la fréquentation scolaire"	
+	
+	
+	}
+
+
 
 
 *** knowledge section ***
@@ -962,10 +976,16 @@ forvalues i = 1/57{
 	gen hh_47_g_`i' = "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autres (préciser ?"
 	gen hh_47_oth_`i' = "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autre à préciser ?"
 	gen hh_48_`i' = "[NOM] a-t-il été testé pour la bilharziose à l'école ?"
+	gen hh_49_`i' = "Consentement pour la vérification de la fréquentation scolaire"	
+	gen hh_50_`i' = "Quel est le nom de l'école?"	
+	gen hh_51_`i' = "Comment cet enfant va-t'il à cette école?"	
+	gen hh_52_`i' = "Quel est le nom de l'école?"	
+	
+	gen hh_21_total_`i' = "Issue found: Sum of hh_21_1 and hh_21_o_1 is more than hh_18_1"
+	gen hh_13_`i'_total = "Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_6 is more than hh_10_`i'"
 }
 
-	gen hh_49_`i' = "Consentement pour la vérification de la fréquentation scolaire"	
-
+	
 
 *** knowledge section ***
 	gen knowledge_01 = "Avez-vous deja entendu parler de la bilharziose"

@@ -100,4 +100,4 @@ order hhid_village hhid, first
 
 *** save data file of attendence checks without consent *** 
 save "$output\missing_attendence_check_consent.dta", replace 
-export excel using "$output\missing_attendence_check_consent_4Feb25.xslx", firstrow(variables) replace 
+export excel using "$output\missing_attendence_check_consent_4Feb25.xlsx", firstrow(variables) replace 

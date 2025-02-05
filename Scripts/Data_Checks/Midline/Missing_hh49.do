@@ -66,7 +66,7 @@ reshape long fu_mem_id_ pull_hhid_village_ pull_hhid_ pull_individ_ ///
 * Keep only relevant variables
 keep school_name fu_mem_id_* pull_hhid_village_* pull_hhid_* pull_individ_* ///
     pull_hh_* pull_baselineniveau_* pull_family_members_* pull_temp_* ///
-    info_eleve_* instanceid instancename formdef_version key
+    instanceid instancename formdef_version key
 
 drop if missing(pull_hhid_)
 
@@ -86,7 +86,7 @@ keep if _merge == 3
 
 drop _merge
 
-drop info_eleve*
+keep school_name pull_hhid_village_ hh_global_id pull_individ_ pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ pull_baselineniveau_ pull_family_members_
 
 export excel using "$schoolprincipal/attendance_checks_missing_hh49.xlsx", firstrow(variables) replace 
 

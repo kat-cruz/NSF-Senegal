@@ -1,7 +1,8 @@
-*** DISES Baseline Data Checks - Household Survey, April Collection***
+*** DISES Baseline Data Checks - Household Survey***
 *** File Created By: Molly Doruska ***
-*** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: April 25, 2024 ***
+*** File Last Updated By: Kateri Mouawad ***
+*** File Last Updated On: February 06, 2025 ***
+*KRM - updated file paths. All updates recorded on GitHub. 
 
 
 clear all 
@@ -19,29 +20,25 @@ else if "`c(username)'"=="Kateri" {
 				
 }
 
+
 *** additional file paths ***
 global data "$master\_CRDES_RawData\Baseline"
 
-global village_observations "$master\Data_Quality_Checks\April_Output\Baseline_Village_Household_Identifiers"
-global household_roster "$master\Data_Quality_Checks\April_Output\Baseline_Household_Roster"
-global knowledge "$master\Data_Quality_Checks\April_Output\Baseline_Knowledge"
-global health "$master\Data_Quality_Checks\April_Output\Baseline_Health" 
-global agriculture_inputs "$master\Data_Quality_Checks\April_Output\Baseline_Agriculture_Inputs"
-global agriculture_production "$master\Data_Quality_Checks\April_Output\Baseline_Agriculture_Production"
-global food_consumption "$master\Data_Quality_Checks\April_Output\Baseline_Food_Consumption"
-global income "$master\Data_Quality_Checks\April_Output\Baseline_Income"
-global standard_living "$master\Data_Quality_Checks\April_Output\Baseline_Standard_Living"
-global beliefs "$master\Data_Quality_Checks\April_Output\Baseline_Beliefs" 
-global public_goods "$master\Data_Quality_Checks\April_Output\Baseline_Public_Goods"
-global enum_observations "$master\Data_Quality_Checks\April_Output\Baseline_Enumerator_Observations"
-
-*** prep existing household IDs for consistency ***
-*import excel "$village_observations\HouseholdIDs_042324.xlsx", clear first
-
-*save "$village_observations\HouseholdIDs_042324.dta", replace 
+global village_observations "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Village_Household_Identifiers"
+global household_roster "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Household_Roster"
+global knowledge "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Knowledge"
+global health "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Health" 
+global agriculture_inputs "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Agriculture_Inputs"
+global agriculture_production "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Agriculture_Production"
+global food_consumption "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Food_Consumption"
+global income "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Income"
+global standard_living "$master\Data_Quality_Checks\Output\Baseline\Jan-Feb_Output\Baseline_Standard_Living"
+global beliefs "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Beliefs" 
+global public_goods "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Public_Goods"
+global enum_observations "$master\Data_Quality_Checks\Output\Baseline\Jan-Feb_Output\Baseline_Enumerator_Observations"
 
 *** Import data - update this every new data cleaning session ***
-import delimited "$data\DISES_enquete_ménage_FINALE_V2_WIDE_26April24.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_enquete_ménage_FINALE_WIDE_6Feb24.csv", clear varnames(1) bindquote(strict)
 
 *** import community survey data ***
 *** this imports test data, update with acutal survey data ***
@@ -63,7 +60,7 @@ label variable hh_time "Heure"
 
 *** labels for household members - loop through all member numbers ***
 *** check the data to ensure this is the maximum number of members in a household ***
-forvalues i = 1/18 {
+forvalues i = 1/28{
 	label variable hh_first_name_`i' "Prenom"
 	label variable hh_name_`i' "Nom"
 	label variable hh_surname_`i' "Surnom"
@@ -119,8 +116,8 @@ forvalues i = 1/18 {
 	label variable hh_13_`i'_3 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 3 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	label variable hh_13_`i'_4 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 4 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	label variable hh_13_`i'_5 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 5 pres de (< 1 m) ou dans la/les source(s) d'eau?"
-	*label variable hh_13_`i'_6 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 6 pres de (< 1 m) ou dans la/les source(s) d'eau?"
-	*label variable hh_13_`i'_7 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
+	label variable hh_13_`i'_6 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 6 pres de (< 1 m) ou dans la/les source(s) d'eau?"
+	label variable hh_13_`i'_7 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	label variable hh_13_o_`i' "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a [hh_12_o] pres de (< 1 m) ou dans la/les source(s) d'eau"
 	label variable hh_14_`i' "Au cours des 12 derniers mois, combien de vegetation aquatique a-t-il/elle recolte pres de (< 1 m) ou dans la/les source(s) d'eau par semaine, en moyenne (en kg)"
 	label variable hh_15_`i' "Comment a-t-il utilise la vegetation aquatique"
@@ -146,8 +143,8 @@ forvalues i = 1/18 {
 	label variable hh_21_`i'_3 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 3 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	label variable hh_21_`i'_4 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 4 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	label variable hh_21_`i'_5 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 5 pres de (< 1 m) ou dans la/les source(s) d'eau?"
-	*label variable hh_21_`i'_6 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 6 pres de (< 1 m) ou dans la/les source(s) d'eau?"
-	*label variable hh_21_`i'_7 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
+	label variable hh_21_`i'_6 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 6 pres de (< 1 m) ou dans la/les source(s) d'eau?"
+	label variable hh_21_`i'_7 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	label variable hh_21_o_`i' "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a [hh_20_o] pres de (< 1 m) ou dans la/les source(s) d'eau"
 	label variable hh_22_`i' "Au cours des 7 derniers jours, combien de vegetation aquatique a-t-il/elle recolte pres de (< 1 m) ou dans la/les source(s) d'eau (en kg)"
 	label variable hh_23_`i' "Comment a-t-il utilise la vegetation aquatique"
@@ -238,7 +235,7 @@ label variable knowledge_23_o "Autre raison"
 
 *** health module indiviudals - this is for member index 1 ***
 *** verify maximum number in data set ****
-forvalues i=1/18 {
+forvalues i=1/28 {
     label variable health_5_2_`i' "Est-ce que [health-name] est tombe malade au cours des 12 derniers mois"
 	label variable health_5_3_`i' "De quel type de maladie ou de blessure a-t-il/elle souffert"
 	label variable health_5_3_1_`i' "Paludisme"
@@ -361,7 +358,7 @@ label variable agri_6_15 "Combien de parcelles a l'interieur des champs cultives
 
 *** parcel questions ****
 *** verify maximum in dataset ***
-forvalues i=1/6 {
+forvalues i=1/4 {
 	label variable agri_6_16_`i' "Ordre de numeration du champ"
 	label variable agri_6_17_`i' "Numero de la parcelle dans le champ"
 	label variable agri_6_18_`i' "Quel est le mode de gestion de la parcelle"
@@ -582,7 +579,7 @@ label variable animals_sales_t "Autre animal vendu par le menage"
 
 *** Livestock/animal product sales quesitons ***
 *** Verify maximum value in data ***
-forvalues i=1/3 {
+forvalues i=1/5 {
 label variable agri_income_11_`i' "Nombre de tetes de [sale_animales-name] vendus"
 label variable agri_income_12_`i' "Montant total en FCFA pour la vente de [sale_animales-name]"
 label variable agri_income_13_`i' "Nature des produits provenant de [sale_animales-name] vendus"
@@ -664,7 +661,7 @@ label variable agri_income_name "Choisissez les membres de votre menage qui ont 
 
 *** Credit roster questions ***
 *** verify maximum in data ***
-forvalues i=1/3 {
+forvalues i=1/4{
 	label variable agri_income_36_`i' "Quel montant de ce pret [credit_ask-name] a t'il contracte"
 	label variable agri_income_37_`i' "Aupres de qui [credit_ask-name] a t'il contracte ce pret"
 	label variable agri_income_38_`i' "Quel est le montant de ce pret que [credit_ask-name] deja rembourse"
@@ -699,7 +696,7 @@ label variable product_divers_99 "Autres depenses"
 
 *** product questions ***
 *** verify maximum in data ***
-forvalues i=1/9 {
+forvalues i=1/11{
 	label variable agri_income_45_`i' "Montant en [product-name]"
 	label variable agri_income_46_`i' "Source de finacement (choix multiples)"
 	label variable agri_income_46_1_`i' "Le credit"
@@ -808,10 +805,12 @@ collapse (max) village_observations =  village_observations, by(village_select)
 
 restore
 
+
+
 ************************************ HOUSEHOLD ROSTER **********************************
 
 *** check individual identificaiton data for missing values *** 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -838,7 +837,7 @@ forvalues i=1/18 {
     restore
 }
 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -865,7 +864,7 @@ forvalues i=1/18 {
     restore
 }
 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -897,7 +896,7 @@ forvalues i=1/18 {
 ***	i.	Age needs to be between 0 and 90 ***
 *** I realized these checks were picking up the household that did not give consent ***
 *** So for the initial checks without dependencies I added a drop them ***
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -928,7 +927,7 @@ forvalues i=1/18 {
   
 ***	ii.	Hh_education_level should be less than two when age is less than 18 ***
 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
 	preserve 
 
@@ -960,7 +959,7 @@ forvalues i=1/18 {
 
 ***	iii. Hh_education_year_acheive should be less than age ***
 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
 	preserve 
 	
@@ -989,7 +988,7 @@ forvalues i=1/18 {
 }
 
 *** check for missing values for hh_03 *** 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -1026,7 +1025,7 @@ forvalues i=1/18 {
 *** want to drop any flags from less than that may household members ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	preserve
 	
 	*** drop no consent households *** 
@@ -1052,7 +1051,7 @@ forvalues i = 1/18 {
 	restore
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	preserve
 	
 	*** drop no consent households *** 
@@ -1079,7 +1078,7 @@ forvalues i = 1/18 {
 	restore
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	preserve
 
 	*** drop no consent households *** 
@@ -1105,7 +1104,7 @@ forvalues i = 1/18 {
 	restore
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	preserve
 
 	*** drop no consent households *** 
@@ -1131,7 +1130,7 @@ forvalues i = 1/18 {
 	restore
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	preserve
 
 	*** drop no consent households *** 
@@ -1160,7 +1159,7 @@ forvalues i = 1/18 {
 ***	ix.	The sum of all values for each individual's hh_13 should be less than hh_10 ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	
 		
 	preserve
@@ -1168,7 +1167,7 @@ forvalues i = 1/18 {
 	*** drop no consent households *** 
 	drop if consent == 0 
 	
-	egen hh_13_`i'_total = rowtotal(hh_13_`i'_1  hh_13_`i'_2  hh_13_`i'_3 hh_13_`i'_4  hh_13_`i'_5)
+	egen hh_13_`i'_total = rowtotal(hh_13_`i'_1  hh_13_`i'_2  hh_13_`i'_3 hh_13_`i'_4  hh_13_`i'_5 hh_13_`i'_6  hh_13_`i'_7)
 	
 	gen ind_var = 0 
 	replace ind_var = 1 if hh_13_`i'_total > hh_10_`i' 
@@ -1191,7 +1190,7 @@ forvalues i = 1/18 {
 ***	x.	Hh_21 plus hh_21_o should NOT be greater than hh_18 ***
 *** I mixed up the instructions - Molly ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 
     preserve 
 
@@ -1199,7 +1198,7 @@ forvalues i = 1/18 {
 	drop if consent == 0 
 
 	
-	egen hh_21_`i'_total = rowtotal ( hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3  hh_21_`i'_4  hh_21_`i'_5)
+	egen hh_21_`i'_total = rowtotal ( hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3  hh_21_`i'_4  hh_21_`i'_5  hh_21_`i'_6  hh_21_`i'_7 )
         
     *Check if sum of hh_21_i_j and hh_21_o_i is more than sum of hh_18_i
 	generate ind_var = 0
@@ -1457,7 +1456,7 @@ restore
 
 *** iii.	Agri_income_12 should be between 0 and 100000000 *** 
 
-forvalues i = 1/3 {
+forvalues i = 1/5 {
 	preserve
      
     keep if agri_income_12_`i' < 0 | agri_income_12_`i' > 100000000
@@ -1492,7 +1491,7 @@ forvalues i = 1/3 {
 
 *** iv.	agri_income_14 should be between 0 and 100000000 ***
 
-forvalues i = 1/3 {
+forvalues i = 1/5 {
 	preserve
      
     keep if agri_income_14_`i' < 0 | agri_income_14_`i' > 100000000
@@ -1551,7 +1550,7 @@ forvalues i = 1/3 {
 ***	v.	agri_income_21_h should be between 0 and 50 ***	
 ***	vi.	agri_income_21_f should be between 0 and 50 ***	
 
-foreach var of varlist agri_income_21_h_o agri_income_21_h_1 agri_income_21_h_2 agri_income_21_h_3 agri_income_21_f_1 agri_income_21_f_2 agri_income_21_f_3 {
+foreach var of varlist agri_income_21_h_o agri_income_21_h_1 agri_income_21_h_2 agri_income_21_h_3 agri_income_21_h_4 agri_income_21_f_1 agri_income_21_f_2 agri_income_21_f_3 agri_income_21_f_4 {
 	
 preserve
     
@@ -1571,7 +1570,7 @@ preserve
 
 ***	vii. agri_income_22 should be less than 12 ***	
 
-foreach var of varlist agri_income_22_o agri_income_22_1 agri_income_22_2 agri_income_22_3 {
+foreach var of varlist agri_income_22_o agri_income_22_1 agri_income_22_2 agri_income_22_3 agri_income_22_4 {
 preserve
     keep if `var'  != . & `var' > 12
 	generate issue = "Unreasonable value"
@@ -1587,7 +1586,7 @@ preserve
 
 *** viii.	agri_income_23 should be between 0 and 1000000000 *** 
 
-forvalues i = 1/3 {
+forvalues i = 1/4 {
 	preserve
      
     keep if agri_income_23_`i' < 0 | agri_income_23_`i' > 1000000000
@@ -1622,7 +1621,7 @@ forvalues i = 1/3 {
 *** ix.	agri_income_45 should be between 0 and 1000000000 ***	
 *** Add step to get rid of missings when the household doesn't grow the product ***
 
-forvalues i = 1/9 {
+forvalues i = 1/11 {
 preserve
     local var agri_income_45_`i'
     keep if `var' < 0 | `var' > 1000000000
@@ -1639,7 +1638,7 @@ restore
 }
 
 *** check to make sure agri_income_46 is not missing *** 
-forvalues i = 1/9 {
+forvalues i = 1/11 {
 preserve
     local var agri_income_46_`i'
 	tostring(`var'), replace 
@@ -1658,20 +1657,69 @@ restore
 
 ***	x.	agri_income_47 should be between 0 and 1000000000 ***	
 
-foreach var of varlist agri_income_47_o agri_income_47_1 agri_income_47_2 agri_income_48_o agri_income_48_1 agri_income_48_2 {
-preserve
+forvalues i = 1/2 {
+    preserve
   
-    keep if  `var' != . & `var' < 0 & `var' > 1000000000
+    keep if  agri_income_47_`i' < 0 | agri_income_47_`i' > 1000000000
+	drop if goodsinex_`i' == . 
 	generate issue = "Unreasonable value"
-	generate issue_variable_name = "`var'"
-	rename `var' print_issue 
+	generate issue_variable_name = "agri_income_47_`i'"
+	rename agri_income_47_`i' print_issue 
 	tostring(print_issue), replace
 	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
 	if _N > 0 {
-		save "$income\Issue_`var'", replace
+		save "$income\Issue_agri_income_47_`i'", replace
+	}
+	restore 	
 }
-restore
+
+forvalues i = 1/2 {
+    preserve
+  
+    keep if  agri_income_48_`i' < 0 | agri_income_48_`i' > 1000000000
+	drop if goodsinex_`i' == . 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "agri_income_48_`i'"
+	rename agri_income_48_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_48_`i'", replace
+	}
+	restore 	
 }
+
+preserve 
+
+keep if expenses_goods_t == 1 
+
+keep if  agri_income_47_o < 0 | agri_income_47_o > 1000000000
+generate issue = "Unreasonable value"
+generate issue_variable_name = "agri_income_47_o"
+rename agri_income_47_o print_issue 
+tostring(print_issue), replace
+keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_47_o", replace
+	}
+	
+restore 	
+
+preserve 
+
+keep if expenses_goods_t == 1 
+
+keep if  agri_income_48_o < 0 | agri_income_48_o > 1000000000
+generate issue = "Unreasonable value"
+generate issue_variable_name = "agri_income_48_o"
+rename agri_income_48_o print_issue 
+tostring(print_issue), replace
+keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_48_o", replace
+	}
+	
+restore 
 
 *** check to make sure expenses_goods and expsenses_goods_t are not missing *** 
 preserve
@@ -1800,7 +1848,7 @@ restore
 ***	i.	hh_ethnicity_o should be answered when hh_ethnicity = 99, response should be text ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
     local hh_ethnicity hh_ethnicity_`i'
 	local hh_ethnicity_o hh_ethnicity_o_`i'
@@ -1826,7 +1874,7 @@ restore
 *** add check to make sure there are that many household members ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
     local hh_relation_with hh_relation_with_`i'
 	local hh_relation_with_o hh_relation_with_o_`i'
@@ -1853,7 +1901,7 @@ restore
 
 ***	iii.	hh_education_level_o should be answered when hh_education_level = 99, response should be text ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_education_level hh_education_level_`i'
     local hh_education_level_o hh_education_level_o_`i'
@@ -1877,7 +1925,7 @@ restore
 
 ***	iv.	hh_main_activity_o should be answered when hh_main_activity = 99, response should be text ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_main_activity hh_main_activity_`i'
     local hh_main_activity_o hh_main_activity_o_`i'
@@ -1901,7 +1949,7 @@ restore
 
 ***	v.	hh_04 should be answered when hh_03 = 1, should be between 0 and 168 or -9 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_04 hh_04_`i'
     local hh_03 hh_03_`i'
@@ -1929,7 +1977,7 @@ restore
 *** vi.	hh_05 should be answered when hh_03 = 1, should be between 0 and 168 or -9 ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_05 hh_05_`i'
     local hh_03 hh_03_`i'
@@ -1956,7 +2004,7 @@ restore
 
 ***	vii. hh_06 should be answered when hh_03 = 1, should be between 0 and 168 or -9 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_06 hh_06_`i'
     local hh_03 hh_03_`i'
@@ -1982,7 +2030,7 @@ restore
 
 ***	vii. hh_07 should be answered when hh_03 = 1, should be between 0 and 168 or -9 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_07 hh_07_`i'
     local hh_03 hh_03_`i'
@@ -2008,7 +2056,7 @@ restore
 
 *** ix.	hh_11 should be answered when hh_10 is greater than 0 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_11 hh_11_`i'
     local hh_10 hh_10_`i'
@@ -2034,7 +2082,7 @@ restore
 ***	x.	hh_11_o should be answered when hh_11 = 99 , should be text ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve	
     local hh_11 hh_11_`i'
 	local hh_11_o hh_11_o_`i'
@@ -2063,7 +2111,7 @@ restore
 *** is not missing, all the others are generated by SurveyCTO ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2088,7 +2136,7 @@ restore
 
 ***	xii. hh_12_a should be answered when hh_10 is greater than 0 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve	
     local hh_12_a hh_12_a_`i'
 	local hh_10 hh_10_`i'
@@ -2112,7 +2160,7 @@ restore
 
 ***	xiii.	hh_12_o should be answered when hh_12_a = 1, should be text ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve	
     local hh_12_a hh_12_a_`i'
 	local hh_12_o hh_12_o_`i'
@@ -2145,7 +2193,7 @@ restore
 *** in separate files for unreasonable values individually for presentation *** 
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2167,7 +2215,7 @@ restore
 
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2189,7 +2237,7 @@ restore
 
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2211,7 +2259,7 @@ restore
 
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2233,7 +2281,7 @@ restore
 
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2255,54 +2303,54 @@ restore
 
 }
 
-*forvalues i = 1/15 {
-    *preserve
-    *local hh_10 hh_10_`i'
+forvalues i = 1/55 {
+    preserve
+    local hh_10 hh_10_`i'
     
-	*keep if `hh_10' > 0 & `hh_10' != . 
-    *gen ind_var = 0 
-    *replace ind_var = 1 if hh_13_`i'_6 < 0 & hh_13_`i'_6 != -9
-	*replace ind_var = 1 if hh_13_`i'_6 > 168 
-	*replace ind_var = 0 if hh_12index_`i'_6 == . 
-    *keep if ind_var == 1 
-    *generate issue = "Issue found: unreasonable value in hh_13_`i'_6 "
-    *generate issue_variable_name = "hh_13_`i'_6"
-	*rename hh_13_`i'_6 print_issue 
-	*tostring(print_issue), replace
-	*keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-	*if _N > 0 {
-	*	save "$household_roster\Issue_hh_13_`i'_6_unreasonable", replace
-*}
-*restore
+	keep if `hh_10' > 0 & `hh_10' != . 
+    gen ind_var = 0 
+    replace ind_var = 1 if hh_13_`i'_6 < 0 & hh_13_`i'_6 != -9
+	replace ind_var = 1 if hh_13_`i'_6 > 168 
+	replace ind_var = 0 if hh_12index_`i'_6 == . 
+    keep if ind_var == 1 
+    generate issue = "Issue found: unreasonable value in hh_13_`i'_6 "
+    generate issue_variable_name = "hh_13_`i'_6"
+	rename hh_13_`i'_6 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$household_roster\Issue_hh_13_`i'_6_unreasonable", replace
+}
+restore
 
-*}
+}
 
-*forvalues i = 1/15 {
- *   preserve
-  *  local hh_10 hh_10_`i'
+forvalues i = 1/55 {
+    preserve
+    local hh_10 hh_10_`i'
     
-	*keep if `hh_10' > 0 & `hh_10' != . 
-    *gen ind_var = 0 
-    *replace ind_var = 1 if hh_13_`i'_7 < 0 & hh_13_`i'_7 != -9
-	*replace ind_var = 1 if hh_13_`i'_7 > 168 
-	*replace ind_var = 0 if hh_12index_`i'_7 == . 
-    *keep if ind_var == 1 
-    *generate issue = "Issue found: unreasonable value in hh_13_`i'_7 "
-    *generate issue_variable_name = "hh_13_`i'_7"
-	*rename hh_13_`i'_7 print_issue 
-	*tostring(print_issue), replace
-	*keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-	*if _N > 0 {
-	*	save "$household_roster\Issue_hh_13_`i'_7_unreasonable", replace
-*}
-*restore
+	keep if `hh_10' > 0 & `hh_10' != . 
+    gen ind_var = 0 
+    replace ind_var = 1 if hh_13_`i'_7 < 0 & hh_13_`i'_7 != -9
+	replace ind_var = 1 if hh_13_`i'_7 > 168 
+	replace ind_var = 0 if hh_12index_`i'_7 == . 
+    keep if ind_var == 1 
+    generate issue = "Issue found: unreasonable value in hh_13_`i'_7 "
+    generate issue_variable_name = "hh_13_`i'_7"
+	rename hh_13_`i'_7 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$household_roster\Issue_hh_13_`i'_7_unreasonable", replace
+}
+restore
 
-*}
+}
 
 ***	xv.	hh_13_o should be answered when hh_12_a = 1, should be between 0 and 168 or -9 ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_12_a hh_12_a_`i'
     local hh_13_o hh_13_o_`i'
@@ -2331,7 +2379,7 @@ restore
 
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	
     preserve	
     local hh_14 hh_14_`i'
@@ -2358,7 +2406,7 @@ restore
 ***	xvii.	hh_15 should be answered when hh_10 is greater than 0 and hh_12 = 6 
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	
     preserve	
     local hh_15 hh_15_`i'
@@ -2384,7 +2432,7 @@ restore
 
 *** xviii.	hh_15_o should be answered when hh_15 = 99, should be text ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	
     preserve	
     
@@ -2410,7 +2458,7 @@ restore
 
 ***	xix.	hh_16 should be answered when hh_10 is greater than 0, should be between 0 and 168 or -9  
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_16 hh_16_`i'
     local hh_10 hh_10_`i'
@@ -2435,7 +2483,7 @@ restore
 
 *** xx.	hh_17 should be answered when hh_10 is greater than 0, should be between 0 and 168 and -9  
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	
 preserve
 	local hh_17 hh_17_`i'
@@ -2463,7 +2511,7 @@ restore
 *** xxi. hh_18 should be answered when hh_10 is greater than 0, should be between 168 and -9  
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_18 hh_18_`i'
     local hh_10 hh_10_`i'
@@ -2490,7 +2538,7 @@ restore
 ***	xxii. hh_19 should be answered when hh_10 is greater than 0 and hh_18 is greater than 0 ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_19 hh_19_`i'
 	local hh_18 hh_18_`i'
@@ -2518,7 +2566,7 @@ restore
 ***	xxiii.	hh_19_o should be answered when hh_19 = 99, should be text *** 
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
     local hh_19 hh_19_`i'
 	local hh_19_o hh_19_o_`i'
@@ -2543,7 +2591,7 @@ restore
 *** xxiv.	hh_20 should be answered when hh_10 is greater than 0 and hh_18 is greater than 0 ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_20 hh_20_`i'
 	local hh_18 hh_18_`i'
@@ -2571,7 +2619,7 @@ restore
 
 ***	xxv. hh_20_a should be answered when hh_10 is greater than 0 and hh_18 is greater than 0 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_20_a hh_20_a_`i'
 	local hh_18 hh_18_`i'
@@ -2599,7 +2647,7 @@ restore
 
 ***	xxvi. hh_20_o should be answered when hh_20_a = 1, should be text *** 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_20_o hh_20_o_`i'
 	local hh_20_a hh_20_a_`i'
@@ -2630,7 +2678,7 @@ restore
 **# Bookmark #1  again, double nested loop, just want you to look through it:))
 *** I also decided to break this one up so we have different files for each sub part *** 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2652,7 +2700,7 @@ restore
 
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2674,7 +2722,7 @@ restore
 
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2696,7 +2744,7 @@ restore
 
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2718,7 +2766,7 @@ restore
 
 }
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
     preserve
     local hh_10 hh_10_`i'
     
@@ -2740,54 +2788,54 @@ restore
 
 }
 
-*forvalues i = 1/15 {
-*    preserve
-*    local hh_10 hh_10_`i'
+forvalues i = 1/55 {
+    preserve
+    local hh_10 hh_10_`i'
     
-*	keep if `hh_10' > 0 & `hh_10' != . 
-*    gen ind_var = 0 
-*    replace ind_var = 1 if hh_21_`i'_6 < 0 & hh_21_`i'_6 != -9
-*	replace ind_var = 1 if hh_21_`i'_6 > 168 
-*	replace ind_var = 0 if hh_20index_`i'_6 == . 
-*    keep if ind_var == 1 
-*    generate issue = "Issue found: unreasonable value in hh_21_`i'_6 "
-*    generate issue_variable_name = "hh_21_`i'_6"
-*	rename hh_21_`i'_6 print_issue 
-*	tostring(print_issue), replace
-*	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-*	if _N > 0 {
-*		save "$household_roster\Issue_hh_21_`i'_6_unreasonable", replace
-*}
-*restore
+	keep if `hh_10' > 0 & `hh_10' != . 
+    gen ind_var = 0 
+    replace ind_var = 1 if hh_21_`i'_6 < 0 & hh_21_`i'_6 != -9
+	replace ind_var = 1 if hh_21_`i'_6 > 168 
+	replace ind_var = 0 if hh_20index_`i'_6 == . 
+    keep if ind_var == 1 
+    generate issue = "Issue found: unreasonable value in hh_21_`i'_6 "
+    generate issue_variable_name = "hh_21_`i'_6"
+	rename hh_21_`i'_6 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$household_roster\Issue_hh_21_`i'_6_unreasonable", replace
+}
+restore
 
-*}
+}
 
-*forvalues i = 1/55 {
-*    preserve
-*    local hh_10 hh_10_`i'
+forvalues i = 1/55 {
+    preserve
+    local hh_10 hh_10_`i'
     
-*	keep if `hh_10' > 0 & `hh_10' != . 
-*    gen ind_var = 0 
-*    replace ind_var = 1 if hh_21_`i'_7 < 0 & hh_21_`i'_7 != -9
-*	replace ind_var = 1 if hh_21_`i'_7 > 168 
-*	replace ind_var = 0 if hh_20index_`i'_7 == . 
-*    keep if ind_var == 1 
-*    generate issue = "Issue found: unreasonable value in hh_21_`i'_7 "
-*    generate issue_variable_name = "hh_21_`i'_7"
-*	rename hh_21_`i'_7 print_issue 
-*	tostring(print_issue), replace
-*	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
-*	if _N > 0 {
-*		save "$household_roster\Issue_hh_21_`i'_7_unreasonable", replace
-*}
-*restore
+	keep if `hh_10' > 0 & `hh_10' != . 
+    gen ind_var = 0 
+    replace ind_var = 1 if hh_21_`i'_7 < 0 & hh_21_`i'_7 != -9
+	replace ind_var = 1 if hh_21_`i'_7 > 168 
+	replace ind_var = 0 if hh_20index_`i'_7 == . 
+    keep if ind_var == 1 
+    generate issue = "Issue found: unreasonable value in hh_21_`i'_7 "
+    generate issue_variable_name = "hh_21_`i'_7"
+	rename hh_21_`i'_7 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$household_roster\Issue_hh_21_`i'_7_unreasonable", replace
+}
+restore
 
-*}
+}
 
 
 ***	xxviii.	hh_21_o should be answered when hh_20_a = 1
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_21_o hh_21_o_`i'
 	local hh_20_a hh_20_a_`i'
@@ -2815,7 +2863,7 @@ restore
 *** xxix.	hh_22 should be answered when hh_20 = 6 and hh_10 is greater than 0 and hh_18 is greater than 0, should be greater than 0 or -9 ***
 *** add the hh_20 = 6 check ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_22 hh_22_`i'
 	local hh_18 hh_18_`i'
@@ -2844,7 +2892,7 @@ restore
 ***	xxx.	hh_23 should be answered when hh_20 = 6 and hh_10 is greater than 0 and hh_18 is greater than 0 ***
 **# Bookmark #3 changed stuff to strings and I'm only calling on hh_23_i (which are just strings) - want to make sure I interpreted this correctly
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_23 hh_23_`i'
 	*local hh_23_99 hh_23_99_`i'
@@ -2876,7 +2924,7 @@ restore
 
 *** xxxi. hh_23_o should be answered when hh_23 = 99, should be text ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_23 hh_23_99_`i'
 	local hh_23_o hh_23_o_`i'
@@ -2907,7 +2955,7 @@ restore
 *** depend on it - I missed this one in the instructions *** 
 
 *** hh_26 should be answered when 4 < age < 18 ***
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 	preserve 
 	
 	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18 
@@ -2930,7 +2978,7 @@ restore
 
 ***	 1.	hh_27 should be answered when hh_26 = 0 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_27 hh_27_`i'
 	local hh_26 hh_26_`i'
@@ -2954,10 +3002,9 @@ preserve
 restore
 
 }
-
 ***	2.	hh_28 should be answered when hh_27 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_28 hh_28_`i'
 	local hh_27 hh_27_`i'
@@ -2982,7 +3029,7 @@ restore
 
 *** 3.	hh_29 should be answered when hh_26 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_29 hh_29_`i'
 	local hh_26 hh_26_`i'
@@ -3006,7 +3053,7 @@ restore
 
 *** 4.	hh_29_o should be answered when hh_29 = 99, should be text  ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_29 hh_29_`i'
 	local hh_29_o hh_29_o_`i'
@@ -3030,7 +3077,7 @@ restore
 
 *** 5.	hh_30 should be answered when hh_26 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_30 hh_30_`i'
 	local hh_26 hh_26_`i'
@@ -3054,7 +3101,7 @@ restore
 
 ***	6.	hh_31 should be answered when hh_30 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_31 hh_31_`i'
 	local hh_30 hh_30_`i'
@@ -3080,7 +3127,7 @@ restore
 
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_32 hh_32_`i'
 	local hh_26 hh_26_`i'
@@ -3105,7 +3152,7 @@ restore
 
 ***	8.	hh_33 should be answered when hh_26 = 1 and hh_32 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_33 hh_33_`i'
 	local hh_32 hh_32_`i'
@@ -3132,7 +3179,7 @@ restore
 *** 9.	hh_34 should be answered when hh_32 = 0 ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_34 hh_34_`i'
 	local hh_32 hh_32_`i'
@@ -3159,7 +3206,7 @@ restore
 
 *** 10.	hh_35 should be answered when hh_32 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_35 hh_35_`i'
 	local hh_32 hh_32_`i'
@@ -3181,10 +3228,9 @@ preserve
 restore
 
 }
-
 *** 11.	hh_36 should be answered when hh_32 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_36 hh_36_`i'
 	local hh_32 hh_32_`i'
@@ -3210,7 +3256,7 @@ restore
 
 *** 12.	hh_37 should be answered when hh_32 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_37 hh_37_`i'
 	local hh_32 hh_32_`i'
@@ -3237,7 +3283,7 @@ restore
 *** 13.	hh_38 should be answered when hh_32 = 1, should be between 0 and 7 or -9 ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local hh_38 hh_38_`i'
 	local hh_32 hh_32_`i'
@@ -3626,7 +3672,7 @@ restore
 ******************************* d. health section *************************************
 
 *** check for missing values in health_5_2 *** 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -3656,7 +3702,7 @@ forvalues i=1/18 {
 ***	i. health_5_3 should be answered when health_5_2 = 1 ***
 *** We only need to check that at least one is selected and not the individual indicators *** 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 
 	local health_5_2 health_5_2_`i'
@@ -3683,7 +3729,7 @@ restore
 *** ii.	health_5_3_o should be answered when health_5_3 = 99, should be text ***
 *** Can check if health_5_3_99 = 1 to check if health_5_3 = 99 
  
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 	local health_5_3 health_5_3_99_`i'
 	local health_5_3_o health_5_3_o_`i'
@@ -3710,7 +3756,7 @@ restore
 
 ***	iii. health_5_4 should be answered when health_5_2 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 
 	local health_5_4 health_5_4_`i'
@@ -3736,7 +3782,7 @@ restore
 }
 
 *** check for missing values in health_5_5, health_5_6, health_5_7, health_5_8 *** 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -3763,7 +3809,7 @@ forvalues i=1/18 {
     restore
 }
 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -3819,7 +3865,7 @@ forvalues i=1/18 {
 //     restore
 // }
 
-forvalues i=1/18 {
+forvalues i=1/55 {
 
     preserve 
 
@@ -3848,7 +3894,7 @@ forvalues i=1/18 {
 
 ***	iv.	health_5_11 should be answered when health_5_10 = 1 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 
 	local health_5_11 health_5_11_`i'
@@ -3878,7 +3924,7 @@ restore
 *** v. health_5_11_o should be answered when health_5_11 = 99, should be text ***
 
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 
 	local health_5_11 health_5_11_`i'
@@ -3905,7 +3951,7 @@ restore
 
 **** vi. health_5_12 should be answered when health_5_10 = 1, should be between 0 and 150 ***
 
-forvalues i = 1/18 {
+forvalues i = 1/55 {
 preserve
 
 	local health_5_12 health_5_12_`i'
@@ -3919,13 +3965,13 @@ preserve
 	keep if ind_var == 1 
 	
 	generate issue = "Unreaonsable value"
-	generate issue_variable_name = "`health_5_12'"
-	rename health_5_12_`i' print_issue 
+	generate issue_variable_name = "health_5_12"
+	rename `health_5_12' print_issue 
 	tostring(print_issue), replace
-	keep hhid_village hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_head_name_complet hh_name_complet_resp issue_variable_name issue print_issue
 	if _N > 0 {
-		save "$health\Issue_health_5_12_`i'", replace
-	}
+		save "$health\Issue_`health_5_12'", replace
+}
 
 restore
 
@@ -4231,7 +4277,7 @@ restore
 
 *** agri_6_16 should be answered when agri_6_14 =  ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4257,7 +4303,7 @@ forvalue i = 1/6 {
 
 *** agri_6_17 should be answered when agri_6_14 = 1 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4282,7 +4328,7 @@ forvalue i = 1/6 {
 
 *** agri_6_18 should be answered when agri_6_14 = 1 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4307,7 +4353,7 @@ forvalue i = 1/6 {
 
 *** agri_6_19 should be answered when agri_6_14 = 1 *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4332,7 +4378,7 @@ forvalue i = 1/6 {
 
 *** agri_6_20 should be answered when agri_6_14 = 1 *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4357,7 +4403,7 @@ forvalue i = 1/6 {
 
 *** agri_6_20_o should be answered when agri_6_14 = 1, should be answered when agri_6_20 == 99, should be text *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4388,7 +4434,7 @@ forvalue i = 1/6 {
 
 *** agri_6_21 should be answered when agri_6_14 = 1, should be between 0 and 20000 ***
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4416,7 +4462,7 @@ forvalue i = 1/6 {
 
 *** agri_6_22 should be answered when agri_6_14 = 1 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4441,7 +4487,7 @@ forvalue i = 1/6 {
 
 *** agri_6_23 should be answered when agri_6_14 = 1 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4467,7 +4513,7 @@ forvalue i = 1/6 {
 
 *** agri_6_23_o should be answered when agri_6_14 = 1, should be answered when agri_6_23 = 99, should be text ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4499,7 +4545,7 @@ forvalue i = 1/6 {
 
 *** agri_6_24 should be answered when agri_6_14 = 1, should be answered when agri_6_23 = 1 **
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4527,7 +4573,7 @@ forvalue i = 1/6 {
 
 *** agri_6_25 should be answered when agri_6_14 = 1, should be answered when agri_6_23 = 1 **
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4555,7 +4601,7 @@ forvalue i = 1/6 {
 
 *** agri_6_25_o should be answered when agri_6_14 = 1, should be answered when agri_6_25 == 99, should be text *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4586,7 +4632,7 @@ forvalue i = 1/6 {
 
 *** agri_6_26 should be answered when agri_6_14 = 1, should be answered when agri_6_23 = 1 **
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4614,7 +4660,7 @@ forvalue i = 1/6 {
 
 *** agri_6_26_o should be answered when agri_6_14 = 1, should be answered when agri_6_26 == 99, should be text ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4646,7 +4692,7 @@ forvalue i = 1/6 {
 
 *** agri_6_27 should be answered when agri_6_14 = 1, should be answered when agri_6_23 = 1 and agri_6_27 does not equal 6 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4677,7 +4723,7 @@ forvalue i = 1/6 {
 
 *** agri_6_28 should be answered when agri_6_14 = 1, should be answered when agri_6_23 = 1 and agri_6_26 does not equal 6 ***
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4705,7 +4751,7 @@ forvalue i = 1/6 {
 
 *** agri_6_29 should be answered when agri_6_14 = 1, should be answered when agri_6_23 = 1 and agri_6_28 = 1 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4733,7 +4779,7 @@ forvalue i = 1/6 {
 
 *** agri_6_29_o should be answered when agri_6_29 = 99, should be text *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4764,7 +4810,7 @@ forvalue i = 1/6 {
 
 *** agri_6_30 should be answered when agri_6_14 = 1 *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4790,7 +4836,7 @@ forvalue i = 1/6 {
 
 *** agri_6_31 should be answered when agri_6_14 = 1, should be answered when agri_6_30 = 1 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4818,7 +4864,7 @@ forvalue i = 1/6 {
 
 *** agri_6_31_o should be answered when agri_6_14 = 1, should be answered when agri_6_31 == 99, should be text *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4849,7 +4895,7 @@ forvalue i = 1/6 {
 
 *** agri_6_32 should be answered when agri_6_14 = 1, should be answered when agri_6_31 = 3, should be between 0 and 1000*** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4877,7 +4923,7 @@ forvalue i = 1/6 {
 
 *** agri_6_33 should be answered when agri_6_14 = 1, should be answered when agri_6_31 = 3 *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4905,7 +4951,7 @@ forvalue i = 1/6 {
 
 *** 18.	Agri_6_33_o should be answered when agri_6_33 = 99, should be text *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4936,7 +4982,7 @@ forvalue i = 1/6 {
 
 *** agri_6_34_comp should be answered when agri_6_14 = 1 *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4961,7 +5007,7 @@ forvalue i = 1/6 {
 
 *** agri_6_34 should be answered when agri_6_14 = 1 *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -4986,7 +5032,7 @@ forvalue i = 1/6 {
 
 *** agri_6_35 should be answered when agri_6_14 = 1, should be answered when agri_6_34 = 1, should be between 0 and 50 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5014,7 +5060,7 @@ forvalue i = 1/6 {
 
 *** agri_6_36 should be answered when agri_6_14 = 1 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5039,7 +5085,7 @@ forvalue i = 1/6 {
 
 *** agri_6_37 should be answered when agri_6_14 = 1, should be answered when agri_6_36 = 1, should be between 0 and 50 ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5067,7 +5113,7 @@ forvalue i = 1/6 {
 
 *** agri_6_38_a should be answered when agri_6_14 = 1, should be between 0 and 1000 ***
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5095,7 +5141,7 @@ forvalue i = 1/6 {
 
 *** agri_6_38_a_code should be answered when agri_6_14 = 1 ***
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5120,7 +5166,7 @@ forvalue i = 1/6 {
 
 *** agri_6_38_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_38_a_code = 99, should be text ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5152,7 +5198,7 @@ forvalue i = 1/6 {
 
 *** agri_6_39_a should be answered when agri_6_14 = 1, should be between 0 and 1000 ***
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5180,7 +5226,7 @@ forvalue i = 1/6 {
 
 *** agri_6_39_a_code should be answered when agri_6_14 = 1 *** 
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5205,7 +5251,7 @@ forvalue i = 1/6 {
 
 *** agri_6_39_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_39_a_code = 99, should be text ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5236,7 +5282,7 @@ forvalue i = 1/6 {
 
 *** agri_6_40_a should be answered when agri_6_14 = 1, should be between 0 and 1000 ***
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5264,7 +5310,7 @@ forvalue i = 1/6 {
 
 *** agri_6_40_a_code should be answered when agri_6_14 = 1 ***
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5289,7 +5335,7 @@ forvalue i = 1/6 {
 
 *** agri_6_40_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_40_a_code = 99, should be text ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5320,7 +5366,7 @@ forvalue i = 1/6 {
 
 *** agri_6_41_a should be answered when agri_6_14 = 1, should be between 0 and 1000 **
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5348,7 +5394,7 @@ forvalue i = 1/6 {
 
 *** agri_6_41_a_code should be answered when agri_6_14 = 1 ***
 *** FLAGGED ***
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -5373,7 +5419,7 @@ forvalue i = 1/6 {
 
 *** agri_6_41_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_41_a_code = 99, should be text ***
 
-forvalue i = 1/6 {
+forvalue i = 1/11 {
 	
 	preserve 
 	
@@ -6678,8 +6724,6 @@ forvalues i = 1/6 {
 forvalues i = 1/6 {
 	preserve 
 	
-	tostring(agri_income_09_o_`i'), replace 
-	
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_09_`i' == 7 & agri_income_09_o_`i' == "."
@@ -6881,7 +6925,7 @@ restore
 
 ** agri_income_13_1 is a string 
 	
-forvalues i = 1/3 {
+forvalues i = 1/5 {
 	preserve 
 	
 	*** make sure it is a string ***
@@ -6906,7 +6950,7 @@ forvalues i = 1/3 {
 }
 
 *** check that agri_income_11 is not missing ***
-forvalues i = 1/3 {
+forvalues i = 1/5 {
 	preserve 
 
 
@@ -6954,7 +6998,7 @@ preserve
 restore
 
 *** check that agri_income_12 is not missing ***
-forvalues i = 1/3 {
+forvalues i = 1/5 {
 	preserve 
 
 
@@ -7002,7 +7046,7 @@ preserve
 restore
 
 *** check that agri_income_13 is not missing ***
-forvalues i = 1/3 {
+forvalues i = 1/5 {
 	preserve 
 
 	tostring(agri_income_13_`i'), replace 
@@ -7145,8 +7189,6 @@ restore
 
 preserve 
 
-	tostring(agri_income_18_o), replace 
-	
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_18 == 3 & agri_income_18_o == "."
@@ -7424,8 +7466,6 @@ restore
 
 preserve 
 
-	tostring(agri_income_31_o), replace 
-
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_31_6 == 1 & agri_income_31_o == "."
@@ -7532,7 +7572,7 @@ restore
 
 *** xlii.	agri_income_36 should be answered when agri_income_34 = 1, should be between 0 and 100000000 ***
 
-forvalues i = 1/3 {
+forvalues i = 1/4 {
 	preserve 
 
 	*** limit sample to agri_income_34 = 1 ***
@@ -7559,7 +7599,7 @@ forvalues i = 1/3 {
 
 *** xliii.	agri_income_37 should be answered when agri_income_34 = 1, should be text  *** 
 
-forvalues i = 1/3 {
+forvalues i = 1/4 {
 	preserve 
 
 	*** limit sample to agri_income_34 = 1 ***
@@ -7586,7 +7626,7 @@ forvalues i = 1/3 {
 
 *** xliv.	agri_income_38 should be answered when agri_income_34 = 1, should be less than agri_income_36 *** 
  
-forvalues i = 1/3 {
+forvalues i = 1/4 {
 	preserve 
 
 	*** limit sample to agri_income_34 = 1 ***
@@ -7613,7 +7653,7 @@ forvalues i = 1/3 {
 
 *** xlv.	agri_income_39 should be answered when agri_income_34 = 1, should be less than agri_income_36, agri_income_36 – agri_income_38 should be greater than agri_income_39   *** 
 
-forvalues i = 1/3 {
+forvalues i = 1/4 {
 	preserve 
 
 	*** limit sample to agri_income_34 = 1 ***
@@ -7642,8 +7682,6 @@ forvalues i = 1/3 {
 
 preserve 
 
-	tostring(agri_loan_name), replace 
-
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_40 == 1 & agri_loan_name == "."
@@ -7663,7 +7701,7 @@ restore
 
 *** xlvii.	agri_income_41 should be answered when agri_income_40 = 1, should between 0 and 10000000  *** 
 
-forvalues i = 1/1 {
+forvalues i = 1/2 {
 	preserve 
 
 	*** limit sample to agri_income_40 = 1 ***
@@ -7690,7 +7728,7 @@ forvalues i = 1/1 {
 
 ***  xlviii.	agri_income_42 should be answered when agri_income_40 = 1, should be less than agri_income_41   *** 
 
-forvalues i = 1/1 {
+forvalues i = 1/2 {
 	preserve 
 
 	*** limit sample to agri_income_40 = 1 ***
@@ -7717,7 +7755,7 @@ forvalues i = 1/1 {
 
 *** xlix.	agri_income_43 should be answered when agri_income_40 = 1, should be less than agri_income_41  *** 
 
-forvalues i = 1/1 {
+forvalues i = 1/2 {
 	preserve 
 
 	*** limit sample to agri_income_40 = 1 ***
@@ -7843,7 +7881,7 @@ forvalues i = 1/1 {
 	restore		
 
 *** l.	agri_income_46_o should be answered when agri_income_46 = 4, should be text *** 
-forvalues i = 1/9 {
+forvalues i = 1/11 {
 	preserve 
 	
 	*** make sure all are string variables *** 
@@ -7939,8 +7977,6 @@ restore
 
 preserve 
 
-	tostring(living_03_o), replace 
-	
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if living_03 == 99 & living_03_o == "."
@@ -8006,8 +8042,6 @@ restore
 *** living_06_o should be answered when living_06 == 99, should be text *** 
 
 preserve 
-
-	tostring(living_06_o), replace
 
 	*** generate indicator variable ***
 	gen ind_var = 0 
@@ -8183,8 +8217,6 @@ restore
 
 preserve 
 
-	tostring(enum_03_o), replace 
-	
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if enum_03 == 99 & enum_03_o == "."
@@ -8231,8 +8263,6 @@ restore
 
 preserve 
 
-	tostring(enum_04_o), replace 
-	
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if enum_04 == 99 & enum_04_o == "."
@@ -8253,8 +8283,6 @@ restore
 *** enum_05_o should be answered when enum_05 == 99, should be text *** 
 
 preserve 
-
-	tostring(enum_05_o), replace
 
 	*** generate indicator variable ***
 	gen ind_var = 0 

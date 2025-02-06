@@ -1,29 +1,39 @@
 *** DISES Household Survey - Combine Data Checks Files ***
 *** Code Created By: Molly Doruska ****
-*** Code Last Updated By: Molly Doruska ***
-*** Code Last Modified: Feb 5, 2024 ***
+*** File Last Updated By: Kateri Mouawad ***
+*** File Last Updated On: February 06, 2025 ***
+*KRM - updated file paths. All updates recorded on GitHub. 
 
 clear all 
 set maxvar 20000 
 
 *** file set up *** 
-global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
 
-global data "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
 
-global village_observations "$master\Data Quality Checks\Code\Village_Household_Identifiers"
-global household_roster "$master\Data Quality Checks\Code\Household_Roster"
-global knowledge "$master\Data Quality Checks\Code\Knowledge"
-global health "$master\Data Quality Checks\Code\Health" 
-global agriculture_inputs "$master\Data Quality Checks\Code\Agriculture_Inputs"
-global agriculture_production "$master\Data Quality Checks\Code\Agriculture_Production"
-global food_consumption "$master\Data Quality Checks\Code\Food_Consumption"
-global income "$master\Data Quality Checks\Code\Income"
-global standard_living "$master\Data Quality Checks\Code\Standard_Living"
-global beliefs "$master\Data Quality Checks\Code\Beliefs" 
-global public_goods "$master\Data Quality Checks\Code\Public_Goods"
-global enum_observations "$master\Data Quality Checks\Code\Enumerator_Observations"
-global issues "$master\Data Quality Checks\Full Issues"
+if "`c(username)'"=="socrm" {
+                global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
+}
+else if "`c(username)'"=="Kateri" {
+                global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
+				
+}
+
+
+*** additional file paths ***
+global data "$master\_CRDES_RawData\Baseline"
+
+global village_observations "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Village_Household_Identifiers"
+global household_roster "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Household_Roster"
+global knowledge "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Knowledge"
+global health "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Health" 
+global agriculture_inputs "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Agriculture_Inputs"
+global agriculture_production "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Agriculture_Production"
+global food_consumption "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Food_Consumption"
+global income "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Income"
+global standard_living "$master\Data_Quality_Checks\Output\Baseline\Jan-Feb_Output\Baseline_Standard_Living"
+global beliefs "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Beliefs" 
+global public_goods "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Public_Goods"
+global enum_observations "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Enumerator_Observations"
 
 ********************** COMBINE FILES INTO SECTION FILES **********************
 

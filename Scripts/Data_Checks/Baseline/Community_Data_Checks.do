@@ -1,24 +1,24 @@
 *** DISES Baseline Data Checks ***
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Kateri Mouawad ***
-*** File Last Updated On: Febuary 05, 2024 ***
+*** File Last Updated On: February 06, 2025 ***
+*KRM - updated file paths. All updates recorded on GitHub. 
 
 clear all 
 
 **** Master file path  ****
 
 if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
+                global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
 }
-else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Baseline Data Collection"
+else if "`c(username)'"=="Kateri" {
+                global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
 				
 }
+global community "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Community_Issues"
+global issues "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\1_Full_Issues"
 
-global community "$master\Data Quality Checks\Output\Community_Issues"
-global issues "$master\Data Quality Checks\Full Issues"
-
-global data "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
+global data "$master\_CRDES_RawData\Baseline"
 
 *** import community survey data ***
 import delimited "$data\Questionnaire Communautaire - NSF DISES_WIDE_6Feb24.csv", clear varnames(1) bindquote(strict)

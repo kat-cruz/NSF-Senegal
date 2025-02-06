@@ -1,7 +1,8 @@
 *** DISES Baseline Data Checks - Household Survey***
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Kateri Mouawad ***
-*** File Last Updated On: February 5, 2024 ***
+*** File Last Updated On: February 06, 2025 ***
+*KRM - updated file paths. All updates recorded on GitHub. 
 
 
 clear all 
@@ -12,33 +13,29 @@ set maxvar 20000
 **** Master file path  ****
 
 if "`c(username)'"=="socrm" {
-                global master "C:\Users\km978\Box\NSF Senegal\Data Management"
+                global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
 }
-else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Data Management"
+else if "`c(username)'"=="Kateri" {
+                global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
 				
 }
 
 
-
-*global master "C:\Users\kateri\Box\NSF Senegal\Baseline Data Collection"
-*global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
-
 *** additional file paths ***
 global data "$master\_CRDES_RawData\Baseline"
 
-global village_observations "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Village_Household_Identifiers"
-global household_roster "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Household_Roster"
-global knowledge "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Knowledge"
-global health "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Health" 
-global agriculture_inputs "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Agriculture_Inputs"
-global agriculture_production "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Agriculture_Production"
-global food_consumption "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Food_Consumption"
-global income "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Income"
-global standard_living "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Standard_Living"
-global beliefs "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Beliefs" 
-global public_goods "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Public_Goods"
-global enum_observations "$master\Data Quality Checks\Output\Baseline\Jan-Feb Output\Enumerator_Observations"
+global village_observations "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Village_Household_Identifiers"
+global household_roster "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Household_Roster"
+global knowledge "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Knowledge"
+global health "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Health" 
+global agriculture_inputs "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Agriculture_Inputs"
+global agriculture_production "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Agriculture_Production"
+global food_consumption "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Food_Consumption"
+global income "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Income"
+global standard_living "$master\Data_Quality_Checks\Output\Baseline\Jan-Feb_Output\Baseline_Standard_Living"
+global beliefs "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Beliefs" 
+global public_goods "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Public_Goods"
+global enum_observations "$master\Data_Quality_Checks\Baseline\Jan-Feb_Output\Baseline_Enumerator_Observations"
 
 *** Import data - update this every new data cleaning session ***
 import delimited "$data\DISES_enquete_ménage_FINALE_WIDE_6Feb24.csv", clear varnames(1) bindquote(strict)

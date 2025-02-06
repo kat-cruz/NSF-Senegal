@@ -79,136 +79,6 @@ foreach i of numlist 1/57 {
     capture rename age_`i' hh_age_`i'
 }
 
-**************************** clear out output folders to retain the most updated checks: ****************************
-/*
-
-	*KRM - we delete the individual .dta's since we save the completed appended excel file for each round of checks 
-	** Household roster module ** 
-			cd "$household_roster"  // set directory to the folder with .dta files
-
-			local files: dir "$household_roster" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $household_roster"
-
-	** knowledge module ** 
-			cd "$knowledge"  // set directory to the folder with .dta files
-
-			local files: dir "$knowledge" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $knowledge"
-	** health module ** 
-			cd "$health"  // set directory to the folder with .dta files
-
-			local files: dir "$health" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $health"	
-	** agriculture_inputs module 
-	 
-			cd "$agriculture_inputs"  // set directory to the folder with .dta files
-
-			local files: dir "$agriculture_inputs" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $agriculture_inputs"
-	** agriculture_production module 
-	 
-			cd "$agriculture_production"  // set directory to the folder with .dta files
-
-			local files: dir "$agriculture_production" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $agriculture_production"
-	** food_consumption module 
-	 
-			cd "$food_consumption"  // set directory to the folder with .dta files
-
-			local files: dir "$food_consumption" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $food_consumption"	
-	** income module 
-	 
-			cd "$income"  // set directory to the folder with .dta files
-
-			local files: dir "$income" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $income"	
-	** standard_living module 
-	 
-			cd "$standard_living"  // set directory to the folder with .dta files
-
-			local files: dir "$standard_living" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $standard_living"	
-			
-	** beliefs module 
-	
-			cd "$beliefs"  // set directory to the folder with .dta files
-
-			local files: dir "$beliefs" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $beliefs"
-			
-	** enum_observations
-
-
-			cd "$enum_observations"  // set directory to the folder with .dta files
-
-			local files: dir "$enum_observations" files "*.dta"  // get a list of .dta files in the folder
-
-			foreach file in `files' {
-				di "Deleting `file'"
-				erase "`file'"
-			}
-
-			di "All .dta files deleted from $enum_observations"
-*/
-
-
-	
-
 
 **************************** capture label variables ****************************
 * Note: we label location and respondents
@@ -3700,7 +3570,7 @@ restore
 
 }
 
-*** 14. hh_39 should be answered when 4 <= age <= 18 ***
+*** 14. hh_39 should be answered when 4 <= age <= 18, and check that it is between -6 and 60 (inclusive of -6 and 60) ***
 *Note: check max i value
 forvalues i = 1/57 {
     preserve
@@ -3710,9 +3580,10 @@ forvalues i = 1/57 {
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 
-
+		
     gen ind_var = 0
     replace ind_var = 1 if missing(`hh_39')
+	replace ind_var = 1 if `hh_39' < -6 & `hh_39' > 60
     keep if ind_var == 1
 
     generate issue = "Missing"
@@ -3726,7 +3597,7 @@ forvalues i = 1/57 {
     restore
 }
 
-*** 15. hh_40 should be answered when 4 <= age <= 18 ***
+*** 15. hh_40 should be answered when 4 <= age <= 18, and check that it is between -6 and 60 (inclusive of -6 and 60) ***
 *Note: check max i value
 forvalues i = 1/57 {
     preserve
@@ -3740,6 +3611,7 @@ forvalues i = 1/57 {
     gen ind_var = 0
   
     replace ind_var = 1 if missing(`hh_40')
+	replace ind_var = 1 if `hh_40' < -6 & `hh_40' > 60
     keep if ind_var == 1
 
     generate issue = "Missing"

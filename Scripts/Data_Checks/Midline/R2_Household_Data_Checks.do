@@ -9,7 +9,7 @@
 			*1)	Create a file with hhid, hh_phone, hh_head_name_complet, hh_name_complet_resp
 			*2)	Check for missing values [NOTE: Skip patterns are noted below in dependencies section]
 			*3)	Verify responses are reasonable values
-			*		After you run the checks, you will need to append all of the outputs using the R2_Combine_Checks_Output.do file to export a complete list of issues for CRDES to correct. 
+			*		After you run the checks, you will need to append all of the outputs using the Midline_Combine_Checks_Output.do file to export a complete list of issues for CRDES to correct. 
 			
 *==============================================================================
 
@@ -33,21 +33,21 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 **************************** data file paths ****************************
 
-global data "$master\Data Management\_CRDES_RawData\Midline\Household_Survey_Data"
+global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
 
 **************************** output file paths ****************************
 
-global village_observations "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Village_Observations"
-global household_roster "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Household_Roster"
-global knowledge "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Knowledge"
-global health "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Health" 
-global agriculture_inputs "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Agriculture_Inputs"
-global agriculture_production "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Agriculture_Production"
-global food_consumption "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Food_Consumption"
-global income "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Income"
-global standard_living "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Standard_Living"
-global beliefs "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Beliefs" 
-global enum_observations "$master\Data Management\Output\Data_Quality_Checks\Midline\R2_Enumerator_Observations"
+global village_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Village_Observations"
+global household_roster "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster"
+global knowledge "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Knowledge"
+global health "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Health" 
+global agriculture_inputs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Agriculture_Inputs"
+global agriculture_production "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Agriculture_Production"
+global food_consumption "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Food_Consumption"
+global income "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Income"
+global standard_living "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Standard_Living"
+global beliefs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Beliefs" 
+global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Enumerator_Observations"
 
 
 **************************** Import household data ****************************

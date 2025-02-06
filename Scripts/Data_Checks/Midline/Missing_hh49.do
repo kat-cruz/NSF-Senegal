@@ -19,10 +19,10 @@ if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 
 * Define the master folder path
-global master "$box_path\Data Management"
+global master "$box_path\Data_Management"
 
 * Define specific paths for output and input data
-global schoolprincipal "$master\Output\Data_Quality_Checks\Midline\R2_Principal_Issues"
+global schoolprincipal "$master\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues"
 global issues "$master\Output\Data_Quality_Checks\Midline\Full Issues"
 global schooldata "$master\_CRDES_RawData\Midline\Principal_Survey_Data"
 global hhdata "$master\_CRDES_RawData\Midline\Household_Survey_Data"

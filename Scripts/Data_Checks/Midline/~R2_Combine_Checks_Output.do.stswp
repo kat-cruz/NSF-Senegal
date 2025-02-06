@@ -56,7 +56,7 @@ global baseline "$master\Data Management\_CRDES_CleanData\Baseline\Identified"
 
 
 global issues "$master\Data_Management\External_Corrections\Issues for Justin and Amina\Midline\Issues"
-global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
+global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midline\_MidOriginal_Issues_Output"
 
 
 ********************** COMBINE FILES INTO SECTION FILES **********************

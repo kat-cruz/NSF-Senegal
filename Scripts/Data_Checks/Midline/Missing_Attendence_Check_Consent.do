@@ -31,9 +31,9 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 **************************** data file paths ****************************
 
-global hh_data "$master\Data Management\_CRDES_RawData\Midline\Household_Survey_Data"
-global attend_data "$master\Data Management\_CRDES_RawData\Midline\Principal_Survey_Data"
-global hhids "$master\Data Management\Output\Household_IDs"
+global hh_data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
+global attend_data "$master\Data_Management\_CRDES_RawData\Midline\Principal_Survey_Data"
+global hhids "$master\Data_Management\Output\Household_IDs"
 
 **************************** output file paths ****************************
 

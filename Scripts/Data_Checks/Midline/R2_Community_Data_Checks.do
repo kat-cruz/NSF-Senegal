@@ -25,7 +25,7 @@ global communityOriginal "$box_path\Data Management\Output\Data_Quality_Checks\M
 global data "$box_path\Data Management\_CRDES_RawData\Midline\Community_Survey_Data"
 
 *** import community survey data ***
-import delimited "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_29Jan.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_05Feb2025.csv", clear varnames(1) bindquote(strict)
 
 *** rename variables to distinguish from baseline *** 
 rename q52 q52_a 
@@ -2039,39 +2039,38 @@ forvalues i = 1/3 {
 ** Look in folder and see which output issue files there are
 ** Include all new files in the folder below 
 
-use "$community\Issue_Community_number_hh.dta", clear 
-append using "$community\Issue_Community_number_hh.dta"
-append using "$community\Issue_Community_number_total.dta"
-append using "$community\Issue_Community_q_43.dta"
-append using "$community\Issue_Community_q_49.dta"
-append using "$community\Issue_Community_q64.dta"
-append using "$community\Issue_Community_q65.dta"
-append using "$community\Issue_Community_q66.dta"
-append using "$community\Issue_Community_unit_convert_1.dta"
-append using "$community\Issue_Community_unit_convert_2.dta"
-append using "$community\Issue_Community_unit_convert_3.dta"
-append using "$community\Issue_Community_unit_convert_4.dta"
-append using "$community\Issue_Community_unit_convert_5.dta"
-append using "$community\Issue_Community_unit_convert_6.dta"
-append using "$community\Issue_Community_unit_convert_7.dta"
-append using "$community\Issue_Community_unit_convert_9.dta"
-append using "$community\Issue_Community_unit_convert_11.dta"
 
 
-	* merge in previous data frames 
-	merge m:m hhid_village using "$communityOriginal\Community_Issues_24Jan2025.dta"
+clear
+local folder "$community"  
+
+cd "`folder'"
+local files: dir . files "*.dta"
+
+foreach file in `files' {
+    di "Appending `file'"
+    append using "`file'"
+}
+
+
+	* merge in previous round: 
+	merge m:m hhid_village using "$communityOriginal\Community_Issues_29Jan2025.dta"
 
 	*filter recent updates by last_update
 	keep if last_update == ""
 	*set new date 
-	replace last_update = "Sent on Jan 29 25"
+	replace last_update = "Sent on Feb 05 25"
+	rename _merge R3_merge
+	**KRM - adjust this so that rounds just get updated 
+	drop R2_merge
 
 
 **************** EXPORT DATA  ***********************
 ** UPDATE DATE IN FILE NAME 
-
+* check that this is working 
 	export excel using "$community\Community_Issues_29Jan2025.xlsx", firstrow(variables) replace  
-	export excel using "$communityOriginal\Community_Issues_29Jan2025.xlsx", firstrow(variables) replace  
-	save "$communityOriginal\Community_Issues_29Jan2025.dta"
+	export excel using "$communityOriginal\Community_Issues_05Feb2025.xlsx", firstrow(variables) replace  
+	save "$communityOriginal\Community_Issues_05Feb2025.dta", replace 
 
+*/
 

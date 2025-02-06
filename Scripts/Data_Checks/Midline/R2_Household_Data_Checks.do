@@ -53,8 +53,8 @@ global enum_observations "$master\Data Management\Output\Data_Quality_Checks\Mid
 **************************** Import household data ****************************
 
 * Note: update this every new data cleaning session ***
-
-import delimited "$data\DISES_Enquête ménage midline VF_WIDE_31Jan.csv", clear varnames(1) bindquote(strict)
+** KRM - needed to re-output these checks to add a filter variable, update next round 
+import delimited "$data\DISES_Enquête ménage midline VF_WIDE_04Feb.csv", clear varnames(1) bindquote(strict)
 
 
 ************************** drop missing consents *************************
@@ -79,6 +79,134 @@ foreach i of numlist 1/57 {
     capture rename age_`i' hh_age_`i'
 }
 
+**************************** clear out output folders to retain the most updated checks: ****************************
+
+	*KRM - we delete the individual .dta's since we save the completed appended excel file for each round of checks 
+	** Household roster module ** 
+			cd "$household_roster"  // set directory to the folder with .dta files
+
+			local files: dir "$household_roster" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $household_roster"
+
+	** knowledge module ** 
+			cd "$knowledge"  // set directory to the folder with .dta files
+
+			local files: dir "$knowledge" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $knowledge"
+	** health module ** 
+			cd "$health"  // set directory to the folder with .dta files
+
+			local files: dir "$health" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $health"	
+	** agriculture_inputs module 
+	 
+			cd "$agriculture_inputs"  // set directory to the folder with .dta files
+
+			local files: dir "$agriculture_inputs" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $agriculture_inputs"
+	** agriculture_production module 
+	 
+			cd "$agriculture_production"  // set directory to the folder with .dta files
+
+			local files: dir "$agriculture_production" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $agriculture_production"
+	** food_consumption module 
+	 
+			cd "$food_consumption"  // set directory to the folder with .dta files
+
+			local files: dir "$food_consumption" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $food_consumption"	
+	** income module 
+	 
+			cd "$income"  // set directory to the folder with .dta files
+
+			local files: dir "$income" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $income"	
+	** standard_living module 
+	 
+			cd "$standard_living"  // set directory to the folder with .dta files
+
+			local files: dir "$standard_living" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $standard_living"	
+			
+	** beliefs module 
+	
+			cd "$beliefs"  // set directory to the folder with .dta files
+
+			local files: dir "$beliefs" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $beliefs"
+			
+	** enum_observations
+
+
+			cd "$enum_observations"  // set directory to the folder with .dta files
+
+			local files: dir "$enum_observations" files "*.dta"  // get a list of .dta files in the folder
+
+			foreach file in `files' {
+				di "Deleting `file'"
+				erase "`file'"
+			}
+
+			di "All .dta files deleted from $enum_observations"
+
+
+	
+
 
 **************************** capture label variables ****************************
 * Note: we label location and respondents
@@ -97,8 +225,12 @@ foreach i of numlist 1/57 {
 	capture label variable who_attended_training "Est-ce que une autre membre de ce menage a assiste a la formation que notre équipe a organisée en [MOIS] 2024 sur l'élimination de la plante aquatique cerato [REMPLACER par le nom local, naithe ?] ?"
 	capture label variable training_id "Qui a assiste a la formation (selectionnez de la liste du membres du menage)"
 	capture label variable heard_training "Avez-vous entendu parler de la formation menées par le projet ?"
-	capture label variable hh_date "Date"
-	capture label variable hh_time "Heure"
+	capture label variable hh_gpslatitude "Date"
+	capture label variable hh_gpslongitude "Heure"
+	capture label variable hh_gpsaltitude "Heure"
+	capture label variable hh_gpsaccuracy  "Heure"
+	capture label variable count_chefs "HH Head Count"
+	
 
 *** labels for household members - loop through all member numbers ***
 *** check the data to ensure this is the maximum number of members in a household ***
@@ -110,9 +242,12 @@ forvalues i = 1/57{
 	capture label variable hh_surname_`i' "Surnom"
 */
 	capture label variable hh_full_name_calc_`i' "Full Name"
+	capture label variable hh_name_complet_resp_`i' "Nom et prénom du répondant" 
+	capture label hh_name_complet_resp_new_`i' "Nouveau membre" 
    	capture label still_member_`i'  "Cette personne fait-elle toujours partie du ménage ?"
 	capture label still_member_whynot_`i'  "Pourquoi il/elle n´est plus membre du ménage? ?"
 	capture label still_member_whynot_o_`i' "Autre raison"
+	capture label newmem_why_`i' "Pourquoi il/elle n'était pas enregistré(e) comme membre de votre ménage lors de la dernière collecte ?" 
 	capture label add_new_`i' "Y a-t-il d'autres personnes dans le ménage ?"
 	capture label variable hh_gender_`i' "Genre"
 	capture label variable hh_age_`i' "Age"
@@ -172,6 +307,8 @@ forvalues i = 1/57{
 	*capture label variable hh_13_`i'_7 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	capture label variable hh_13_o_`i' "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a [hh_12_o] pres de (< 1 m) ou dans la/les source(s) d'eau"
 	capture label variable hh_14_`i' "Au cours des 12 derniers mois, combien de vegetation aquatique a-t-il/elle recolte pres de (< 1 m) ou dans la/les source(s) d'eau par semaine, en moyenne (en kg)"
+	capture label variable hh_14_a_`i' "Au cours des 12 derniers mois, combien de fois a-t-il/elle recolté de végétation aquatique près de (< 1 m) ou dans la/les source(s) d'eau?"
+	capture label variable hh_14_b_`i' "Pour chaque fois, en moyenne, combien de végétation aquatique a-t-il/elle recolté près de (< 1 m) ou dans la/les source(s) d'eau? (1= kg Tipha, 2= kg autre)"
 	capture label variable hh_15_`i' "Comment a-t-il utilise la vegetation aquatique"
 	capture label variable hh_15_o_`i' "Autre a preciser"
 	capture label variable hh_16_`i' "Au cours des 12 derniers mois combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a la production d'engrais, son achat, ou son application sur le champ"
@@ -241,9 +378,13 @@ forvalues i = 1/57{
 	capture label variable hh_47_g_`i' "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autres (préciser ?"
 	capture label variable hh_47_oth_`i' "Combien a été dépensé pour l'éducation de [NOM] au cours des 12 derniers mois par le ménage, la famille et les amis : Autre à préciser ?"
 	capture label variable hh_48_`i' "[NOM] a-t-il été testé pour la bilharziose à l'école ?"
-}
+	capture label variable hh_49_`i' "Cet enfant fréquente-t-il actuellement une école située dans cette communauté ?"	
+	capture label variable hh_50_`i' "Quel est le nom de l'école?"	
+	capture label variable hh_51_`i' "Comment cet enfant va-t'il à cette école?"	
+	capture label variable hh_52_`i' "Quel est le nom de l'école?"	
+	
+	}
 
-	capture label variable hh_49_`i' "Consentement pour la vérification de la fréquentation scolaire"	
 
 
 *** knowledge section ***
@@ -873,47 +1014,644 @@ restore
 
 
 *** Locate HHs with missing hhids
-*Note: check max i value 
-forvalues i = 1/57 {
+
+ ** hh_date – check that there is a text entry
+
+    preserve 
+
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+    replace ind_var = 1  if missing(hh_date)
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "hh_date"
+	rename hh_date print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_date.dta", replace
+	}
+  
+    restore
+
+
+** hh_time – check that there is a text entr
+
+    preserve 
+
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+    replace ind_var = 1  if missing(hh_time)
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "hh_time"
+	rename hh_time print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_time.dta", replace
+	}
+  
+    restore
+
+
+** hh_gpslatitude – check that there is a numeric entry 
+** KRM - checking if it's missing, if there's a non-numeric value the var will be a string and will fail the check 
+
+    preserve 
+
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if missing(hh_gpslatitude)
+
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "hh_gpslatitude"
+	rename hh_gpslatitude print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_gpslatitude.dta", replace
+	}
+  
+    restore
+
+	** hh_gpslongitude – check that there is a numeric entry
+	** KRM - checking if it's missing, if there's a non-numeric value the var will be a string and will fail the check 
+
+    preserve 
+
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if missing(hh_gpslongitude)
+
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "hh_gpslongitude"
+	rename hh_gpslongitude print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_gpslongitude.dta", replace
+	}
+  
+    restore
+	
+	** hh_gpsaltitude – check that there is a numeric entry
+	** KRM - checking if it's missing, if there's a non-numeric value the var will be a string and will fail the check 
+
+    preserve 
+
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if missing(hh_gpsaltitude)
+
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "hh_gpsaltitude"
+	rename hh_gpsaltitude print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_gpsaltitude.dta", replace
+	}
+  
+    restore
+
+	** hh_gpsaccuracy – check that there is a numeric entry
+	** KRM - checking if it's missing, if there's a non-numeric value the var will be a string and will fail the check 
+	 preserve 
+
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if missing(hh_gpsaccuracy)
+
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "hh_gpsaccuracy"
+	rename hh_gpsaccuracy print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_gpsaccuracy.dta", replace
+	}
+  
+    restore
+
+	
+	** check houshold roster respondent age 
 
     preserve 
 
 	*** drop no consent households *** 
-	keep if consent == 0 
-	
-	
-    local hh_age hh_age_`i'
-	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
-	rename `pull_hh_full_name_calc' hh_member_name
+	drop if consent == 0 
 	
 	*** generate indicator variable ***
 	gen ind_var = 0
-    replace ind_var = 1  if `hh_age' < 0 | `hh_age' > 90    
- 	replace ind_var = 0 if _household_roster_count < `i'
-	drop if still_member_`i' == 0
-    
+    replace ind_var = 1  if hh_age_resp < 0 | hh_age_resp > 90    
+ 
     	* keep and add variables to export *
 	keep if ind_var == 1 	
 	generate issue =  "Unreasonable value"
-	generate issue_variable_name = "hh_age_`i'"
-	rename `hh_age' print_issue 
+	generate issue_variable_name = "hh_age_resp"
+	rename hh_age_resp print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_age_resp.dta", replace
+	}
+  
+    restore
+
+  ** hh_name_complet_resp – check that there is a text entry here
+  
+   
+    preserve 
+
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+    replace ind_var = 1  if missing(hh_name_complet_resp)
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "hh_name_complet_resp"
+	rename hh_age_resp print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_name_complet_resp.dta", replace
+	}
+  
+    restore
+
+  
+  
+  * check that we have names for new respondends 
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	*** generate indicator variable ***
+	gen ind_var = 0
+    replace ind_var = 1 if hh_name_complet_resp == "999" & missing(hh_name_complet_resp_new) 
+	replace ind_var = 1 if hh_name_complet_resp == "999" & !regexm(hh_name_complet_resp_new, "[A-Za-z]")
+
+    
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing name"
+	generate issue_variable_name = "hh_name_complet_resp_new"
+	generate print_issue = "hh_name_complet_resp_new"
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_hh_name_complet_resp_new.dta", replace
+	}
+  
+    restore
+
+	
+	** attend_training: for treatment groups, check that the answer is 0, 1, or 2
+	
+	   
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	keep if grappe_int == 1
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+    replace ind_var = 1 if attend_training != 0 & attend_training != 1 & attend_training != 2
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Attend_training needs to = 0, 1, or 2"
+	generate issue_variable_name = "attend_training"
+	rename attend_training print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_Attend_training.dta", replace
+	}
+  
+    restore
+
+	
+		**  training_id – when who_attended_training = 1, check that there is a text entry
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	keep if grappe_int == 1
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+    replace ind_var = 1 if who_attended_training == 1 & missing(training_id)
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing ID"
+	generate issue_variable_name = "training_id"
+	rename training_id print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_training_id.dta", replace
+	}
+  
+    restore
+
+	
+	** heard_training – for treatment groups, check that the answer is 0, 1, or 2
+	
+	preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	keep if grappe_int == 1
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if heard_training != 0 & heard_training != 1 & heard_training != 2
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "heard_training needs to = 0, 1, or 2"
+	generate issue_variable_name = "heard_training"
+	rename heard_training print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_heard_training.dta", replace
+	}
+  
+    restore
+	
+	
+	
+	** who_attended_training – for treatment groups, check that the answer is 0, 1, or 2
+	
+	preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	keep if grappe_int == 1
+		
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if who_attended_training != 0 & who_attended_training != 1 & who_attended_training != 2
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "who_attended_training needs to = 0, 1, or 2"
+	generate issue_variable_name = "who_attended_training"
+	rename who_attended_training print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_who_attended_training.dta", replace
+	}
+  
+    restore
+	
+	** still_member – add check that is zero or one 
+	
+	forvalues i = 1/57 {
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+    local still_member still_member_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+	*** generate indicator variable ***
+
+	gen ind_var = 0
+    replace ind_var = 1  if `still_member' != 0 & `still_member' != 1  
+ 	replace ind_var = 0 if _household_roster_count < `i'
+	*KRM - idk why this working 
+	replace ind_var = 0 if `i' > hh_size_load  
+	  
+    *drop if still_member_`i' == 0
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Unreasonable value"
+	generate issue_variable_name = "still_member_`i'"
+	
+	rename `still_member' print_issue 
 	tostring(print_issue), replace
 	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 	
     * Export the dataset to Excel conditional on there being an issue
-
     if _N > 0 {
-        save "$household_roster\Issue_Household_`hh_age'.dta", replace
+        save "$household_roster\Issue_Household_`still_member'.dta", replace
     }
-
   
     restore
+}	
+	
+	
+	** newmem_why_ - check that for new members, the response should be 1, 2, 3, 4, or 10 
+	
+	forvalues i = 1/57 {
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+    local newmem_why newmem_why_`i'
+	local add_new add_new_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+	*** generate indicator variable ***
+
+	keep if add_new_`i' == 1
+	gen ind_var = 0
+    replace ind_var = 1 if `add_new' == 1 & !inlist(`newmem_why', 1, 2, 3, 4, 10 )
+	replace ind_var = 1 if `add_new' == 1 & missing(`newmem_why')
+ 	replace ind_var = 0 if _household_roster_count < `i'
+	*KRM - check here too 
+	replace ind_var = 0 if `i' > hh_size_load  
+	  
+    *drop if still_member_`i' == 0
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Unreasonable value"
+	generate issue_variable_name = "newmem_why_`i'"
+	
+	rename `newmem_why' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_Household_`newmem_why'.dta", replace
+    }
+  
+    restore
+}	
+	
+	
+
+	
+** still_member_whynot – add check that there is a response of 1,2,3,4,5,6,7,8,9,11 or -777 when still_member == 0 
+
+forvalues i = 1/57 {
+    preserve
+
+    *** Drop households with no consent ***
+    drop if consent == 0
+    
+    local still_member still_member_`i'
+	local still_member_whynot still_member_whynot_`i'
+    local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+    rename `pull_hh_full_name_calc' hh_member_name
+	
+
+    *** Generate indicator variable ***
+    gen ind_var = 0
+
+    * Check for unreasonable still_member values and valid still_member_whynot values when still_member == 0 *
+    
+    replace ind_var = 1 if `still_member' == 0 & !inlist(`still_member_whynot', 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, -777)
+
+    *** Keep only flagged cases ***
+    keep if ind_var == 1  	
+	replace ind_var = 0 if _household_roster_count < `i'
+	replace ind_var = 0 if `i' > hh_size_load  
+
+    generate issue = "Unreasonable value"
+    generate issue_variable_name = "still_member_whynot_`i'"
+
+    rename `still_member_whynot' print_issue
+    tostring(print_issue), replace
+
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+
+    * Export the dataset to Excel conditional on there being an issue *
+    if _N > 0 {
+        save "$household_roster/Issue_HH_Roster_still_member_whynot_`i'.dta", replace
+    }
+
+    restore
 }
+
+	
+** still_member_whynot_o – add check that there is a text entry when still_member_whynot == -777
+
+
+forvalues i = 1/57 {
+    preserve
+
+    *** Drop households with no consent ***
+    drop if consent == 0
+    
+    local still_member_whynot_o still_member_whynot_o_`i'
+	local still_member_whynot still_member_whynot_`i'
+    local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+    rename `pull_hh_full_name_calc' hh_member_name
+	tostring `still_member_whynot_o', replace 
+
+    *** Generate indicator variable ***
+    gen ind_var = 0
+
+    * Check for unreasonable values 
+    
+    replace ind_var = 1 if `still_member_whynot' == -777 & `still_member_whynot_o' == ""
+
+    *** Keep only flagged cases ***
+    keep if ind_var == 1  	
+	replace ind_var = 0 if _household_roster_count < `i'
+	replace ind_var = 0 if `i' > hh_size_load  
+
+    generate issue = "Unreasonable value"
+    generate issue_variable_name = "still_member_whynot_o_`i'"
+
+    rename `still_member_whynot_o' print_issue
+    tostring(print_issue), replace
+
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+
+    * Export the dataset to Excel conditional on there being an issue *
+    if _N > 0 {
+        save "$household_roster/Issue_HH_Roster_still_member_whynot_o_`i'.dta", replace
+    }
+
+    restore
+}
+
+	
+** hh_presence_winter – check that there is a response for each household member and is 0, 1, or 2
+
+
+
+	forvalues i = 1/57 {
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+    local hh_presence_winter hh_presence_winter_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+	*** generate indicator variable ***
+
+	gen ind_var = 0
+	replace ind_var = 1  if missing(`hh_presence_winter' )
+    replace ind_var = 1  if `hh_presence_winter' != 0 & `hh_presence_winter' != 1  & `hh_presence_winter' != 2
+ 	replace ind_var = 0 if _household_roster_count < `i'  
+    drop if still_member_`i' == 0
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Unreasonable value"
+	generate issue_variable_name = "hh_presence_winter_`i'"
+	
+	rename `hh_presence_winter' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_`hh_presence_winter'.dta", replace
+    }
+  
+    restore
+}	
+	
+** hh_presence_dry – check that there is a response for each household member and is 0, 1, or 2
+**KRM - check this too 
+
+	forvalues i = 1/57 {
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+    local hh_presence_dry hh_presence_dry_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+	*** generate indicator variable ***
+
+	gen ind_var = 0
+	replace ind_var = 1  if missing(`hh_presence_dry' )
+    replace ind_var = 1  if `hh_presence_dry' != 0 & `hh_presence_dry' != 1  & `hh_presence_dry' != 2
+ 	replace ind_var = 0 if _household_roster_count < `i'  
+    drop if still_member_`i' == 0
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Unreasonable value"
+	generate issue_variable_name = "hh_presence_dry_`i'"
+	
+	rename `hh_presence_dry' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_`hh_presence_dry'.dta", replace
+    }
+  
+    restore
+}	
+		** hh_active_agri – check that there is a response for each household member and is 0, 1, or 2
+		
+	forvalues i = 1/57 {
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+    local hh_active_agri hh_active_agri_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+	*** generate indicator variable ***
+
+	gen ind_var = 0
+	replace ind_var = 1  if missing(`hh_active_agri' )
+    replace ind_var = 1  if `hh_active_agri' != 0 & `hh_active_agri' != 1  & `hh_active_agri' != 2
+ 	replace ind_var = 0 if _household_roster_count < `i'  
+    drop if still_member_`i' == 0
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Unreasonable value"
+	generate issue_variable_name = "hh_active_agri_`i'"
+	
+	rename `hh_active_agri' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_`hh_active_agri'.dta", replace
+    }
+  
+    restore
+}	
+
+
+
+
 
 
 ***	i.	Age needs to be between 0 and 90 ***
 *** I realized these checks were picking up the household that did not give consent ***
 *** So for the initial checks without dependencies I added a drop them ***
+
 
 forvalues i = 1/57 {
 
@@ -945,71 +1683,9 @@ forvalues i = 1/57 {
     }
   
     restore
-}
-
-  * check houshold roster respondent age 
-
-
-
-    preserve 
-
-	*** drop no consent households *** 
-	drop if consent == 0 
+}	
 	
-	*** generate indicator variable ***
-	gen ind_var = 0
-    replace ind_var = 1  if hh_age_resp < 0 | hh_age_resp > 90    
- 
-    	* keep and add variables to export *
-	keep if ind_var == 1 	
-	generate issue =  "Unreasonable value"
-	generate issue_variable_name = "hh_age_resp"
-	rename hh_age_resp print_issue 
-	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
-	
-    * Export the dataset to Excel conditional on there being an issue
-    if _N > 0 {
-        save "$household_roster\Issue_HH_Roster_hh_age_resp.dta", replace
-	}
-  
-    restore
 
-  
-  
-  * check that we have names for new respondends 
-
-/*
-
-    preserve 
-
-	*** drop no consent households *** 
-	drop if consent == 0 
-	
-	*** generate indicator variable ***
-	gen ind_var = 0
-    replace ind_var = 1 if hh_name_complet_resp == "999" | (missing(hh_name_complet_resp_new) | hh_name_complet_resp_new !~ "[A-Za-z]")
-
-    
-    	* keep and add variables to export *
-	keep if ind_var == 1 	
-	generate issue =  "Unreasonable value"
-	generate issue_variable_name = "hh_name_complet_resp_new"
-	rename hh_name_complet_resp_new print_issue 
-	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
-	
-    * Export the dataset to Excel conditional on there being an issue
-    if _N > 0 {
-        save "$household_roster\Issue_HH_Roster_hh_name_complet_resp_new.dta", replace
-
-  
-    restore
-*/
-
-
-  
-*/
 ***	ii.	Hh_education_level should be less than two when age is less than 18 ***
 
 forvalues i = 1/57 {
@@ -1304,7 +1980,7 @@ forvalues i = 1/57 {
 	
 	keep if ind_var == 1 
 	
-	generate issue = "Unreasonable values'"
+	generate issue = "Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_6 is more than hh_10_`i'"
 	generate issue_variable_name = "hh_13_`i'_total"
 	
 	rename hh_13_`i'_total print_issue
@@ -1339,8 +2015,8 @@ forvalues i = 1/57 {
 	
 	keep if ind_var == 1 
      
-	generate issue = "Missing" 
-   	generate issue_variable_name = "Issue found: Sum of hh_21_`i' and hh_21_o_`i' is more than hh_18_`i'"
+	generate issue = "Issue found: Sum of hh_21_`i' and hh_21_o_`i' is more than hh_18_`i'" 
+   	generate issue_variable_name = "hh_21_total_`i'"
 	rename  hh_21_`i'_total print_issue 
 	tostring(print_issue), replace
 	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
@@ -1966,6 +2642,61 @@ forvalues i = 1/57 {
 restore
 
 }
+
+** hh_14_a – check that when hh_12_6_`i' == 1 there is an answer, and it is between 1 and 500
+*Note: check max i value
+forvalues i = 1/57 {
+	
+    preserve	
+    local hh_14_a hh_14_a_`i'
+    local hh_12_6 hh_12_6_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
+    
+    gen ind_var = 0
+	replace ind_var = 1 if `hh_12_6' == 1 & missing(`hh_14_a')
+	replace ind_var = 1 if `hh_12_6' == 1 & (`hh_14_a' < 1 | `hh_14_a' > 500)
+	keep if ind_var == 1	
+	
+    generate issue = "Unreasonable value"
+    generate issue_variable_name = "`hh_14_a'"
+	rename `hh_14_a' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	if _N > 0 {
+		save "$household_roster\Issue_HH_Roster_hh_14_a_`i'", replace
+}
+restore
+
+}
+
+** hh_14_b – check that when hh_12_6_`i' == 1 there is an answer, and it is between 1 and 100
+*Note: check max i value
+forvalues i = 1/57 {
+	
+    preserve	
+    local hh_14_b hh_14_b_`i'
+    local hh_12_6 hh_12_6_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	rename `pull_hh_full_name_calc' hh_member_name 
+    
+    gen ind_var = 0
+	replace ind_var = 1 if `hh_12_6' == 1 & missing(`hh_14_b')
+	replace ind_var = 1 if `hh_12_6' == 1 & (`hh_14_b' < 1 | `hh_14_b' > 100)
+	keep if ind_var == 1	
+	
+    generate issue = "Unreasonable value"
+    generate issue_variable_name = "`hh_14_b'"
+	rename `hh_14_b' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	if _N > 0 {
+		save "$household_roster\Issue_HH_Roster_hh_14_b_`i'", replace
+}
+restore
+
+}
+
 ***	xvii.	hh_15 should be answered when hh_10 is greater than 0 and hh_12 = 6 
 
 *Note: check max i value
@@ -3183,6 +3914,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_a' == .
+	replace ind_var = 1 if `hh_47_a' < 0 & `hh_47_a' > 100000
 	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
    
@@ -3216,6 +3948,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_b' == .
+	replace ind_var = 1 if `hh_47_b' < 0 & `hh_47_b' > 100000
  	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
    
@@ -3247,6 +3980,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_c' == .
+	replace ind_var = 1 if `hh_47_c' < 0 & `hh_47_c' > 100000
  	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
    
@@ -3278,6 +4012,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_d' == .
+	replace ind_var = 1 if `hh_47_d' < 0 & `hh_47_d' > 100000
  	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
    
@@ -3310,6 +4045,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
 	replace ind_var = 1 if `hh_47_e' == .
+	replace ind_var = 1 if `hh_47_e' < 0 & `hh_47_e' > 100000
  	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
    
@@ -3341,6 +4077,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
 	replace ind_var = 1 if `hh_47_f' == .
+	replace ind_var = 1 if `hh_47_f' < 0 & `hh_47_f' > 100000
  	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
    
@@ -3372,6 +4109,8 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_g' == .
+	replace ind_var = 1 if `hh_47_g' < 0 & `hh_47_g' > 100000
+ 	replace ind_var = 0 if _household_roster
  	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
    
@@ -3412,6 +4151,78 @@ forvalues i = 1/57 {
     keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
     if _N > 0 {
         save "$household_roster\Issue_`hh_47_oth'", replace
+    }
+    restore
+}
+
+ ** hh_50 – check that when hh_32 = 1, answer is 0, 1, or 2 
+
+*Note: check max i value
+forvalues i = 1/57 {
+    preserve
+	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18
+    local hh_50 hh_50_`i'
+    local hh_32 hh_32_`i'
+
+    gen ind_var = 0
+    replace ind_var = 1 if `hh_32' ==1 & !inlist(`hh_50', 0, 1, 2 )
+    keep if ind_var == 1
+
+    generate issue = "Missing"
+    generate issue_variable_name = "`hh_50'"
+    rename `hh_50' print_issue
+    tostring(print_issue), replace
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_`hh_50'", replace
+    }
+    restore
+}
+
+** hh_51  check that when hh_32 = 1, answer is 1, 2, 3, 4, 5
+
+*Note: check max i value
+forvalues i = 1/57 {
+    preserve
+	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18
+    local hh_51 hh_51_`i'
+    local hh_32 hh_32_`i'
+
+    gen ind_var = 0
+	replace ind_var = 1 if `hh_32' ==1 & !inlist(`hh_51', 1, 2, 3, 4, 5 )
+    keep if ind_var == 1
+
+    generate issue = "Missing"
+    generate issue_variable_name = "`hh_51'"
+    rename `hh_51' print_issue
+    tostring(print_issue), replace
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_`hh_51'", replace
+    }
+    restore
+}
+
+** hh_52 -  check that when hh_32 = 1, there is a text entry 
+
+*Note: check max i value
+forvalues i = 1/57 {
+    preserve
+	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18
+    local hh_52 hh_52_`i'
+    local hh_32 hh_32_`i'
+
+    gen ind_var = 0
+	replace ind_var = 1 if `hh_32' ==1 & missing(`hh_52')
+    keep if ind_var == 1
+
+    generate issue = "Missing"
+    generate issue_variable_name = "`hh_51'"
+    rename `hh_52' print_issue
+    tostring(print_issue), replace
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_`hh_52'", replace
     }
     restore
 }

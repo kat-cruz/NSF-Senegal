@@ -2,10 +2,8 @@
 	*** Updates recorded in GitHub ***
 *==============================================================================
 clear all
-set mem 2000m
-set maxvar 30000
-set matsize 11000
 set more off
+set maxvar 30000
 
 **************************************************
 * SET FILE PATHS
@@ -23,238 +21,21 @@ global master "$box_path\Data_Management"
 
 * Define specific paths for output and input data
 global dailyupdates "$master\Output\Data_Quality_Checks\Midline\Midline_Daily_Updates"
-
-global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_27Jan.csv"
-
+global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_5Feb.csv"
 global baselinedata "$master\_CRDES_CleanData\Baseline\Identified\DISES_Baseline_Complete_PII.dta"
-
 global training "$master\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
-
-global individ "$master\_CRDES_CleanData\Baseline\Identified\All_Villages_With_Individual_IDs.dta"
-
-***************************************************
-
-* For computing attrition/revisit rates: *
-
-* Load midline data
-import delimited "$data", clear varnames(1) bindquote(strict)
-
-egen midline_count = count(hh_global_id), by(hhid_village)
-
-
-* Create a variable counting households per village
-gen one = 1
-collapse (sum) one, by(hhid_village)
-rename one midline_count
-
-* Calculate revisit and attrition rates for each village
-gen revisit_rate = (midline_count / 20) * 100
-gen attrition_rate = 100 - revisit_rate
-
-* Calculate totals
-* Total households surveyed at midline
-egen total_midline = sum(midline_count)
-
-* Total revisit rate (overall)
-gen total_baseline = _N * 20  // Baseline households (20 per village)
-gen total_revisit_rate = (total_midline / total_baseline) * 100
-gen total_attrition_rate = 100 - total_revisit_rate
-
-* Display the results
-list hhid_village midline_count revisit_rate attrition_rate, sep(0)
-
-* Display totals
-di "Total Households Surveyed at Midline: " total_midline[1]
-di "Total Revisit Rate: " total_revisit_rate[1] "%"
-di "Total Attrition Rate: " total_attrition_rate[1] "%"
+global respond "$master\_CRDES_CleanData\Baseline\Identified\respondent_index.dta"
+global issues "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
 
 ***************************************************
-
-* What share of households retained have a different respondent than the baseline household list: *
-
-***************************************************
-
-import delimited "$data", clear varnames(1) bindquote(strict)
-
-* Generate indicator for different respondent
-gen total_new_member_respondent = (hh_name_complet_resp == "999")
-
-* Count total households retained
-count
-local total_households = r(N)
-
-* Count households with a different respondent
-count if total_new_member_respondent == 1
-local total_new_member_respondent = r(N)
-
-* Calculate share of households with a different respondent
-local share_new_member_respondent = (`total_new_member_respondent' / `total_households') * 100
-
-* Display results
-di "Households with New Member Respondent: `total_new_member_respondent'"
-di "Share of Households with New Member Respondent: `share_new_member_respondent'%"
-
-***************************************************
-* Step 2: Identify Households That Retained the Same Respondent
-***************************************************
-
-* Load baseline individual dataset and keep relevant observations
-use "$individ", clear
-keep if hh_name_complet_resp == hh_full_name_calc_
-drop hh_head_name_complet
-
-* Convert individ to string to ensure compatibility
-tostring individ, replace force
-replace individ = trim(individ)
-replace individ = upper(individ)
-
-* Save cleaned dataset
-save temp_individ.dta, replace
-
-* Load midline data again
-import delimited "$data", clear varnames(1) bindquote(strict)
-
-* Drop missing or invalid names
-drop if missing(hh_name_complet_resp)
-drop if hh_name_complet_resp == "999"
-
-* Rename for merging consistency
-rename hh_name_complet_resp individ
-
-* Convert individ to string format
-tostring individ, replace force
-replace individ = trim(individ)
-replace individ = upper(individ)
-
-* Merge with baseline respondents
-merge 1:1 individ using temp_individ.dta
-
-* Check merge results
-tab _merge
-
-* Generate indicator for same respondent retained
-gen same_respondent = (_merge == 3)  // Matched cases where the same respondent was found in baseline
-
-* Count households where the same respondent was retained
-count if same_respondent == 1
-local total_same_respondent = r(N)
-
-* Compute number of households with a different respondent
-local total_different_respondent = `total_households' - `total_same_respondent'
-
-* Compute share of households that had a different respondent
-local share_different_respondent = (`total_different_respondent' / `total_households') * 100
-
-* Display results
-di "Households with a Different Respondent: `total_different_respondent'"
-di "Share of Households with a Different Respondent: `share_different_respondent' %"
-
-***************************************************
-* Tracking Training Attendance Limited to Midline Villages
-***************************************************
-
-* Load midline data
-import delimited "$data", clear varnames(1) bindquote(strict)
-
-* Keep unique `hhid_village`
-keep hhid_village
-duplicates drop
-
-* Save the list of midline `hhid_village`
-tempfile midline_villages
-save `midline_villages', replace
-
-import delimited "$data", clear varnames(1) bindquote(strict)
-rename hh_global_id hhid
-keep hhid attend_training who_attended_training
-drop if missing(hhid)
-tempfile midline_trained
-save `midline_trained', replace
-
-* Load midline data
-import delimited "$data", clear varnames(1) bindquote(strict)
-
-* Rename hh_global_id to hhid for consistency
-rename hh_global_id hhid
-
-drop if missing(training_id)
-
-* Keep relevant variables
-keep hhid training_id_* training_id training_id_*
-
-* Reshape training_id_* variables to long format
-reshape long training_id_, i(hhid) j(individ) string
-
-* Standardize individ to uppercase for comparison
-gen individ_upper = upper(individ)
-drop individ
-rename individ_upper individ
-
-* Keep only records where training_id matches individ
-keep if training_id == individ
-
-merge 1:1 individ using "$training"
-
-* Create hhid_village by extracting the first 4 characters of hhid
-gen hhid_village = substr(hhid, 1, 4)
-
-* Rename the first _merge variable to preserve it
-rename _merge merge_individ
-
-* Merge with midline `hhid_village`
-merge m:1 hhid_village using `midline_villages'
-
-* Keep only matched rows (hhid_village that appear in midline)
-keep if _merge == 3
-drop _merge
-
-* Rename the second _merge variable to preserve it
-//rename _merge merge_individ
-
-merge m:1 hhid using `midline_trained' 
-
-***************************************************
-* Calculate Individual-Level Ratio
-***************************************************
-
-* Count baseline-trained individuals
-count if trained_indiv == 1
-local total_trained_indiv = r(N)
-
-* Count baseline-trained individuals who reported midline training
-count if trained_indiv == 1 & training_id_ == 1
-local total_training_id = r(N)
-
-* Calculate individual-level ratio
-local indiv_ratio = (`total_training_id' / `total_trained_indiv') * 100
-
-***************************************************
-* Calculate Household-Level Ratio
-***************************************************
-
-* Count baseline-trained households
-count if trained_hh == 1
-local total_trained_hh = r(N)
-
-* Count baseline-trained households with midline attendance
-count if trained_hh == 1 & (attend_training == 1 | who_attended_training == 1)
-local total_attend_hh = r(N)
-
-* Calculate household-level ratio
-local hh_ratio = (`total_attend_hh' / `total_trained_hh') * 100
-
-
-***************************************************
-* Export Results to Excel
-***************************************************
-putexcel set "$dailyupdates\DISES_DailyChecks_27Jan.xlsx", replace
-
-* Write headers for Revisit and Attrition Rates
+putexcel set "$dailyupdates\DISES_DailyChecks_Feb5.xlsx", replace
+* Write Revisit and Attrition Rates
 putexcel A1 = "Metric" B1 = "Value"
 
 * Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
 
+* For computing attrition/revisit rates: *
 egen midline_count = count(hh_global_id), by(hhid_village)
 
 * Create a variable counting households per village
@@ -270,32 +51,114 @@ gen attrition_rate = 100 - revisit_rate
 * Total households surveyed at midline
 egen total_midline = sum(midline_count)
 
-* Total revisit rate (overall)
+* Compute overall revisit and attrition rates
 gen total_baseline = _N * 20  // Baseline households (20 per village)
 gen total_revisit_rate = (total_midline / total_baseline) * 100
 gen total_attrition_rate = 100 - total_revisit_rate
 
-* Export results to Excel
-putexcel A2 = "Total Households Surveyed at Midline" B2 = total_midline[1]
-putexcel A3 = "Total Revisit Rate (%)" B3 = total_revisit_rate[1]
-putexcel A4 = "Total Attrition Rate (%)" B4 = total_attrition_rate[1]
+* Display results
+di "Total Households Surveyed at Midline: " total_midline[1]
+di "Total Revisit Rate: " total_revisit_rate[1] "%"
+di "Total Attrition Rate: " total_attrition_rate[1] "%"
 
-* Load midline data
-* Export respondent retention results
-putexcel A6 = "Households with New  Member Respondent" B6 = `total_new_member_respondent'
-putexcel A7 = "Share of Households with New Household Member Respondent (%)" B7 = `share_new_member_respondent'
-
-putexcel A8 = "Households with a Different Respondent" B8 = `total_different_respondent'
-putexcel A9 = "Share of Households with a Different Respondent (%)" B9 = `share_different_respondent'
+* Write Revisit and Attrition Rates
+putexcel A1 = "Metric" B1 = "Value"
+putexcel A2 = "Total Households Surveyed at Midline" B2 = total_midline
+putexcel A3 = "Total Revisit Rate (%)" B3 = total_revisit_rate
+putexcel A4 = "Total Attrition Rate (%)" B4 = total_attrition_rate
 
 ***************************************************
-* Export Training Attendance Results
+* Identify Households with Different Respondents
 ***************************************************
 
-putexcel A11 = "Total Trained Individuals (Baseline)" B11 = `total_trained_indiv'
-putexcel A12 = "Total Trained Individuals (Midline)" B12 = `total_training_id'
-putexcel A13 = "Individual-Level Training Attendance (%)" B13 = `indiv_ratio'
+* Load baseline respondent dataset and isolate those who were respondents at baseline
+use "$respond", clear
 
-putexcel A15 = "Total Trained Households (Baseline)" B15 = `total_trained_hh'
-putexcel A16 = "Total Trained Households Reporting Attendance (Midline)" B16 = `total_attend_hh'
-putexcel A17 = "Household-Level Training Attendance (%)" B17 = `hh_ratio'
+* Convert resp_index to a string and ensure leading zero for single digits
+gen str2 resp_str = string(resp_index, "%02.0f")  
+
+gen individ = hhid + resp_str
+
+* Standardize ID format
+tostring individ, replace force
+replace individ = trim(upper(individ))
+
+* Save cleaned baseline respondents
+save temp_individ.dta, replace
+
+* Load midline data again
+import delimited "$data", clear varnames(1) bindquote(strict)
+
+* Count total households retained
+count
+local total_households = r(N)
+
+* Drop missing or invalid respondents
+drop if missing(hh_name_complet_resp)
+
+* Standardize ID format
+rename hh_name_complet_resp individ
+tostring individ, replace force
+replace individ = trim(upper(individ))
+
+* Merge with baseline respondent dataset
+merge m:1 individ using temp_individ.dta
+tab _merge
+
+* Identify same respondent cases
+gen same_respondent = (_merge == 3)
+
+* Compute respondent statistics
+count if same_respondent == 1
+local total_same_respondent = r(N)
+
+local total_different_respondent = `total_households' - `total_same_respondent'
+
+* Compute share safely
+if `total_households' > 0 {
+    local share_different_respondent = (`total_different_respondent' / `total_households') * 100
+} 
+else {
+    local share_different_respondent = .
+}
+
+* Display results
+di "Households with a Different Respondent: `total_different_respondent'"
+di "Share of Households with a Different Respondent: `share_different_respondent' %"
+
+* Write Respondent Change Statistics
+putexcel A6 = "Households with a Different Respondent" B6 = `total_different_respondent'
+putexcel A7 = "Share of Households with a Different Respondent (%)" B7 = `share_different_respondent'
+
+* Initialize a counter for flagged values in each row
+gen num_flagged_values = 0
+
+* Loop through all variables and count occurrences of special values per row
+foreach var of varlist _all {
+    capture confirm numeric variable `var'
+    if _rc == 0 {  
+        replace num_flagged_values = num_flagged_values + (inlist(`var', -999, -99, -9, 999))
+    }
+    else {
+        replace num_flagged_values = num_flagged_values + (inlist(real(`var'), -999, -99, -9, 999))
+    }
+}
+
+* Compute total number of flagged values across the dataset
+egen total_flagged_values = total(num_flagged_values)
+
+* Compute total number of flagged values from households with a different respondent
+gen num_flagged_values_new_resp = num_flagged_values if same_respondent == 0
+egen total_flagged_values_new_resp = total(num_flagged_values_new_resp)
+
+* Compute share of flagged values from households with a new respondent
+gen share_flagged_values_new_resp = (total_flagged_values_new_resp / total_flagged_values) * 100
+
+* Display results
+di "Total flagged values in dataset: " total_flagged_values
+di "Total flagged values from households with a new respondent: " total_flagged_values_new_resp
+di "Percentage of flagged values from new respondent households: " share_flagged_values_new_resp "%"
+
+* Write Flagged Values Statistics
+putexcel A9 = "Total Flagged Values in Dataset" B9 = total_flagged_values
+putexcel A10 = "Share of Flagged Values from New Respondent Households (%)" B11 = share_flagged_values_new_resp

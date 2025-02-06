@@ -1404,7 +1404,7 @@ restore
 }	
 	
 	
-	** newmem_why_ - check that for new members, the response should be 1, 2, 3, 4, or 10 
+	** newmem_why_ - check that for new members, the response should be 1, 2, 3, 4, or 10 KRM - check here to make sure filters are working 
 	
 	forvalues i = 1/57 {
 
@@ -1423,9 +1423,9 @@ restore
 	gen ind_var = 0
     replace ind_var = 1 if `add_new' == 1 & !inlist(`newmem_why', 1, 2, 3, 4, 10 )
 	replace ind_var = 1 if `add_new' == 1 & missing(`newmem_why')
- 	replace ind_var = 0 if _household_roster_count < `i'
+ 	*replace ind_var = 0 if _household_roster_count < `i'
 	*KRM - check here too 
-	replace ind_var = 0 if `i' > hh_size_load  
+	*replace ind_var = 0 if `i' > hh_size_load  
 	  
     *drop if still_member_`i' == 0
     	* keep and add variables to export *
@@ -1467,13 +1467,13 @@ forvalues i = 1/57 {
 
     * Check for unreasonable still_member values and valid still_member_whynot values when still_member == 0 *
     
-   keep if `still_member' == 0 
+	keep if `still_member' == 0 
     replace ind_var = 1 if still_member_whynot !inlist(1, 2, 3, 4, 5, 6, 7, 8, 9, 11, -777) // KRM - update this to ensure it filters 
 
     *** Keep only flagged cases ***
     keep if ind_var == 1  	
-	replace ind_var = 0 if _household_roster_count < `i'
-	replace ind_var = 0 if `i' > hh_size_load  
+	*replace ind_var = 0 if _household_roster_count < `i'
+	*replace ind_var = 0 if `i' > hh_size_load  
 
     generate issue = "Unreasonable value"
     generate issue_variable_name = "still_member_whynot_`i'"
@@ -1516,8 +1516,8 @@ forvalues i = 1/57 {
 
     *** Keep only flagged cases ***
     keep if ind_var == 1  	
-	replace ind_var = 0 if _household_roster_count < `i'
-	replace ind_var = 0 if `i' > hh_size_load  
+	*replace ind_var = 0 if _household_roster_count < `i'
+	*replace ind_var = 0 if `i' > hh_size_load  
 
     generate issue = "Unreasonable value"
     generate issue_variable_name = "still_member_whynot_o_`i'"
@@ -1746,6 +1746,7 @@ forvalues i = 1/57 {
     replace ind_var = 1 if `hh_education_level ' > `hh_age' & `hh_education_level' != .
 	replace ind_var = 0 if _household_roster_count < `i'
 	drop if still_member_`i' == 0
+	drop if still_member_`i' == 2
 
 	* keep and add variables to export *
 	keep if ind_var == 1 
@@ -3800,7 +3801,7 @@ forvalues i = 1/57 {
     gen ind_var = 0
     keep if `hh_42' == 1
     replace ind_var = 1 if missing(`hh_43')
-
+	
     keep if ind_var == 1
 
     generate issue = "Missing"
@@ -4158,6 +4159,8 @@ forvalues i = 1/57 {
     restore
 }
 
+
+	
  ** hh_50 – check that when hh_32 = 1, answer is 0, 1, or 2 
 
 *Note: check max i value

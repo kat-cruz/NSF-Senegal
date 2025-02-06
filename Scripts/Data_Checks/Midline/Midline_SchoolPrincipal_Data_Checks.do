@@ -996,21 +996,7 @@ restore
 
 ** KRM - use loop below to append faster if you would like !
 
-************** deletes everything in the file if you're deleting before outputing ********
 /*
-	cd "$schoolprincipal"  // set directory to the folder with .dta files
-
-	local files: dir "$schoolprincipal" files "*.dta"  // get a list of .dta files in the folder
-
-	foreach file in `files' {
-		di "Deleting `file'"
-		erase "`file'"
-	}
-
-	di "All .dta files deleted from $schoolprincipal"	
-*/
-
-**************** appends everything in the folder ******************
 	clear
 	local folder "$schoolprincipal"  
 
@@ -1024,10 +1010,10 @@ restore
 
 
 	save "$income\Schoolprincipal_Issues.dta", replace // keep record of all the issues for each cleaning to filter
+*/
 
 
 
-/*
 use "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G1.dta", clear
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G2.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G3.dta"
@@ -1062,7 +1048,7 @@ append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G5_C2.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G6_C1.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G6_C2.dta"
-*/
+
 **************** UPDATE DATE IN FILE NAME ***********************
 
 * Export to Excel

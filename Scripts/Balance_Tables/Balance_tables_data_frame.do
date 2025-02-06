@@ -41,10 +41,10 @@ if "`c(username)'"=="Kateri" global git_path "C:\Users\km978\Downloads\GIT-Seneg
 
 * Define project-specific paths
 
-global data "${box_path}\Data Management\_CRDES_CleanData\Baseline\Deidentified"
+global data "${box_path}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
 
 ***** Data folders *****
-global dataOutput "${box_path}\Data Management\Output\Data_Analysis\Balance_Tables" 
+global dataOutput "${box_path}\Data_Management\Output\Data_Analysis\Balance_Tables" 
 global latexOutput "$git_path\Latex_Output\Balance_Tables"
 
 use "$data\Complete_Baseline_Household_Roster.dta", clear 
@@ -132,13 +132,16 @@ forval i = 1/7 {
 hh_number_ hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ ///
 health_5_3_ health_5_5_ health_5_6_ health_5_7_, i(hhid) j(id)
 
+
+*Collapse at hh level - default to mean, change to something else IEBaltab - balance table output 
+
 ********************************************************* Replace missings by accounting for skip patterns *********************************************************
 
 replace agri_income_05 = 0 if agri_income_01 == 0
 * hh_14 relevance: ${hh_10} > 0 and selected(${hh_12}, "6")
 replace hh_11_ = 0 if hh_10_ == 0 
 * hh_12_: ${hh_10} > 0
-*** KRM - can i replace these all with zeros?
+*** KRM - can i replace these all with zeros? or -9s
 foreach i of numlist 1/8 {
     replace hh_12_`i'_ = 0 if hh_10_ == 0
 }

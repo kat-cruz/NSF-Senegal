@@ -2067,7 +2067,7 @@ foreach file in `files' {
 
 **************** EXPORT DATA  ***********************
 ** UPDATE DATE IN FILE NAME 
-* check that this is working 
+* check that this is workiin
 	export excel using "$community\Community_Issues_29Jan2025.xlsx", firstrow(variables) replace  
 	export excel using "$communityOriginal\Community_Issues_05Feb2025.xlsx", firstrow(variables) replace  
 	save "$communityOriginal\Community_Issues_05Feb2025.dta", replace 

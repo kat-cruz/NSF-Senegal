@@ -4,6 +4,7 @@
 
 *>>>>>>>>>>**--*--*--*--*--*--*--*--** READ ME **--*--*--*--*--*--*--*--**<<<<<<<<<<<*
 
+		** REDO ALL OF THIS LOL
 
 			*1)	Go to the following file path:
 					*Data Management\Output\Data_Quality_Checks\Midline
@@ -67,19 +68,19 @@ global issuesOriginal "$master\Data Management\Output\Data_Quality_Checks\Midlin
 ************************* COMBINE HOUSEHOLD ROSTER FILES *****************
 * Note: check to see what was output before running just to ensure things look good 
 
-clear
-local folder "$household_roster"  
+	clear
+	local folder "$household_roster"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	cd "`folder'"
+	local files: dir . files "*.dta"
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$household_roster\Roster_Issues.dta", replace 
+	save "$household_roster\Roster_Issues.dta", replace 
 
 
 
@@ -87,80 +88,80 @@ save "$household_roster\Roster_Issues.dta", replace
 *************************  COMBINE KNOWLEDGE FILES *****************
 * Note: check to see what was output
 
-/*
-clear
-local folder "$knowledge"  
+	/*
+	clear
+	local folder "$knowledge"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	cd "`folder'"
+	local files: dir . files "*.dta"
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
-
-
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$knowledge\Knowledge_Issues.dta", replace 
+
+
+	save "$knowledge\Knowledge_Issues.dta", replace 
 */
 
 
 ************************* COMBINE HEALTH FILES *****************
 * Note: check to see what was output
 
-clear
-local folder "$health"  
+	clear
+	local folder "$health"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	cd "`folder'"
+	local files: dir . files "*.dta"
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
-
-
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$health\Health_Issues.dta", replace 
+
+
+	save "$health\Health_Issues.dta", replace 
 
 
 ************************* COMBINE AGRICULTURE INPUTS FILES *****************
 * Note: check to see what was output
 
 
-clear
-local folder "$agriculture_inputs"  
+	clear
+	local folder "$agriculture_inputs"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	cd "`folder'"
+	local files: dir . files "*.dta"
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$agriculture_inputs\Ag_Inputs_Issues.dta", replace 
+	save "$agriculture_inputs\Ag_Inputs_Issues.dta", replace 
 
 
 ************************* COMBINE AGRICULTURE PRODUCITON FILES *****************
 * Note: check to see what was output
 
-clear
-local folder "$agriculture_production"  
+	clear
+	local folder "$agriculture_production"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	cd "`folder'"
+	local files: dir . files "*.dta"
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$agriculture_production\Ag_Inputs_Issues.dta", replace 
+	save "$agriculture_production\Ag_Production_Issues.dta", replace 
 
 
 ************************* COMBINE FOOD CONSUMPTION ISSUE FILES *****************
@@ -168,61 +169,61 @@ save "$agriculture_production\Ag_Inputs_Issues.dta", replace
 
  * KRM - none this round, commented out 
 
-/*
+	/*
 
-clear
-local folder "$food_consumption"  
+	clear
+	local folder "$food_consumption"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	cd "`folder'"
+	local files: dir . files "*.dta"
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$food_consumption\Food_Consumption_Issues.dta", replace 
+	save "$food_consumption\Food_Consumption_Issues.dta", replace 
 */
 
 
 ************************* COMBINE INCOME ISSUE FILES *****************
 * Note: check to see what was output
-* R2 - none this round 
-clear
-local folder "$income"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	clear
+	local folder "$income"  
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
+	cd "`folder'"
+	local files: dir . files "*.dta"
+
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$income\Income_Issues.dta", replace 
+	save "$income\Income_Issues.dta", replace 
 
 
 
 ************************* COMBINE STANDARD OF LIVING ISSUE FILES  *****************
 * Note: check to see what was output
 * R2 - none this round 
-/*
-clear
-local folder "$standard_living"  
+	/*
+	clear
+	local folder "$standard_living"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	cd "`folder'"
+	local files: dir . files "*.dta"
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$standard_living\Standard_Living_Issues.dta", replace 
-*/
+	save "$standard_living\Standard_Living_Issues.dta", replace 
+	*/
 
 
 
@@ -230,21 +231,21 @@ save "$standard_living\Standard_Living_Issues.dta", replace
 * Note: check to see what was output
 * R2 - none this round 
 
-/*
-clear
-local folder "$enum_observations"  
+	/*
+	clear
+	local folder "$enum_observations"  
 
-cd "`folder'"
-local files: dir . files "*.dta"
+	cd "`folder'"
+	local files: dir . files "*.dta"
 
-foreach file in `files' {
-    di "Appending `file'"
-    append using "`file'"
-}
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
 
 
-save "$enum_observations\Enum_Observations_Issues.dta", replace 
-*/
+	save "$enum_observations\Enum_Observations_Issues.dta", replace 
+	*/
 
 ************** COMBINE SECTION FILES INTO ONE HOUSEHOLD ISSUES FILE *************
 
@@ -262,7 +263,24 @@ save "$enum_observations\Enum_Observations_Issues.dta", replace
 
 		
 		rename hh_name_complet_resp hh_individ_complet_resp 
-	
+
+		
+************** SAVE DATAFRAME FOR FUTURE ROUND ************** 
+
+		*R3 - please update round number here! 
+	/*
+		use "$issuesOriginal\Household_Data_Sent_Issues_R3.dta", clear 
+	   drop filter_var
+	*/
+		preserve
+		
+		gen filter_var = "All sent"
+		
+		save "$issuesOriginal\Household_Data_Sent_Issues_R3.dta", replace 
+		
+		restore 
+
+************************************************** STEPS FOR SORTING AND ORGANIZING FOR CLARITY **************************************************
 	
 *1) *--*--*--*--*--*--*--*--* merge in baseline data *--*--*--*--*--*--*--*--*
 				*1.1) **>>>>>>>>> we do this to grab the hh_head_name_complet variable and the corresponding names to hh_individ_complet_resp <<<<<<<<<<**
@@ -275,46 +293,46 @@ save "$enum_observations\Enum_Observations_Issues.dta", replace
 *2) *--*--*--*--*--*--*--*--* merge in the previous output to filter for new errors: *--*--*--*--*--*--*--*--*
 				*2.1) **>>>>>>>>> filter by the last_update variable <<<<<<<<<<**
 
-		merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\Household_Data_Issues_28Jan2025.dta"
-		keep if last_update == ""
+		merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\Household_Data_Sent_Issues_R2.dta"
+		keep if filter_var == ""
 		
 	*Note: update the _merge var for record since we will need to drop it if we don't for the next merge 
-		rename _merge _mergeFeb03
+		rename _merge _mergeR2
 		replace hh_name_complet_resp = hh_name_complet_resp_new if hh_individ_complet_resp == "999"
-		drop hh_name_complet_resp_new _merge_Jan28
+		drop hh_name_complet_resp_new filter_var
 		*Note - pls update the date
-		replace last_update = "Sent on Feb 03"
+		gen  last_update = "Sent on Feb 05"
 		
 *3) *--*--*--*--*--*--*--*--* bring in survey questions - merge on issue_variable_name *--*--*--*--*--*--*--*--*
-		
+		** KRM - need to change the round folder name to something more clear ** 
 		merge m:m issue_variable_name using "$issuesOriginal\R2_Survey_Questions.dta"
 		
 				*3.1) **>>>>>>>>> filter on villageid == empty  <<<<<<<<<<**
 	
 		drop if villageid == ""
-		drop _merge
+		drop  _merge
 
 *4) *--*--*--*--*--*--*--*--* order and clean up *--*--*--*--*--*--*--*--*
 	
-		order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name last_update _mergeFeb03
+		order villageid sup sup_name enqu enqu_name hhid hh_individ_complet_resp hh_head_name_complet hh_name_complet_resp hh_member_name hh_phone print_issue issue issue_variable_name last_update _mergeR2
 		
 				
 ************* EXPORT COMBINED HOUSEHOLD CHECKS DATA FILE ************* 
 
 
-*Note - please update DATE on export!:) 
-/*
-export excel using "$issues\Household_Data_Issues_03Feb2025.xlsx", firstrow(variables) replace 
-save "$issues\Household_Data_Issues_03Feb2025.dta", replace 
-*/
+		*Note - please update DATE on export!:) 
+		/*
+		export excel using "$issues\Household_Data_Issues_03Feb2025.xlsx", firstrow(variables) replace 
+		save "$issues\Household_Data_Issues_03Feb2025.dta", replace 
+		*/
 
 
-*keep original for version control 
-export excel using "$issuesOriginal\Household_Data_Issues_03Feb2025_test.xlsx", firstrow(variables) replace 
-save "$issuesOriginal\Household_Data_Issues_03Feb2025.dta", replace 
+		*keep original for version control 
+		export excel using "$issuesOriginal\R3_Household_Data_Issues_05Feb2025_test.xlsx", firstrow(variables) replace 
+		save "$issuesOriginal\R3_Household_Data_Issues_04Feb2025.dta", replace 
 
 
-** end of .do file
+		** end of .do file
 
 
 

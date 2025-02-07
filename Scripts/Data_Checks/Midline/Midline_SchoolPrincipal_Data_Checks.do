@@ -30,7 +30,7 @@ global data "$master\_CRDES_RawData\Midline\Principal_Survey_Data"
 *** Import school principal survey data ***
 **************************************************
 
-import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_4Feb.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_7Feb.csv", clear varnames(1) bindquote(strict)
 
 *** label variables ***
 label variable consent_obtain "Etes-vous d'accord de participer afin que je puisse poursuivre avec nos questions ?" 
@@ -155,7 +155,7 @@ foreach var of varlist consent_obtain respondent_is_director school_children_wat
     gen ind_issue = .
     replace ind_issue = 1 if `var' != 0 & `var' != 1
     keep if ind_issue == 1
-	keep hhid_village sup_name respondent_name respondent_phone_primary `var'
+	keep hhid_village sup_name respondent_name respondent_phone_primary `var' key
     
     * Generate issue variables
     generate issue = "Value out of range (should be 0 or 1)"
@@ -179,7 +179,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if consent_obtain == 0
 keep if ind_issue == 1
-	keep hhid_village sup_name respondent_name respondent_phone_primary consent_obtain
+	keep hhid_village sup_name respondent_name respondent_phone_primary consent_obtain key
 
 generate issue = "Consent not obtained; survey should end"
 generate issue_variable_name = "consent_obtain"
@@ -195,7 +195,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if consent_obtain == 0 & missing(consent_notes)
 keep if ind_issue == 1
-	keep hhid_village sup_name respondent_name respondent_phone_primary consent_obtain consent_notes
+	keep hhid_village sup_name respondent_name respondent_phone_primary consent_obtain consent_notes key
 
 generate issue = "Missing reason for lack of consent"
 generate issue_variable_name = "consent_notes"
@@ -216,7 +216,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if respondent_is_director == 0 & missing(respondent_is_not_director)
 keep if ind_issue == 1
-	keep hhid_village sup_name respondent_name respondent_phone_primary respondent_is_director respondent_is_not_director 
+	keep hhid_village sup_name respondent_name respondent_phone_primary respondent_is_director respondent_is_not_director key
 
 generate issue = "Missing reason for not interviewing school director"
 generate issue_variable_name = "respondent_is_not_director"
@@ -234,7 +234,7 @@ gen ind_issue = .
 replace ind_issue = 1 if respondent_other_role == 99 & missing(respondent_other_role_o)
 keep if ind_issue == 1
 * Retain key metadata fields before exporting
-keep hhid_village sup_name respondent_name respondent_phone_primary respondent_other_role respondent_other_role_o
+keep hhid_village sup_name respondent_name respondent_phone_primary respondent_other_role respondent_other_role_o key
 
 generate issue = "Missing specification for 'Other' role of respondent"
 generate issue_variable_name = "respondent_other_role_o"
@@ -257,7 +257,7 @@ gen ind_issue = .
 replace ind_issue = 1 if missing(geo_locaccuracy) | missing(geo_loclatitude) | missing(geo_loclongitude)
 keep if ind_issue == 1
 * Retain key metadata fields before exporting
-keep hhid_village sup_name respondent_name respondent_phone_primary geo_locaccuracy geo_loclatitude geo_loclongitude
+keep hhid_village sup_name respondent_name respondent_phone_primary geo_locaccuracy geo_loclatitude geo_loclongitude key
 generate issue = "Missing GPS coordinates"
 generate issue_variable_name = "geo_locaccuracy/geo_loclatitude/geo_loclongitude"
 rename geo_locaccuracy print_issue
@@ -293,7 +293,7 @@ gen ind_issue = .
 replace ind_issue = 1 if missing(time)
 keep if ind_issue == 1
 * Retain key metadata fields before exporting
-keep hhid_village sup_name respondent_name respondent_phone_primary time
+keep hhid_village sup_name respondent_name respondent_phone_primary time key
 
 generate issue = "Time not recorded"
 generate issue_variable_name = "time"
@@ -315,7 +315,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_water_main)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_water_main
+keep hhid_village sup_name respondent_name respondent_phone_primary school_water_main key
 generate issue = "Missing main source of water for the school"
 generate issue_variable_name = "school_water_main"
 rename school_water_main print_issue
@@ -331,7 +331,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_distance_river) | school_distance_river == 0
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_distance_river
+keep hhid_village sup_name respondent_name respondent_phone_primary school_distance_river key
 
 generate issue = "Missing or invalid distance from school to nearest water access point"
 generate issue_variable_name = "school_distance_river"
@@ -348,7 +348,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_children_water_collection)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection
+keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection key
 
 generate issue = "Missing indicator for school sending children to collect water"
 generate issue_variable_name = "school_children_water_collection"
@@ -366,7 +366,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if school_children_water_collection == 1 & missing(school_water_use)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection school_water_use
+keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection school_water_use key
 generate issue = "Missing use of water collected by children"
 generate issue_variable_name = "school_water_use"
 rename school_water_use print_issue
@@ -384,7 +384,7 @@ foreach var in school_reading_french school_reading_local school_computer_access
     gen ind_issue = .
     replace ind_issue = 1 if missing(`var')
     keep if ind_issue == 1
-    keep hhid_village sup_name respondent_name respondent_phone_primary `var'
+    keep hhid_village sup_name respondent_name respondent_phone_primary `var' key
     generate issue = "Missing value for `var'"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
@@ -402,7 +402,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_teachers)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_teachers
+keep hhid_village sup_name respondent_name respondent_phone_primary school_teachers key
 generate issue = "Missing number of teachers at the school"
 generate issue_variable_name = "school_teachers"
 rename school_teachers print_issue
@@ -419,7 +419,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if school_council == 1 & council_women > council_school_staff + council_community_members
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_council council_women council_school_staff council_community_members
+keep hhid_village sup_name respondent_name respondent_phone_primary school_council council_women council_school_staff council_community_members key
 generate issue = "Number of women in council exceeds total council members"
 generate issue_variable_name = "council_women"
 rename council_women print_issue
@@ -441,7 +441,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_water_main)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_water_main
+keep hhid_village sup_name respondent_name respondent_phone_primary school_water_main key
 generate issue = "Missing main source of water for the school"
 generate issue_variable_name = "school_water_main"
 rename school_water_main print_issue
@@ -458,7 +458,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_distance_river) | school_distance_river <= 0
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_distance_river
+keep hhid_village sup_name respondent_name respondent_phone_primary school_distance_river key
 
 generate issue = "Missing or invalid distance from school to nearest water access point"
 generate issue_variable_name = "school_distance_river"
@@ -476,7 +476,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_children_water_collection)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection
+keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection key
 
 generate issue = "Missing indicator for school sending children to collect water"
 generate issue_variable_name = "school_children_water_collection"
@@ -493,7 +493,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if school_children_water_collection == 1 & missing(school_water_use)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection school_water_use
+keep hhid_village sup_name respondent_name respondent_phone_primary school_children_water_collection school_water_use key
 generate issue = "Missing use of water collected by children"
 generate issue_variable_name = "school_water_use"
 rename school_water_use print_issue
@@ -511,7 +511,7 @@ foreach var in school_reading_french school_reading_local school_computer_access
     gen ind_issue = .
     replace ind_issue = 1 if missing(`var')
     keep if ind_issue == 1
-    keep hhid_village sup_name respondent_name respondent_phone_primary `var'
+    keep hhid_village sup_name respondent_name respondent_phone_primary `var' key
     generate issue = "Missing value for `var'"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
@@ -529,7 +529,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_teachers)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_teachers
+keep hhid_village sup_name respondent_name respondent_phone_primary school_teachers key
 generate issue = "Missing number of teachers at the school"
 generate issue_variable_name = "school_teachers"
 rename school_teachers print_issue
@@ -546,7 +546,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_staff_paid_non_teaching)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_staff_paid_non_teaching
+keep hhid_village sup_name respondent_name respondent_phone_primary school_staff_paid_non_teaching key
 generate issue = "Missing number of paid non-teaching staff"
 generate issue_variable_name = "school_staff_paid_non_teaching"
 rename school_staff_paid_non_teaching print_issue
@@ -563,7 +563,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(school_staff_volunteers)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_staff_volunteers
+keep hhid_village sup_name respondent_name respondent_phone_primary school_staff_volunteers key
 generate issue = "Missing number of unpaid volunteers"
 generate issue_variable_name = "school_staff_volunteers"
 rename school_staff_volunteers print_issue
@@ -581,7 +581,7 @@ foreach var in council_school_staff council_community_members council_women coun
     gen ind_issue = .
     replace ind_issue = 1 if school_council == 1 & missing(`var')
     keep if ind_issue == 1
-    keep hhid_village sup_name respondent_name respondent_phone_primary `var'
+    keep hhid_village sup_name respondent_name respondent_phone_primary `var' key
     generate issue = "Missing value for `var' when school council exists"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
@@ -599,7 +599,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if school_council == 1 & council_women > council_school_staff + council_community_members
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary council_women
+keep hhid_village sup_name respondent_name respondent_phone_primary council_women key
 generate issue = "Number of women in council exceeds total council members"
 generate issue_variable_name = "council_women"
 rename council_women print_issue
@@ -621,7 +621,7 @@ foreach var in grade_loop grade_loop_1 grade_loop_2 grade_loop_3 grade_loop_4 gr
     gen ind_issue = .
     replace ind_issue = 1 if missing(`var')
     keep if ind_issue == 1
-	keep hhid_village sup_name respondent_name respondent_phone_primary `var'  
+	keep hhid_village sup_name respondent_name respondent_phone_primary `var' key
     generate issue = "Missing grade loop variable"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
@@ -639,7 +639,7 @@ foreach var in classroom_count_1 classroom_count_2 classroom_count_3 classroom_c
     gen ind_issue = .
     replace ind_issue = 1 if missing(`var') | `var' < 0
     keep if ind_issue == 1
-	keep hhid_village sup_name respondent_name respondent_phone_primary `var'  
+	keep hhid_village sup_name respondent_name respondent_phone_primary `var' key
     generate issue = "Missing or invalid classroom count"
     generate issue_variable_name = "`var'"
     rename `var' print_issue
@@ -664,7 +664,7 @@ foreach grade in 1 2 3 4 5 6 {
     gen ind_issue = .
     replace ind_issue = 1 if `grade_loop_var' == `grade' & `classroom_count_var' < `grade'
     keep if ind_issue == 1
-	keep hhid_village sup_name respondent_name respondent_phone_primary `classroom_count_var'  
+	keep hhid_village sup_name respondent_name respondent_phone_primary `classroom_count_var' key
     generate issue = "Classroom count does not match required grade level"
     generate issue_variable_name = "`classroom_count_var'"
     rename `classroom_count_var' print_issue
@@ -690,7 +690,7 @@ foreach grade in 1 2 3 4 5 6 {
         replace ind_issue = 1 if `classroom_count_var' >= `class' & missing(enrollment_2024_total_`grade'_`class')
         replace ind_issue = 1 if `classroom_count_var' >= `class' & enrollment_2024_total_`grade'_`class' <= 0
         keep if ind_issue == 1
-		keep hhid_village sup_name respondent_name respondent_phone_primary enrollment_2024_total_`grade'_`class'
+		keep hhid_village sup_name respondent_name respondent_phone_primary enrollment_2024_total_`grade'_`class' key
         generate issue = "Invalid or missing enrollment total"
         generate issue_variable_name = "enrollment_2024_total_`grade'_`class'"
         rename enrollment_2024_total_`grade'_`class' print_issue
@@ -717,7 +717,7 @@ foreach grade in 1 2 3 4 5 6 {
         replace ind_issue = 1 if `classroom_count_var' >= `class' & missing(enrollment_2024_female_`grade'_`class')
         replace ind_issue = 1 if `classroom_count_var' >= `class' & enrollment_2024_female_`grade'_`class' > enrollment_2024_total_`grade'_`class'
         keep if ind_issue == 1
-		keep hhid_village sup_name respondent_name respondent_phone_primary enrollment_2024_female_`grade'_`class'
+		keep hhid_village sup_name respondent_name respondent_phone_primary enrollment_2024_female_`grade'_`class' key
         generate issue = "Invalid or missing female enrollment"
         generate issue_variable_name = "enrollment_2024_female_`grade'_`class'"
         rename enrollment_2024_female_`grade'_`class' print_issue
@@ -745,7 +745,7 @@ foreach grade in 1 2 3 4 5 6 {
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_total_`grade'_`class' < 0
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_total_`grade'_`class' > enrollment_2024_total_`grade'_`class'
         keep if ind_issue == 1
-		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_total_`grade'_`class'
+		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_total_`grade'_`class' key
         generate issue = "Invalid or missing passing total"
         generate issue_variable_name = "passing_2024_total_`grade'_`class'"
         rename passing_2024_total_`grade'_`class' print_issue
@@ -774,7 +774,7 @@ foreach grade in 1 2 3 4 5 6 {
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' > passing_2024_total_`grade'_`class'
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' > enrollment_2024_female_`grade'_`class'
         keep if ind_issue == 1
-		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_female_`grade'_`class'
+		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_female_`grade'_`class' key
         generate issue = "Invalid or missing female passing count"
         generate issue_variable_name = "passing_2024_female_`grade'_`class'"
         rename passing_2024_female_`grade'_`class' print_issue
@@ -797,7 +797,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(absenteeism_problem) | absenteeism_problem < 1 | absenteeism_problem > 5
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary absenteeism_problem
+keep hhid_village sup_name respondent_name respondent_phone_primary absenteeism_problem key
 generate issue = "Missing or invalid response for absenteeism problem"
 generate issue_variable_name = "absenteeism_problem"
 rename absenteeism_problem print_issue
@@ -813,7 +813,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(main_absenteeism_reasons)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary main_absenteeism_reasons
+keep hhid_village sup_name respondent_name respondent_phone_primary main_absenteeism_reasons key
 generate issue = "Missing main reasons for absenteeism"
 generate issue_variable_name = "main_absenteeism_reasons"
 rename main_absenteeism_reasons print_issue
@@ -829,7 +829,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(absenteeism_top_reason) | absenteeism_top_reason < 1 | absenteeism_top_reason > 99
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary absenteeism_top_reason
+keep hhid_village sup_name respondent_name respondent_phone_primary absenteeism_top_reason key
 generate issue = "Missing or invalid top reason for absenteeism"
 generate issue_variable_name = "absenteeism_top_reason"
 rename absenteeism_top_reason print_issue
@@ -845,7 +845,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_problem) | schistosomiasis_problem < 1 | schistosomiasis_problem > 5
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_problem
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_problem key
 generate issue = "Missing or invalid response for schistosomiasis problem"
 generate issue_variable_name = "schistosomiasis_problem"
 rename schistosomiasis_problem print_issue
@@ -861,7 +861,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(peak_schistosomiasis_month) | peak_schistosomiasis_month < 1 | peak_schistosomiasis_month > 12
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary peak_schistosomiasis_month
+keep hhid_village sup_name respondent_name respondent_phone_primary peak_schistosomiasis_month key
 generate issue = "Missing or invalid peak schistosomiasis month"
 generate issue_variable_name = "peak_schistosomiasis_month"
 rename peak_schistosomiasis_month print_issue
@@ -877,7 +877,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_primary_effect) | schistosomiasis_primary_effect < 1 | schistosomiasis_primary_effect > 2
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_primary_effect
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_primary_effect key
 generate issue = "Missing or invalid primary effect of schistosomiasis"
 generate issue_variable_name = "schistosomiasis_primary_effect"
 rename schistosomiasis_primary_effect print_issue
@@ -893,7 +893,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_sources)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_sources
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_sources key
 generate issue = "Missing sources of schistosomiasis"
 generate issue_variable_name = "schistosomiasis_sources"
 rename schistosomiasis_sources print_issue
@@ -909,7 +909,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_treatment_minist) | (schistosomiasis_treatment_minist != 0 & schistosomiasis_treatment_minist != 1)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_treatment_minist
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_treatment_minist key
 generate issue = "Missing or invalid Ministry of Health treatment indicator"
 generate issue_variable_name = "schistosomiasis_treatment_ministry"
 rename schistosomiasis_treatment_minist print_issue
@@ -925,7 +925,7 @@ preserve
 gen ind_issue = .
 replace ind_issue = 1 if missing(schistosomiasis_treatment_date)
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_treatment_date
+keep hhid_village sup_name respondent_name respondent_phone_primary schistosomiasis_treatment_date key
 generate issue = "Missing treatment date for schistosomiasis"
 generate issue_variable_name = "schistosomiasis_treatment_date"
 rename schistosomiasis_treatment_date print_issue
@@ -945,7 +945,7 @@ foreach grade in 1 2 3 4 5 6 {
     
     * Keep only problematic cases
     keep if ind_issue == 1
-    keep hhid_village sup_name respondent_name respondent_phone_primary classroom_count_`grade'
+    keep hhid_village sup_name respondent_name respondent_phone_primary classroom_count_`grade' key
     
     * Generate issue description
     generate issue = "Mismatch: grade_loop_`grade' exists but classroom_count_`grade' is missing or zero"
@@ -969,7 +969,7 @@ replace ind_issue = 1 if missing(school_name)
 
 * Keep only problematic cases
 keep if ind_issue == 1
-keep hhid_village sup_name respondent_name respondent_phone_primary school_name
+keep hhid_village sup_name respondent_name respondent_phone_primary school_name key
 
 * Generate issue description
 generate issue = "School name is missing"
@@ -1048,9 +1048,8 @@ append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G5_C2.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G6_C1.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G6_C2.dta"
-
 **************** UPDATE DATE IN FILE NAME ***********************
 
 * Export to Excel
-export excel using "$schoolprincipal\SchoolPrincipal_Issues_4Feb2025.xlsx", firstrow(variables) replace  
+export excel using "$schoolprincipal\SchoolPrincipal_Issues_7Feb2025.xlsx", firstrow(variables) replace  
 

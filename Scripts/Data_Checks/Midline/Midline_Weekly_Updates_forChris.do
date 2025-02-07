@@ -218,8 +218,8 @@ di "Trained households hearing about training at midline: `total_overlap_heard' 
 * Write Training Statistics to Excel
 ***************************************************
 
-putexcel A13 = "Total Trained Households in Midline" B13 = `total_trained_hh'
-putexcel A14 = "Trained HH Recall Attending Training at Midline" B14 = `total_overlap_attended'
-putexcel A15 = "Share of Trained HH Recall Attending Training (%)" B15 = `share_overlap_attended'
-putexcel A16 = "Trained HH Heard Training at Midline" B16 = `total_overlap_heard'
-putexcel A17 = "Share of Trained HH Heard about Training (%)" B17 = `share_overlap_heard'
+putexcel A12 = "Total Trained Households in Midline" B12 = `total_trained_hh'
+putexcel A13 = "Trained HH Recall Attending Training at Midline" B13 = `total_overlap_attended'
+putexcel A14 = "Share of Trained HH Recall Attending Training (%)" B14 = `share_overlap_attended'
+putexcel A15 = "Trained HH Heard Training at Midline" B15 = `total_overlap_heard'
+putexcel A16 = "Share of Trained HH Heard about Training (%)" B16 = `share_overlap_heard'

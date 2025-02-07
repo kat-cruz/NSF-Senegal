@@ -31,7 +31,7 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 *==============================================================================
 
-global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Original_Issues_Output"
+global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
 
 *==============================================================================
 **************************** generate variables ****************************
@@ -1596,7 +1596,7 @@ use temp.dta, clear
 
 rename variable_name issue_variable_name
 
-save "$issuesOriginal\R2_Survey_Questions", replace 
+save "$issuesOriginal\Midline_Survey_Questions", replace 
 
 
 

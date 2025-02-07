@@ -19,6 +19,11 @@ else if "`c(username)'"=="Kateri" {
                 global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
 				
 }
+else if "`c(username)'"=="km978" {
+                global master "C:\Users\km978\Box\NSF Senegal\Data_Management"
+				
+}
+
 
 
 *** additional file paths ***

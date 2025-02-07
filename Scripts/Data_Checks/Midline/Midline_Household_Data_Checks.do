@@ -53,7 +53,7 @@ global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Mid
 **************************** Import household data ****************************
 
 * Note: update this every new data cleaning session ***
-** KRM - needed to re-output these checks to add a filter variable, update next round 
+
 import delimited "$data\DISES_Enquête ménage midline VF_WIDE_R2_07Feb2025.csv", clear varnames(1) bindquote(strict)
 
 
@@ -175,8 +175,8 @@ forvalues i = 1/57{
 	capture label variable hh_13_`i'_4 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 4 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	capture label variable hh_13_`i'_5 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 5 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	capture label variable hh_13_`i'_6 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 6 pres de (< 1 m) ou dans la/les source(s) d'eau?"
-**# Bookmark #6 : KRM - not present 
-	*capture label variable hh_13_`i'_7 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
+** KRM - hh_13_`i'_7  present, added back in  
+	capture label variable hh_13_`i'_7 "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_12 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	capture label variable hh_13_o_`i' "Au cours des 12 derniers mois, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a [hh_12_o] pres de (< 1 m) ou dans la/les source(s) d'eau"
 	capture label variable hh_14_`i' "Au cours des 12 derniers mois, combien de vegetation aquatique a-t-il/elle recolte pres de (< 1 m) ou dans la/les source(s) d'eau par semaine, en moyenne (en kg)"
 	capture label variable hh_14_a_`i' "Au cours des 12 derniers mois, combien de fois a-t-il/elle recolté de végétation aquatique près de (< 1 m) ou dans la/les source(s) d'eau?"
@@ -206,8 +206,8 @@ forvalues i = 1/57{
 	capture label variable hh_21_`i'_4 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 4 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	capture label variable hh_21_`i'_5 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 5 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	capture label variable hh_21_`i'_6 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 6 pres de (< 1 m) ou dans la/les source(s) d'eau?"
-**# Bookmark #7 - KRM: not present 
-	*capture label variable hh_21_`i'_7 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
+**# Bookmark #7 - KRM:  present, added back in 
+	capture label variable hh_21_`i'_7 "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a hh_20 = 7 pres de (< 1 m) ou dans la/les source(s) d'eau?"
 	capture label variable hh_21_o_`i' "Au cours des 7 derniers jours, combien d'heures par semaine en moyenne [hh_full_name_calc] a t-il consacre a [hh_20_o] pres de (< 1 m) ou dans la/les source(s) d'eau"
 	capture label variable hh_22_`i' "Au cours des 7 derniers jours, combien de vegetation aquatique a-t-il/elle recolte pres de (< 1 m) ou dans la/les source(s) d'eau (en kg)"
 	capture label variable hh_23_`i' "Comment a-t-il utilise la vegetation aquatique"
@@ -414,8 +414,8 @@ forvalues i = 1/57 {
 	capture label variable _agri_number_5 "Combien de [agri-name] avez-vous eu" 
 	capture label variable _agri_number_6 "Combien de [agri-name] avez-vous eu" 
 	capture label variable _agri_number_7 "Combien de [agri-name] avez-vous eu" 
-	**# Bookmark #11 : KRM - not present
-	*capture label variable _agri_number_8 "Combien de [agri-name] avez-vous eu" 
+	capture label variable _agri_number_8 "Combien de [agri-name] avez-vous eu" 
+	**KRM : R2 - not present
 	*capture label variable _agri_number_9 "Combien de [agri-name] avez-vous eu" 
 	*capture label variable _agri_number_10 "Combien de [agri-name] avez-vous eu" 
 	capture label variable list_agri_equip_o "Est-ce qu'il y a un autre equipement agricole que l'on n'a pas pris en compte"
@@ -1246,17 +1246,20 @@ restore
 	
     local still_member still_member_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
-	rename `pull_hh_full_name_calc' hh_member_name
 	*** generate indicator variable ***
-	keep if hh_member_name == ""
+	tostring(`pull_hh_full_name_calc'), replace 
+	keep if `pull_hh_full_name_calc' == ""
 	gen ind_var = 0
-    replace ind_var = 1  if `still_member' != 0 & `still_member' != 1  & `still_member' != 2
+    replace ind_var = 1 if `still_member' != 0 
+	replace ind_var = 1 if `still_member' != 1 
+	replace ind_var = 1 if `still_member' != 2
  		  
     	* keep and add variables to export *
 	keep if ind_var == 1 	
 	generate issue =  "Unreasonable value"
 	generate issue_variable_name = "still_member_`i'"
 	
+	rename `pull_hh_full_name_calc' hh_member_name
 	rename `still_member' print_issue 
 	tostring(print_issue), replace
 	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
@@ -1857,7 +1860,7 @@ forvalues i = 1/57 {
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
 	
-	egen hh_13_`i'_total = rowtotal(hh_13_`i'_1  hh_13_`i'_2  hh_13_`i'_3 hh_13_`i'_4  hh_13_`i'_5 hh_13_`i'_6 )
+	egen hh_13_`i'_total = rowtotal(hh_13_`i'_1  hh_13_`i'_2  hh_13_`i'_3 hh_13_`i'_4  hh_13_`i'_5 hh_13_`i'_6 hh_13_`i'_7 )
 	
 	gen ind_var = 0 
 	replace ind_var = 1 if hh_13_`i'_total > hh_10_`i' 
@@ -1866,7 +1869,7 @@ forvalues i = 1/57 {
 	
 	keep if ind_var == 1 
 	
-	generate issue = "Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_6 is more than hh_10_`i'"
+	generate issue = "Issue found: Sum of hh_13_`i'_1 - hh_13_`i'_7 is more than hh_10_`i'"
 	generate issue_variable_name = "hh_13_`i'_total"
 	
 	rename hh_13_`i'_total print_issue
@@ -1881,7 +1884,7 @@ forvalues i = 1/57 {
 	
 ***	x.	Hh_21 plus hh_21_o should NOT be greater than hh_18 ***
 *** I mixed up the instructions - Molly ***
-*KRM - removed hh_21_`i'_7 for now
+*KRM - added hh_21_`i'_7 in as it has now been selected
 forvalues i = 1/57 {
 
     preserve 
@@ -1892,7 +1895,7 @@ forvalues i = 1/57 {
 	drop if still_member_`i' == 2
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
-	egen hh_21_`i'_total = rowtotal ( hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3  hh_21_`i'_4  hh_21_`i'_5  hh_21_`i'_6  )
+	egen hh_21_`i'_total = rowtotal ( hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3  hh_21_`i'_4  hh_21_`i'_5  hh_21_`i'_6 hh_21_`i'_7 )
         
     *Check if sum of hh_21_i_j and hh_21_o_i is more than sum of hh_18_i
 	generate ind_var = 0
@@ -2516,8 +2519,8 @@ restore
 
 }
 
-*KRM - missing hh_13_`i'_7
-/*
+*KRM - added hh_13_`i'_7 in as it's been selected
+
 forvalues i = 1/57 {
     preserve
 	
@@ -2545,7 +2548,7 @@ forvalues i = 1/57 {
 restore
 
 }
-*/
+
 
 ***	xv.	hh_13_o should be answered when hh_12_a = 1, should be between 0 and 168 or -9 ***
 
@@ -3182,9 +3185,9 @@ restore
 
 }
 
-*KRM - missing hh_21_`i'_7
+*KRM - added hh_21_`i'_7 back in as it's been selected
 
-/*
+
 forvalues i = 1/57 {
     preserve
 	
@@ -3212,7 +3215,7 @@ forvalues i = 1/57 {
 restore
 
 }
-*/
+
 
 
 ***	xxviii.	hh_21_o should be answered when hh_20_a = 1
@@ -4527,8 +4530,8 @@ restore
 
 *** i.	_actif_number should be between 0 and 100 ***	
 
-
-forvalues i = 1/14 {
+*R2 - check max i val
+forvalues i = 1/15 {
 preserve
 
 	*** drop no consent households *** 
@@ -4555,7 +4558,8 @@ restore
 
 ***  iii.	_agri_number should be between 0 and 100 ***	
 *Note: check max value for i 
-forvalues i = 1/7 {
+	*R2 - check next round if max changes
+forvalues i = 1/8 {
 preserve
 	*** drop no consent households *** 
 	drop if consent == 0 
@@ -4645,8 +4649,8 @@ restore
 *** ii.	agri_income_08 should be between 0 and 500 ***	
 *** For each of these, only some households grow crops ***
 *** So we should loop through numbers to not pick up extra values *** 
-	
-forvalues i = 1/5{
+	*R2 - check max i val 
+forvalues i = 1/7{
 	preserve
      
     keep if agri_income_07_`i' < 0 | agri_income_07_`i' > 500
@@ -4678,7 +4682,9 @@ preserve
 
 restore
 
-forvalues i = 1/5{
+	*R2 - check max i val 
+
+forvalues i = 1/7{
 	preserve
      
     keep if agri_income_08_`i' < 0 | agri_income_08_`i' > 500
@@ -4711,8 +4717,9 @@ preserve
 restore
 
 *** iii.	Agri_income_12 should be between 0 and 100000000 *** 
-*Note: check max i value 
-forvalues i = 1/4 {
+	*Note: check max i value 
+	*R2 - check max i val
+forvalues i = 1/6 {
 	preserve
      
     keep if agri_income_12_`i' < 0 | agri_income_12_`i' > 100000000
@@ -4746,8 +4753,8 @@ forvalues i = 1/4 {
 
 
 *** iv.	agri_income_14 should be between 0 and 100000000 ***
-
-forvalues i = 1/4{
+	*R2 - check max i val
+forvalues i = 1/6{
 	preserve
      
     keep if agri_income_14_`i' < 0 | agri_income_14_`i' > 100000000
@@ -4805,8 +4812,8 @@ forvalues i = 1/4{
 
 ***	v.	agri_income_21_h should be between 0 and 50 ***	
 ***	vi.	agri_income_21_f should be between 0 and 50 ***	
-*KRM - removed agri_income_21_f_4 agri_income_21_h_4
-foreach var of varlist agri_income_21_h_o agri_income_21_h_1 agri_income_21_h_2 agri_income_21_h_3 agri_income_21_f_1 agri_income_21_f_2 agri_income_21_f_3  {
+*KRM - added agri_income_21_f_4 agri_income_21_h_4 back in as it's been selected
+foreach var of varlist agri_income_21_h_o agri_income_21_h_1 agri_income_21_h_2 agri_income_21_h_3 agri_income_21_f_1 agri_income_21_f_2 agri_income_21_f_3 agri_income_21_f_4 agri_income_21_h_4 {
 	
 preserve
     
@@ -4825,9 +4832,9 @@ preserve
 }
 
 ***	vii. agri_income_22 should be less than 12 ***	
-*KRM- removed agri_income_22_4
+*KRM- added agri_income_22_4 back in as it's been selected
 
-foreach var of varlist agri_income_22_o agri_income_22_1 agri_income_22_2 agri_income_22_3 {
+foreach var of varlist agri_income_22_o agri_income_22_1 agri_income_22_2 agri_income_22_3 agri_income_22_4 {
 preserve
     keep if `var'  != . & `var' > 12
 	generate issue = "Unreasonable value"
@@ -4843,7 +4850,8 @@ preserve
 
 *** viii.	agri_income_23 should be between 0 and 1000000000 *** 
 *Note: check max i value
-forvalues i = 1/3 {
+	*R2 - check max i val
+forvalues i = 1/5 {
 	preserve
      
     keep if agri_income_23_`i' < 0 | agri_income_23_`i' > 1000000000
@@ -8964,8 +8972,9 @@ restore
 
 *** check that agri_income_13 is not missing ***
 *Note: check max i value 
+*R2 - check max i val
 
-forvalues i = 1/4 {
+forvalues i = 1/6 {
 	
 	preserve 
 
@@ -9680,7 +9689,8 @@ forvalues i = 1/1 {
 }
 
 *** xlix.	agri_income_43 should be answered when agri_income_40 = 1, should be less than agri_income_41  *** 
-*Note: check max value for i
+*
+*R2 - check i value
 forvalues i = 1/1 {
 	preserve 
 
@@ -9779,7 +9789,8 @@ forvalues i = 1/1 {
 	restore		
 
 *** l.	agri_income_46_o should be answered when agri_income_46 = 4, should be text *** 
-forvalues i=1/5 {
+*R2 - check i val
+forvalues i=1/15 {
 	preserve 
 	
 	*** make sure all are string variables *** 

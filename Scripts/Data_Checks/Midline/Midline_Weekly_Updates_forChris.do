@@ -21,14 +21,17 @@ global master "$box_path\Data_Management"
 
 * Define specific paths for output and input data
 global dailyupdates "$master\Output\Data_Quality_Checks\Midline\Midline_Daily_Updates"
-global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_5Feb.csv"
+* UPDATE WITH DATE
+global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_6Feb.csv"
 global baselinedata "$master\_CRDES_CleanData\Baseline\Identified\DISES_Baseline_Complete_PII.dta"
 global training "$master\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 global respond "$master\_CRDES_CleanData\Baseline\Identified\respondent_index.dta"
 global issues "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
 
 ***************************************************
-putexcel set "$dailyupdates\DISES_DailyChecks_Feb5.xlsx", replace
+* UPDATE WITH DATE
+putexcel set "$dailyupdates\DISES_DailyChecks_6Feb.xlsx", replace
+
 * Write Revisit and Attrition Rates
 putexcel A1 = "Metric" B1 = "Value"
 
@@ -161,4 +164,62 @@ di "Percentage of flagged values from new respondent households: " share_flagged
 
 * Write Flagged Values Statistics
 putexcel A9 = "Total Flagged Values in Dataset" B9 = total_flagged_values
-putexcel A10 = "Share of Flagged Values from New Respondent Households (%)" B11 = share_flagged_values_new_resp
+putexcel A10 = "Share of Flagged Values from New Respondent Households (%)" B10 = share_flagged_values_new_resp
+
+***************************************************
+* Calculate Household-Level Training Status
+***************************************************
+* Load midline data again
+import delimited "$data", clear varnames(1) bindquote(strict)
+rename hh_global_id hhid
+tempfile midline_clean
+save `midline_clean', replace
+
+* Prepare training data
+use "$training", clear
+collapse (max) trained_hh, by(hhid)
+tempfile training_clean
+save `training_clean', replace
+
+* Load prepared midline data
+use `midline_clean', clear
+
+* Merge with prepared training data
+merge m:1 hhid using `training_clean', keep(master match) nogen
+
+* Identify trained households in midline data
+gen trained_hh_midline = 0
+replace trained_hh_midline = 1 if attend_training == 1 | who_attended_training == 1
+
+* Check overlap: trained_hh == 1 and midline indicators
+gen overlap_attended = trained_hh == 1 & (attend_training == 1 | who_attended_training == 1)
+gen overlap_heard = trained_hh == 1 & heard_training == 1
+
+* Count totals
+count if trained_hh == 1
+local total_trained_hh = r(N)
+
+count if overlap_attended == 1
+local total_overlap_attended = r(N)
+
+count if overlap_heard == 1
+local total_overlap_heard = r(N)
+
+* Compute shares
+local share_overlap_attended = (`total_overlap_attended' / `total_trained_hh') * 100
+local share_overlap_heard = (`total_overlap_heard' / `total_trained_hh') * 100
+
+* Display results
+di "Total trained households: `total_trained_hh'"
+di "Trained households attending or having a member attend training at midline: `total_overlap_attended' (`share_overlap_attended'%)"
+di "Trained households hearing about training at midline: `total_overlap_heard' (`share_overlap_heard'%)"
+
+***************************************************
+* Write Training Statistics to Excel
+***************************************************
+
+putexcel A13 = "Total Trained Households in Midline" B13 = `total_trained_hh'
+putexcel A14 = "Trained HH Recall Attending Training at Midline" B14 = `total_overlap_attended'
+putexcel A15 = "Share of Trained HH Recall Attending Training (%)" B15 = `share_overlap_attended'
+putexcel A16 = "Trained HH Heard Training at Midline" B16 = `total_overlap_heard'
+putexcel A17 = "Share of Trained HH Heard about Training (%)" B17 = `share_overlap_heard'

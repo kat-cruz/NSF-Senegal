@@ -22,7 +22,7 @@ global master "$box_path\Data_Management"
 * Define specific paths for output and input data
 global dailyupdates "$master\Output\Data_Quality_Checks\Midline\Midline_Daily_Updates"
 * UPDATE WITH DATE
-global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_6Feb.csv"
+global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_7Feb.csv"
 global baselinedata "$master\_CRDES_CleanData\Baseline\Identified\DISES_Baseline_Complete_PII.dta"
 global training "$master\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 global respond "$master\_CRDES_CleanData\Baseline\Identified\respondent_index.dta"
@@ -30,7 +30,7 @@ global issues "$master\External_Corrections\Issues for Justin and Amina\Midline\
 
 ***************************************************
 * UPDATE WITH DATE
-putexcel set "$dailyupdates\DISES_DailyChecks_6Feb.xlsx", replace
+putexcel set "$dailyupdates\DISES_DailyChecks_7Feb.xlsx", replace
 
 * Write Revisit and Attrition Rates
 putexcel A1 = "Metric" B1 = "Value"

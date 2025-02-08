@@ -910,7 +910,52 @@ restore
 	}
   
     restore
+	
+	** correct_hh – check that it = 1
+    preserve 
 
+			*** generate indicator variable ***
+	gen ind_var = 0
+    replace ind_var = 1 if correct_hh != 1
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "correct_hh"
+	rename correct_hh print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_correct_hh.dta", replace
+	}
+  
+    restore
+
+	
+	** count_chefs  - check that it = 1
+		
+	preserve 
+
+			*** generate indicator variable ***
+	gen ind_var = 0
+    replace ind_var = 1 if count_chefs != 1
+ 
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "count_chefs"
+	rename count_chefs print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$household_roster\Issue_HH_Roster_count_chefs.dta", replace
+	}
+  
+    restore
 
 ** hh_time – check that there is a text entry
 
@@ -1039,6 +1084,38 @@ restore
 	}
   
     restore
+	
+	** Check phone number - add check for valid phone numbers, should be 300000000- 309999999, 330000000-339999999, 700000000-709999999, 750000000-789999999  
+	
+preserve  
+
+	*** generate indicator variable ***  
+	gen ind_var = 0  
+	replace ind_var = 1 if missing(hh_phone)  
+
+	*** Check if phone number is within valid ranges ***  
+	replace ind_var = 1 if !inrange(hh_phone, 300000000, 309999999) & ///
+							 !inrange(hh_phone, 330000000, 339999999) & ///
+							 !inrange(hh_phone, 700000000, 709999999) & ///
+							 !inrange(hh_phone, 750000000, 789999999)  
+
+	* keep and add variables to export *  
+	keep if ind_var == 1  
+	generate issue = "Invalid or missing phone number"  
+	generate issue_variable_name = "hh_phone"  
+	gen print_issue = hh_phone  
+	tostring(print_issue), replace  
+
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+	
+	* Export the dataset to Excel conditional on there being an issue  
+	if _N > 0 {  
+		save "$household_roster\Issue_HH_Roster_hh_phone.dta", replace  
+	}  
+
+restore  
+
 
 	
 	** check houshold roster respondent age 
@@ -1245,19 +1322,27 @@ restore
 	drop if consent == 0 
 	
     local still_member still_member_`i'
-	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
-	*** generate indicator variable ***
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
+	local add_new add_new_`i'
 	tostring(`pull_hh_full_name_calc'), replace 
-	keep if `pull_hh_full_name_calc' == ""
+	keep if `pull_hh_full_name_calc' != ""
+	keep if `pull_hh_full_name_calc' != "."
+	*** generate indicator variable ***
 	gen ind_var = 0
-    replace ind_var = 1 if `still_member' != 0 
-	replace ind_var = 1 if `still_member' != 1 
-	replace ind_var = 1 if `still_member' != 2
- 		  
+	replace ind_var = 1 if `still_member' != 0 & `still_member' != 1 & `still_member' != 2
+	*replace ind_var = 0 if _household_roster_count < `i'
+
+/*
+	replace ind_var = 0 if `add_new' == 0
+	replace ind_var = 0 if `add_new' == 1
+	replace ind_var = 0 if _household_roster_count < `i'
+*/
+	*replace ind_var = 0 if _household_roster_count < `i'
     	* keep and add variables to export *
 	keep if ind_var == 1 	
 	generate issue =  "Unreasonable value"
 	generate issue_variable_name = "still_member_`i'"
+	
 	
 	rename `pull_hh_full_name_calc' hh_member_name
 	rename `still_member' print_issue 
@@ -1286,7 +1371,9 @@ restore
 	local add_new add_new_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
-	keep if hh_member_name == ""
+	tostring(hh_member_name), replace 
+	keep if hh_member_name != ""
+	keep if hh_member_name != "."
 	*** generate indicator variable ***
 
 	keep if `add_new' == 1
@@ -1328,6 +1415,9 @@ forvalues i = 1/57 {
 	local still_member_whynot still_member_whynot_`i'
     local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
     rename `pull_hh_full_name_calc' hh_member_name
+	tostring(hh_member_name), replace 
+	keep if hh_member_name != ""
+	keep if hh_member_name != "."
 	
 
     *** Generate indicator variable ***
@@ -1374,6 +1464,9 @@ forvalues i = 1/57 {
     local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
     rename `pull_hh_full_name_calc' hh_member_name
 	tostring `still_member_whynot_o', replace 
+	tostring(hh_member_name), replace 
+	keep if hh_member_name != ""
+	keep if hh_member_name != "."
 
     *** Generate indicator variable ***
     gen ind_var = 0
@@ -1415,6 +1508,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
 	
     local hh_presence_winter hh_presence_winter_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
@@ -1454,6 +1549,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
 	
     local hh_presence_dry hh_presence_dry_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
@@ -1491,6 +1588,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
 	
     local hh_active_agri hh_active_agri_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
@@ -1537,6 +1636,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
 	
     local hh_age hh_age_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
@@ -1574,6 +1675,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
 	
 	
     local hh_age hh_age_`i'
@@ -1613,6 +1716,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
 
     local hh_age hh_age_`i'
 	local hh_education_level hh_education_year_achieve_`i'
@@ -1647,6 +1752,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 
@@ -1687,7 +1795,10 @@ forvalues i = 1/57 {
 	
 	*** drop no consent households *** 
 	drop if still_member_`i' == 0
-	drop if still_member_`i' == 2	 
+	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 
@@ -1719,6 +1830,9 @@ forvalues i = 1/57 {
 	*** drop no consent households *** 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
 	
@@ -1752,6 +1866,9 @@ forvalues i = 1/57 {
 	*** drop no consent households *** 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
 	
@@ -1787,6 +1904,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
 	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 	
@@ -1819,6 +1938,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
 	
@@ -1857,6 +1979,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
 	
@@ -1893,6 +2018,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
 	egen hh_21_`i'_total = rowtotal ( hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3  hh_21_`i'_4  hh_21_`i'_5  hh_21_`i'_6 hh_21_`i'_7 )
@@ -1927,6 +2055,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_ethnicity hh_ethnicity_`i'
 	local hh_ethnicity_o hh_ethnicity_o_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -1961,6 +2092,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_relation_with hh_relation_with_`i'
 	local hh_relation_with_o hh_relation_with_o_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -1995,6 +2129,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local hh_education_level hh_education_level_`i'
     local hh_education_level_o hh_education_level_o_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2025,6 +2162,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local hh_main_activity hh_main_activity_`i'
     local hh_main_activity_o hh_main_activity_o_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2056,6 +2196,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local hh_04 hh_04_`i'
     local hh_03 hh_03_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2090,6 +2233,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local hh_05 hh_05_`i'
     local hh_03 hh_03_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2123,6 +2269,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local hh_06 hh_06_`i'
     local hh_03 hh_03_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2155,6 +2304,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local hh_07 hh_07_`i'
     local hh_03 hh_03_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2187,6 +2339,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local hh_11 hh_11_`i'
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2218,6 +2373,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2	
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_11 hh_11_`i'
 	local hh_11_o hh_11_o_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2253,6 +2411,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
@@ -2284,6 +2445,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_12_a hh_12_a_`i'
 	local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2314,6 +2478,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_12_a hh_12_a_`i'
 	local hh_12_o hh_12_o_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2352,6 +2519,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
@@ -2381,6 +2551,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
@@ -2410,6 +2583,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
@@ -2439,6 +2615,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
@@ -2468,6 +2647,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
@@ -2497,6 +2679,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
@@ -2527,6 +2712,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
     local hh_10 hh_10_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
 	rename `pull_hh_full_name_calc' hh_member_name 
@@ -2559,6 +2747,9 @@ preserve
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+	
 	local hh_12_a hh_12_a_`i'
     local hh_13_o hh_13_o_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i' 
@@ -2594,6 +2785,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+
     local hh_14 hh_14_`i'
     local hh_12 hh_12_6_`i' 
     local hh_10 hh_10_`i'
@@ -2618,6 +2812,7 @@ restore
 
 }
 
+* KRM - left off here if you need to cary over droping for add_new - i don't think you do and that it's redundent 
 ** hh_14_a – check that when hh_12_6_`i' == 1 there is an answer, and it is between 1 and 500
 *Note: check max i value
 forvalues i = 1/57 {
@@ -3891,6 +4086,11 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+/*
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+*/
+	
 	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18
     local hh_41 hh_41_`i'
     local hh_26 hh_26_`i'
@@ -3901,14 +4101,15 @@ forvalues i = 1/57 {
     gen ind_var = 0
     keep if `hh_26' == 1
     replace ind_var = 1 if missing(`hh_41')
-	
+	replace ind_var = 1 if `hh_41' > hh_age_`i'
+	rename hh_age_`i' hh_age
     keep if ind_var == 1
 
-    generate issue = "Missing"
+    generate issue = "Missing/Reported age for starting school is larger than current age"
     generate issue_variable_name = "`hh_41'"
     rename `hh_41' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue hh_age print_issue hh_member_name
     if _N > 0 {
         save "$household_roster/Issue_`hh_41'", replace
     }
@@ -3990,6 +4191,8 @@ forvalues i = 1/57 {
 	
 	drop if consent == 0 
 	drop if still_member_`i' == 0
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
 	drop if still_member_`i' == 2
 	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18
     local hh_44 hh_44_`i'
@@ -4092,6 +4295,12 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	*KRM - clean this up 
+/*
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+*/
+	
 	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18
 	local hh_47_a hh_47_a_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
@@ -4100,7 +4309,7 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_a' == .
 	replace ind_var = 1 if `hh_47_a' < 0 & `hh_47_a' > 100000
-	replace ind_var = 0 if _household_roster_count < `i'
+	*replace ind_var = 0 if _household_roster_count < `i'
    
     	* keep and add variables to export *
 	keep if ind_var == 1 
@@ -4127,6 +4336,12 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	*KRM - clean this
+/*
+	drop if add_new_`i' == 2
+	drop if add_new_`i' == 0
+*/
+	
 	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18
 	local hh_47_b hh_47_b_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
@@ -4136,7 +4351,7 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_b' == .
 	replace ind_var = 1 if `hh_47_b' < 0 & `hh_47_b' > 100000
- 	replace ind_var = 0 if _household_roster_count < `i'
+ 	*replace ind_var = 0 if _household_roster_count < `i'
 
    
     	* keep and add variables to export *
@@ -4162,6 +4377,13 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	
+	*KRM - clean this up 
+/*
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
+*/
+	
 	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18
 	local hh_47_c hh_47_c_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
@@ -4171,7 +4393,7 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_c' == .
 	replace ind_var = 1 if `hh_47_c' < 0 & `hh_47_c' > 100000
- 	replace ind_var = 0 if _household_roster_count < `i'
+ 	*replace ind_var = 0 if _household_roster_count < `i'
 
    
     	* keep and add variables to export *
@@ -4206,7 +4428,7 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_d' == .
 	replace ind_var = 1 if `hh_47_d' < 0 & `hh_47_d' > 100000
- 	replace ind_var = 0 if _household_roster_count < `i'
+ 	*replace ind_var = 0 if _household_roster_count < `i'
 
     	* keep and add variables to export *
 	keep if ind_var == 1 
@@ -4375,7 +4597,7 @@ forvalues i = 1/57 {
     gen ind_var = 0
     replace ind_var = 1 if missing(`hh_48')
 	replace ind_var = 1  if `hh_48' != 0 & `hh_48' != 1  & `hh_48' != 2
-	replace ind_var = 0 if _household_roster_count < `i'
+	*replace ind_var = 0 if _household_roster_count < `i'
     keep if ind_var == 1
 
     generate issue = "Missing"
@@ -5407,6 +5629,8 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 	
@@ -5541,6 +5765,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 
@@ -5572,9 +5799,11 @@ forvalues i = 1/57 {
 
 	*** drop no consent households *** 
 	drop if consent == 0 
-	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' ==  2 
+
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 
@@ -5609,6 +5838,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
+
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 
@@ -5809,7 +6041,10 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
-	local 	health_5_7_1 health_5_7_1_`i'
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
+	
+	local health_5_7_1 health_5_7_1_`i'
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 
@@ -5823,7 +6058,7 @@ forvalues i = 1/57 {
     keep if ind_var == 1 
     generate issue = "Missing value"
     generate issue_variable_name = "`health_5_7_1'"
-    rename `health_5_7_1'' print_issue 
+    rename `health_5_7_1' print_issue 
     tostring(print_issue), replace
     keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
 
@@ -5843,6 +6078,9 @@ forvalues i = 1/57 {
 	drop if consent == 0 
 	drop if still_member_`i' == 0
 	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
+	
 	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
 	rename `pull_hh_full_name_calc' hh_member_name
 

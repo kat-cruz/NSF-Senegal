@@ -25,12 +25,14 @@ global master "$box_path\Data_Management"
 global schoolprincipal "$master\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues"
 global issues "$master\Output\Data_Quality_Checks\Midline\Full_Issues"
 global data "$master\_CRDES_RawData\Midline\Principal_Survey_Data"
+global corrected "$master\Output\Data_Corrections\Midline"
 
 **************************************************
 *** Import school principal survey data ***
 **************************************************
 
-import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_7Feb.csv", clear varnames(1) bindquote(strict)
+import excel "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_10Feb.xlsx", clear firstrow
+
 
 *** label variables ***
 label variable consent_obtain "Etes-vous d'accord de participer afin que je puisse poursuivre avec nos questions ?" 
@@ -744,6 +746,7 @@ foreach grade in 1 2 3 4 5 6 {
         replace ind_issue = 1 if `classroom_count_var' >= `class' & missing(passing_2024_total_`grade'_`class')
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_total_`grade'_`class' < 0
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_total_`grade'_`class' > enrollment_2024_total_`grade'_`class'
+		replace ind_issue = 0 if key == "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5" & passing_2024_total_`grade'_`class' == -999 // one village the principal was new and does not have access to last years registry
         keep if ind_issue == 1
 		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_total_`grade'_`class' key
         generate issue = "Invalid or missing passing total"
@@ -773,7 +776,9 @@ foreach grade in 1 2 3 4 5 6 {
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' < 0
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' > passing_2024_total_`grade'_`class'
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' > enrollment_2024_female_`grade'_`class'
-        keep if ind_issue == 1
+        replace ind_issue = 0 if key == "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5" & passing_2024_female_`grade'_`class' == -999 // one village the principal was new and does not have access to last years registry
+		keep if ind_issue == 1
+
 		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_female_`grade'_`class' key
         generate issue = "Invalid or missing female passing count"
         generate issue_variable_name = "passing_2024_female_`grade'_`class'"
@@ -1012,44 +1017,17 @@ restore
 	save "$income\Schoolprincipal_Issues.dta", replace // keep record of all the issues for each cleaning to filter
 */
 
-
-
-use "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G1.dta", clear
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G3.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G4.dta"
+use "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G4.dta", clear
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G5.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G6.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_SchoolFacilities_DistanceRiverMissing.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_SchoolFacilities_SchoolNameMissing.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_EnrollmentTotalInvalid_G6_C1.dta"
+append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G1.dta"
+append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G2.dta"
+append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G3.dta"
 append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_GradeLoop_ClassroomMismatch_G1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G1_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G1_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G2_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G2_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G3_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G3_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G4_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G4_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G5_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G5_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G6_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingFemaleInvalid_G6_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G1_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G1_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G2_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G2_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G3_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G3_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G4_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G4_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G5_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G5_C2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G6_C1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_PassingTotalInvalid_G6_C2.dta"
 **************** UPDATE DATE IN FILE NAME ***********************
 
 * Export to Excel
-export excel using "$schoolprincipal\SchoolPrincipal_Issues_7Feb2025.xlsx", firstrow(variables) replace  
+export excel using "$schoolprincipal\SchoolPrincipal_Issues_10Feb2025.xlsx", firstrow(variables) replace  
 

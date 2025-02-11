@@ -94,7 +94,7 @@ keep if _merge == 3
 
 drop _merge
 
-keep school_name pull_hhid_village_ hh_global_id pull_individ_ pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ pull_baselineniveau_ pull_family_members_
+keep school_name pull_hhid_village_ hh_global_id pull_individ_ pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ pull_baselineniveau_ pull_family_members_ key
 
 export excel using "$schoolprincipal\attendance_checks_missing_hh49_10Feb2025.xlsx", firstrow(variables) replace 
 

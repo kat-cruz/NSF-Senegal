@@ -85,7 +85,7 @@ keep hhid hhid_village ///
      hh_education_skills* hh_education_level* hh_education_year_achieve* ///
      hh_numero* hh_03* hh_10* hh_11* hh_12* hh_13* ///
      hh_14* hh_15* hh_16* hh_29* ///
-     health_5_2* health_5_3* health_5_5* health_5_6* health_5_7* ///
+     health_5_2* health_5_3* health_5_5* health_5_6* ///
      agri_6_15* species* agri_income_01 agri_income_05 ///
      living_01* living_03* living_04* living_05* ///
      montant_02* montant_05* ///
@@ -97,29 +97,29 @@ keep hhid hhid_village ///
 
 
 
-// Drop variables with numbered suffixes (1 to 55) for specific patterns
+*/ Drop variables with numbered suffixes (1 to 55) for specific patterns
 forval i = 1/55 {
     drop hh_education_skills_`i' hh_12_`i' health_5_3_`i'
 }
 
-// Drop variables matching specific patterns
+* Drop variables matching specific patterns
 drop hh_12_o* hh_12_a* hh_13_s* hh_13_o*  ///
      living_01_o living_03_o living_04_o living_05_o ///
      enum_03_o enum_04_o enum_05_o species_o ///
 	hh_12_r* hh_12name_* hh_12_calc_* hh_12index_* hh_education_level_o_* ///
      hh_11_o_* hh_education_skills_0_* hh_15_o_* hh_gender_res* hh_29_o* health_5_3_o* ///
-	 speciesindex* species_autre speciesname*
+	 speciesindex* species_autre speciesname* 
 
 
 * Reshape long with hhid and id
 forval i = 1/7 {
-    // Loop over the second index (1 to 55)
+    * Loop over the second index (1 to 55)
     forval j = 1/55 {
-        // Construct the old and new variable names
+        * Construct the old and new variable names
         local oldname = "hh_13_`j'_`i'"
         local newname = "hh_13_`i'_`j'"
         
-        // Rename if the old variable exists
+        * Rename if the old variable exists
         cap rename `oldname' `newname'
     }
 }
@@ -128,25 +128,28 @@ forval i = 1/7 {
 
 
 	
-	reshape long hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ hh_education_level_ hh_education_year_achieve_ ///
+	reshape long hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ hh_education_level_ hh_education_year_achieve_ ///
 hh_number_ hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ ///
-health_5_3_ health_5_5_ health_5_6_ health_5_7_, i(hhid) j(id)
+health_5_3_ health_5_5_ health_5_6_, i(hhid) j(id)
 
 
 *Collapse at hh level - default to mean, change to something else IEBaltab - balance table output 
 
 ********************************************************* Replace missings by accounting for skip patterns *********************************************************
 
-replace agri_income_05 = 0 if agri_income_01 == 0
+*replace agri_income_05 = 0 if agri_income_01 == 0
 * hh_14 relevance: ${hh_10} > 0 and selected(${hh_12}, "6")
-replace hh_11_ = 0 if hh_10_ == 0 
+*replace hh_11_ = 0 if hh_10_ == 0 
 * hh_12_: ${hh_10} > 0
 *** KRM - can i replace these all with zeros? or -9s
+/*
 foreach i of numlist 1/8 {
     replace hh_12_`i'_ = 0 if hh_10_ == 0
 }
+*/
 
 *hh_13: ${hh_10} > 0
+/*
 
 foreach i of numlist 1/8 {
     replace hh_13_`i'_ = 0 if hh_10_ == 0
@@ -162,19 +165,99 @@ replace hh_14_ = 0 if hh_10_ == 0
 replace hh_16_ = 0 if hh_10_ == 0
 
 * hh_education_year_achieve: {hh_education_level} != 0
+ */
 
 replace hh_education_year_achieve_ = 0 if hh_education_level_ == 0
 
 
+** Note **
+
+* agri_income_05, hh_11_ hh_12_ hh_13_ hh_14_ hh_16_ are all conditional variables 
+
+********************************************************* Encode variables to binaries  *********************************************************
+
+* Creating binary variables for hh_education_level
+foreach x in 0 1 2 3 4 99 {
+    gen hh_education_level_`x' = hh_education_level_ == `x'
+    replace hh_education_level_`x' = 0 if missing(hh_education_level_)
+}
+
+* Creating binary variables for hh_11
+foreach x in 1 2 3 4 99 {
+    gen hh_11_`x' = hh_11_ == `x'
+    replace hh_11_`x' = 0 if missing(hh_11_)
+}
+
+* Creating binary variables for hh_15
+foreach x in 1 2 3 4 5 99 {
+    gen hh_15_`x' = hh_15_ == `x'
+    replace hh_15_`x' = 0 if missing(hh_15_)
+}
+
+* Creating binary variables for living_01
+foreach x in 1 2 3 4 5 6 7 8 9 10 99 {
+    gen living_01_`x' = living_01 == `x'
+    replace living_01_`x' = 0 if missing(living_01)
+}
+
+* Creating binary variables for living_03
+foreach x in 1 2 3 99 {
+    gen living_03_`x' = living_03 == `x'
+    replace living_03_`x' = 0 if missing(living_03)
+}
+
+* Creating binary variables for living_04
+foreach x in 1 2 3 4 5 6 7 99 {
+    gen living_04_`x' = living_04 == `x'
+    replace living_04_`x' = 0 if missing(living_04)
+}
+
+* Creating binary variables for living_05
+foreach x in 1 2 3 4 5 6 7 99 {
+    gen living_05_`x' = living_05 == `x'
+    replace living_05_`x' = 0 if missing(living_05)
+}
+
+* Creating binary variables for enum_03
+foreach x in 1 2 3 4 99 {
+    gen enum_03_`x' = enum_03 == `x'
+    replace enum_03_`x' = 0 if missing(enum_03)
+}
+
+* Creating binary variables for enum_04
+foreach x in 1 2 3 4 5 6 99 {
+    gen enum_04_`x' = enum_04 == `x'
+    replace enum_04_`x' = 0 if missing(enum_04)
+}
+
+* Creating binary variables for enum_05
+foreach x in 1 2 3 4 5 99 {
+    gen enum_05_`x' = enum_05 == `x'
+    replace enum_05_`x' = 0 if missing(enum_05)
+}
+
+* Recode hh_gender_ (change 2 to 0, leave others unchanged)
+recode hh_gender_ (2=0)
 
 
+********************************************************* Reorder the variables & collapse at household level *********************************************************
+* drop empty/useless variables 
 
-********************************************************* Reorder the variables *********************************************************
 drop id species health_5_3_ hh_number_
 
-order hhid hhid_village hh_numero hh_age_resp hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_ hh_education_year_achieve_ hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ health_5_5_ health_5_6_ health_5_7_ agri_6_15 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01 living_03 living_04 living_05 montant_02 montant_05 face_04 face_13 enum_03 enum_04 enum_05
+
+** collaspe by mean at the household level 
+collapse (mean)  hh_age_resp hh_gender_ hh_age_ hh_education_year_achieve_ hh_03_ hh_10_ hh_14_ hh_16_ hh_29_ health_5_2_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_count montant_02 montant_05 face_04 face_13 ///
+    (sum) hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_* hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ 	   	hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_15_* ///
+    health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ ///
+    species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 ///
+    living_01* living_03* living_04* living_05* enum_03* enum_04* enum_05*, by(hhid)
+
+
+order hhid hh_age_resp hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_* hh_education_year_achieve_ hh_03_ hh_10_ hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_* hh_16_ hh_29_ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01* living_03* living_04* living_05* montant_02 montant_05 face_04 face_13 enum_03* enum_04* enum_05*
 
 drop if missing(hh_gender_) & missing(hh_age_)
+
 
 ********************************************************* Save the final dataset *********************************************************
 

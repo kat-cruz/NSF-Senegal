@@ -5808,6 +5808,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
     replace ind_var = 1 if health_5_6_`i' == .  
+	replace ind_var = 1 if health_5_6_`i' != 0 & health_5_6_`i' != 1 & health_5_6_`i' != 2
  	replace ind_var = 0 if _household_roster_count < `i'
    
     	* keep and add variables to export *
@@ -5826,7 +5827,7 @@ forvalues i = 1/57 {
     restore
 }
 
-** add back in health_5_7_i
+** KRM - added back in health_5_7_i
 *Note: check max i value
 forvalues i = 1/57 {
 
@@ -5845,6 +5846,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
     replace ind_var = 1 if health_5_7_`i' == .  
+	replace ind_var = 1 if health_5_7_`i' != 0 & health_5_7_`i' != 1 & health_5_7_`i' != 2
  	replace ind_var = 0 if _household_roster_count < `i'
    
     	* keep and add variables to export *
@@ -5864,6 +5866,44 @@ forvalues i = 1/57 {
 }
 
 
+*** Check for missing values in health_5_7_1, and check that it is 0, 1, or 2 ***
+*Note: check max i value
+forvalues i = 1/57 {
+    preserve 
+    *** Drop households without consent ***
+	drop if consent == 0 
+	drop if still_member_`i' == 0
+	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
+	
+	local health_5_7_1 health_5_7_1_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
+
+    gen ind_var = 0
+    replace ind_var = 1 if `health_5_7_1' == .  
+	replace ind_var = 1  if `health_5_7_1' != 0 & `health_5_7_1' != 1  & `health_5_7_1' != 2
+    replace ind_var = 0 if _household_roster_count < `i'
+
+    * Keep and add variables to export *
+    keep if ind_var == 1 
+    generate issue = "Missing value"
+    generate issue_variable_name = "`health_5_7_1'"
+    rename `health_5_7_1' print_issue 
+    tostring(print_issue), replace
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$health\Issue_health_`health_5_7_1'.dta", replace
+    }
+    restore
+}
+
+** health_5_8 check 
+
 *Note: check max i value
 forvalues i = 1/57 {
 
@@ -5882,6 +5922,7 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0
     replace ind_var = 1 if health_5_8_`i' == .  
+	replace ind_var = 1 if health_5_8_`i' != 0 & health_5_8_`i' != 1 & health_5_8_`i' != 2	
  	replace ind_var = 0 if _household_roster_count < `i'
 
    
@@ -5901,6 +5942,82 @@ forvalues i = 1/57 {
     restore
 }
 
+
+*** Check for missing values in health_5_9 ***
+*Note: check max i value
+forvalues i = 1/57 {
+    preserve 
+    *** Drop households without consent ***
+	drop if consent == 0 
+	drop if still_member_`i' == 0
+	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
+	
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
+	
+    gen ind_var = 0
+    replace ind_var = 1 if health_5_9_`i' == .  
+	replace ind_var = 1 if health_5_9_`i' != 0 & health_5_9_`i' != 1 & health_5_9_`i' != 2
+    replace ind_var = 0 if _household_roster_count < `i'
+
+
+    * Keep and add variables to export *
+    keep if ind_var == 1 
+    generate issue = "Missing value"
+    generate issue_variable_name = "health_5_9_`i'"
+    rename health_5_9_`i' print_issue 
+    tostring(print_issue), replace
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$health\Issue_Household_health_5_9_`i'.dta", replace
+    }
+    restore
+}
+
+
+*** KRM - added this check, Check for missing values/wrong values in health_5_10 ***
+*Note: check max i value
+forvalues i = 1/57 {
+    preserve 
+    *** Drop households without consent ***
+	drop if consent == 0 
+	drop if still_member_`i' == 0
+	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' == 2
+	
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
+	
+    gen ind_var = 0
+    replace ind_var = 1 if health_5_10_`i' == .  
+	replace ind_var = 1 if health_5_10_`i' != 0 & health_5_10_`i' != 1 & health_5_10_`i' != 2
+    replace ind_var = 0 if _household_roster_count < `i'
+
+
+    * Keep and add variables to export *
+    keep if ind_var == 1 
+    generate issue = "Missing value"
+    generate issue_variable_name = "health_5_10_`i'"
+    rename health_5_10_`i' print_issue 
+    tostring(print_issue), replace
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$health\Issue_Household_health_5_10_`i'.dta", replace
+    }
+    restore
+}
+
+
+
 ***	iv.	health_5_11 should be answered when health_5_10 = 1 ***
 *Note: check max i value
 forvalues i = 1/57 {
@@ -5919,6 +6036,7 @@ preserve
 	
     keep if `health_5_10' == 1 
 	replace ind_var = 1 if `health_5_11' == .
+	
 	keep if ind_var == 1 
 	
 
@@ -5969,6 +6087,42 @@ preserve
 restore
 
 }
+
+** KRM - this looks like the same check so commenting out 
+
+/*
+*** Check for unreasonable values in health_5_12 ***
+*Note: check max i value
+forvalues i = 1/57 {
+    preserve
+	
+	drop if consent == 0 
+	drop if still_member_`i' == 0
+	drop if still_member_`i' == 2
+    local health_5_12 health_5_12_`i'
+    local health_5_10 health_5_10_`i'
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
+
+    gen ind_var = 0
+    keep if `health_5_10' == 1
+    replace ind_var = 1 if `health_5_12' > 150 
+    replace ind_var = 1 if `health_5_12' < 0 | `health_5_12' == .
+    keep if ind_var == 1 
+
+    generate issue = "Unreasonable value"
+    generate issue_variable_name = "`health_5_12'"
+    rename `health_5_12' print_issue 
+    tostring(print_issue), replace
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+
+    if _N > 0 {
+        save "$health\Issue_`health_5_12'", replace
+    }
+    restore
+}
+*/
 
 **** vi. health_5_12 should be answered when health_5_10 = 1, should be between 0 and 150 ***
 *Note: check max i value
@@ -6068,111 +6222,8 @@ preserve
 
 restore
 
-*** Check for missing values in health_5_7_1, and check that it is 0, 1, or 2 ***
-*Note: check max i value
-forvalues i = 1/57 {
-    preserve 
-    *** Drop households without consent ***
-	drop if consent == 0 
-	drop if still_member_`i' == 0
-	drop if still_member_`i' == 2
-	drop if add_new_`i' == 0
-	drop if add_new_`i' == 2
-	
-	local health_5_7_1 health_5_7_1_`i'
-	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
-	rename `pull_hh_full_name_calc' hh_member_name
-
-
-    gen ind_var = 0
-    replace ind_var = 1 if `health_5_7_1' == .  
-	replace ind_var = 1  if `health_5_7_1' != 0 & `health_5_7_1' != 1  & `health_5_7_1' != 2
-    replace ind_var = 0 if _household_roster_count < `i'
-
-    * Keep and add variables to export *
-    keep if ind_var == 1 
-    generate issue = "Missing value"
-    generate issue_variable_name = "`health_5_7_1'"
-    rename `health_5_7_1' print_issue 
-    tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
-
-    * Export the dataset to Excel conditional on there being an issue
-    if _N > 0 {
-        save "$health\Issue_health_`health_5_7_1'.dta", replace
-    }
-    restore
-}
-
-
-*** Check for missing values in health_5_9 ***
-*Note: check max i value
-forvalues i = 1/57 {
-    preserve 
-    *** Drop households without consent ***
-	drop if consent == 0 
-	drop if still_member_`i' == 0
-	drop if still_member_`i' == 2
-	drop if add_new_`i' == 0
-	drop if add_new_`i' == 2
-	
-	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
-	rename `pull_hh_full_name_calc' hh_member_name
-
-	
-    gen ind_var = 0
-    replace ind_var = 1 if health_5_9_`i' == .  
-    replace ind_var = 0 if _household_roster_count < `i'
-
-
-    * Keep and add variables to export *
-    keep if ind_var == 1 
-    generate issue = "Missing value"
-    generate issue_variable_name = "health_5_9_`i'"
-    rename health_5_9_`i' print_issue 
-    tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
-
-    * Export the dataset to Excel conditional on there being an issue
-    if _N > 0 {
-        save "$health\Issue_Household_health_5_9_`i'.dta", replace
-    }
-    restore
-}
-
-
-*** Check for unreasonable values in health_5_12 ***
-*Note: check max i value
-forvalues i = 1/57 {
-    preserve
-	
-	drop if consent == 0 
-	drop if still_member_`i' == 0
-	drop if still_member_`i' == 2
-    local health_5_12 health_5_12_`i'
-    local health_5_10 health_5_10_`i'
-	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
-	rename `pull_hh_full_name_calc' hh_member_name
-
-
-    gen ind_var = 0
-    keep if `health_5_10' == 1
-    replace ind_var = 1 if `health_5_12' > 150 
-    replace ind_var = 1 if `health_5_12' < 0 | `health_5_12' == .
-    keep if ind_var == 1 
-
-    generate issue = "Unreasonable value"
-    generate issue_variable_name = "`health_5_12'"
-    rename `health_5_12' print_issue 
-    tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
-
-    if _N > 0 {
-        save "$health\Issue_`health_5_12'", replace
-    }
-    restore
-}
-
+** KRM - these also look to be duplicate checks 
+/*
 *** Check for missing values in health_5_14_a ***
 preserve
 	gen ind_var = 0
@@ -6226,6 +6277,7 @@ preserve
 		save "$health\Issue_health_5_14_c", replace
 	}
 restore
+*/
 
 
 ********************* Agriculture Section Checks *********************

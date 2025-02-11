@@ -12,8 +12,8 @@ set more off
 **************************************************
 
 * Set base Box path for each user
-if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box"
-if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box"
+if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box\NSF Senegal"
+if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box\NSF Senegal"
 if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"

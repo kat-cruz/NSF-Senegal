@@ -26,9 +26,10 @@ global schoolprincipal "$master\Output\Data_Quality_Checks\Midline\Midline_Princ
 global issues "$master\Output\Data_Quality_Checks\Midline\Full Issues"
 global schooldata "$master\_CRDES_RawData\Midline\Principal_Survey_Data"
 global hhdata "$master\_CRDES_RawData\Midline\Household_Survey_Data"
+global crdes "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
 
 * Import the HH data
-import delimited "$hhdata\DISES_Enquête_ménage_midline_VF_WIDE_5Feb.csv", clear varnames(1) bindquote(strict)
+import delimited "$hhdata\DISES_Enquête ménage midline VF_WIDE_10Feb2025.csv", clear varnames(1) bindquote(strict)
 
 drop if missing(hh_global_id)
 
@@ -37,10 +38,10 @@ duplicates drop hh_global_id, force
 keep if missing(hh_49)
 
 * Save the imported CSV as a Stata .dta file for merging
-save "$hhdata\DISES_Enquête_ménage_midline_VF_WIDE_5Feb_Missing_hh49.dta", replace
+save "$hhdata\DISES_Enquête_ménage_midline_VF_WIDE_10Feb_Missing_hh49.dta", replace
 
 * Import School Attendance check
-import delimited "$schooldata\DISES_Principal_Survey_MIDLINE_VF_WIDE_5Feb.csv", clear varnames(1) bindquote(strict)
+import delimited "$schooldata\DISES_Principal_Survey_MIDLINE_VF_WIDE_10Feb.csv", clear varnames(1) bindquote(strict)
 
 * Drop completely empty variables
 ds
@@ -55,6 +56,13 @@ foreach var in `r(varlist)' {
 foreach var of varlist pull_baselineniveau_* {
     tostring `var', replace force
 }
+
+* Replace missing school_name with village_select_o
+replace school_name = village_select_o if missing(school_name)
+
+* Keep only the first school name duplicates (2 cases right now) doesn't matter here just need the roster list to know who consent is needed for
+duplicates drop school_name, force
+
 
 * Reshape long with `id` as the suffix and `school_name` as the unique identifier
 reshape long fu_mem_id_ pull_hhid_village_ pull_hhid_ pull_individ_ ///
@@ -78,7 +86,7 @@ duplicates drop hh_global_id, force
 
 preserve
 
-merge m:1 hh_global_id using "$hhdata\DISES_Enquête_ménage_midline_VF_WIDE_5Feb_Missing_hh49.dta"
+merge m:1 hh_global_id using "$hhdata\DISES_Enquête_ménage_midline_VF_WIDE_10Feb_Missing_hh49.dta"
 
 tab _merge
 
@@ -88,7 +96,9 @@ drop _merge
 
 keep school_name pull_hhid_village_ hh_global_id pull_individ_ pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ pull_baselineniveau_ pull_family_members_
 
-export excel using "$schoolprincipal/attendance_checks_missing_hh49.xlsx", firstrow(variables) replace 
+export excel using "$schoolprincipal\attendance_checks_missing_hh49_10Feb2025.xlsx", firstrow(variables) replace 
+
+export excel using "$crdes\attendance_checks_missing_hh49_10Feb2025.xlsx", firstrow(variables) replace 
 
 
 

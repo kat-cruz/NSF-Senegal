@@ -5826,6 +5826,43 @@ forvalues i = 1/57 {
     restore
 }
 
+** add back in health_5_7_i
+*Note: check max i value
+forvalues i = 1/57 {
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	drop if still_member_`i' == 0
+	drop if still_member_`i' == 2
+	drop if add_new_`i' == 0
+	drop if add_new_`i' ==  2 
+
+	local pull_hh_full_name_calc pull_hh_full_name_calc__`i'
+	rename `pull_hh_full_name_calc' hh_member_name
+
+	
+	gen ind_var = 0
+    replace ind_var = 1 if health_5_7_`i' == .  
+ 	replace ind_var = 0 if _household_roster_count < `i'
+   
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "health_5_7_`i'"
+	rename health_5_7_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$health\Issue_Household_health_5_7_`i'.dta", replace
+    }
+  
+    restore
+}
+
 
 *Note: check max i value
 forvalues i = 1/57 {

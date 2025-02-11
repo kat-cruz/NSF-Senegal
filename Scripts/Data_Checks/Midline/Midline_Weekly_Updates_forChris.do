@@ -10,8 +10,8 @@ set maxvar 30000
 **************************************************
 
 * Set base Box path for each user
-if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box"
-if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box"
+if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box\NSF Senegal"
+if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box\NSF Senegal"
 if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
@@ -22,7 +22,7 @@ global master "$box_path\Data_Management"
 * Define specific paths for output and input data
 global dailyupdates "$master\Output\Data_Quality_Checks\Midline\Midline_Daily_Updates"
 * UPDATE WITH DATE
-global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_7Feb.csv"
+global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_10Feb2025.csv"
 global baselinedata "$master\_CRDES_CleanData\Baseline\Identified\DISES_Baseline_Complete_PII.dta"
 global training "$master\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 global respond "$master\_CRDES_CleanData\Baseline\Identified\respondent_index.dta"
@@ -30,7 +30,7 @@ global issues "$master\External_Corrections\Issues for Justin and Amina\Midline\
 
 ***************************************************
 * UPDATE WITH DATE
-putexcel set "$dailyupdates\DISES_DailyChecks_7Feb.xlsx", replace
+putexcel set "$dailyupdates\DISES_DailyChecks_10Feb.xlsx", replace
 
 * Write Revisit and Attrition Rates
 putexcel A1 = "Metric" B1 = "Value"
@@ -223,3 +223,15 @@ putexcel A13 = "Trained HH Recall Attending Training at Midline" B13 = `total_ov
 putexcel A14 = "Share of Trained HH Recall Attending Training (%)" B14 = `share_overlap_attended'
 putexcel A15 = "Trained HH Heard Training at Midline" B15 = `total_overlap_heard'
 putexcel A16 = "Share of Trained HH Heard about Training (%)" B16 = `share_overlap_heard'
+
+
+***************************************************
+* Export Tabulation of HHID_Village to Excel
+***************************************************
+* see how many hh's are missing from each village
+estpost tab hhid_village
+esttab using "$dailyupdates\Village_Counts_10Feb.xlsx", cells("b(label(Count)) pct(label(Percent))") replace
+
+
+
+

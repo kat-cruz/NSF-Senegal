@@ -33,6 +33,10 @@ output: html_document
 # install.packages(estimatr)
 # install.packages(broom)
 #install.packages(reshape2)
+# install.packages("cobalt")
+# install.packages("RCT")
+#install.packages("purrr")
+
 #library(reshape2)
 library(officer)
 library(r2rtf)
@@ -45,6 +49,8 @@ library(rtf)
 library(tidyverse)
 library(estimatr)
 library(broom)
+library(RCT)
+library(cobalt)
 
 ```
 
@@ -63,12 +69,12 @@ proj_paths <- list(
 if (file.exists(proj_paths$projects)) {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$projects,
-    p1 = "<projects>/Data Management/Output/Data_Analysis/Balance_Tables"
+    p1 = "<projects>/Data_Management/Output/Data_Analysis/Balance_Tables"
   ))  
 } else {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$alternative_projects,
-    p1 = "<projects>/Data Management/Output/Data_Analysis/Balance_Tables"
+    p1 = "<projects>/Data_Management/Output/Data_Analysis/Balance_Tables"
   ))
 }
 
@@ -107,6 +113,30 @@ view(balance_df)
 
 
 
+```{r}
+
+
+# List of variables to test
+vars_to_test <- setdiff(names(balance_df), c("hhid", "group", "control", 
+                                             "public_health_trained", 
+                                             "private_benefits_trained", 
+                                             "public_and_private_trained"))
+# Define treatment arms
+treatment_arms <- c("public_health_trained", "private_benefits_trained", "public_and_private_trained")
+
+# Compute balance tables
+bal.tab(
+  balance_df[, vars_to_test],          # The covariates to check for balance
+  treat = balance_df$control,          # The treatment assignment (0 = control, 1 = treated)
+  data = balance_df,                   # The dataset
+  focal = 0,                            # Set the control group as the reference
+  pairwise = TRUE,                      # Perform pairwise comparisons among treatment groups
+  un = TRUE                             # Show unadjusted differences
+)
+
+
+
+```
 
 
 
@@ -128,6 +158,76 @@ view(balance_df)
 
 
 #Archive 
+
+
+
+```{r}
+
+
+
+
+
+
+
+
+
+
+
+
+# Define treatment groups
+# 
+# # Function to compute means and SDs
+# compute_summary_stats <- function(var, group_var) {
+#   balance_df %>%
+#     group_by(!!sym(group_var)) %>%   # Groups the data by the specified group variable
+#     summarise(
+#       mean = mean(.data[[var]], na.rm = TRUE),  # Computes mean of `var`, ignoring NAs
+#       sd = sd(.data[[var]], na.rm = TRUE),      # Computes standard deviation of `var`, ignoring NAs
+#       n = n(),                                  # Counts number of observations
+#       .groups = "drop"                          # Prevents unwanted grouping in later operations
+#     )
+# }
+# 
+# # Function to run t-tests
+# run_t_test <- function(var, group1, group2) {
+#   t_test <- t.test(
+#     balance_df[[var]][balance_df[[group1]] == 1],  # Subset `var` for group1
+#     balance_df[[var]][balance_df[[group2]] == 1],  # Subset `var` for group2
+#     var.equal = TRUE                               # Assume equal variance
+#   )
+#   
+#   return(
+#     tidy(t_test) %>% 
+#       mutate(variable = var, group1 = group1, group2 = group2)
+#   )
+# }
+# 
+# treatment_groups <- c("public_health_trained", "private_benefits_trained", "public_and_private_trained")
+# treatment_groups
+# # Generate summary stats for all variables by group
+# summary_stats <- map_dfr(vars_to_test, ~map_dfr(c("control", public_health_trained), 
+#                                                 ~compute_summary_stats(.x, .y), 
+#                                                 .id = "group"))
+# 
+# 
+# t_tests_vs_control <- cross_df(list(variable = vars_to_test, treatment = treatment_groups)) %>%
+#   mutate(results = map2(variable, treatment, ~run_t_test(.x, .y, "control"))) %>%
+#   unnest(results)
+# 
+# 
+# 
+# # Run pairwise t-tests among treatment groups
+# pairwise_tests <- expand.grid(variable = vars_to_test, 
+#                               group1 = treatment_groups, 
+#                               group2 = treatment_groups) %>%
+#   filter(group1 != group2) %>%
+#   mutate(results = map2(variable, paste(group1, group2, sep = "_"), 
+#                         ~run_t_test(.x, .y, .y))) %>%
+#   unnest(results)
+
+```
+
+
 
 
 ```{r}

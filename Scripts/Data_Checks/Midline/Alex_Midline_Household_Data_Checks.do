@@ -6763,7 +6763,7 @@ forvalue i=1/5 {
 	preserve 
 	
 	*** restrict sample to agri_6_14 = 1 ***
-	keep if agri_6_14 == 1 
+	keep if agri_6_14 == 1 & !missing(parcelleindex_`i') 
 	
 	*** generate indicator variable *** 
 	gen ind_var = 0 
@@ -6792,6 +6792,8 @@ forvalue i=1/5 {
 	
 	*** generate indicator variable *** 
 	gen ind_var = 0 
+	keep if agri_6_14 == 1 & !missing(parcelleindex_`i') & agri_6_38_a_`i' > 0
+
 	replace ind_var = 1 if agri_6_14 == 1 & agri_6_38_a_code_`i' == . 
 	replace ind_var = 0 if parcelleindex_`i' == . 
 	
@@ -6816,7 +6818,7 @@ forvalue i=1/5 {
 	preserve 
 	
 	*** restrict sample to agri_6_14 = 1 & agri_6_38_a_code = 99 ***
-	keep if agri_6_14 == 1 & agri_6_38_a_code_`i' == 99
+	keep if agri_6_38_a_code_`i' == 99 & !missing(parcelleindex_`i')
 	
 	*** make sure string *** 
 	tostring(agri_6_38_a_code_o_`i'), replace 
@@ -6848,7 +6850,7 @@ forvalue i=1/5 {
 	preserve 
 	
 	*** restrict sample to agri_6_14 = 1 ***
-	keep if agri_6_14 == 1 
+	keep if agri_6_14 == 1 & !missing(parcelleindex_`i') 
 	
 	*** generate indicator variable *** 
 	gen ind_var = 0 
@@ -6877,6 +6879,8 @@ forvalue i=1/5 {
 	
 	*** generate indicator variable *** 
 	gen ind_var = 0 
+	keep if agri_6_14 == 1 & !missing(parcelleindex_`i') & agri_6_39_a_`i' > 0
+
 	replace ind_var = 1 if agri_6_14 == 1 & agri_6_39_a_code_`i' == . 
 	replace ind_var = 0 if parcelleindex_`i' == . 
 	
@@ -6894,14 +6898,14 @@ forvalue i=1/5 {
 	restore
 }
 
-*** agri_6_39_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_39_a_code = 99, should be text ***  ISSUES OUTPUT
+*** agri_6_39_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_39_a_code = 99, should be text ***  CHECKED
 
 forvalue i=1/5 {
 	
 	preserve 
 	
 	*** restrict sample to agri_6_14 = 1 & agri_6_38_a_code = 99 ***
-	keep if agri_6_14 == 1 & agri_6_39_a_code_`i' == 99
+	keep if agri_6_39_a_code_`i' == 99 & !missing(parcelleindex_`i')
 	
 	*** make sure string *** 
 	tostring(agri_6_39_a_code_o_`i'), replace 
@@ -6925,14 +6929,14 @@ forvalue i=1/5 {
 	restore
 }
 
-*** agri_6_40_a should be answered when agri_6_14 = 1, should be between 0 and 1000 ***   ***ISSUES OUTPUT
+*** agri_6_40_a should be answered when agri_6_14 = 1, should be between 0 and 1000 ***   ***ISSUES OUTPUT  BECAUSE OF THE BOUNDS
 *** FLAGGED ***
 forvalue i=1/5 {
 	
 	preserve 
 	
 	*** restrict sample to agri_6_14 = 1 ***
-	keep if agri_6_14 == 1 
+	keep if agri_6_14 == 1 & !missing(parcelleindex_`i') 
 	
 	*** generate indicator variable *** 
 	gen ind_var = 0 
@@ -6961,6 +6965,8 @@ forvalue i=1/5 {
 	
 	*** generate indicator variable *** 
 	gen ind_var = 0 
+	keep if agri_6_14 == 1 & !missing(parcelleindex_`i') & agri_6_40_a_`i' > 0
+
 	replace ind_var = 1 if agri_6_14 == 1 & agri_6_40_a_code_`i' == . 
 	replace ind_var = 0 if parcelleindex_`i' == . 
 	
@@ -6978,14 +6984,14 @@ forvalue i=1/5 {
 	restore
 }
 
-*** agri_6_40_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_40_a_code = 99, should be text ***   ISSUES OUTPUT
+*** agri_6_40_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_40_a_code = 99, should be text ***   ISSUES OUTPUT  FIXED
 
 forvalue i=1/5 {
 	
 	preserve 
 	
 	*** restrict sample to agri_6_14 = 1 & agri_6_38_a_code = 99 ***
-	keep if agri_6_14 == 1 & agri_6_40_a_code_`i' == 99
+	keep if agri_6_40_a_code_`i' == 99 & !missing(parcelleindex_`i')
 	
 	*** make sure string *** 
 	tostring(agri_6_40_a_code_o_`i'), replace 
@@ -7016,7 +7022,8 @@ forvalue i=1/5 {
 	preserve 
 	
 	*** restrict sample to agri_6_14 = 1 ***
-	keep if agri_6_14 == 1 
+	keep if agri_6_14 == 1 & !missing(parcelleindex_`i') 
+
 	
 	*** generate indicator variable *** 
 	gen ind_var = 0 
@@ -7045,8 +7052,10 @@ forvalue i=1/5 {
 	
 	*** generate indicator variable *** 
 	gen ind_var = 0 
+	keep if agri_6_14 == 1 & !missing(parcelleindex_`i') & agri_6_41_a_`i' > 0
+
 	replace ind_var = 1 if agri_6_14 == 1 & agri_6_41_a_code_`i' == . 
-	replace ind_var = 0 if parcelleindex_`i' == . 
+	replace ind_var = 0 if missing(parcelleindex_`i')
 	
 	*** keep and add variables to export *** 
 	keep if ind_var == 1 
@@ -7062,14 +7071,15 @@ forvalue i=1/5 {
 	restore
 }
 
-*** agri_6_41_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_41_a_code = 99, should be text ***   ISSUES OUTPUT
+*** agri_6_41_a_code_o should be answered when agri_6_14 = 1, should be answered when agri_6_41_a_code = 99, should be text ***   ISSUES OUTPUT FIXED
 
 forvalue i=1/5 {
 	
 	preserve 
 	
 	*** restrict sample to agri_6_14 = 1 & agri_6_41_a_code = 99 ***
-	keep if agri_6_14 == 1 & agri_6_41_a_code_`i' == 99
+	keep if agri_6_41_a_code_`i' == 99 & !missing(parcelleindex_`i')
+
 	
 	*** make sure string *** 
 	tostring(agri_6_41_a_code_o_`i'), replace 
@@ -7093,6 +7103,3534 @@ forvalue i=1/5 {
 	restore
 }
 
+********************* Agriculture Production Section Checks *****************
+
+*** 1.	Cereals_01 should be answered when cereals_consumption = 1, should be between 0 and 30   ***
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to cereals_consumption = 1 ***
+	keep if cereals_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if cereals_01_`i' < 0 | cereals_01_`i' > 50
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "cereals_01_`i'"
+	rename cereals_01_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_cereals_01_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 2.	cereals_02 should be answered when cereals_consumption = 1, should be between 0 and 10000 ***
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to cereals_consumption = 1 ***
+	keep if cereals_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if cereals_02_`i' < 0 | cereals_02_`i' > 10000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "cereals_02_`i'"
+	rename cereals_02_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_cereals_02_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
 
 
+*** 3.	cereals_03 should be answered when cereals_consumption = 1, should be less than cereals_02  ***
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to cereals_consumption = 1 ***
+	keep if cereals_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if cereals_03_`i' > cereals_02_`i' 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "cereals_03_`i'"
+	rename cereals_03_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_cereals_03_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 4.	cereals_04 should be answered when cereals_consumption = 1, should be less than cereals_02  ***
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to cereals_consumption = 1 ***
+	keep if cereals_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if cereals_04_`i' > cereals_02_`i' 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "cereals_04_`i'"
+	rename cereals_04_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_cereals_04_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 5.	cereals_05 should be answered when cereals_consumption = 1, should be between 0 and 5000  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to cereals_consumption = 1 ***
+	keep if cereals_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if cereals_05_`i' < 0 | cereals_05_`i' > 5000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "cereals_05_`i'"
+	rename cereals_05_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_cereals_05_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+
+*** 1.	Farines_01 should be answered when farine_tubercules_consumption = 1, should be between 0 and 50  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to farine_tubercules_consumption = 1 ***
+	keep if farine_tubercules_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if farines_01_`i' < 0 | farines_01_`i' > 50
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "farines_01_`i'"
+	rename farines_01_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_farines_01_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 2.	Farines_02 should be answered when farines_tubercules_consumption = 1, should be between 0 and 10000  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to farine_tubercules_consumption = 1 ***
+	keep if farine_tubercules_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if farines_02_`i' < 0 | farines_02_`i' > 10000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "farines_02_`i'"
+	rename farines_02_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_farines_02_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 3.	Farines_03 should be answered when farines_tubercules_consumption = 1, should be less than farines_02   ***
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to farine_tubercules_consumption = 1 ***
+	keep if farine_tubercules_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if farines_03_`i' > farines_02_`i' 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "farines_03_`i'"
+	rename farines_03_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_farines_03_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+} 
+
+*** 4.	Farines_04 should be answered when farines_tubercules_consumption = 1, should be less than farines_02  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to farine_tubercules_consumption = 1 ***
+	keep if farine_tubercules_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if farines_04_`i' > farines_02_`i' 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "farines_04_`i'"
+	rename farines_04_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_farines_04_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+} 
+
+*** 5.	Farines_05 should be answered when farines_tubercules_consumption = 1, should be between 0 and 5000  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to farine_tubercules_consumption = 1 ***
+	keep if farine_tubercules_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if farines_05_`i' < 0 | farines_05_`i' > 5000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "farines_05_`i'"
+	rename farines_05_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_farines_05_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 1.	Legumes_01 should be answered when legumes_consumption = 1, should be between 0 and 50  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to legumes_consumption = 1 ***
+	keep if legumes_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumes_01_`i' < 0 | legumes_01_`i' > 50
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumes_01_`i'"
+	rename legumes_01_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumes_01_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 2.	legumes_02 should be answered when legumes_consumption = 1, should be between 0 and 10000  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to legumes_consumption = 1 ***
+	keep if legumes_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumes_02_`i' < 0 | legumes_02_`i' > 10000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumes_02_`i'"
+	rename legumes_02_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumes_02_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 3.	legumes_03 should be answered when legumes_consumption = 1, should be less than legumes_02   ***
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to legumes_consumption = 1 ***
+	keep if legumes_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumes_03_`i' > legumes_02_`i' 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumes_03_`i'"
+	rename legumes_03_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumes_03_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+} 
+
+*** 4.	legumes_04 should be answered when legumes_consumption = 1, should be less than legumes_02  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to legumes_consumption = 1 ***
+	keep if legumes_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumes_04_`i' > legumes_02_`i' 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumes_04_`i'"
+	rename legumes_04_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumes_04_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+} 
+
+*** 5.	legumes_05 should be answered when legumes_consumption = 1, should be between 0 and 5000  *** 
+
+forvalue i = 1/6 {
+	
+	preserve 
+	
+	*** restrict sample to legumes_consumption = 1 ***
+	keep if legumes_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumes_05_`i' < 0 | legumes_05_`i' > 5000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumes_05_`i'"
+	rename legumes_05_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumes_05_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 1.	Legumineuses_01 should be answered when legumineuses_consumption = 1, should be between 0 and 50  *** 
+
+forvalue i = 1/5 {
+	
+	preserve 
+	
+	*** restrict sample to legumineuses_consumption = 1 ***
+	keep if legumineuses_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumineuses_01_`i' < 0 | legumineuses_01_`i' > 50
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumineuses_01_`i'"
+	rename legumineuses_01_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumineuses_01_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 2.	legumineuses_02 should be answered when legumineuses_consumption = 1, should be between 0 and 10000  *** 
+
+forvalue i = 1/5 {
+	
+	preserve 
+	
+	*** restrict sample to legumineuses_consumption = 1 ***
+	keep if legumineuses_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumineuses_02_`i' < 0 | legumineuses_02_`i' > 10000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumineuses_02_`i'"
+	rename legumineuses_02_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumineuses_02_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** 3.	legumineuses_03 should be answered when legumineuses_consumption = 1, should be less than legumineuses_02   ***
+
+forvalue i = 1/5 {
+	
+	preserve 
+	
+	*** restrict sample to legumineuses_consumption = 1 ***
+	keep if legumineuses_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumineuses_03_`i' > legumineuses_02_`i' 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumineuses_03_`i'"
+	rename legumineuses_03_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumineuses_03_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+} 
+
+*** 4.	legumineuses_04 should be answered when legumineuses_consumption = 1, should be less than legumineuses_02  *** 
+
+forvalue i = 1/5 {
+	
+	preserve 
+	
+	*** restrict sample to legumineuses_consumption = 1 ***
+	keep if legumineuses_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumineuses_04_`i' > legumineuses_02_`i' 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumineuses_04_`i'"
+	rename legumineuses_04_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumineuses_04_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+} 
+
+*** 5.	legumineuses_05 should be answered when legumineuses_consumption = 1, should be between 0 and 5000  *** 
+
+forvalue i = 1/5 {
+	
+	preserve 
+	
+	*** restrict sample to legumineuses_consumption = 1 ***
+	keep if legumes_consumption_`i' == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if legumineuses_05_`i' < 0 | legumineuses_05_`i' > 5000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "legumineuses_05_`i'"
+	rename legumineuses_05_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_legumineuses_05_`i'_unreasonable.dta", replace 
+	}
+	
+	restore 
+}
+
+*** v.	Aquatique_01 should be answered when aquatique_consumption = 1, should be between 0 and 50  *** 
+
+preserve 
+	
+	*** restrict sample to aquatique_consumption = 1 ***
+	keep if aquatique_consumption == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if aquatique_01 < 0 | aquatique_01 > 50
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "aquatique_01"
+	rename aquatique_01 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_aquatique_01_unreasonable.dta", replace 
+	}
+	
+restore 
+
+*** vi.	Aquatique_02 should be answered when aquatique_consumption = 1, should be between 0 and 10000 ***
+
+preserve 
+	
+	*** restrict sample to aquatique_consumption = 1 ***
+	keep if aquatique_consumption == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if aquatique_02 < 0 | aquatique_02 > 10000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "aquatique_02"
+	rename aquatique_02 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_aquatique_02_unreasonable.dta", replace 
+	}
+	
+restore
+
+*** vii.	Aquatique_03 should be answered when aquatique_consumption = 1, should be less than aquatique_02   ***
+
+preserve 
+	
+	*** restrict sample to aquatique_consumption = 1 ***
+	keep if aquatique_consumption == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if aquatique_03 > aquatique_02 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "aquatique_03"
+	rename aquatique_03 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_aquatique_03_unreasonable.dta", replace 
+	}
+	
+restore
+
+*** viii.	Aquatique_04 should be answered when aquatique_consumption = 1, should be less than aquatique_02  *** 
+
+preserve 
+	
+	*** restrict sample to aquatique_consumption = 1 ***
+	keep if aquatique_consumption == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if aquatique_04 > aquatique_02 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "aquatique_04"
+	rename aquatique_04 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_aquatique_04_unreasonable.dta", replace 
+	}
+	
+restore
+
+*** ix.	Aquatique_05 should be answered when aquatique_consumption = 1, should be between 0 and 5000  ***
+
+preserve 
+	
+	*** restrict sample to aquatique_consumption = 1 ***
+	keep if aquatique_consumption == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if aquatique_05 < 0 | aquatique_05 > 5000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "aquatique_05"
+	rename aquatique_05 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_aquatique_05_unreasonable.dta", replace 
+	}
+	
+restore
+
+*** x.	Autre_culture should be answered when autre_culture_yesno = 1, should be text  *** 
+
+preserve 
+
+*** generate indicator variable ***
+gen ind_var = 0 
+replace ind_var = 1 if autre_culture_yesno == 1 & autre_culture == "."
+
+*** keep and add variables to export ***
+keep if ind_var == 1 
+generate issue = "Missing"
+generate issue_variable_name = "autre_culture" 
+rename autre_culture print_issue
+tostring(print_issue), replace 
+keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+if _N > 0 {
+	save "$food_consumption\Issue_autre_culture_missing.dta", replace 
+}
+
+restore
+
+*** xi.	O_culture_01 should be answered when autre_culture_yesno = 1, should be between 0 and 50  *** 
+
+preserve 
+	
+	*** restrict sample to autre_culture_yesno = 1 ***
+	keep if autre_culture_yesno == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if o_culture_01 < 0 | o_culture_01 > 50
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "o_culture_01"
+	rename o_culture_01 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_o_culture_01_unreasonable.dta", replace 
+	}
+	
+restore 
+
+*** xii.	O_culture_02 should be answered when autre_culture_yesno = 1, should be between 0 and 10000  ***
+
+preserve 
+	
+	*** restrict sample to autre_culture_yesno = 1 ***
+	keep if autre_culture_yesno == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if o_culture_02 < 0 | o_culture_02 > 10000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "o_culture_02"
+	rename o_culture_02 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_o_culture_02_unreasonable.dta", replace 
+	}
+	
+restore 
+
+*** xiii.	O_culture_03 should be answered when autre_culture_yesno = 1, should be less that o_culture_02   ***
+
+preserve 
+	
+	*** restrict sample to autre_culture_yesno = 1 ***
+	keep if autre_culture_yesno == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if o_culture_03 > o_culture_02 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "o_culture_03"
+	rename o_culture_03 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_o_culture_03_unreasonable.dta", replace 
+	}
+	
+restore 
+
+*** xiv.	O_culture_04 should be answered when autre_culture_yesno = 1, should be less than o_culture_02  *** 
+
+preserve 
+	
+	*** restrict sample to autre_culture_yesno = 1 ***
+	keep if autre_culture_yesno == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if o_culture_04 > o_culture_02 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "o_culture_04"
+	rename o_culture_04 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_o_culture_04_unreasonable.dta", replace 
+	}
+	
+restore 
+
+*** xv.	O_culture_05 should be answered when autre_culture_yesno = 1, should be between 0 and 5000 *** 
+
+preserve 
+	
+	*** restrict sample to autre_culture_yesno = 1 ***
+	keep if autre_culture_yesno == 1 
+	
+	*** generate indicator variable *** 
+	gen ind_var = 0 
+	replace ind_var = 1 if o_culture_05 < 0 | o_culture_05 > 5000
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "o_culture_05"
+	rename o_culture_05 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$agriculture_production\Issue_o_culture_05_unreasonable.dta", replace 
+	}
+	
+restore 
+
+
+******************** Food Consumption Checks *************************
+
+*** i.	Food02 should be answered when food01 is greater than 0 ***
+
+preserve 
+
+*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food01 > 0 & food01 != . & food02 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food02" 
+	rename food02 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food02_missing.dta", replace 
+	}
+
+restore 
+
+*** ii.	Food03 should be answered when food01 is greater than 0  ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food01 > 0 & food01 != . & food03 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food03" 
+	rename food03 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food03_missing.dta", replace 
+	}
+
+restore 
+
+*** iii.	Food05 should be answered when food03 = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food03 == 1 & food05 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food05" 
+	rename food05 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food05_missing.dta", replace 
+	}
+
+restore 
+
+*** iv.	Food06 should be answered when food03 = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food03 == 1 & food06 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food06" 
+	rename food06 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food06_missing.dta", replace 
+	}
+
+restore
+
+*** v.	Food07 should be answered when food03 = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food03 == 1 & food07 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food07" 
+	rename food07 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food07_missing.dta", replace 
+	}
+
+restore
+
+*** vi.	Food08 should be answered when food03 = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food03 == 1 & food08 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food08" 
+	rename food08 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food08_missing.dta", replace 
+	}
+
+restore
+
+*** vii.	Food09 should be answered when food03 = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food03 == 1 & food09 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food09" 
+	rename food09 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food09_missing.dta", replace 
+	}
+
+restore
+
+*** viii.	Food11 should be answered when food01 is greater than 0  ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food01 > 0 & food01 != . & food11 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food11" 
+	rename food11 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food11_missing.dta", replace 
+	}
+
+restore 
+
+*** ix.	Food12 should be answered when food01 is greater than 0  ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if food01 > 0 & food01 != . & food12 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "food12" 
+	rename food12 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$food_consumption\Issue_food12_missing.dta", replace 
+	}
+
+restore 
+
+******************** Income Checks ***********************************
+
+*** agri_income_01 check for missing values ***
+
+preserve 
+
+	*** drop if no consent ***
+	drop if consent == 0 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_01 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_01" 
+	rename agri_income_01 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_01_missing.dta", replace 
+	}
+
+restore 
+
+*** species check for missing values ***
+
+preserve 
+
+	*** drop if no consent ***
+	drop if consent == 0 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if species == "." 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "species" 
+	rename species print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_species_missing.dta", replace 
+	}
+
+restore 
+
+*** agri_income_15 check for missing values ***
+
+preserve 
+
+	*** drop if no consent ***
+	drop if consent == 0 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_15 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_15" 
+	rename agri_income_15 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_15_missing.dta", replace 
+	}
+
+restore 
+
+*** DROPPED VAR ***
+*** agri_income_17 check for missing values ***
+
+// preserve 
+//
+// 	*** limit to when agri_income_15 = 1 ***
+// 	keep if agri_income_15 == 1 
+//
+// 	*** generate indicator variable ***
+// 	gen ind_var = 0
+// 	replace ind_var = 1 if agri_income_17 == . 
+//
+// 	*** keep and add variables to export ***
+// 	keep if ind_var == 1 
+// 	generate issue = "Missing"
+// 	generate issue_variable_name = "agri_income_17" 
+// 	rename agri_income_17 print_issue
+// 	tostring(print_issue), replace 
+// 	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+// 	if _N > 0 {
+// 		save "$income\Issue_agri_income_17_missing.dta", replace 
+// 	}
+//
+// restore 
+
+*** i. agri_income_02 should be answered when agri_income_01 = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_01 == 1 & agri_income_02 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_02" 
+	rename agri_income_02 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_02_missing.dta", replace 
+	}
+
+restore 
+
+*** ii. agri_income_02_o should be answered when agri_income_02 = 3 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_02 == 3 & agri_income_02_o == "." 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_02_o" 
+	rename agri_income_02_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_02_missing.dta", replace 
+	}
+
+restore 
+
+
+*** iii. agri_income_03 should be answered when agri_income_01 = 1 ***
+*** should be between 0 and 365 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_01 == 1 & agri_income_03 < 0
+	replace ind_var = 1 if agri_income_01 == 1 & agri_income_03 > 365 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "agri_income_03" 
+	rename agri_income_03 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_03_unreasonable.dta", replace 
+	}
+
+restore 
+
+*** iv. agri_income_04 should be answered when agri_income_01 = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_01 == 1 & agri_income_04 == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "agri_income_04" 
+	rename agri_income_04 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_04_missing.dta", replace 
+	}
+
+restore 
+
+*** v. agri_income_05 should be answered when agri_income_01 = 1 ***
+*** should be between 0 and 10000000 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_01 == 1 & agri_income_05 < 0
+	replace ind_var = 1 if agri_income_01 == 1 & agri_income_05 > 10000000 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "agri_income_05" 
+	rename agri_income_05 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_05_unreasonable.dta", replace 
+	}
+
+restore 
+
+***vi.  agri_income_06 should be answered when agri_income_01 = 1 ***
+*** should be between 0 and 10000000 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_01 == 1 & agri_income_06 < 0
+	replace ind_var = 1 if agri_income_01 == 1 & agri_income_06 > 10000000 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "agri_income_06" 
+	rename agri_income_06 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_06_unreasonable.dta", replace 
+	}
+
+restore 
+
+*** vii. species_o should be answered when species_autre = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if species_autre == 1 & species_o == "." 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "species_o" 
+	rename species_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_species_o_missing.dta", replace 
+	}
+
+restore 
+
+*** viii. agri_income_09 should be answered when agri_income_08 is greater than 0 ***
+*Note: Please verify max
+forvalues i = 1/5{
+	preserve 
+	
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_08_`i' > 0 & agri_income_08_`i' != . & agri_income_09_`i' == .
+	
+	*** keep and add variables to export 
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_09_`i'"
+	rename agri_income_09_`i' print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+	save "$income\Issue_agri_income_09_`i'_missing.dta", replace 
+	}
+	restore
+
+}
+
+*** ix. agri_income_09_o should be answered when agri_income_09 = 7, should be text ***
+forvalues i = 1/5{
+	preserve 
+	
+	tostring agri_income_09_o_`i', replace
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_09_`i' == 7 & agri_income_09_o_`i' == "."
+	
+	*** keep and add variables to export 
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_09_o_`i'"
+	rename agri_income_09_o_`i' print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+	save "$income\Issue_agri_income_09_o_`i'_missing.dta", replace 
+	}
+	restore
+
+}
+
+*** x. agri_income_10 should be answered when agri_income_08 is greater than 0 ***
+*** should be between 0 and 1000000 ***
+forvalues i = 1/5{
+	preserve 
+	
+	*** limit sample to agri_income_08 > 0 ***
+	keep if agri_income_08_`i' > 0 & agri_income_08_`i' != .
+	
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_10_`i' < 0 | agri_income_10_`i' > 1000000
+	
+	*** keep and add variables to export 
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_10_`i'"
+	rename agri_income_10_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+	save "$income\Issue_agri_income_10_`i'_unreasonable.dta", replace 
+	}
+	restore
+
+}
+
+*** xi. agri_income_07_o should be answered when species_autre = 1 ***
+*** should be between 0 and 500 ***
+
+preserve 
+
+	*** limit sample to species_autre = 1 ***
+	keep if species_autre == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_07_o < 0 | agri_income_07_o > 500
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_07_o"
+	rename agri_income_07_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_07_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xii. agri_income_08_o should be answered when species_autre = 1 ***
+*** should be between 0 and 500 ***
+
+preserve 
+
+	*** limit sample to species_autre = 1 ***
+	keep if species_autre == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_08_o < 0 | agri_income_08_o > 500
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_08_o"
+	rename agri_income_08_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_08_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xiii. agri_income_09_o_o should be answered when agri_income_08_o > 0 ***
+
+preserve 
+
+	*** limit sample to species_autre = 1 ***
+	keep if species_autre == 1 
+
+	*** limit sample to agri_income_08_o > 0 *** 
+	keep if agri_income_08_o > 0 & agri_income_08_o != .
+		
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_09_o_o == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_09_o_o"
+	rename agri_income_09_o_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_09_o_o_missing.dta", replace 
+	}
+
+restore
+
+*** xiv. agri_income_09_o_o_o should be answered when agri_income_09_o_o = 7 ***
+
+preserve 
+
+	*** limit sample to species_autre = 1 ***
+	keep if species_autre == 1 
+
+	*** make sure agri_income_09_o_o_o is a string ***
+	tostring(agri_income_09_o_o_o), replace 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_09_o_o == 7 & agri_income_09_o_o_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_09_o_o_o"
+	rename agri_income_09_o_o_o print_issue
+	tostring(print_issue), replace  
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_09_o_o_o_missing.dta", replace 
+	}
+
+restore
+
+*** xv. agri_income_09_o_o should be answered when agri_income_08_o > 0 ***
+*** should be between 0 and 1000000 ***
+
+preserve 
+
+	*** limit sample to species_autre = 1 ***
+	keep if species_autre == 1 
+
+	*** limit sample to agri_income_08_o > 0 *** 
+	keep if agri_income_08_o > 0 & agri_income_08_o != .
+		
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_10_o < 0 | agri_income_10_o > 1000000
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_10_o"
+	rename agri_income_10_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_10_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xvi. animals_sales_t should be answered when animals_sales_o = 1 ***
+
+	preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if animals_sales_o == 1 & animals_sales_t == "." 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "animals_sales_t" 
+	rename animals_sales_t print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_animals_sales_t_missing.dta", replace 
+	}
+
+restore 
+
+*** xvii. agri_income_13_autre should be answered when agri_income_13 = 99, should be text ***
+
+** agri_income_13_1 is a string 
+*Note: confirm max
+forvalues i = 1/4 {
+	preserve 
+	
+	*** make sure it is a string ***
+	tostring(agri_income_13_autre_`i'), replace 
+	
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_13_99_`i' == 1 & agri_income_13_99_`i' != . & agri_income_13_autre_`i' == "."
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_13_autre_`i'" 
+	rename agri_income_13_autre_`i' print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_13_autre_`i'_missing.dta", replace 
+	}
+	
+	restore
+}
+
+*** check that agri_income_11 is not missing ***
+forvalues i = 1/4 {
+	preserve 
+
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_11_`i' < 0 | agri_income_11_`i' > 500
+	replace ind_var = 0 if sale_animalesindex_`i' == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_11_`i'"
+	rename agri_income_11_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_11_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+} 
+
+*** xviii.	agri_income_11_o should be answered when animals_sales_o = 1, should be between 0 and 500  ***
+
+preserve 
+
+	*** limit sample to animals_sales_o = 1 ***
+	keep if animals_sales_o == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_11_o < 0 | agri_income_11_o > 500
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_11_o"
+	rename agri_income_11_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_11_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** check that agri_income_12 is not missing ***
+*Note: check max value for i 
+forvalues i = 1/2 {
+	preserve 
+
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_12_`i' < 0 | agri_income_12_`i' > 1000000000
+	replace ind_var = 0 if sale_animalesindex_`i' == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_12_`i'"
+	rename agri_income_12_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_12_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+} 
+
+*** xix. agri_income_12_o should be answered when animals_sales_o = 1, should be between 0 and 1000000000 ***
+
+preserve 
+
+	*** limit sample to animals_sales_o = 1 ***
+	keep if animals_sales_o == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_12_o < 0 | agri_income_12_o > 1000000000
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_12_o"
+	rename agri_income_12_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_12_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** check that agri_income_13 is not missing ***
+*Note: check max i value 
+*R2 - check max i val
+
+forvalues i = 1/6 {
+	
+	preserve 
+
+	tostring(agri_income_13_`i'), replace 
+	
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_13_`i' == "."
+	replace ind_var = 0 if sale_animalesindex_`i' == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_13_`i'"
+	rename agri_income_13_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_13_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+} 
+
+
+
+
+*** xx.	agri_income_13_o should be answered when animals_sales_o = 1 ***
+* UPDATE
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if animals_sales_o == 1 & agri_income_13_o == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_13_o"
+	rename agri_income_13_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_13_o_missing.dta", replace 
+	}
+
+restore
+*/
+
+*** xxi.	agri_income_14_ o should be answered animals_sales_o = 1, should be between 0 and 1000000000  
+
+preserve 
+
+	*** limit sample to animals_sales_o = 1 ***
+	keep if animals_sales_o == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_14_o < 0 | agri_income_14_o > 1000000000
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_14_o"
+	rename agri_income_14_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_14_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xxii.	agri_income_13_o_t should be answered when agri_income_13_o = 4, should be text  ***
+
+preserve 
+
+	*** make sure agri_income_13_o_t is a string ***
+	tostring(agri_income_13_o_t), replace 
+
+	*** generate indicator variable ***
+	gen ind_var = 0
+	replace ind_var = 1 if agri_income_13_o == 4 & agri_income_13_o_t == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_13_o_t"
+	rename agri_income_13_o_t print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_13_o_t_missing.dta", replace 
+	}
+
+restore
+
+*** xxiii.	agri_income_16 should be answered when agri_income_15 = 1, should be between 0 and 50  ***
+
+preserve 
+
+	*** limit sample ***
+	keep if agri_income_15 == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_16 < 0 | agri_income_16 > 50
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_16"
+	rename agri_income_16 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_16_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xxiv.	agri_income_18 should be answered when agri_income_15 = 1 *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_15 == 1 & agri_income_18 == ""
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_18"
+	rename agri_income_18 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_18_missing.dta", replace 
+	}
+
+restore
+
+*** xxv.	agri_income_18_o should be answered when agri_income_18 = 3, should be text  ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	tostring agri_income_18_o, replace 
+	replace ind_var = 1 if agri_income_18_3 == 1 & agri_income_18_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_18_o"
+	rename agri_income_18_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_18_o_missing.dta", replace 
+	}
+
+restore
+
+*** xxvi.	agri_income_19 should be answered when agri_income_15 = 1, should be between 0 and 100000000 ***
+
+preserve 
+
+	*** limit sample to agri_income_15 = 1 ***
+	keep if agri_income_15 == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_19 < 0 | agri_income_19 > 100000000
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_19"
+	rename agri_income_19 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_19_unreasonable.dta", replace 
+	}
+
+restore
+
+
+*** xxvii.	agri_income_20_o should be answered when agri_income_20_t = 1, should be text   *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_20_t == 1 & agri_income_20_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_20_o"
+	rename agri_income_20_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_20_o_missing.dta", replace 
+	}
+
+restore
+
+*** xxviii.	agri_income_21_h_o should be answered when agri_income_20_t = 1, should be between 0 and 50 ***
+
+preserve 
+
+	*** limit sample to agri_income_20_t = 1 ***
+	keep if agri_income_20_t == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_21_h_o < 0 | agri_income_21_h_o > 50
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_21_h_o"
+	rename agri_income_21_h_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_21_h_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xxix.	agri_income_21_f_o should be answered when agri_income_20_t = 1, should be between 0 and 50  ***
+ 
+preserve 
+
+	*** limit sample to agri_income_20_t = 1 ***
+	keep if agri_income_20_t == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_21_f_o < 0 | agri_income_21_f_o > 50
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_21_f_o"
+	rename agri_income_21_f_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_21_f_o_unreasonable.dta", replace 
+	}
+
+	restore
+
+*** xxx.	agri_income_22_o should be answered when agri_income_20_t = 1, should be between 0 and 12 *** 
+
+preserve 
+
+	*** limit sample to agri_income_20_t = 1 ***
+	keep if agri_income_20_t == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_22_o < 0 | agri_income_22_o > 12
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_22_o"
+	rename agri_income_22_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_22_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xxxi.	agri_income_23_o should be answered when agri_income_20_t = 1, should be between 0 and 1000000000  *** 
+
+preserve 
+
+	*** limit sample to agri_income_20_t = 1 ***
+	keep if agri_income_20_t == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_23_o < 0 | agri_income_23_o > 1000000000
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_23_o"
+	rename agri_income_23_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_23_o_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xxxii.	agri_income_26 should be answered when agri_income_25 = 1, should be between 0 and 50  ***
+
+preserve 
+
+	*** limit sample to agri_income_25 = 1 ***
+	keep if agri_income_25 == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_26 < 0 | agri_income_26 > 50
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_26"
+	rename agri_income_26 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_26_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xxxiii.	agri_income_28 should be answered when agri_income_25 = 1 ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_25 == 1 & agri_income_28 == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_28"
+	rename agri_income_28 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_28_missing.dta", replace 
+	}
+
+restore
+
+*** xxxiv.	agri_income_28_o should be answered when agri_income_28 = 3, should be text  ***
+
+preserve 
+
+	*** verify agri_income_28_o is a string ***
+	tostring(agri_income_28_o), replace
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_28 == 3 & agri_income_28_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_28_o"
+	rename agri_income_28_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_28_o_missing.dta", replace 
+	}
+
+restore
+
+*** xxxv.	agri_income_29 should be answered when agri_income_25 = 1, should be between 0 and 10000000  ***
+
+preserve 
+
+	*** limit sample to agri_income_25 = 1 ***
+	keep if agri_income_25 == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_29 < 0 | agri_income_29 > 10000000
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_29"
+	rename agri_income_29 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_29_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xxxvi.	agri_income_31 should be answered when agri_income_30 = 1 *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_30 == 1 & agri_income_31 == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_31"
+	rename agri_income_31 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_31_missing.dta", replace 
+	}
+
+restore
+
+*** xxxvii.	agri_income_31_o should be answered when agri_income_31 = 6, should be text   ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_31_6 == 1 & agri_income_31_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_31_o"
+	rename agri_income_31_o print_issue
+	tostring(print_issue), replace  
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_31_missing_o.dta", replace 
+	}
+
+restore
+
+*** xxxviii.	agri_income_32 should be answered when agri_income_30 = 1  ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_30 == 1 & agri_income_32 == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_32"
+	rename agri_income_32 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_32_missing.dta", replace 
+	}
+
+restore
+
+*** xxxix.	agri_income_33 should be answered when agri_income_30 = 1 and agri_income_32 = 1, should be between 0 and 100000000 ***
+
+preserve 
+
+	*** limit sample to agri_income_30 = 1 & agri_income_32 == 1 ***
+	keep if agri_income_30 == 1 & agri_income_32 == 1 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_33 < 0 | agri_income_33 > 10000000
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_33"
+	rename agri_income_33 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_33_unreasonable.dta", replace 
+	}
+
+restore
+
+*** xl.	agri_income_name should be answered when agri_income_34 = 1  ***
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_34 == 1 & agri_income_name == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_name"
+	rename agri_income_name print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_name_missing.dta", replace 
+	}
+
+restore
+
+*** xli.	agri_income_35 should be answered when agri_income_34 = 0  *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_34 == 0 & agri_income_35 == .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_35"
+	rename agri_income_35 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_35_missing.dta", replace 
+	}
+
+restore
+
+*** xlii.	agri_income_36 should be answered when agri_income_34 = 1, should be between 0 and 100000000 ***
+*Note: check max value for i
+forvalues i = 1/2 {
+	preserve 
+
+	*** limit sample to agri_income_34 = 1 ***
+	keep if agri_income_34 == 1  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_36_`i' < 0 | agri_income_36_`i' > 10000000
+	replace ind_var = 0 if credit_askindex_`i' == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_36_`i'"
+	rename agri_income_36_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_36_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+}
+
+*** xliii.	agri_income_37 should be answered when agri_income_34 = 1, should be text  *** 
+
+forvalues i = 1/2 {
+	preserve 
+
+	*** limit sample to agri_income_34 = 1 ***
+	keep if agri_income_34 == 1  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_37_`i' == "."
+	replace ind_var = 0 if credit_askindex_`i' == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_37_`i'"
+	rename agri_income_37_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_37_`i'_missing.dta", replace 
+	}
+
+	restore
+}
+
+*** xliv.	agri_income_38 should be answered when agri_income_34 = 1, should be less than agri_income_36 *** 
+ 
+forvalues i = 1/2 {
+	preserve 
+
+	*** limit sample to agri_income_34 = 1 ***
+	keep if agri_income_34 == 1  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_38_`i' > agri_income_36_`i'
+	replace ind_var = 0 if credit_askindex_`i' == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_38_`i'"
+	rename agri_income_38_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_38_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+}
+
+*** xlv.	agri_income_39 should be answered when agri_income_34 = 1, should be less than agri_income_36, agri_income_36 – agri_income_38 should be greater than agri_income_39   *** 
+
+forvalues i = 1/2 {
+	preserve 
+
+	*** limit sample to agri_income_34 = 1 ***
+	keep if agri_income_34 == 1  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_39_`i' > agri_income_36_`i' | ((agri_income_36_`i' - agri_income_38_`i') < agri_income_39_`i')
+	replace ind_var = 0 if credit_askindex_`i' == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_39_`i'"
+	rename agri_income_39_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_39_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+}
+
+*** xlvi.	agri_loan_name should be answered when agri_income_40 = 1 *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	tostring agri_loan_name, replace 
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_40 == 1 & agri_loan_name == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_loan_name"
+	rename agri_loan_name print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_loan_name_missing.dta", replace 
+	}
+
+restore
+
+*** xlvii.	agri_income_41 should be answered when agri_income_40 = 1, should between 0 and 10000000  *** 
+*Note: check max value for i
+forvalues i = 1/1 {
+	preserve 
+
+	*** limit sample to agri_income_40 = 1 ***
+	keep if agri_income_40 == 1  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_41_`i' < 0 | agri_income_41_`i' > 10000000
+	replace ind_var = 0 if loanindex_`i' == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_41_`i'"
+	rename agri_income_41_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_41_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+}
+
+***  xlviii.	agri_income_42 should be answered when agri_income_40 = 1, should be less than agri_income_41   *** 
+*Note: check max value for i
+forvalues i = 1/1 {
+	preserve 
+
+	*** limit sample to agri_income_40 = 1 ***
+	keep if agri_income_40 == 1  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_42_`i' > agri_income_41_`i'
+	replace ind_var = 0 if loanindex_`i' == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_42_`i'"
+	rename agri_income_42_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_42_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+}
+
+*** xlix.	agri_income_43 should be answered when agri_income_40 = 1, should be less than agri_income_41  *** 
+*
+*R2 - check i value
+forvalues i = 1/1 {
+	preserve 
+
+	*** limit sample to agri_income_40 = 1 ***
+	keep if agri_income_40 == 1  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_43_`i' > agri_income_41_`i'
+	replace ind_var = 0 if loanindex_`i' == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable"
+	generate issue_variable_name = "agri_income_43_`i'"
+	rename agri_income_43_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_43_`i'_unreasonable.dta", replace 
+	}
+
+	restore
+}
+
+*** check if product_divers is missing ***
+
+	preserve 
+
+	*** limit sample to consent ***
+	drop if consent == 0  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if product_divers == "." 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "product_divers"
+	rename product_divers print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_product_divers.dta", replace 
+	}
+
+	restore
+	
+*** check if animal_sales is missing ***
+
+	preserve 
+
+	*** limit sample to consent ***
+	drop if consent == 0  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if animals_sales == "." 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "animals_sales"
+	rename animals_sales print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_animals_sales.dta", replace 
+	}
+
+	restore	
+
+*** check if animal_sales is missing ***
+
+	preserve 
+
+	*** limit sample to consent ***
+	drop if consent == 0  
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if animals_sales_o == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "animals_sales_o"
+	rename animals_sales_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_animals_sales_o.dta", replace 
+	}
+
+	restore		
+
+*** l.	agri_income_46_o should be answered when agri_income_46 = 4, should be text *** 
+*R2 - check i val
+forvalues i=1/15 {
+	preserve 
+	
+	*** make sure all are string variables *** 
+	tostring(agri_income_46_o_`i'), replace 
+	
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_46_4_`i' == 1 & agri_income_46_o_`i' == "."
+	replace ind_var = 0 if productindex_`i' == . 
+	
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_46_o_`i'"
+	rename agri_income_46_o_`i' print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_46_o_`i'_missing.dta", replace 
+	}
+
+	restore
+	
+}
+
+*** li.	expenses_goods_o should be answered when expenses_goods_t = 1  *** 
+preserve 
+
+	*** verify expenses_goods_o is a string variable *** 
+	tostring(expenses_goods_o), replace 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if expenses_goods_t == 1 & expenses_goods_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "expenses_goods_o"
+	rename expenses_goods_o print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_expenses_goods_o_missing.dta", replace 
+	}
+
+restore
+
+
+*************************************	HOUSEHOLD INCOME SECTION ************************************************
+
+*** i.	agri_income_07 should be between 0 and 500 ***	
+*** ii.	agri_income_08 should be between 0 and 500 ***	
+*** For each of these, only some households grow crops ***
+*** So we should loop through numbers to not pick up extra values *** 
+	*R2 - check max i val 
+forvalues i = 1/7{
+	preserve
+     
+    keep if agri_income_07_`i' < 0 | agri_income_07_`i' > 500
+	drop if speciesindex_`i' == .
+	generate issue = "Issue found: agri_income_07_`i' value not in bound (0<x<500)"
+	generate issue_variable_name = "agri_income_07_`i'"
+	rename agri_income_07_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_07_`i'_unreasonable", replace
+}
+
+    restore
+}
+
+preserve
+     
+    keep if agri_income_07_o < 0 | agri_income_07_o > 500
+	drop if species_autre != 1
+	generate issue = "Issue found: agri_income_07_o value not in bound (0<x<500)"
+	generate issue_variable_name = "agri_income_07_o"
+	rename agri_income_07_o print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_07_o_unreasonable", replace
+}
+
+restore
+
+	*R2 - check max i val 
+
+forvalues i = 1/7{
+	preserve
+     
+    keep if agri_income_08_`i' < 0 | agri_income_08_`i' > 500
+	drop if speciesindex_`i' == .
+	generate issue = "Issue found: agri_income_08_`i' value not in bound (0<x<500)"
+	generate issue_variable_name = "agri_income_08_`i'"
+	rename agri_income_08_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_08_`i'_unreasonable", replace
+}
+
+    restore
+}
+
+preserve
+     
+    keep if agri_income_08_o < 0 | agri_income_08_o > 500
+	drop if species_autre != 1
+	generate issue = "Issue found: agri_income_08_o value not in bound (0<x<500)"
+	generate issue_variable_name = "agri_income_08_o"
+	rename agri_income_08_o print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_08_o_unreasonable", replace
+}
+
+restore
+
+*** iii.	Agri_income_12 should be between 0 and 100000000 *** 
+	*Note: check max i value 
+	*R2 - check max i val
+forvalues i = 1/6 {
+	preserve
+     
+    keep if agri_income_12_`i' < 0 | agri_income_12_`i' > 100000000
+	drop if sale_animalesindex_`i' == .
+	generate issue = "Issue found: unreasonable value"
+	generate issue_variable_name = "agri_income_12_`i'"
+	rename agri_income_12_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_12_`i'_unreasonable", replace
+}
+
+    restore
+}
+
+	preserve
+     
+    keep if agri_income_12_o < 0 | agri_income_12_o > 100000000
+	drop if animals_sales_o != 1
+	generate issue = "Issue found: unreasonable value"
+	generate issue_variable_name = "agri_income_12_o"
+	rename agri_income_12_o print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_12_o_unreasonable", replace
+}
+
+    restore
+
+
+*** iv.	agri_income_14 should be between 0 and 100000000 ***
+	*R2 - check max i val
+forvalues i = 1/6{
+	preserve
+     
+    keep if agri_income_14_`i' < 0 | agri_income_14_`i' > 100000000
+	drop if sale_animalesindex_`i' == .
+	generate issue = "Issue found: unreasonable value"
+	generate issue_variable_name = "agri_income_14_`i'"
+	rename agri_income_14_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_14_`i'_unreasonable", replace
+}
+
+    restore
+}
+
+	preserve
+     
+    keep if agri_income_14_o < 0 | agri_income_14_o > 100000000
+	drop if animals_sales_o != 1
+	generate issue = "Issue found: unreasonable value"
+	generate issue_variable_name = "agri_income_14_o"
+	rename agri_income_14_o print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_14_o_unreasonable", replace
+}
+
+    restore
+	
+*** check that agri_income_20 is not missing ***
+	preserve 
+
+	*** drop no consent ***
+	drop if consent == 0 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if agri_income_20 == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "agri_income_20"
+	rename agri_income_20 print_issue 
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_20_unreasonable.dta", replace 
+	}
+
+	restore
+	
+
+***	v.	agri_income_21_h should be between 0 and 50 ***	
+***	vi.	agri_income_21_f should be between 0 and 50 ***	
+*KRM - added agri_income_21_f_4 agri_income_21_h_4 back in as it's been selected
+foreach var of varlist agri_income_21_h_o agri_income_21_h_1 agri_income_21_h_2 agri_income_21_h_3 agri_income_21_f_1 agri_income_21_f_2 agri_income_21_f_3 agri_income_21_f_4 agri_income_21_h_4 {
+	
+preserve
+    
+	keep if `var' < 0 | `var' > 50 & `var' != .
+	
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "`var'"
+	rename `var' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_`var'", replace
+}
+
+    restore
+}
+
+***	vii. agri_income_22 should be less than 12 ***	
+*KRM- added agri_income_22_4 back in as it's been selected
+
+foreach var of varlist agri_income_22_o agri_income_22_1 agri_income_22_2 agri_income_22_3 agri_income_22_4 {
+preserve
+    keep if `var'  != . & `var' > 12
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "`var'"
+	rename `var' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_`var'", replace
+}
+ restore
+}
+
+*** viii.	agri_income_23 should be between 0 and 1000000000 *** 
+*Note: check max i value
+	*R2 - check max i val
+forvalues i = 1/5 {
+	preserve
+     
+    keep if agri_income_23_`i' < 0 | agri_income_23_`i' > 1000000000
+	drop if agri_income_20index_`i' == .
+	generate issue = "Issue found: unreasonable value"
+	generate issue_variable_name = "agri_income_23_`i'"
+	rename agri_income_23_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_23_`i'_unreasonable", replace
+}
+
+    restore
+}
+
+	preserve
+     
+    keep if agri_income_23_o < 0 | agri_income_23_o > 1000000000
+	drop if agri_income_20_t != 1
+	generate issue = "Issue found: unreasonable value"
+	generate issue_variable_name = "agri_income_23_o"
+	rename agri_income_23_o print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_23_o_unreasonable", replace
+}
+
+    restore
+
+*** ix.	agri_income_45 should be between 0 and 1000000000 ***	
+*** Add step to get rid of missings when the household doesn't grow the product ***
+*Note: check max i value
+forvalues i=1/15 {
+preserve
+    local var agri_income_45_`i'
+    keep if `var' < 0 | `var' > 1000000000
+	drop if productindex_`i' == . 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "`var'"
+	rename `var' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_`var'", replace
+}
+restore
+}
+
+*** check to make sure agri_income_46 is not missing *** 
+*Note: check max i value
+
+forvalues i=1/15 {
+preserve
+    local var agri_income_46_`i'
+	tostring(`var'), replace 
+    keep if `var' == "."
+	drop if productindex_`i' == . 
+	generate issue = "Missing"
+	generate issue_variable_name = "`var'"
+	rename `var' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_`var'", replace
+}
+restore
+}
+
+***	x.	agri_income_47 should be between 0 and 1000000000 ***	
+
+forvalues i = 1/2 {
+    preserve
+  
+    keep if  agri_income_47_`i' < 0 | agri_income_47_`i' > 1000000000
+	drop if goodsinex_`i' == . 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "agri_income_47_`i'"
+	rename agri_income_47_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_47_`i'", replace
+	}
+	restore 	
+}
+
+forvalues i = 1/2 {
+    preserve
+  
+    keep if  agri_income_48_`i' < 0 | agri_income_48_`i' > 1000000000
+	drop if goodsinex_`i' == . 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "agri_income_48_`i'"
+	rename agri_income_48_`i' print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$income\Issue_agri_income_48_`i'", replace
+	}
+	restore 	
+}
+
+preserve 
+
+	keep if expenses_goods_t == 1 
+
+	keep if  agri_income_47_o < 0 | agri_income_47_o > 1000000000
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "agri_income_47_o"
+	rename agri_income_47_o print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+		if _N > 0 {
+			save "$income\Issue_agri_income_47_o", replace
+		}
+		
+restore 	
+
+******************* Standard of Living Checks ************************
+
+*** living_01_o should be answered when living_01 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if living_01 == 99 & living_01_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "living_01_o" 
+	rename living_01_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$standard_living\Issue_living_01_o_missing.dta", replace 
+	}
+
+restore 
+
+*** living_03 should be answered when living_02 =1 ***
+preserve 
+
+	*** Generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if living_02 == 1  & living_03 == . 
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "living_03" 
+	rename living_03 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$standard_living\Issue_living_03_missing.dta", replace 
+	}
+
+restore 
+
+*** living_03_o should be answered when living_03 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	tostring living_03_o, replace
+	gen ind_var = 0 
+	replace ind_var = 1 if living_03 == 99 & living_03_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "living_03_o" 
+	rename living_03_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$standard_living\Issue_living_03_o_missing.dta", replace 
+	}
+
+restore 
+
+*** living_04_o should be answered when living_04 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	tostring living_04_o, replace 
+	gen ind_var = 0 
+	replace ind_var = 1 if living_04 == 99 & living_04_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "living_04_o" 
+	rename living_04_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$standard_living\Issue_living_04_o_missing.dta", replace 
+	}
+
+restore 
+
+*** living_05_o should be answered when living_05 == 99, should be text *** 
+
+************** convert living_05_o to string if not already ********************
+tostring living_05_o, replace 
+
+	preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if living_05 == 99 & living_05_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "living_05_o" 
+	rename living_05_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$standard_living\Issue_living_05_o_missing.dta", replace 
+	}
+
+restore 
+
+*** living_06_o should be answered when living_06 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	tostring living_06_o, replace 
+	replace ind_var = 1 if living_06 == 99 & living_06_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "living_06_o" 
+	rename living_06_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$standard_living\Issue_living_06_o_missing.dta", replace 
+	}
+
+restore 
+
+
+******************* Enumerator Observations Checks ********************
+
+*** enum_02 should be answered when enum_01 = 1, response should be between 0 and 15 
+
+*** PART 01 - Make sure it is filled out when asked for and reasonable ***
+
+preserve 
+
+	*** Generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_01 == 1 & (enum_02 < 0 | enum_02 > 15)
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "enum_02" 
+	rename enum_02 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_02_unreasonable.dta", replace 
+	}
+
+restore 
+
+*** PART 02 - Check for extra responses ***
+
+preserve 
+
+	*** Generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_01 != 1 & enum_02 != .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Extra response"
+	generate issue_variable_name = "enum_02" 
+	rename enum_02 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_02_extraresponse.dta", replace 
+	}
+
+restore 
+
+*** check if enum_03 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if enum_03 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "enum_03"
+	rename enum_03 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$enum_observations\Issue_enum_03.dta", replace
+    }
+  
+    restore
+
+*** enum_03_o should be answered when enum_03 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_03 == 99 & enum_03_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "enum_03_o" 
+	rename enum_03_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_03_o_missing.dta", replace 
+	}
+
+restore 
+
+*** check if enum_04 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if enum_04 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "enum_04"
+	rename enum_04 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$enum_observations\Issue_enum_04.dta", replace
+    }
+  
+    restore
+
+*** enum_04_o should be answered when enum_04 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_04 == 99 & enum_04_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "enum_04_o" 
+	rename enum_04_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_04_o_missing.dta", replace 
+	}
+
+restore 
+
+*** enum_05_o should be answered when enum_05 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	tostring enum_05_o, replace 
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_05 == 99 & enum_05_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "enum_05_o" 
+	rename enum_05_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_05_o_missing.dta", replace 
+	}
+
+restore 
+
+
+*** enum_07 should be answered when enum_06 = 3, 4, or 5, should be text *** 
+
+preserve 
+
+*** generate indicator variable ***
+gen ind_var = 0 
+replace ind_var = 1 if enum_06 == 3 & enum_07 == "."
+replace ind_var = 1 if enum_06 == 4 & enum_07 == "."
+replace ind_var = 1 if enum_06 == 5 & enum_07 == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "enum_07" 
+	rename enum_07 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_07_missing.dta", replace 
+	}
+
+restore 
+
+****************** Beleifs Data Checks *****************************
+*** check if beliefs_01 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_01 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_01"
+	rename beliefs_01 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_01.dta", replace
+    }
+  
+    restore
+
+*** check if beliefs_02 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_02 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_02"
+	rename beliefs_02 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_02.dta", replace
+    }
+  
+    restore
+	
+*** check if beliefs_03 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_03 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_03"
+	rename beliefs_03 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_03.dta", replace
+    }
+  
+    restore	
+
+	*** check if beliefs_04 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_04 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_04"
+	rename beliefs_04 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_04.dta", replace
+    }
+  
+    restore
+
+*** check if beliefs_05 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_05 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_05"
+	rename beliefs_05 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_05.dta", replace
+    }
+  
+    restore	
+
+*** check if beliefs_06 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_06 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_06"
+	rename beliefs_06 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_06.dta", replace
+    }
+  
+    restore
+
+*** check if beliefs_07 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_07 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_07"
+	rename beliefs_07 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_07.dta", replace
+    }
+  
+    restore
+
+*** check if beliefs_08 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_08 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_08"
+	rename beliefs_08 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_08.dta", replace
+    }
+  
+    restore	
+
+*** check if beliefs_09 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if beliefs_09 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "beliefs_09"
+	rename beliefs_09 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$beliefs\Issue_beliefs_09.dta", replace
+    }
+  
+    restore	
+	
+
+	******************* Enumerator Observations Checks ********************
+
+*** enum_02 should be answered when enum_01 = 1, response should be between 0 and 15 
+
+*** PART 01 - Make sure it is filled out when asked for and reasonable ***
+
+preserve 
+
+	*** Generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_01 == 1 & (enum_02 < 0 | enum_02 > 15)
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Unreasonable value"
+	generate issue_variable_name = "enum_02" 
+	rename enum_02 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_02_unreasonable.dta", replace 
+	}
+
+restore 
+
+*** PART 02 - Check for extra responses ***
+
+preserve 
+
+	*** Generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_01 != 1 & enum_02 != .
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Extra response"
+	generate issue_variable_name = "enum_02" 
+	rename enum_02 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_02_extraresponse.dta", replace 
+	}
+
+restore 
+
+*** check if enum_03 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if enum_03 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "enum_03"
+	rename enum_03 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$enum_observations\Issue_enum_03.dta", replace
+    }
+  
+    restore
+
+*** enum_03_o should be answered when enum_03 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_03 == 99 & enum_03_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "enum_03_o" 
+	rename enum_03_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_03_o_missing.dta", replace 
+	}
+
+restore 
+
+*** check if enum_04 is missing ***
+
+    preserve 
+
+	*** drop no consent households *** 
+	drop if consent == 0 
+	
+	gen ind_var = 0
+    replace ind_var = 1 if enum_04 == .  
+
+    	* keep and add variables to export *
+	keep if ind_var == 1 	
+	generate issue =  "Missing value"
+	generate issue_variable_name = "enum_04"
+	rename enum_04 print_issue 
+	tostring(print_issue), replace
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	
+    * Export the dataset to Excel conditional on there being an issue
+    if _N > 0 {
+        save "$enum_observations\Issue_enum_04.dta", replace
+    }
+  
+    restore
+
+*** enum_04_o should be answered when enum_04 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_04 == 99 & enum_04_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "enum_04_o" 
+	rename enum_04_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_04_o_missing.dta", replace 
+	}
+
+restore 
+
+*** enum_05_o should be answered when enum_05 == 99, should be text *** 
+
+preserve 
+
+	*** generate indicator variable ***
+	tostring enum_05_o, replace 
+	gen ind_var = 0 
+	replace ind_var = 1 if enum_05 == 99 & enum_05_o == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "enum_05_o" 
+	rename enum_05_o print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_05_o_missing.dta", replace 
+	}
+
+restore 
+
+
+*** enum_07 should be answered when enum_06 = 3, 4, or 5, should be text *** 
+
+preserve 
+
+*** generate indicator variable ***
+gen ind_var = 0 
+replace ind_var = 1 if enum_06 == 3 & enum_07 == "."
+replace ind_var = 1 if enum_06 == 4 & enum_07 == "."
+replace ind_var = 1 if enum_06 == 5 & enum_07 == "."
+
+	*** keep and add variables to export ***
+	keep if ind_var == 1 
+	generate issue = "Missing"
+	generate issue_variable_name = "enum_07" 
+	rename enum_07 print_issue
+	tostring(print_issue), replace 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	if _N > 0 {
+		save "$enum_observations\Issue_enum_07_missing.dta", replace 
+	}
+
+restore 
+
+	
+	
+*** End of .do file ** 
 

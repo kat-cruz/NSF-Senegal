@@ -1,10 +1,17 @@
 *==============================================================================
 * Program: human paristological dataframe
 * ==============================================================================
+
 * written by: Alex Mills
 * additions made by: Kateri Mouawad (KRM), Molly Doruska (MJD)
 * Created: October 2024
-* Updates recorded in GitHub 
+* Updates recorded in GitHub
+
+*>>>>>>>>>>**--*--*--*--*--*--*--*--** READ ME **--*--*--*--*--*--*--*--**<<<<<<<<<<<*
+		
+
+
+ 
 
 clear all
 set mem 100m
@@ -23,13 +30,11 @@ if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box"
 
 
-
 * Define project-specific paths
-global path "${box_path}\Data Management\_PartnerData\Child infection dataframe"
-global crdes "${box_path}\Data Management\_CRDES_CleanData"
-global eco "${box_path}\Data Management\_PartnerData\Ecological Data\Baseline"
-*this is temporary - will clean later
-global output "${box_path}\Data Management\Output\Data Analysis\Rice_Asset_Analysis"
+global path "${box_path}\Data_Management\_PartnerData\Parasitological_Analysis_Dataframe"
+global crdes "${box_path}\Data_Management\_CRDES_CleanData"
+global eco "${box_path}\Data_Management\_PartnerData\Ecological Data\Baseline"
+
 
 ***** Global folders *****
 global data      "${path}\Raw Data"
@@ -326,6 +331,8 @@ gen wealthindex=list_actifscount/16
 keep individual_id_crdes health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ hh_ethnicity_ hh_10_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_18_ hh_19_ hh_22_ hh_26_ hh_29_ hh_30_ hh_31_ hh_32_ hh_33_ hh_37_ hh_age_ hh_gender_ living_01 living_02 living_03 living_04 wealthindex q_18 q_19 q_23 q_24 q_35_check q_39 q_49 q_46 q_51 list_actifscount Cerratophyllummassg Bulinus Biomph Humanwatercontact BegeningTimesampling Endsamplingtime Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator list_actifs agri_6_20_ hh_age_resp
 
 
+
+
 * Save temp health data
 *save "${dataframe}\temp_health_reshaped.dta", replace
 
@@ -333,7 +340,7 @@ keep individual_id_crdes health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ healt
 save "${dataframe}\temp_features_reshaped.dta", replace
 
 * Load main dataset 
-use "${dataframe}\child_infection_dataframe.dta", clear
+use "${dataframe}\child_infection_dataframe.dta", clearx	
 
 * Merge health variables where individual_id_crdes matches
 merge m:1 individual_id_crdes using "${dataframe}\temp_features_reshaped.dta", ///
@@ -374,9 +381,6 @@ order individual_id_crdes  hh_age_resp  hh_age_ hh_gender_ hh_ethnicity_ health_
 *save "${dataframe}\child_infection_dataframe.dta", replace
 save "${dataframe}\child_infection_dataframe_features.dta", replace
 
-********************* For rice analysis *********************
-*save "${output}\child_infection_dataframe_features.dta", replace
 
-*erase "${dataframe}\temp_health_reshaped.dta"
 
 

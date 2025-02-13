@@ -258,6 +258,36 @@ order hhid hh_age_resp hh_gender_ hh_age_ hh_education_skills_1_ hh_education_sk
 
 drop if missing(hh_gender_) & missing(hh_age_)
 
+********************************************************* Bring in survey questions *********************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ********************************************************* Save the final dataset *********************************************************
 

@@ -115,26 +115,68 @@ view(balance_df)
 
 ```{r}
 
+# 
+# # List of variables to test
+# vars_to_test <- setdiff(names(balance_df), c("hhid", "group", "control", 
+#                                              "public_health_trained", 
+#                                              "private_benefits_trained", 
+#                                              "public_and_private_trained"))
+# # Define treatment arms
+# treatment_arms <- c("public_health_trained", "private_benefits_trained", "public_and_private_trained")
+# 
+# # Compute balance tables
+# bal.tab(
+#   balance_df[, vars_to_test],          # The covariates to check for balance
+#   treat = balance_df$control,          # The treatment assignment (0 = control, 1 = treated)
+#   data = balance_df,                   # The dataset
+#   focal = 0,                            # Set the control group as the reference
+#   pairwise = TRUE,                      # Perform pairwise comparisons among treatment groups
+#   un = TRUE                             # Show unadjusted differences
+# )
+# 
+# 
+# 
+# balance_df$treatment_group <- if_else(balance_df$group %in% c("0A", "0B"), "Control",
+#                                       if_else(balance_df$group %in% c("1A", "1B"), "Public Health Trained",
+#                                               if_else(balance_df$group %in% c("2A", "2B"), "Private Benefits Trained",
+#                                                       "Public and Private Trained")))
+# 
+# bal.tab(
+#   balance_df[, vars_to_test],  # Variables you want to test for balance
+#   treat = balance_df$treatment_arms,  # New treatment variable with all arms
+#   un = TRUE,  # Display unweighted balance
+#   pairwise = TRUE,  # Make pairwise comparisons
+#   disp.means = TRUE,  # Display means
+#   disp.sd = TRUE,  # Display standard deviations
+#   disp.p = TRUE  # Display p-values
+# )
 
-# List of variables to test
-vars_to_test <- setdiff(names(balance_df), c("hhid", "group", "control", 
-                                             "public_health_trained", 
-                                             "private_benefits_trained", 
-                                             "public_and_private_trained"))
-# Define treatment arms
-treatment_arms <- c("public_health_trained", "private_benefits_trained", "public_and_private_trained")
+balance_df <- balance_df %>%
+  mutate(
+    # Extract the two middle characters (e.g., 2A) from hhid
+    group = str_sub(hhid, 3, 4),
+    
+    # Create a new variable 'treatment_group' based on the 'group' value
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",  # Define control group
+      group %in% c("1A", "1B") ~ "Public Health Trained",  # Define public health trained group
+      group %in% c("2A", "2B") ~ "Private Benefits Trained",  # Define private benefits trained group
+      group %in% c("3A", "3B") ~ "Public and Private Trained",  # Define combined treatment group
+      TRUE ~ NA_character_  # Handle cases that don't fit any group
+    )
+  )
 
-# Compute balance tables
+balance_df
+# Run balance checking using bal.tab()
 bal.tab(
-  balance_df[, vars_to_test],          # The covariates to check for balance
-  treat = balance_df$control,          # The treatment assignment (0 = control, 1 = treated)
-  data = balance_df,                   # The dataset
-  focal = 0,                            # Set the control group as the reference
-  pairwise = TRUE,                      # Perform pairwise comparisons among treatment groups
-  un = TRUE                             # Show unadjusted differences
+  balance_df[, vars_to_test],  # Specify variables you want to test for balance
+  treat = balance_df$treatment_group,  # Use the newly created treatment_group variable
+  un = TRUE,  # Display unweighted balance
+  pairwise = TRUE,  # Perform pairwise comparisons
+  disp.means = TRUE,  # Display means
+  disp.sd = TRUE,  # Display standard deviations
+  disp.p = TRUE  # Display p-values
 )
-
-
 
 ```
 

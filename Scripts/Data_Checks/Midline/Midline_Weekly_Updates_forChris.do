@@ -30,7 +30,7 @@ global issues "$master\External_Corrections\Issues for Justin and Amina\Midline\
 
 ***************************************************
 * UPDATE WITH DATE
-putexcel set "$dailyupdates\DISES_DailyChecks_10Feb.xlsx", replace
+putexcel set "$dailyupdates\DISES_DailyChecks_12Feb.xlsx", replace
 
 * Write Revisit and Attrition Rates
 putexcel A1 = "Metric" B1 = "Value"
@@ -158,13 +158,13 @@ egen total_flagged_values_new_resp = total(num_flagged_values_new_resp)
 gen share_flagged_values_new_resp = (total_flagged_values_new_resp / total_flagged_values) * 100
 
 * Display results
-di "Total flagged values in dataset: " total_flagged_values
-di "Total flagged values from households with a new respondent: " total_flagged_values_new_resp
-di "Percentage of flagged values from new respondent households: " share_flagged_values_new_resp "%"
+di "Total flagged 'I Don't Know' values in dataset: " total_flagged_values
+di "Total flagged 'I Don't Know' values from households with a new respondent: " total_flagged_values_new_resp
+di "Percentage of flagged 'I Don't Know' values from new respondent households: " share_flagged_values_new_resp "%"
 
 * Write Flagged Values Statistics
-putexcel A9 = "Total Flagged Values in Dataset" B9 = total_flagged_values
-putexcel A10 = "Share of Flagged Values from New Respondent Households (%)" B10 = share_flagged_values_new_resp
+putexcel A9 = "Total Flagged 'I Don't Know' Values in Dataset" B9 = total_flagged_values
+putexcel A10 = "Share of Flagged 'I Don't Know' Values from New Respondent Households (%)" B10 = share_flagged_values_new_resp
 
 ***************************************************
 * Calculate Household-Level Training Status
@@ -230,7 +230,7 @@ putexcel A16 = "Share of Trained HH Heard about Training (%)" B16 = `share_overl
 ***************************************************
 * see how many hh's are missing from each village
 estpost tab hhid_village
-esttab using "$dailyupdates\Village_Counts_10Feb.xlsx", cells("b(label(Count)) pct(label(Percent))") replace
+esttab using "$dailyupdates\Village_Counts_12Feb.xlsx", cells("b(label(Count)) pct(label(Percent))") replace
 
 
 

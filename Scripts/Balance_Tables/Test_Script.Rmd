@@ -6,9 +6,10 @@ output: html_document
 ---
 
 ```{r}
-
+install.packages("cobalt")
 library(dplyr)
 library(cobalt)
+
 
 ```
 
@@ -98,6 +99,8 @@ print(summary_stats)
 print(t_test_results)
 
 ```
+
+
 ```{r}
 # # Load necessary libraries
 # library(dplyr)
@@ -215,4 +218,16 @@ print(summary_stats)
 print(tidy_results)
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
 

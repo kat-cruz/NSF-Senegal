@@ -42,7 +42,7 @@ global standard_living "$master\Data_Management\Output\Data_Quality_Checks\Midli
 global beliefs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Beliefs\Replacement_Survey" 
 global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Enumerator_Observations\Replacement_Survey"
 
-global replacement_survey "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Replacement_Survey""
+global replacement_survey "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Replacement_Survey"
 
 **************************** Import household data ****************************
 

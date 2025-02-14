@@ -49,7 +49,7 @@ save `corrections_temp'
 * IMPORT ISSUES FILE AND MERGE WITH CORRECTIONS
 **************************************************
 * Import issues file containing the key
-import excel "$issues\SchoolPrincipal_Issues_7Feb2025.xlsx", clear firstrow
+import excel "$issues\SchoolPrincipal_Issues_13Feb2025.xlsx", clear firstrow
 
 * Drop duplicates to ensure unique entries
 duplicates drop hhid_village sup_name respondent_name respondent_phone_primary issue_variable_name print_issue, force
@@ -73,7 +73,7 @@ export excel using "$issues\CORRECTIONS_QUESTIONNAIRE_PRINCIPAL_5Feb2025_key.xls
 * APPLY CORRECTIONS TO SURVEY DATASET
 **************************************************
 
-import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_10Feb.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_13Feb2025.csv", clear varnames(1) bindquote(strict)
 
 * Dealt with the ones commented out in the daily checks because those are actually valid answers of i dont know
 replace school_name = "ECOLE PRIMAIRE KASACK NORD" if key == "433515e7-f57f-4968-9fd1-d83a2cc493ed"
@@ -113,5 +113,5 @@ replace school_name = "ECOLE PRIMAIRE DE KHOR" if key == "uuid:431e16bd-2154-457
 replace school_name = "ECOLE PRIMAIRE DE MBAKHANA" if key == "uuid:beb73689-535b-4c76-9057-be452d774559"
 
 * Save the corrected dataset
-export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_10Feb.xlsx", firstrow(variables) replace
+export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_13Feb2025.xlsx", firstrow(variables) replace
 

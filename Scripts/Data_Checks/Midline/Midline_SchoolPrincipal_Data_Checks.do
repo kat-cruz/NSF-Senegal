@@ -31,7 +31,7 @@ global corrected "$master\Output\Data_Corrections\Midline"
 *** Import school principal survey data ***
 **************************************************
 
-import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_13Feb2025.csv", clear varnames(1) bindquote(strict)
+import excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_13Feb2025.xlsx", firstrow
 
 
 *** label variables ***

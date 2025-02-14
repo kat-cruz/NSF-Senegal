@@ -41,9 +41,10 @@ output: html_document
 #library(officer)
 #library(r2rtf)
 library(dplyr)
+library(readr)
 #library(ggplot2)
 #library(kwb.utils)
-#library(haven)
+library(haven)
 library(data.table)
 library(rtf)
 library(tidyverse)
@@ -81,6 +82,9 @@ if (file.exists(proj_paths$projects)) {
 
 file_path_balance_tables_df <- file.path(proj$p1, "baseline_balance_tables_data.dta")
 balance_df <- read_dta(file_path_balance_tables_df)
+
+#survey_questions <- read_csv(file.path(proj$p1, "Baseline_Survey_Questions.csv"))
+
 
 ```
 
@@ -124,14 +128,18 @@ long_data <- balance_df %>%
   )
 
 
-view(long_data)
+#view(long_data)
 # View the transformed dat
 
+###################### bring in survey questions to merge ###################################################
 
 long_data <- long_data %>%
   rename(group = treatment_group)
-long_data
 
+# long_data <- merge(long_data, survey_questions, by = "variable")
+# 
+# view(long_data)
+# survey_questions
 
 # Adding indicator variables for household training categories
 # balance_df <- balance_df %>%
@@ -241,7 +249,7 @@ run_t_tests <- function(df, vars) {
 
 # Define the list of variables to test
 vars_to_test <- setdiff(names(balance_df), c("hhid", "treatment_group"))
-vars_to_test <- ("species_3")
+#vars_to_test <- ("species_3")
 vars_to_test
 # Run t-tests
 t_test_results <- run_t_tests(long_data, vars_to_test)
@@ -294,12 +302,42 @@ final_table <- final_table %>%
     variable = ifelse(comparison == "(p.value)", "", variable),
     comparison = ifelse(comparison == "(p.value)", "", comparison)
   ) %>%
-select(-"comparison", -"Control")
+select(-"comparison")
 
 
- final_table
+# Define the data with Unicode indentation
+
+print(final_table)
 
 
+
+```
+
+##Clean up the table: 
+
+```{r}
+final_table <- final_table %>%
+  mutate(Question = NA_character_)
+vars_to_test
+final_table
+
+#add row in variable equal to the following: hh_education_skills == "" 
+#if variable =  hh_age_resp, replace Question == Age of the Respondent
+#if variable =  hh_gender_, replace Question == Gender
+#if variable =  hh_age_, replace Question == Age (in completed years)
+#if variable =  hh_education_skills_1 , replace Question == 3.7. Education - Skills (multiple choice)
+
+#if variable =  hh_education_skills, replace Question == hh_education_level_
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
 
 
 ```
@@ -321,10 +359,99 @@ select(-"comparison", -"Control")
 
 
 
-
-
 #Archive 
 
+```{r}
+# final_table <- final_table %>%
+# mutate(
+#   Value = case_when(
+#     
+#     variable == "hh_gender" & is.na(Value) ~ "Male/Female",
+#     variable == "health_5_3_2"  ~ "N/A",
+#     variable == "health_5_5" ~ "Yes/No/I don't know",
+#     variable == "health_5_6"  ~ "Yes/No/I don't know",
+#     variable == "health_5_8" ~ "Yes/No/I don't know",
+#     variable == "health_5_9" ~ "Yes/No/I don't know",
+# 
+#     
+#     variable == "hh_12_1"  ~ "Fetched water for HH",
+#     variable == "hh_12_2"  ~ "Gave water to livestock",
+#     variable == "hh_12_3"  ~ "Fetched water for agriculture",
+#     variable == "hh_12_4"  ~ "Washed clothes",
+#     variable == "hh_12_5" ~ "Did the dishes",
+#     variable == "hh_12_6"  ~ "Harvested aquatic vegetation",
+#     variable == "hh_12_7"  ~ "Swam/bathed",
+#     variable == "hh_12_8" ~ "Played",
+#         
+#     variable == "hh_19_1"  ~ "Lake",
+#     variable == "hh_19_2"  ~ "Pond",
+#     variable == "hh_19_3" ~ "River",
+#     variable == "hh_19_4"  ~ "Irrigation channel",
+#     variable == "hh_19_99"  ~ "Other, give details",
+#     
+#     variable == "hh_31_1"  ~ "Graduated, studies completed",
+#     variable == "hh_31_2"  ~ "Moving to the next class",
+#     variable == "hh_31_3"  ~ "Failure, repetition",
+#     variable == "hh_31_4"  ~ "Failure, dismissal",
+#     variable == "hh_31_5"  ~ "Dropping out during the year",
+#     
+#     variable == "hh_33_1"  ~ "Lower",
+#     variable == "hh_33_2"  ~ "About the same",
+#     variable == "hh_33_3" ~ "Superior",
+#     
+#     variable == "living_01_1" ~ "Interior tap",
+#     variable == "living_01_2" ~ "Public tap",
+#     variable == "living_01_3" ~ "Neighbor’s tap",
+#     variable == "living_01_4" ~ "Protected well",
+#     variable == "living_01_5"  ~ "Unprotected well",
+#     variable == "living_01_6"  ~ "Drill hole",
+#     variable == "living_01_7"  ~ "Tanker service",
+#     variable == "living_01_8"  ~ "Water seller",
+#     variable == "living_01_9"  ~ "Source",
+#     variable == "living_01_10"  ~ "Stream",
+#     variable == "living_01_99"  ~ "Other",
+#     
+#     variable == "living_03_1"  ~ "Bleach/Aqua tabs",
+#     variable == "living_03_2"  ~ "Boil",
+#     variable == "living_03_3"  ~ "Filtration",
+#     variable == "living_03_99"  ~ "Other (to be specified)",
+#     
+#     variable == "living_04_1"  ~ "None/outside",
+#     variable == "living_04_2" ~ "Flush with sewer",
+#     variable == "living_04_3" ~ "Toilet flush with septic tank",
+#     variable == "living_04_4"  ~ "Bucket",
+#     variable == "living_04_5"  ~ "Covered pit latrines",
+#     variable == "living_04_6"  ~ "Uncovered pit latrines",
+#     variable == "living_04_7"  ~ "Improved latrines",
+#     variable == "living_04_99"  ~ "Others",
+#     
+#     TRUE ~ as.character(Value)  # Keep other values as they are
+#   )
+# )
+# 
+# 
+# 
+#   Survey_Question = case_when(
+#     str_detect(Variable, "^hh_gender") ~ "Gender of respondent?",
+#      str_detect(Variable, "^health_5_3_2") ~ "Had Bilharzia past 12 months?",
+#      str_detect(Variable, "^health_5_5") ~ "Has he/she received medication for the treatment of schistosomiasis in the past 12 months?",
+#      str_detect(Variable, "^health_5_6") ~ "Has this person ever been diagnosed with schistosomiasis?",
+#      str_detect(Variable, "^health_5_8") ~ "Has this person had blood in their urine in the past 12 months?",
+#      str_detect(Variable, "^health_5_9") ~ "Has this person had blood in their stools in the past 12 months?",
+#     str_detect(Variable, "^hh_12_") ~ "In the past 12 months, why did [Name] spend time near (< 1 m) or in the water source(s)?",
+#     str_detect(Variable, "^hh_19_") ~ "What source(s) of surface water?",
+#     str_detect(Variable, "^hh_31_") ~ "What result did [Name] achieve in the year 2022/2023?",
+#     str_detect(Variable, "^hh_33_") ~ "How does [Name]'s academic performance compare to other students: lower, the same, or higher?",
+#     str_detect(Variable, "^living_01") ~ "What is the main source of drinking water supply?",
+#     str_detect(Variable, "^living_03") ~ "If yes, how is the water treated?",
+#     str_detect(Variable, "^living_04") ~ "What is the main type of toilet used by your household?",
+#     TRUE ~ NA_character_  # Assign NA if no match
+#   )
+# ) %>%
+#   relocate(Survey_Question, .before = Variable) %>%
+#   relocate(Value, .before = N)
+
+```
 
 ```{r}
 

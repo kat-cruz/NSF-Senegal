@@ -38,19 +38,19 @@ output: html_document
 #install.packages("purrr")
 
 #library(reshape2)
-library(officer)
-library(r2rtf)
+#library(officer)
+#library(r2rtf)
 library(dplyr)
-library(ggplot2)
-library(kwb.utils)
-library(haven)
+#library(ggplot2)
+#library(kwb.utils)
+#library(haven)
 library(data.table)
 library(rtf)
 library(tidyverse)
 library(estimatr)
 library(broom)
-library(RCT)
-library(cobalt)
+#library(RCT)
+#library(cobalt)
 
 ```
 
@@ -91,26 +91,239 @@ balance_df <- read_dta(file_path_balance_tables_df)
 ```{r}
 
 
-# Adding indicator variables for household training categories
+
+# Adding a single categorical variable for household training categories
 balance_df <- balance_df %>%
   mutate(
     # Extract the two middle characters (e.g., 2A) from hhid
     group = str_sub(hhid, 3, 4),
     
-    # Add indicator variables based on the group value
-    control = if_else(group %in% c("0A", "0B"), 1, 0),
-    public_health_trained = if_else(group %in% c("1A", "1B"), 1, 0),
-    private_benefits_trained = if_else(group %in% c("2A", "2B"), 1, 0),
-    public_and_private_trained = if_else(group %in% c("3A", "3B"), 1, 0)
+    # Assign treatment group based on the extracted group value
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1", # Public health trained
+      group %in% c("2A", "2B") ~ "Treatment2", # Private benefits trained
+      group %in% c("3A", "3B") ~ "Treatment3"  # Public and private trained
+    )
   ) %>%
-  # Drop the 'group' column if it's not needed
   select(-group)
 
-view(balance_df)
+#view(balance_df)
+
+
+# Ensure 'group' is character to avoid conflicts
+# balance_df <- balance_df %>%
+#   mutate(group = as.character(group)) 
+
+# Reshape the data
+long_data <- balance_df %>%
+  pivot_longer(
+    cols = -c(hhid, treatment_group),  # Keep hhid and group as is, pivot all other columns
+    names_to = "variable",    # Create a column named "variable" for former column names
+    values_to = "value"       # Store values in a column named "value"
+  )
+
+
+view(long_data)
+# View the transformed dat
+
+
+long_data <- long_data %>%
+  rename(group = treatment_group)
+long_data
+
+
+# Adding indicator variables for household training categories
+# balance_df <- balance_df %>%
+#   mutate(
+#     # Extract the two middle characters (e.g., 2A) from hhid
+#     group = str_sub(hhid, 3, 4),
+#     
+#     # Add indicator variables based on the group value
+#     control = if_else(group %in% c("0A", "0B"), 1, 0),
+#     treatment1 = if_else(group %in% c("1A", "1B"), 1, 0), #public health trained
+#     treatment2 = if_else(group %in% c("2A", "2B"), 1, 0), # private benefits trained
+#     treatment3 = if_else(group %in% c("3A", "3B"), 1, 0) # public_and_private_trained
+#   ) #%>%
+#   # Drop the 'group' column if it's not needed
+#   #select(-group)
+# 
+# view(balance_df)
+
+# Adding indicator variables for household training categories
+# balance_df <- balance_df %>%
+#   mutate(
+#     # Extract the two middle characters (e.g., 2A) from hhid
+#     group = str_sub(hhid, 3, 4),
+#     
+#     # Add indicator variables based on the group value
+#     control = if_else(group %in% c("0A", "0B"), 1, 0),
+#     public_health_trained = if_else(group %in% c("1A", "1B"), 1, 0),
+#     private_benefits_trained = if_else(group %in% c("2A", "2B"), 1, 0),
+#     public_and_private_trained = if_else(group %in% c("3A", "3B"), 1, 0)
+#   ) %>%
+#   # Drop the 'group' column if it's not needed
+#   select(-group)
+# 
+# view(balance_df)
 
 
 ```
 
+
+
+```{r}
+
+
+
+summary_stats <- long_data %>%
+  group_by(variable, group) %>%
+  summarise(mean = mean(value, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = group, values_from = mean) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+summary_stats
+
+# Function to run t-tests and store results
+# run_t_tests <- function(df, vars) {
+#   results <- list()
+#   
+#   for (var in vars) {
+#     # Subset the data for the current variable
+#     df_var <- df %>% filter(variable == var)
+#     
+#     # Initialize storage for comparisons
+#     results[[var]] <- list()
+#     
+#     # Define all comparisons
+#     comparisons <- list(
+#       "Control vs Treatment1" = c("Control", "Treatment1"),
+#       "Control vs Treatment2" = c("Control", "Treatment2"),
+#       "Control vs Treatment3" = c("Control", "Treatment3"),
+#       "Treatment1 vs Treatment2" = c("Treatment1", "Treatment2"),
+#       "Treatment1 vs Treatment3" = c("Treatment1", "Treatment3"),
+#       "Treatment2 vs Treatment3" = c("Treatment2", "Treatment3")
+#     )
+#     
+#     # Run t-tests
+#     for (comp_name in names(comparisons)) {
+#       groups <- comparisons[[comp_name]]
+#       
+#       # Filter data for the two groups in the comparison
+#       df_subset <- df_var %>% filter(group %in% groups)
+#       
+#       # Run t-test without checking for missing groups
+#       results[[var]][[comp_name]] <- t.test(value ~ group, data = df_subset)
+#     }
+#   }
+#   
+#   return(results)
+# }
+
+run_t_tests <- function(df, vars) {
+  results <- list()
+  
+  for (var in vars) {
+    # Control vs. each treatment
+    results[[var]] <- list()
+    results[[var]][["Control vs Treatment1"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment1"), variable == var))
+    results[[var]][["Control vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment2"), variable == var))
+    results[[var]][["Control vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment3"), variable == var))
+    
+    # Treatment pairwise comparisons
+    results[[var]][["Treatment1 vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment2"), variable == var))
+    results[[var]][["Treatment1 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment3"), variable == var))
+    results[[var]][["Treatment2 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment2", "Treatment3"), variable == var))
+  }
+  
+  return(results)
+}
+
+# Define the list of variables to test
+vars_to_test <- setdiff(names(balance_df), c("hhid", "treatment_group"))
+vars_to_test <- ("species_3")
+vars_to_test
+# Run t-tests
+t_test_results <- run_t_tests(long_data, vars_to_test)
+t_test_results
+# Convert t-test results into a tidy format
+# tidy_results <- lapply(names(t_test_results), function(var) {
+#   bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+#     tidy(t_test_results[[var]][[comp]]) %>%
+#       mutate(variable = var, comparison = comp)
+#   }))
+# }) %>%
+#   bind_rows() %>%
+#   select(variable, comparison, estimate, p.value) %>%
+#   pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+# tidy_results
+
+tidy_results <- lapply(names(t_test_results), function(var) {
+  bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+    tidy(t_test_results[[var]][[comp]]) %>%
+      mutate(variable = var, comparison = comp)
+  }))
+}) %>%
+  bind_rows() %>%
+  select(variable, comparison, estimate, p.value) %>%
+  mutate(across(c(estimate, p.value), ~ round(.x, 2))) %>%
+  pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+
+# # Reshape the data for the final table: combine estimates and p-values
+final_table <- summary_stats %>%
+  left_join(tidy_results, by = "variable") %>%
+  arrange(variable) %>%
+  select(variable, Control, contains("estimate"), contains("p.value")) %>%
+  pivot_longer(cols = starts_with("estimate_") | starts_with("p.value_"),
+               names_to = c("comparison", "stat"), names_pattern = "(.*)_(.*)", values_to = "value") %>%
+  pivot_wider(names_from = stat, values_from = value) %>%  # Separate estimates and p-values
+  mutate(across(contains("estimate"), ~ paste0(.x, " (",
+                                               round(get(gsub("estimate", "p.value", cur_column())), 3), ")"),
+                .names = "{.col}_formatted")) %>%
+  select(-contains("p.value"), -contains("estimate"))
+
+# Add parentheses around all values in rows where comparison = "p.value"
+final_table <- final_table %>%
+  mutate(across(where(is.numeric), ~ formatC(.x, format = "f", digits = 2))) %>%  # Round and format numeric columns to 2 decimal places
+  mutate(across(everything(), as.character)) %>%  # Convert all columns to character for manipulation
+  mutate(across(everything(), ~ ifelse(grepl("p.value", comparison), 
+                                       paste0("(", .x, ")"), 
+                                       .x)))  # Add parentheses for p.value rows
+final_table <- final_table %>%
+  mutate(
+    variable = ifelse(comparison == "(p.value)", "", variable),
+    comparison = ifelse(comparison == "(p.value)", "", comparison)
+  ) %>%
+select(-"comparison", -"Control")
+
+
+ final_table
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Archive 
 
 
 ```{r}
@@ -150,56 +363,34 @@ view(balance_df)
 #   disp.sd = TRUE,  # Display standard deviations
 #   disp.p = TRUE  # Display p-values
 # )
-
-balance_df <- balance_df %>%
-  mutate(
-    # Extract the two middle characters (e.g., 2A) from hhid
-    group = str_sub(hhid, 3, 4),
-    
-    # Create a new variable 'treatment_group' based on the 'group' value
-    treatment_group = case_when(
-      group %in% c("0A", "0B") ~ "Control",  # Define control group
-      group %in% c("1A", "1B") ~ "Public Health Trained",  # Define public health trained group
-      group %in% c("2A", "2B") ~ "Private Benefits Trained",  # Define private benefits trained group
-      group %in% c("3A", "3B") ~ "Public and Private Trained",  # Define combined treatment group
-      TRUE ~ NA_character_  # Handle cases that don't fit any group
-    )
-  )
-
-balance_df
-# Run balance checking using bal.tab()
-bal.tab(
-  balance_df[, vars_to_test],  # Specify variables you want to test for balance
-  treat = balance_df$treatment_group,  # Use the newly created treatment_group variable
-  un = TRUE,  # Display unweighted balance
-  pairwise = TRUE,  # Perform pairwise comparisons
-  disp.means = TRUE,  # Display means
-  disp.sd = TRUE,  # Display standard deviations
-  disp.p = TRUE  # Display p-values
-)
-
+# 
+# balance_df <- balance_df %>%
+#   mutate(
+#     # Extract the two middle characters (e.g., 2A) from hhid
+#     group = str_sub(hhid, 3, 4),
+#     
+#     # Create a new variable 'treatment_group' based on the 'group' value
+#     treatment_group = case_when(
+#       group %in% c("0A", "0B") ~ "Control",  # Define control group
+#       group %in% c("1A", "1B") ~ "Public Health Trained",  # Define public health trained group
+#       group %in% c("2A", "2B") ~ "Private Benefits Trained",  # Define private benefits trained group
+#       group %in% c("3A", "3B") ~ "Public and Private Trained",  # Define combined treatment group
+#       TRUE ~ NA_character_  # Handle cases that don't fit any group
+#     )
+#   )
+# 
+# balance_df
+# # Run balance checking using bal.tab()
+# bal.tab(
+#   balance_df[, vars_to_test],  # Specify variables you want to test for balance
+#   treat = balance_df$treatment_group,  # Use the newly created treatment_group variable
+#   un = TRUE,  # Display unweighted balance
+#   pairwise = TRUE,  # Perform pairwise comparisons
+#   disp.means = TRUE,  # Display means
+#   disp.sd = TRUE,  # Display standard deviations
+#   disp.p = TRUE  # Display p-values
+# )
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#Archive 
 
 
 
@@ -270,8 +461,6 @@ bal.tab(
 ```
 
 
-
-
 ```{r}
 
 
@@ -317,9 +506,6 @@ bal.tab(
 
 
 ```
-
-
-
 
 
 ```{r}

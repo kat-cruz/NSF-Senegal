@@ -6,9 +6,11 @@ output: html_document
 ---
 
 ```{r}
-install.packages("cobalt")
+
+# Load necessary libraries
 library(dplyr)
-library(cobalt)
+library(tidyr)
+library(broom)
 
 
 ```
@@ -16,17 +18,14 @@ library(cobalt)
 
 ```{r}
 
-# Load necessary libraries
-library(dplyr)
-library(tidyr)
-library(broom)
+
 # Set seed for reproducibility
 set.seed(123)
 
 # Generate synthetic data (already in long format)
 # Generate synthetic data (already in long format)
 n <- 200  # Number of households
-balance_df <- data.frame(
+balance_test_df <- data.frame(
   hhid = rep(1:n, each = 3),
   group = rep(c("Control", "Treatment1", "Treatment2", "Treatment3"), n),
   variable = rep(c("hh_08", "hh_09", "hh_10"), each = n),
@@ -87,10 +86,10 @@ run_t_tests <- function(df, vars) {
 vars_to_test <- c("hh_08", "hh_09", "hh_10")
 
 # Compute summary statistics for all variables
-summary_stats <- compute_summary_stats(balance_df, vars_to_test)
+summary_stats <- compute_summary_stats(balance_test_df, vars_to_test)
 
 # Run t-tests for each variable
-t_test_results <- run_t_tests(balance_df, vars_to_test)
+t_test_results <- run_t_tests(balance_test_df, vars_to_test)
 
 # Print the summary stats
 print(summary_stats)
@@ -112,7 +111,7 @@ set.seed(123)
 
 # Generate synthetic data (already in long format)
 n <- 200  # Number of households
-balance_df <- data.frame(
+balance_test_df <- data.frame(
   hhid = rep(1:n, each = 3),
   group = rep(c("Control", "Treatment1", "Treatment2", "Treatment3"), n),
   variable = rep(c("hh_08", "hh_09", "hh_10"), each = n),
@@ -203,10 +202,10 @@ tidy_t_tests <- function(t_test_results, vars) {
 vars_to_test <- c("hh_08", "hh_09", "hh_10")
 
 # Compute summary statistics for all variables
-summary_stats <- compute_summary_stats(balance_df, vars_to_test)
+summary_stats <- compute_summary_stats(balance_test_df, vars_to_test)
 
 # Run t-tests for each variable
-t_test_results <- run_t_tests(balance_df, vars_to_test)
+t_test_results <- run_t_tests(balance_test_df, vars_to_test)
 
 # Create a tidy table from the t-test results
 tidy_results <- tidy_t_tests(t_test_results, vars_to_test)
@@ -219,9 +218,205 @@ print(tidy_results)
 
 ```
 
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate synthetic data
+n <- 200  # Number of households
+balance_test_df <- data.frame(
+  hhid = rep(1:n, each = 3),
+  group = rep(c("Control", "Treatment1", "Treatment2", "Treatment3"), n),
+  variable = rep(c("hh_08", "hh_09", "hh_10"), each = n),
+  value = c(rnorm(n, mean = 0.5, sd = 0.1),
+            rnorm(n, mean = 1.5, sd = 0.2),
+            rnorm(n, mean = 2.5, sd = 0.3),
+            rnorm(n, mean = 0.5, sd = 0.1),
+            rnorm(n, mean = 1.5, sd = 0.2),
+            rnorm(n, mean = 2.5, sd = 0.3),
+            rnorm(n, mean = 0.5, sd = 0.1),
+            rnorm(n, mean = 1.5, sd = 0.2),
+            rnorm(n, mean = 2.5, sd = 0.3),
+            rnorm(n, mean = 0.5, sd = 0.1),
+            rnorm(n, mean = 1.5, sd = 0.2),
+            rnorm(n, mean = 2.5, sd = 0.3)
+  )
+)
+
+# Compute summary statistics
+summary_stats <- balance_test_df %>%
+  group_by(variable, group) %>%
+  summarise(mean = mean(value, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = group, values_from = mean)
+
+# Function to run t-tests and store results
+run_t_tests <- function(df, vars) {
+  results <- list()
+  
+  for (var in vars) {
+    # Control vs. each treatment
+    results[[var]] <- list()
+    results[[var]][["Control vs Treatment1"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment1"), variable == var))
+    results[[var]][["Control vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment2"), variable == var))
+    results[[var]][["Control vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment3"), variable == var))
+    
+    # Treatment pairwise comparisons
+    results[[var]][["Treatment1 vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment2"), variable == var))
+    results[[var]][["Treatment1 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment3"), variable == var))
+    results[[var]][["Treatment2 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment2", "Treatment3"), variable == var))
+  }
+  
+  return(results)
+}
+
+# Define the list of variables to test
+vars_to_test <- c("hh_08", "hh_09", "hh_10")
+
+# Run t-tests
+t_test_results <- run_t_tests(balance_test_df, vars_to_test)
+
+# Convert t-test results into a tidy format
+tidy_results <- lapply(names(t_test_results), function(var) {
+  bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+    tidy(t_test_results[[var]][[comp]]) %>%
+      mutate(variable = var, comparison = comp)
+  }))
+}) %>%
+  bind_rows() %>%
+  select(variable, comparison, estimate, p.value) %>%
+  pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+
+# Combine summary statistics with test results into the desired format
+final_table <- summary_stats %>%
+  left_join(tidy_results, by = "variable") %>%
+  arrange(variable)
+
+# Print final table
+print(final_table, n = Inf)
+```
 
 
 
+```{r}
+
+# Load necessary libraries
+# library(dplyr)
+# library(tidyr)
+# library(broom)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate synthetic data
+n <- 200  # Number of households
+balance_test_df <- data.frame(
+  hhid = rep(1:n, each = 3),
+  group = rep(c("Control", "Treatment1", "Treatment2", "Treatment3"), n),
+  variable = rep(c("hh_08", "hh_09", "hh_10"), each = n),
+  value = c(rnorm(n, mean = 0.5, sd = 0.1),
+            rnorm(n, mean = 1.5, sd = 0.2),
+            rnorm(n, mean = 2.5, sd = 0.3),
+            rnorm(n, mean = 0.5, sd = 0.1),
+            rnorm(n, mean = 1.5, sd = 0.2),
+            rnorm(n, mean = 2.5, sd = 0.3),
+            rnorm(n, mean = 0.5, sd = 0.1),
+            rnorm(n, mean = 1.5, sd = 0.2),
+            rnorm(n, mean = 2.5, sd = 0.3),
+            rnorm(n, mean = 0.5, sd = 0.1),
+            rnorm(n, mean = 1.5, sd = 0.2),
+            rnorm(n, mean = 2.5, sd = 0.3)
+  )
+)
+balance_test_df
+summary_stats <- balance_test_df %>%
+  group_by(variable, group) %>%
+  summarise(mean = mean(value, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = group, values_from = mean) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+# Function to run t-tests and store results
+run_t_tests <- function(df, vars) {
+  results <- list()
+  
+  for (var in vars) {
+    # Control vs. each treatment
+    results[[var]] <- list()
+    results[[var]][["Control vs Treatment1"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment1"), variable == var))
+    results[[var]][["Control vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment2"), variable == var))
+    results[[var]][["Control vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment3"), variable == var))
+    
+    # Treatment pairwise comparisons
+    results[[var]][["Treatment1 vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment2"), variable == var))
+    results[[var]][["Treatment1 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment3"), variable == var))
+    results[[var]][["Treatment2 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment2", "Treatment3"), variable == var))
+  }
+  
+  return(results)
+}
+
+balance_test_df
+# Define the list of variables to test
+vars_to_test <- c("hh_08", "hh_09", "hh_10")
+
+# Run t-tests
+t_test_results <- run_t_tests(balance_test_df, vars_to_test)
+t_test_results
+# Convert t-test results into a tidy format
+# tidy_results <- lapply(names(t_test_results), function(var) {
+#   bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+#     tidy(t_test_results[[var]][[comp]]) %>%
+#       mutate(variable = var, comparison = comp)
+#   }))
+# }) %>%
+#   bind_rows() %>%
+#   select(variable, comparison, estimate, p.value) %>%
+#   pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+# tidy_results
+
+tidy_results <- lapply(names(t_test_results), function(var) {
+  bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+    tidy(t_test_results[[var]][[comp]]) %>%
+      mutate(variable = var, comparison = comp)
+  }))
+}) %>%
+  bind_rows() %>%
+  select(variable, comparison, estimate, p.value) %>%
+  mutate(across(c(estimate, p.value), ~ round(.x, 2))) %>%
+  pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+
+# # Reshape the data for the final table: combine estimates and p-values
+final_table <- summary_stats %>%
+  left_join(tidy_results, by = "variable") %>%
+  arrange(variable) %>%
+  select(variable, Control, contains("estimate"), contains("p.value")) %>%
+  pivot_longer(cols = starts_with("estimate_") | starts_with("p.value_"),
+               names_to = c("comparison", "stat"), names_pattern = "(.*)_(.*)", values_to = "value") %>%
+  pivot_wider(names_from = stat, values_from = value) %>%  # Separate estimates and p-values
+  mutate(across(contains("estimate"), ~ paste0(.x, " (",
+                                               round(get(gsub("estimate", "p.value", cur_column())), 3), ")"),
+                .names = "{.col}_formatted")) %>%
+  select(-contains("p.value"), -contains("estimate"))
+
+# Add parentheses around all values in rows where comparison = "p.value"
+final_table <- final_table %>%
+  mutate(across(where(is.numeric), ~ formatC(.x, format = "f", digits = 2))) %>%  # Round and format numeric columns to 2 decimal places
+  mutate(across(everything(), as.character)) %>%  # Convert all columns to character for manipulation
+  mutate(across(everything(), ~ ifelse(grepl("p.value", comparison), 
+                                       paste0("(", .x, ")"), 
+                                       .x)))  # Add parentheses for p.value rows
+final_table <- final_table %>%
+  mutate(
+    variable = ifelse(comparison == "(p.value)", "", variable),
+    comparison = ifelse(comparison == "(p.value)", "", comparison)
+  ) %>%
+select(-"comparison", -"Control")
+
+
+ final_table
+# Print final table
+#print(final_table, n = Inf)
+
+```
 
 
 

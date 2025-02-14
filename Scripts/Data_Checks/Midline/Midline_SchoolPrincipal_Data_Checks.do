@@ -31,7 +31,7 @@ global corrected "$master\Output\Data_Corrections\Midline"
 *** Import school principal survey data ***
 **************************************************
 
-import excel "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_10Feb.xlsx", clear firstrow
+import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_13Feb2025.csv", clear varnames(1) bindquote(strict)
 
 
 *** label variables ***
@@ -1001,7 +1001,6 @@ restore
 
 ** KRM - use loop below to append faster if you would like !
 
-/*
 	clear
 	local folder "$schoolprincipal"  
 
@@ -1014,20 +1013,10 @@ restore
 	}
 
 
-	save "$income\Schoolprincipal_Issues.dta", replace // keep record of all the issues for each cleaning to filter
-*/
+	save "$schoolprincipal\Schoolprincipal_Issues_13Feb2025.dta", replace // keep record of all the issues for each cleaning to filter
 
-use "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G4.dta", clear
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G5.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G6.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_SchoolFacilities_DistanceRiverMissing.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_SchoolFacilities_SchoolNameMissing.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G1.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G2.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_GradeLoop_ClassroomCountMismatch_G3.dta"
-append using "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues\Issue_StudentEnrollment_GradeLoop_ClassroomMismatch_G1.dta"
-**************** UPDATE DATE IN FILE NAME ***********************
+sort sup_name
 
 * Export to Excel
-export excel using "$schoolprincipal\SchoolPrincipal_Issues_10Feb2025.xlsx", firstrow(variables) replace  
+export excel using "$schoolprincipal\SchoolPrincipal_Issues_13Feb2025.xlsx", firstrow(variables) replace  
 

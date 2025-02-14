@@ -5104,7 +5104,7 @@ restore
 preserve
 
 	gen ind_var = 0
-    keep if knowledge_23 == 99 
+    keep if knowledge_23 == "99" 
 	replace ind_var = 1 if missing(knowledge_23_o) 
 	keep if ind_var == 1 
 	

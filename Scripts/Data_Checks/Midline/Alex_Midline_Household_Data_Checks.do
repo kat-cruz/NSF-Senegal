@@ -882,7 +882,7 @@ restore
 	generate issue_variable_name = "hh_date"
 	rename hh_date print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -904,7 +904,7 @@ restore
 	generate issue_variable_name = "correct_hh"
 	rename correct_hh print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -928,7 +928,7 @@ restore
 	generate issue_variable_name = "count_chefs"
 	rename count_chefs print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -952,7 +952,7 @@ restore
 	generate issue_variable_name = "hh_time"
 	rename hh_time print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -979,7 +979,7 @@ restore
 	generate issue_variable_name = "hh_gpslatitude"
 	rename hh_gpslatitude print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1005,7 +1005,7 @@ restore
 	generate issue_variable_name = "hh_gpslongitude"
 	rename hh_gpslongitude print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1031,7 +1031,7 @@ restore
 	generate issue_variable_name = "hh_gpsaltitude"
 	rename hh_gpsaltitude print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1056,7 +1056,7 @@ restore
 	generate issue_variable_name = "hh_gpsaccuracy"
 	rename hh_gpsaccuracy print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1086,7 +1086,7 @@ preserve
 	gen print_issue = hh_phone  
 	tostring(print_issue), replace  
 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
 	
 	* Export the dataset to Excel conditional on there being an issue  
@@ -1115,7 +1115,7 @@ restore
 	generate issue_variable_name = "hh_age_resp"
 	rename hh_age_resp print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1140,7 +1140,7 @@ restore
 	generate issue_variable_name = "hh_name_complet_resp"
 	rename hh_age_resp print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1168,7 +1168,7 @@ restore
 	generate issue_variable_name = "hh_name_complet_resp_new"
 	generate print_issue = "hh_name_complet_resp_new"
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1197,7 +1197,7 @@ restore
 	generate issue_variable_name = "attend_training"
 	rename attend_training print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1224,7 +1224,7 @@ restore
 	generate issue_variable_name = "training_id"
 	rename training_id print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1252,7 +1252,7 @@ restore
 	generate issue_variable_name = "heard_training"
 	rename heard_training print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1281,7 +1281,7 @@ restore
 	generate issue_variable_name = "who_attended_training"
 	rename who_attended_training print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1325,7 +1325,7 @@ restore
 	rename `pull_hh_full_name_calc' hh_member_name
 	rename `still_member' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1367,7 +1367,7 @@ restore
 	
 	rename newmem_why_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1415,7 +1415,7 @@ forvalues i = 1/57 {
     rename still_member_whynot_`i' print_issue
     tostring(print_issue), replace
 
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     * Export the dataset to Excel conditional on there being an issue *
     if _N > 0 {
@@ -1461,7 +1461,7 @@ forvalues i = 1/57 {
     rename `still_member_whynot_o' print_issue
     tostring(print_issue), replace
 
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     * Export the dataset to Excel conditional on there being an issue *
     if _N > 0 {
@@ -1504,7 +1504,7 @@ forvalues i = 1/57 {
 	
 	rename `hh_presence_winter' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1545,7 +1545,7 @@ forvalues i = 1/57 {
 	
 	rename `hh_presence_dry' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1584,7 +1584,7 @@ forvalues i = 1/57 {
 	
 	rename `hh_active_agri' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1630,7 +1630,7 @@ forvalues i = 1/57 {
 	
 	rename `hh_age' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1673,7 +1673,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_education_level_`i'"
 	rename `hh_education_level' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     if _N > 0 {
         save "$household_roster\Issue_Household_`hh_education_level'.dta", replace
@@ -1710,7 +1710,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_education_year_achieve_`i'"
 	rename hh_education_year_achieve_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
 	
     if _N > 0 {
@@ -1746,7 +1746,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_03_`i'"
 	rename hh_03_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -1790,7 +1790,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_01_`i'"
 	rename hh_01_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     
 	if _N > 0 {
@@ -1826,7 +1826,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_02_`i'"
 	rename hh_02_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     
 	if _N > 0 {
@@ -1863,7 +1863,7 @@ forvalues i = 1/57 {
 	rename hh_08_`i' print_issue 
 	tostring(print_issue), replace
 	
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone  hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue  hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone  hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     
 	if _N > 0 {
@@ -1899,7 +1899,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_09_`i'"
 	rename hh_09_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     
 	if _N > 0 {
@@ -1936,7 +1936,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_10_`i'"
 	rename hh_10_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     
 	if _N > 0 {
@@ -1978,7 +1978,7 @@ forvalues i = 1/57 {
 	
 	rename hh_13_`i'_total print_issue
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	  if _N > 0 {
         save "$household_roster\Issue_hh_13_`i'_total_unreasonable.dta", replace
     }
@@ -2015,7 +2015,7 @@ forvalues i = 1/57 {
    	generate issue_variable_name = "hh_21_total_`i'"
 	rename  hh_21_`i'_total print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
 	if _N > 0 {
         save "$household_roster\Issue_Household_sum_less_than_hh_18_`i'.dta", replace
@@ -2052,7 +2052,7 @@ preserve
 	generate issue_variable_name = "`hh_ethnicity_o'"
 	rename `hh_ethnicity_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_ethnicity_o'_missing", replace
 }
@@ -2091,7 +2091,7 @@ preserve
 	generate issue_variable_name = "`hh_relation_with_o'"
 	rename `hh_relation_with_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_relation_with_o'_missing", replace
 }
@@ -2124,7 +2124,7 @@ preserve
 	generate issue_variable_name = "`hh_education_level_o'"
 	rename `hh_education_level_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_education_level_o'_missing", replace
 }
@@ -2157,7 +2157,7 @@ preserve
 	generate issue_variable_name = "`hh_main_activity_o'"
 	rename `hh_main_activity_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_main_activity_o'_missing", replace
 }
@@ -2194,7 +2194,7 @@ preserve
 	generate issue_variable_name = "`hh_04'"
 	rename `hh_04' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_04_`i'", replace
 }
@@ -2231,7 +2231,7 @@ preserve
 	generate issue_variable_name = "`hh_05'"
 	rename `hh_05' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_05_`i'", replace
 }
@@ -2267,7 +2267,7 @@ preserve
 	generate issue_variable_name = "`hh_06'"
 	rename `hh_06' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_06_`i'", replace
 }
@@ -2302,7 +2302,7 @@ preserve
 	generate issue_variable_name = "`hh_07'"
 	rename `hh_07' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_07_`i'", replace
 }
@@ -2335,7 +2335,7 @@ preserve
 	generate issue_variable_name = "`hh_11'"
 	rename `hh_11' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_11_`i'", replace
 }
@@ -2369,7 +2369,7 @@ preserve
 	generate issue_variable_name = "`hh_11_o'"
 	rename `hh_11_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_11_o_`i'", replace
 }
@@ -2407,7 +2407,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "hh_12_`i'"
 	rename hh_12_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_12_`i'", replace
 }
@@ -2440,7 +2440,7 @@ preserve
 	generate issue_variable_name = "`hh_12_a'"
 	rename `hh_12_a' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_12_a_`i'", replace
 }
@@ -2476,7 +2476,7 @@ preserve
 	generate issue_variable_name = "`hh_12_o'"
 	rename `hh_12_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_12_o_`i'", replace
 }
@@ -2511,7 +2511,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_12_a_o'"
     rename `hh_12_a_o' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\Issue_hh_12_a_o_`i'", replace
     }
@@ -2551,7 +2551,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_1"
 	rename hh_13_`i'_1 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_1_unreasonable", replace
 }
@@ -2583,7 +2583,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_2"
 	rename hh_13_`i'_2 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 { 
 		save "$household_roster\Issue_hh_13_`i'_2_unreasonable", replace
 }
@@ -2615,7 +2615,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_3"
 	rename hh_13_`i'_3 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_3_unreasonable", replace
 }
@@ -2647,7 +2647,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_4"
 	rename hh_13_`i'_4 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_4_unreasonable", replace
 }
@@ -2679,7 +2679,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_5"
 	rename hh_13_`i'_5 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_5_unreasonable", replace
 }
@@ -2711,7 +2711,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_6"
 	rename hh_13_`i'_6 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_6_unreasonable", replace
 }
@@ -2744,7 +2744,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_13_`i'_7"
 	rename hh_13_`i'_7 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_13_`i'_7_unreasonable", replace
 }
@@ -2780,7 +2780,7 @@ preserve
 	generate issue_variable_name = "`hh_13_o'"
 	rename `hh_13_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_13_o_`i''", replace
 }
@@ -2819,7 +2819,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_14'"
 	rename `hh_14' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_14_`i'", replace
 }
@@ -2850,7 +2850,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_14_a'"
 	rename `hh_14_a' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_HH_Roster_hh_14_a_`i'", replace
 }
@@ -2881,7 +2881,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_14_b'"
 	rename `hh_14_b' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_HH_Roster_hh_14_b_`i'", replace
 }
@@ -2914,7 +2914,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_15'"
 	rename `hh_15' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_15'", replace
 }
@@ -2945,7 +2945,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_15_o_`i'"
 	rename hh_15_o_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_15_o_`i'", replace
 }
@@ -2976,7 +2976,7 @@ preserve
 	generate issue_variable_name = "`hh_16'"
 	rename `hh_16' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_16'", replace
 }
@@ -3008,7 +3008,7 @@ preserve
 	generate issue_variable_name = "`hh_17'"
 	rename `hh_17' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_17'", replace
 }
@@ -3041,7 +3041,7 @@ preserve
 	generate issue_variable_name = "`hh_18'"
 	rename `hh_18' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_18'", replace
 }
@@ -3076,7 +3076,7 @@ preserve
 	generate issue_variable_name = "`hh_19'"
 	rename `hh_19' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_19'", replace
 }
@@ -3107,7 +3107,7 @@ preserve
 	generate issue_variable_name = "`hh_19_o'"
 	rename `hh_19_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_19_o'", replace
 }
@@ -3142,7 +3142,7 @@ preserve
 	generate issue_variable_name = "`hh_20'"
 	rename `hh_20' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_20'", replace
 }
@@ -3175,7 +3175,7 @@ preserve
 	generate issue_variable_name = "`hh_20_a'"
 	rename `hh_20_a' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_20_a'", replace
 }
@@ -3209,7 +3209,7 @@ preserve
 	generate issue_variable_name = "`hh_20_o'"
 	rename `hh_20_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_20_o'", replace
 }
@@ -3242,7 +3242,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_1"
 	rename hh_21_`i'_1 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_1_unreasonable", replace
 }
@@ -3271,7 +3271,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_2"
 	rename hh_21_`i'_2 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_2_unreasonable", replace
 }
@@ -3300,7 +3300,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_3"
 	rename hh_21_`i'_3 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_3_unreasonable", replace
 }
@@ -3329,7 +3329,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_4"
 	rename hh_21_`i'_4 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_4_unreasonable", replace
 }
@@ -3358,7 +3358,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_5"
 	rename hh_21_`i'_5 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_5_unreasonable", replace
 }
@@ -3387,7 +3387,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_6"
 	rename hh_21_`i'_6 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_6_unreasonable", replace
 }
@@ -3418,7 +3418,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_21_`i'_7"
 	rename hh_21_`i'_7 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_21_`i'_7_unreasonable", replace
 }
@@ -3454,7 +3454,7 @@ preserve
     generate issue_variable_name = "`hh_21_o'"
 	rename `hh_21_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_21_o'", replace
 }
@@ -3490,7 +3490,7 @@ preserve
 	generate issue_variable_name = "`hh_22'"
 	rename `hh_22' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_22'", replace
 }
@@ -3531,7 +3531,7 @@ preserve
 	generate issue_variable_name = "`hh_23'"
 	rename `hh_23' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_23'", replace
 }
@@ -3563,7 +3563,7 @@ preserve
 	generate issue_variable_name = "`hh_23_o'"
 	rename `hh_23_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_23_o'", replace
 }
@@ -3598,7 +3598,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_26_`i'"
 	rename hh_26_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_26_`i'_missing", replace
 }
@@ -3632,7 +3632,7 @@ preserve
 	generate issue_variable_name = "`hh_27'"
 	rename `hh_27' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_27'", replace
 }
@@ -3662,7 +3662,7 @@ preserve
 	generate issue_variable_name = "`hh_28'"
 	rename `hh_28' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_28'", replace
 }
@@ -3696,7 +3696,7 @@ preserve
 	generate issue_variable_name = "`hh_29'"
 	rename `hh_29' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_29'", replace
 }
@@ -3726,7 +3726,7 @@ preserve
 	generate issue_variable_name = "`hh_29_o'"
 	rename `hh_29_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_29_o'", replace
 }
@@ -3758,7 +3758,7 @@ preserve
 	generate issue_variable_name = "`hh_30'"
 	rename `hh_30' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_30'", replace
 }
@@ -3788,7 +3788,7 @@ preserve
 	generate issue_variable_name = "`hh_31'"
 	rename `hh_31' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_31'", replace
 }
@@ -3821,7 +3821,7 @@ preserve
 	generate issue_variable_name = "`hh_32'"
 	rename `hh_32' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_32'", replace
 }
@@ -3853,7 +3853,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_34'"
     rename `hh_34' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster/Issue_`hh_34'", replace
     }
@@ -3886,7 +3886,7 @@ preserve
 	generate issue_variable_name = "`hh_34'"
 	rename `hh_34' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_34'", replace
 }
@@ -3918,7 +3918,7 @@ preserve
 	generate issue_variable_name = "hh_35_`i'"
 	rename hh_35_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_hh_35_`i'", replace
 }
@@ -3952,7 +3952,7 @@ preserve
 	rename `hh_36' print_issue
 	
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_36'", replace
 }
@@ -3984,7 +3984,7 @@ preserve
 	generate issue_variable_name = "`hh_37'"
 	rename `hh_37' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_37'", replace
 }
@@ -4020,7 +4020,7 @@ preserve
 	generate issue_variable_name = "`hh_38'"
 	rename `hh_38' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$household_roster\Issue_`hh_38'", replace
 }
@@ -4052,7 +4052,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_39'"
     rename `hh_39' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\Issue_`hh_39'", replace
     }
@@ -4083,7 +4083,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_40'"
     rename `hh_40' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\Issue_`hh_40'", replace
     }
@@ -4122,7 +4122,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_41'"
     rename `hh_41' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue hh_age print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue hh_age print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster/Issue_`hh_41'", replace
     }
@@ -4156,7 +4156,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_42'"
     rename `hh_42' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\Issue_HH_Roster_`hh_42'", replace
     }
@@ -4190,7 +4190,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_43'"
     rename `hh_43' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\Issue_`hh_43'", replace
     }
@@ -4225,7 +4225,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_44'"
     rename `hh_44' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\Issue_`hh_44'", replace
     }
@@ -4256,7 +4256,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_45'"
     rename `hh_45' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\Issue_`hh_45'", replace
     }
@@ -4287,7 +4287,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_46_`i'"
     rename hh_46_`i' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\Issue_hh_46_`i'", replace
     }
@@ -4334,7 +4334,7 @@ forvalues i = 1/57 {
     tostring(print_issue), replace
 	
 
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name 
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\hh_roster_issue_`hh_47_a'", replace
     }
@@ -4375,7 +4375,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_47_b'"
     rename `hh_47_b' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\hh_roster_issue_`hh_47_b'", replace
     }
@@ -4417,7 +4417,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_47_c'"
     rename `hh_47_c' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\hh_roster_issue_`hh_47_c'", replace
     }
@@ -4451,7 +4451,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_47_d'"
     rename `hh_47_d' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\hh_roster_issue_`hh_47_d'", replace
     }
@@ -4486,7 +4486,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_47_e'"
     rename `hh_47_e' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\hh_roster_issue_`hh_47_e'", replace
     }
@@ -4520,7 +4520,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_47_f'"
     rename `hh_47_f' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\hh_roster_issue_`hh_47_f'", replace
     }
@@ -4554,7 +4554,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_47_g'"
     rename `hh_47_g' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
     if _N > 0 {
         save "$household_roster\hh_roster_issue_`hh_47_g'", replace
     }
@@ -4592,7 +4592,7 @@ forvalues i = 1/57 {
         tostring print_issue, replace force
     }
 
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 
     if _N > 0 {
         save "$household_roster\Issue_`hh_47_oth'", replace
@@ -4625,7 +4625,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_48'"
     rename `hh_48' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
     if _N > 0 {
         save "$household_roster\Issue_`hh_48'", replace
     }
@@ -4654,7 +4654,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_50_`i'"
     rename hh_50_`i' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
     if _N > 0 {
         save "$household_roster\Issue_HH_Roster_hh_50_`i'", replace
     }
@@ -4681,7 +4681,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "hh_51_`i'"
     rename hh_51_`i' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
     if _N > 0 {
         save "$household_roster\Issue_HH_Roster_hh_51_`i'", replace
     }
@@ -4709,7 +4709,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`hh_51'"
     rename `hh_52' print_issue
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
     if _N > 0 {
         save "$household_roster\Issue_HH_Roster_`hh_52'", replace
     }
@@ -4732,7 +4732,7 @@ preserve
 	generate issue_variable_name = "knowledge_02"
 	rename knowledge_02 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_02", replace
 }
@@ -4752,7 +4752,7 @@ preserve
 	generate issue_variable_name = "knowledge_03"
 	rename knowledge_03 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_03", replace
 }
@@ -4773,7 +4773,7 @@ preserve
 	generate issue_variable_name = "knowledge_04"
 	rename knowledge_04 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_04", replace
 }
@@ -4794,7 +4794,7 @@ preserve
 	generate issue_variable_name = "knowledge_05"
 	rename knowledge_05 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_05", replace
 }
@@ -4814,7 +4814,7 @@ preserve
 	generate issue_variable_name = "knowledge_05_o"
 	rename knowledge_05_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {	
 		save "$knowledge\Issue_knowledge_05_o", replace
 		}
@@ -4835,7 +4835,7 @@ preserve
 	generate issue_variable_name = "knowledge_08"
 	rename knowledge_08 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_08", replace
 }
@@ -4855,7 +4855,7 @@ preserve
 	generate issue_variable_name = "knowledge_10"
 	rename knowledge_10_count print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
  if _N > 0 {
         save "$knowledge\Issue_knowledge_10_count_unreasonable.dta", replace
@@ -4876,7 +4876,7 @@ preserve
 	generate issue_variable_name = "knowledge_10_o"
 	rename knowledge_10_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_10_o", replace
 }
@@ -4896,7 +4896,7 @@ preserve
 	generate issue_variable_name = "knowledge_12_o"
 	rename knowledge_12_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_12_o", replace
 }
@@ -4917,7 +4917,7 @@ preserve
 	generate issue_variable_name = "knowledge_16"
 	rename knowledge_16 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_16", replace
 }
@@ -4938,7 +4938,7 @@ preserve
 	generate issue_variable_name = "knowledge_19"
 	rename knowledge_19 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_19", replace
 }
@@ -4959,7 +4959,7 @@ preserve
 	generate issue_variable_name = "knowledge_19_o"
 	rename knowledge_19_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_19_o", replace
 }
@@ -4982,7 +4982,7 @@ preserve
 	generate issue_variable_name = "knowledge_20"
 	rename knowledge_20 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_20", replace
 }
@@ -5002,7 +5002,7 @@ preserve
 	generate issue_variable_name = "knowledge_20_o"
 	rename knowledge_20_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_20_o", replace
 }
@@ -5023,7 +5023,7 @@ preserve
 	generate issue_variable_name = "knowledge_21"
 	rename knowledge_21 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_21", replace
 }
@@ -5045,7 +5045,7 @@ preserve
 	generate issue_variable_name = "knowledge_22"
 	rename knowledge_22 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_22", replace
 }
@@ -5069,7 +5069,7 @@ preserve
 	generate issue_variable_name = "knowledge_23"
 	rename knowledge_23 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
  if _N > 0 {
         save "$knowledge\issue_household_knowledge_23.dta", replace
     }
@@ -5090,7 +5090,7 @@ preserve
 	generate issue_variable_name = "knowledge_23_o"
 	rename knowledge_23_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$knowledge\Issue_knowledge_23_o", replace
 }
@@ -5125,7 +5125,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "health_5_2_`i'"
 	rename health_5_2_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5160,7 +5160,7 @@ preserve
 	generate issue_variable_name = "health_5_3_`i'"
 	rename health_5_3_`i' print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
  if _N > 0 {
         save "$health\issue_household_health_5_3_`i'.dta", replace
     }
@@ -5196,7 +5196,7 @@ preserve
 	generate issue_variable_name = "health_5_3_o"
 	rename `health_5_3_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$health\Issue_`health_5_3_o'", replace
 }
@@ -5232,7 +5232,7 @@ preserve
 	generate issue_variable_name = "health_5_4"
 	rename `health_5_4' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$health\Issue_`health_5_4'", replace
 }
@@ -5269,7 +5269,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "health_5_5_`i'"
 	rename health_5_5_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5306,7 +5306,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "health_5_6_`i'"
 	rename health_5_6_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5344,7 +5344,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "health_5_7_`i'"
 	rename health_5_7_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5382,7 +5382,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "`health_5_7_1'"
     rename `health_5_7_1' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5421,7 +5421,7 @@ forvalues i = 1/57 {
 	generate issue_variable_name = "health_5_8_`i'"
 	rename health_5_8_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5459,7 +5459,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "health_5_9_`i'"
     rename health_5_9_`i' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5496,7 +5496,7 @@ forvalues i = 1/57 {
     generate issue_variable_name = "health_5_10_`i'"
     rename health_5_10_`i' print_issue 
     tostring(print_issue), replace
-    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+    keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5533,7 +5533,7 @@ preserve
 	generate issue_variable_name = "health_5_11"
 	rename `health_5_11' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$health\Issue_`health_5_11'", replace
 }
@@ -5568,7 +5568,7 @@ preserve
 	generate issue_variable_name = "health_5_11_o"
 	rename `health_5_11_o' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$health\Issue_`health_5_11_o'", replace
 }
@@ -5601,7 +5601,7 @@ preserve
 	generate issue_variable_name = "health_5_12"
 	rename `health_5_12' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key
 	if _N > 0 {
 		save "$health\Issue_`health_5_12'", replace
 }
@@ -5624,7 +5624,7 @@ preserve
 	generate issue_variable_name = "health_5_14_a"
 	rename health_5_14_a print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$health\Issue_health_5_14_a", replace
 }
@@ -5646,7 +5646,7 @@ preserve
 	generate issue_variable_name = "health_5_14_b"
 	rename health_5_14_b print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$health\Issue_health_5_14_b", replace
 }
@@ -5668,7 +5668,7 @@ preserve
 	generate issue_variable_name = "health_5_14_c"
 	rename health_5_14_c print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$health\Issue_health_5_14_c", replace
 }
@@ -5695,7 +5695,7 @@ restore
 	generate issue_variable_name = "list_actifs"
 	rename list_actifs print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5720,7 +5720,7 @@ restore
 	generate issue_variable_name = "list_agri_equip"
 	rename list_agri_equip print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5745,7 +5745,7 @@ restore
 	generate issue_variable_name = "agri_6_5"
 	rename agri_6_5 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -5769,7 +5769,7 @@ preserve
 	generate issue_variable_name = "actifs_o"
 	rename actifs_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 	save "$agriculture_inputs\Issue_actifs_o_missing.dta", replace 
 	}
@@ -5793,7 +5793,7 @@ preserve
 	generate issue_variable_name = "actifs_o_int"
 	rename actifs_o_int print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_actifs_o_int_unreasonable.dta", replace 
 	}
@@ -5814,7 +5814,7 @@ preserve
 	generate issue_variable_name = "list_agri_equip_o_t"
 	rename list_agri_equip_o_t print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_list_agri_equip_o_t_missing.dta", replace 
 	}
@@ -5838,7 +5838,7 @@ preserve
 	generate issue_variable_name = "list_agri_equip_int"
 	rename list_agri_equip_int print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_list_agri_equip_o_int_unreasonable.dta", replace 
 	}
@@ -5859,7 +5859,7 @@ preserve
 	generate issue_variable_name = "agri_6_12"
 	rename agri_6_12 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_12_missing.dta", replace 
 	}
@@ -5880,7 +5880,7 @@ preserve
 	generate issue_variable_name = "agri_6_12_o"
 	rename agri_6_12_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_12_o_missing.dta", replace 
 	}
@@ -5904,7 +5904,7 @@ preserve
 	generate issue_variable_name = "agri_6_15"
 	rename agri_6_15 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_15_unreasonable.dta", replace 
 	}
@@ -5930,7 +5930,7 @@ forvalue i = 1/5 {
 	generate issue_variable_name = "agri_6_16_`i'"
 	rename agri_6_16_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_16_`i'_missing.dta", replace 
 	}
@@ -5958,7 +5958,7 @@ forvalue i = 1/5 {
 	generate issue_variable_name = "agri_6_17_`i'"
 	rename agri_6_17_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_17_`i'_missing.dta", replace 
 	}
@@ -5984,7 +5984,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_18_`i'"
 	rename agri_6_18_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_18_`i'_missing.dta", replace 
 	}
@@ -6010,7 +6010,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_19_`i'"
 	rename agri_6_19_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_19_`i'_missing.dta", replace 
 	}
@@ -6036,7 +6036,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_20_`i'"
 	rename agri_6_20_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_20_`i'_missing.dta", replace 
 	}
@@ -6068,7 +6068,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_20_o_`i'"
 	rename agri_6_20_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_20_o_`i'_missing.dta", replace 
 	}
@@ -6097,7 +6097,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_21_`i'"
 	rename agri_6_21_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_21_`i'_unreasonable.dta", replace 
 	}
@@ -6122,7 +6122,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_22_`i'"
 	rename agri_6_22_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_22_`i'_missing.dta", replace 
 	}
@@ -6147,7 +6147,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_23_`i'"
 	rename agri_6_23_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_23_`i'_missing.dta", replace 
 	}
@@ -6179,7 +6179,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_23_o_`i'"
 	rename agri_6_23_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_23_o_`i'_missing.dta", replace 
 	}
@@ -6208,7 +6208,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_24_`i'"
 	rename agri_6_24_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_24_`i'_missing.dta", replace 
 	}
@@ -6236,7 +6236,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_25_`i'"
 	rename agri_6_25_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_25_`i'_missing.dta", replace 
 	}
@@ -6267,7 +6267,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_25_o_`i'"
 	rename agri_6_25_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_25_o_`i'_missing.dta", replace 
 	}
@@ -6295,7 +6295,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_26_`i'"
 	rename agri_6_26_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_26_`i'_missing.dta", replace 
 	}
@@ -6326,7 +6326,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_26_o_`i'"
 	rename agri_6_26_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_26_o_`i'_missing.dta", replace 
 	}
@@ -6358,7 +6358,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_27_`i'"
 	rename agri_6_27_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_27_`i'_missing.dta", replace 
 	}
@@ -6386,7 +6386,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_28_`i'"
 	rename agri_6_28_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_28_`i'_missing.dta", replace 
 	}
@@ -6414,7 +6414,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_29_`i'"
 	rename agri_6_29_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_29_`i'_missing.dta", replace 
 	}
@@ -6445,7 +6445,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_29_o_`i'"
 	rename agri_6_29_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_29_o_`i'_missing.dta", replace 
 	}
@@ -6470,7 +6470,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_30_`i'"
 	rename agri_6_30_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_30_`i'_missing.dta", replace 
 	}
@@ -6499,7 +6499,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_31_`i'"
 	rename agri_6_31_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_31_`i'_missing.dta", replace 
 	}
@@ -6530,7 +6530,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_31_o_`i'"
 	rename agri_6_31_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_31_o_`i'_missing.dta", replace 
 	}
@@ -6558,7 +6558,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_32_`i'"
 	rename agri_6_32_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_32_`i'_unreasonable.dta", replace 
 	}
@@ -6586,7 +6586,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_33_`i'"
 	rename agri_6_33_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_33_`i'_missing.dta", replace 
 	}
@@ -6617,7 +6617,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_33_o_`i'"
 	rename agri_6_33_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_33_o_`i'_missing.dta", replace 
 	}
@@ -6642,7 +6642,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_34_comp_`i'"
 	rename agri_6_34_comp_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_34_comp_`i'_missing.dta", replace 
 	}
@@ -6667,7 +6667,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_34_`i'"
 	rename agri_6_34_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_34_`i'_missing.dta", replace 
 	}
@@ -6695,7 +6695,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_35_`i'"
 	rename agri_6_35_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_35_`i'_unreasonable.dta", replace 
 	}
@@ -6720,7 +6720,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_36_`i'"
 	rename agri_6_36_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_36_`i'_missing.dta", replace 
 	}
@@ -6748,7 +6748,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_37_`i'"
 	rename agri_6_37_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_37_`i'_unreasonable.dta", replace 
 	}
@@ -6776,7 +6776,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_38_a_`i'"
 	rename agri_6_38_a_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_38_a_`i'_unreasonable.dta", replace 
 	}
@@ -6803,7 +6803,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_38_a_code_`i'"
 	rename agri_6_38_a_code_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_38_a_code_`i'_missing.dta", replace 
 	}
@@ -6834,7 +6834,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_38_a_code_o_`i'"
 	rename agri_6_38_a_code_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_38_a_code_o_`i'_missing.dta", replace 
 	}
@@ -6863,7 +6863,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_39_a_`i'"
 	rename agri_6_39_a_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_39_a_`i'_unreasonable.dta", replace 
 	}
@@ -6890,7 +6890,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_39_a_code_`i'"
 	rename agri_6_39_a_code_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_39_a_code_`i'_missing.dta", replace 
 	}
@@ -6921,7 +6921,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_39_a_code_o_`i'"
 	rename agri_6_39_a_code_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_39_a_code_o_`i'_missing.dta", replace 
 	}
@@ -6949,7 +6949,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_40_a_`i'"
 	rename agri_6_40_a_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_40_a_`i'_unreasonable.dta", replace 
 	}
@@ -6976,7 +6976,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_40_a_code_`i'"
 	rename agri_6_40_a_code_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_40_a_code_`i'_missing.dta", replace 
 	}
@@ -7007,7 +7007,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_40_a_code_o_`i'"
 	rename agri_6_40_a_code_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_40_a_code_o_`i'_missing.dta", replace 
 	}
@@ -7036,7 +7036,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_41_a_`i'"
 	rename agri_6_41_a_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_41_a_`i'_unreasonable.dta", replace 
 	}
@@ -7063,7 +7063,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_41_a_code_`i'"
 	rename agri_6_41_a_code_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_41_a_code_`i'_missing.dta", replace 
 	}
@@ -7095,7 +7095,7 @@ forvalue i=1/5 {
 	generate issue_variable_name = "agri_6_41_a_code_o_`i'"
 	rename agri_6_41_a_code_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_inputs\Issue_agri_6_41_a_code_o_`i'_missing.dta", replace 
 	}
@@ -7124,7 +7124,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "cereals_01_`i'"
 	rename cereals_01_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_cereals_01_`i'_unreasonable.dta", replace 
 	}
@@ -7151,7 +7151,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "cereals_02_`i'"
 	rename cereals_02_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_cereals_02_`i'_unreasonable.dta", replace 
 	}
@@ -7179,7 +7179,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "cereals_03_`i'"
 	rename cereals_03_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_cereals_03_`i'_unreasonable.dta", replace 
 	}
@@ -7206,7 +7206,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "cereals_04_`i'"
 	rename cereals_04_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_cereals_04_`i'_unreasonable.dta", replace 
 	}
@@ -7233,7 +7233,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "cereals_05_`i'"
 	rename cereals_05_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_cereals_05_`i'_unreasonable.dta", replace 
 	}
@@ -7261,7 +7261,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "farines_01_`i'"
 	rename farines_01_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_farines_01_`i'_unreasonable.dta", replace 
 	}
@@ -7288,7 +7288,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "farines_02_`i'"
 	rename farines_02_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_farines_02_`i'_unreasonable.dta", replace 
 	}
@@ -7315,7 +7315,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "farines_03_`i'"
 	rename farines_03_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_farines_03_`i'_unreasonable.dta", replace 
 	}
@@ -7342,7 +7342,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "farines_04_`i'"
 	rename farines_04_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_farines_04_`i'_unreasonable.dta", replace 
 	}
@@ -7369,7 +7369,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "farines_05_`i'"
 	rename farines_05_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_farines_05_`i'_unreasonable.dta", replace 
 	}
@@ -7396,7 +7396,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "legumes_01_`i'"
 	rename legumes_01_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumes_01_`i'_unreasonable.dta", replace 
 	}
@@ -7423,7 +7423,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "legumes_02_`i'"
 	rename legumes_02_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumes_02_`i'_unreasonable.dta", replace 
 	}
@@ -7450,7 +7450,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "legumes_03_`i'"
 	rename legumes_03_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumes_03_`i'_unreasonable.dta", replace 
 	}
@@ -7477,7 +7477,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "legumes_04_`i'"
 	rename legumes_04_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumes_04_`i'_unreasonable.dta", replace 
 	}
@@ -7504,7 +7504,7 @@ forvalue i = 1/6 {
 	generate issue_variable_name = "legumes_05_`i'"
 	rename legumes_05_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumes_05_`i'_unreasonable.dta", replace 
 	}
@@ -7531,7 +7531,7 @@ forvalue i = 1/5 {
 	generate issue_variable_name = "legumineuses_01_`i'"
 	rename legumineuses_01_`i' print_issue 
 	tostring print_issue, replace force
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumineuses_01_`i'_unreasonable.dta", replace 
 	}
@@ -7558,7 +7558,7 @@ forvalue i = 1/5 {
 	generate issue_variable_name = "legumineuses_02_`i'"
 	rename legumineuses_02_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumineuses_02_`i'_unreasonable.dta", replace 
 	}
@@ -7585,7 +7585,7 @@ forvalue i = 1/5 {
 	generate issue_variable_name = "legumineuses_03_`i'"
 	rename legumineuses_03_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumineuses_03_`i'_unreasonable.dta", replace 
 	}
@@ -7612,7 +7612,7 @@ forvalue i = 1/5 {
 	generate issue_variable_name = "legumineuses_04_`i'"
 	rename legumineuses_04_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumineuses_04_`i'_unreasonable.dta", replace 
 	}
@@ -7639,7 +7639,7 @@ forvalue i = 1/5 {
 	generate issue_variable_name = "legumineuses_05_`i'"
 	rename legumineuses_05_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_legumineuses_05_`i'_unreasonable.dta", replace 
 	}
@@ -7664,7 +7664,7 @@ preserve
 	generate issue_variable_name = "aquatique_01"
 	rename aquatique_01 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_aquatique_01_unreasonable.dta", replace 
 	}
@@ -7688,7 +7688,7 @@ preserve
 	generate issue_variable_name = "aquatique_02"
 	rename aquatique_02 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_aquatique_02_unreasonable.dta", replace 
 	}
@@ -7712,7 +7712,7 @@ preserve
 	generate issue_variable_name = "aquatique_03"
 	rename aquatique_03 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_aquatique_03_unreasonable.dta", replace 
 	}
@@ -7736,7 +7736,7 @@ preserve
 	generate issue_variable_name = "aquatique_04"
 	rename aquatique_04 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_aquatique_04_unreasonable.dta", replace 
 	}
@@ -7760,7 +7760,7 @@ preserve
 	generate issue_variable_name = "aquatique_05"
 	rename aquatique_05 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_aquatique_05_unreasonable.dta", replace 
 	}
@@ -7781,7 +7781,7 @@ generate issue = "Missing"
 generate issue_variable_name = "autre_culture" 
 rename autre_culture print_issue
 tostring(print_issue), replace 
-keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 if _N > 0 {
 	save "$food_consumption\Issue_autre_culture_missing.dta", replace 
 }
@@ -7805,7 +7805,7 @@ preserve
 	generate issue_variable_name = "o_culture_01"
 	rename o_culture_01 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_o_culture_01_unreasonable.dta", replace 
 	}
@@ -7829,7 +7829,7 @@ preserve
 	generate issue_variable_name = "o_culture_02"
 	rename o_culture_02 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_o_culture_02_unreasonable.dta", replace 
 	}
@@ -7853,7 +7853,7 @@ preserve
 	generate issue_variable_name = "o_culture_03"
 	rename o_culture_03 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_o_culture_03_unreasonable.dta", replace 
 	}
@@ -7877,7 +7877,7 @@ preserve
 	generate issue_variable_name = "o_culture_04"
 	rename o_culture_04 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_o_culture_04_unreasonable.dta", replace 
 	}
@@ -7901,7 +7901,7 @@ preserve
 	generate issue_variable_name = "o_culture_05"
 	rename o_culture_05 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$agriculture_production\Issue_o_culture_05_unreasonable.dta", replace 
 	}
@@ -7925,7 +7925,7 @@ preserve
 	generate issue_variable_name = "food02" 
 	rename food02 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food02_missing.dta", replace 
 	}
@@ -7946,7 +7946,7 @@ preserve
 	generate issue_variable_name = "food03" 
 	rename food03 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food03_missing.dta", replace 
 	}
@@ -7967,7 +7967,7 @@ preserve
 	generate issue_variable_name = "food05" 
 	rename food05 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food05_missing.dta", replace 
 	}
@@ -7988,7 +7988,7 @@ preserve
 	generate issue_variable_name = "food06" 
 	rename food06 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food06_missing.dta", replace 
 	}
@@ -8009,7 +8009,7 @@ preserve
 	generate issue_variable_name = "food07" 
 	rename food07 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food07_missing.dta", replace 
 	}
@@ -8030,7 +8030,7 @@ preserve
 	generate issue_variable_name = "food08" 
 	rename food08 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food08_missing.dta", replace 
 	}
@@ -8051,7 +8051,7 @@ preserve
 	generate issue_variable_name = "food09" 
 	rename food09 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food09_missing.dta", replace 
 	}
@@ -8072,7 +8072,7 @@ preserve
 	generate issue_variable_name = "food11" 
 	rename food11 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food11_missing.dta", replace 
 	}
@@ -8093,7 +8093,7 @@ preserve
 	generate issue_variable_name = "food12" 
 	rename food12 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$food_consumption\Issue_food12_missing.dta", replace 
 	}
@@ -8119,7 +8119,7 @@ preserve
 	generate issue_variable_name = "agri_income_01" 
 	rename agri_income_01 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_01_missing.dta", replace 
 	}
@@ -8143,7 +8143,7 @@ preserve
 	generate issue_variable_name = "species" 
 	rename species print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_species_missing.dta", replace 
 	}
@@ -8167,7 +8167,7 @@ preserve
 	generate issue_variable_name = "agri_income_15" 
 	rename agri_income_15 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_15_missing.dta", replace 
 	}
@@ -8213,7 +8213,7 @@ preserve
 	generate issue_variable_name = "agri_income_02" 
 	rename agri_income_02 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_02_missing.dta", replace 
 	}
@@ -8234,7 +8234,7 @@ preserve
 	generate issue_variable_name = "agri_income_02_o" 
 	rename agri_income_02_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_02_missing.dta", replace 
 	}
@@ -8258,7 +8258,7 @@ preserve
 	generate issue_variable_name = "agri_income_03" 
 	rename agri_income_03 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_03_unreasonable.dta", replace 
 	}
@@ -8279,7 +8279,7 @@ preserve
 	generate issue_variable_name = "agri_income_04" 
 	rename agri_income_04 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_04_missing.dta", replace 
 	}
@@ -8302,7 +8302,7 @@ preserve
 	generate issue_variable_name = "agri_income_05" 
 	rename agri_income_05 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_05_unreasonable.dta", replace 
 	}
@@ -8325,7 +8325,7 @@ preserve
 	generate issue_variable_name = "agri_income_06" 
 	rename agri_income_06 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_06_unreasonable.dta", replace 
 	}
@@ -8346,7 +8346,7 @@ preserve
 	generate issue_variable_name = "species_o" 
 	rename species_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_species_o_missing.dta", replace 
 	}
@@ -8368,7 +8368,7 @@ forvalues i = 1/5{
 	generate issue_variable_name = "agri_income_09_`i'"
 	rename agri_income_09_`i' print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 	save "$income\Issue_agri_income_09_`i'_missing.dta", replace 
 	}
@@ -8390,7 +8390,7 @@ forvalues i = 1/5{
 	generate issue = "Missing"
 	generate issue_variable_name = "agri_income_09_o_`i'"
 	rename agri_income_09_o_`i' print_issue
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 	save "$income\Issue_agri_income_09_o_`i'_missing.dta", replace 
 	}
@@ -8416,7 +8416,7 @@ forvalues i = 1/5{
 	generate issue_variable_name = "agri_income_10_`i'"
 	rename agri_income_10_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 	save "$income\Issue_agri_income_10_`i'_unreasonable.dta", replace 
 	}
@@ -8442,7 +8442,7 @@ preserve
 	generate issue_variable_name = "agri_income_07_o"
 	rename agri_income_07_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_07_o_unreasonable.dta", replace 
 	}
@@ -8467,7 +8467,7 @@ preserve
 	generate issue_variable_name = "agri_income_08_o"
 	rename agri_income_08_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_08_o_unreasonable.dta", replace 
 	}
@@ -8494,7 +8494,7 @@ preserve
 	generate issue_variable_name = "agri_income_09_o_o"
 	rename agri_income_09_o_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_09_o_o_missing.dta", replace 
 	}
@@ -8521,7 +8521,7 @@ preserve
 	generate issue_variable_name = "agri_income_09_o_o_o"
 	rename agri_income_09_o_o_o print_issue
 	tostring(print_issue), replace  
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_09_o_o_o_missing.dta", replace 
 	}
@@ -8549,7 +8549,7 @@ preserve
 	generate issue_variable_name = "agri_income_10_o"
 	rename agri_income_10_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_10_o_unreasonable.dta", replace 
 	}
@@ -8570,7 +8570,7 @@ restore
 	generate issue_variable_name = "animals_sales_t" 
 	rename animals_sales_t print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_animals_sales_t_missing.dta", replace 
 	}
@@ -8597,7 +8597,7 @@ forvalues i = 1/4 {
 	generate issue_variable_name = "agri_income_13_autre_`i'" 
 	rename agri_income_13_autre_`i' print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_13_autre_`i'_missing.dta", replace 
 	}
@@ -8621,7 +8621,7 @@ forvalues i = 1/4 {
 	generate issue_variable_name = "agri_income_11_`i'"
 	rename agri_income_11_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_11_`i'_unreasonable.dta", replace 
 	}
@@ -8646,7 +8646,7 @@ preserve
 	generate issue_variable_name = "agri_income_11_o"
 	rename agri_income_11_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_11_o_unreasonable.dta", replace 
 	}
@@ -8670,7 +8670,7 @@ forvalues i = 1/2 {
 	generate issue_variable_name = "agri_income_12_`i'"
 	rename agri_income_12_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_12_`i'_unreasonable.dta", replace 
 	}
@@ -8695,7 +8695,7 @@ preserve
 	generate issue_variable_name = "agri_income_12_o"
 	rename agri_income_12_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_12_o_unreasonable.dta", replace 
 	}
@@ -8723,7 +8723,7 @@ forvalues i = 1/6 {
 	generate issue_variable_name = "agri_income_13_`i'"
 	rename agri_income_13_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_13_`i'_unreasonable.dta", replace 
 	}
@@ -8749,7 +8749,7 @@ preserve
 	generate issue_variable_name = "agri_income_13_o"
 	rename agri_income_13_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_13_o_missing.dta", replace 
 	}
@@ -8774,7 +8774,7 @@ preserve
 	generate issue_variable_name = "agri_income_14_o"
 	rename agri_income_14_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_14_o_unreasonable.dta", replace 
 	}
@@ -8798,7 +8798,7 @@ preserve
 	generate issue_variable_name = "agri_income_13_o_t"
 	rename agri_income_13_o_t print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_13_o_t_missing.dta", replace 
 	}
@@ -8822,7 +8822,7 @@ preserve
 	generate issue_variable_name = "agri_income_16"
 	rename agri_income_16 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_16_unreasonable.dta", replace 
 	}
@@ -8843,7 +8843,7 @@ preserve
 	generate issue_variable_name = "agri_income_18"
 	rename agri_income_18 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_18_missing.dta", replace 
 	}
@@ -8865,7 +8865,7 @@ preserve
 	generate issue_variable_name = "agri_income_18_o"
 	rename agri_income_18_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_18_o_missing.dta", replace 
 	}
@@ -8889,7 +8889,7 @@ preserve
 	generate issue_variable_name = "agri_income_19"
 	rename agri_income_19 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_19_unreasonable.dta", replace 
 	}
@@ -8911,7 +8911,7 @@ preserve
 	generate issue_variable_name = "agri_income_20_o"
 	rename agri_income_20_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_20_o_missing.dta", replace 
 	}
@@ -8935,7 +8935,7 @@ preserve
 	generate issue_variable_name = "agri_income_21_h_o"
 	rename agri_income_21_h_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_21_h_o_unreasonable.dta", replace 
 	}
@@ -8959,7 +8959,7 @@ preserve
 	generate issue_variable_name = "agri_income_21_f_o"
 	rename agri_income_21_f_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_21_f_o_unreasonable.dta", replace 
 	}
@@ -8983,7 +8983,7 @@ preserve
 	generate issue_variable_name = "agri_income_22_o"
 	rename agri_income_22_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_22_o_unreasonable.dta", replace 
 	}
@@ -9007,7 +9007,7 @@ preserve
 	generate issue_variable_name = "agri_income_23_o"
 	rename agri_income_23_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_23_o_unreasonable.dta", replace 
 	}
@@ -9031,7 +9031,7 @@ preserve
 	generate issue_variable_name = "agri_income_26"
 	rename agri_income_26 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_26_unreasonable.dta", replace 
 	}
@@ -9052,7 +9052,7 @@ preserve
 	generate issue_variable_name = "agri_income_28"
 	rename agri_income_28 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_28_missing.dta", replace 
 	}
@@ -9076,7 +9076,7 @@ preserve
 	generate issue_variable_name = "agri_income_28_o"
 	rename agri_income_28_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_28_o_missing.dta", replace 
 	}
@@ -9100,7 +9100,7 @@ preserve
 	generate issue_variable_name = "agri_income_29"
 	rename agri_income_29 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_29_unreasonable.dta", replace 
 	}
@@ -9121,7 +9121,7 @@ preserve
 	generate issue_variable_name = "agri_income_31"
 	rename agri_income_31 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_31_missing.dta", replace 
 	}
@@ -9142,7 +9142,7 @@ preserve
 	generate issue_variable_name = "agri_income_31_o"
 	rename agri_income_31_o print_issue
 	tostring(print_issue), replace  
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_31_missing_o.dta", replace 
 	}
@@ -9163,7 +9163,7 @@ preserve
 	generate issue_variable_name = "agri_income_32"
 	rename agri_income_32 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_32_missing.dta", replace 
 	}
@@ -9187,7 +9187,7 @@ preserve
 	generate issue_variable_name = "agri_income_33"
 	rename agri_income_33 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_33_unreasonable.dta", replace 
 	}
@@ -9208,7 +9208,7 @@ preserve
 	generate issue_variable_name = "agri_income_name"
 	rename agri_income_name print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_name_missing.dta", replace 
 	}
@@ -9229,7 +9229,7 @@ preserve
 	generate issue_variable_name = "agri_income_35"
 	rename agri_income_35 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_35_missing.dta", replace 
 	}
@@ -9255,7 +9255,7 @@ forvalues i = 1/2 {
 	generate issue_variable_name = "agri_income_36_`i'"
 	rename agri_income_36_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_36_`i'_unreasonable.dta", replace 
 	}
@@ -9282,7 +9282,7 @@ forvalues i = 1/2 {
 	generate issue_variable_name = "agri_income_37_`i'"
 	rename agri_income_37_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_37_`i'_missing.dta", replace 
 	}
@@ -9309,7 +9309,7 @@ forvalues i = 1/2 {
 	generate issue_variable_name = "agri_income_38_`i'"
 	rename agri_income_38_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_38_`i'_unreasonable.dta", replace 
 	}
@@ -9336,7 +9336,7 @@ forvalues i = 1/2 {
 	generate issue_variable_name = "agri_income_39_`i'"
 	rename agri_income_39_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_39_`i'_unreasonable.dta", replace 
 	}
@@ -9359,7 +9359,7 @@ preserve
 	generate issue_variable_name = "agri_loan_name"
 	rename agri_loan_name print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_loan_name_missing.dta", replace 
 	}
@@ -9385,7 +9385,7 @@ forvalues i = 1/1 {
 	generate issue_variable_name = "agri_income_41_`i'"
 	rename agri_income_41_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_41_`i'_unreasonable.dta", replace 
 	}
@@ -9412,7 +9412,7 @@ forvalues i = 1/1 {
 	generate issue_variable_name = "agri_income_42_`i'"
 	rename agri_income_42_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_42_`i'_unreasonable.dta", replace 
 	}
@@ -9440,7 +9440,7 @@ forvalues i = 1/1 {
 	generate issue_variable_name = "agri_income_43_`i'"
 	rename agri_income_43_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_43_`i'_unreasonable.dta", replace 
 	}
@@ -9465,7 +9465,7 @@ forvalues i = 1/1 {
 	generate issue_variable_name = "product_divers"
 	rename product_divers print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_product_divers.dta", replace 
 	}
@@ -9489,7 +9489,7 @@ forvalues i = 1/1 {
 	generate issue_variable_name = "animals_sales"
 	rename animals_sales print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_animals_sales.dta", replace 
 	}
@@ -9513,7 +9513,7 @@ forvalues i = 1/1 {
 	generate issue_variable_name = "animals_sales_o"
 	rename animals_sales_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_animals_sales_o.dta", replace 
 	}
@@ -9539,7 +9539,7 @@ forvalues i=1/15 {
 	generate issue_variable_name = "agri_income_46_o_`i'"
 	rename agri_income_46_o_`i' print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_46_o_`i'_missing.dta", replace 
 	}
@@ -9564,7 +9564,7 @@ preserve
 	generate issue_variable_name = "expenses_goods_o"
 	rename expenses_goods_o print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_expenses_goods_o_missing.dta", replace 
 	}
@@ -9588,7 +9588,7 @@ forvalues i = 1/7{
 	generate issue_variable_name = "agri_income_07_`i'"
 	rename agri_income_07_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_07_`i'_unreasonable", replace
 }
@@ -9604,7 +9604,7 @@ preserve
 	generate issue_variable_name = "agri_income_07_o"
 	rename agri_income_07_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_07_o_unreasonable", replace
 }
@@ -9622,7 +9622,7 @@ forvalues i = 1/7{
 	generate issue_variable_name = "agri_income_08_`i'"
 	rename agri_income_08_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_08_`i'_unreasonable", replace
 }
@@ -9638,7 +9638,7 @@ preserve
 	generate issue_variable_name = "agri_income_08_o"
 	rename agri_income_08_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_08_o_unreasonable", replace
 }
@@ -9657,7 +9657,7 @@ forvalues i = 1/6 {
 	generate issue_variable_name = "agri_income_12_`i'"
 	rename agri_income_12_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_12_`i'_unreasonable", replace
 }
@@ -9673,7 +9673,7 @@ forvalues i = 1/6 {
 	generate issue_variable_name = "agri_income_12_o"
 	rename agri_income_12_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_12_o_unreasonable", replace
 }
@@ -9692,7 +9692,7 @@ forvalues i = 1/6{
 	generate issue_variable_name = "agri_income_14_`i'"
 	rename agri_income_14_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_14_`i'_unreasonable", replace
 }
@@ -9708,7 +9708,7 @@ forvalues i = 1/6{
 	generate issue_variable_name = "agri_income_14_o"
 	rename agri_income_14_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_14_o_unreasonable", replace
 }
@@ -9731,7 +9731,7 @@ forvalues i = 1/6{
 	generate issue_variable_name = "agri_income_20"
 	rename agri_income_20 print_issue 
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_20_unreasonable.dta", replace 
 	}
@@ -9752,7 +9752,7 @@ preserve
 	generate issue_variable_name = "`var'"
 	rename `var' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_`var'", replace
 }
@@ -9770,7 +9770,7 @@ preserve
 	generate issue_variable_name = "`var'"
 	rename `var' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_`var'", replace
 }
@@ -9789,7 +9789,7 @@ forvalues i = 1/5 {
 	generate issue_variable_name = "agri_income_23_`i'"
 	rename agri_income_23_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_23_`i'_unreasonable", replace
 }
@@ -9805,7 +9805,7 @@ forvalues i = 1/5 {
 	generate issue_variable_name = "agri_income_23_o"
 	rename agri_income_23_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_23_o_unreasonable", replace
 }
@@ -9824,7 +9824,7 @@ preserve
 	generate issue_variable_name = "`var'"
 	rename `var' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_`var'", replace
 }
@@ -9844,7 +9844,7 @@ preserve
 	generate issue_variable_name = "`var'"
 	rename `var' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_`var'", replace
 }
@@ -9862,7 +9862,7 @@ forvalues i = 1/2 {
 	generate issue_variable_name = "agri_income_47_`i'"
 	rename agri_income_47_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_47_`i'", replace
 	}
@@ -9878,7 +9878,7 @@ forvalues i = 1/2 {
 	generate issue_variable_name = "agri_income_48_`i'"
 	rename agri_income_48_`i' print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$income\Issue_agri_income_48_`i'", replace
 	}
@@ -9894,7 +9894,7 @@ preserve
 	generate issue_variable_name = "agri_income_47_o"
 	rename agri_income_47_o print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 		if _N > 0 {
 			save "$income\Issue_agri_income_47_o", replace
 		}
@@ -9917,7 +9917,7 @@ preserve
 	generate issue_variable_name = "living_01_o" 
 	rename living_01_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$standard_living\Issue_living_01_o_missing.dta", replace 
 	}
@@ -9937,7 +9937,7 @@ preserve
 	generate issue_variable_name = "living_03" 
 	rename living_03 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$standard_living\Issue_living_03_missing.dta", replace 
 	}
@@ -9959,7 +9959,7 @@ preserve
 	generate issue_variable_name = "living_03_o" 
 	rename living_03_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$standard_living\Issue_living_03_o_missing.dta", replace 
 	}
@@ -9981,7 +9981,7 @@ preserve
 	generate issue_variable_name = "living_04_o" 
 	rename living_04_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$standard_living\Issue_living_04_o_missing.dta", replace 
 	}
@@ -10005,7 +10005,7 @@ tostring living_05_o, replace
 	generate issue_variable_name = "living_05_o" 
 	rename living_05_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$standard_living\Issue_living_05_o_missing.dta", replace 
 	}
@@ -10027,7 +10027,7 @@ preserve
 	generate issue_variable_name = "living_06_o" 
 	rename living_06_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$standard_living\Issue_living_06_o_missing.dta", replace 
 	}
@@ -10053,7 +10053,7 @@ preserve
 	generate issue_variable_name = "enum_02" 
 	rename enum_02 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_02_unreasonable.dta", replace 
 	}
@@ -10074,7 +10074,7 @@ preserve
 	generate issue_variable_name = "enum_02" 
 	rename enum_02 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_02_extraresponse.dta", replace 
 	}
@@ -10097,7 +10097,7 @@ restore
 	generate issue_variable_name = "enum_03"
 	rename enum_03 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10120,7 +10120,7 @@ preserve
 	generate issue_variable_name = "enum_03_o" 
 	rename enum_03_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_03_o_missing.dta", replace 
 	}
@@ -10143,7 +10143,7 @@ restore
 	generate issue_variable_name = "enum_04"
 	rename enum_04 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10166,7 +10166,7 @@ preserve
 	generate issue_variable_name = "enum_04_o" 
 	rename enum_04_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_04_o_missing.dta", replace 
 	}
@@ -10188,7 +10188,7 @@ preserve
 	generate issue_variable_name = "enum_05_o" 
 	rename enum_05_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_05_o_missing.dta", replace 
 	}
@@ -10212,7 +10212,7 @@ replace ind_var = 1 if enum_06 == 5 & enum_07 == "."
 	generate issue_variable_name = "enum_07" 
 	rename enum_07 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_07_missing.dta", replace 
 	}
@@ -10236,7 +10236,7 @@ restore
 	generate issue_variable_name = "beliefs_01"
 	rename beliefs_01 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10261,7 +10261,7 @@ restore
 	generate issue_variable_name = "beliefs_02"
 	rename beliefs_02 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10286,7 +10286,7 @@ restore
 	generate issue_variable_name = "beliefs_03"
 	rename beliefs_03 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10311,7 +10311,7 @@ restore
 	generate issue_variable_name = "beliefs_04"
 	rename beliefs_04 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10336,7 +10336,7 @@ restore
 	generate issue_variable_name = "beliefs_05"
 	rename beliefs_05 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10361,7 +10361,7 @@ restore
 	generate issue_variable_name = "beliefs_06"
 	rename beliefs_06 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10386,7 +10386,7 @@ restore
 	generate issue_variable_name = "beliefs_07"
 	rename beliefs_07 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10411,7 +10411,7 @@ restore
 	generate issue_variable_name = "beliefs_08"
 	rename beliefs_08 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10436,7 +10436,7 @@ restore
 	generate issue_variable_name = "beliefs_09"
 	rename beliefs_09 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10464,7 +10464,7 @@ preserve
 	generate issue_variable_name = "enum_02" 
 	rename enum_02 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_02_unreasonable.dta", replace 
 	}
@@ -10485,7 +10485,7 @@ preserve
 	generate issue_variable_name = "enum_02" 
 	rename enum_02 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_02_extraresponse.dta", replace 
 	}
@@ -10508,7 +10508,7 @@ restore
 	generate issue_variable_name = "enum_03"
 	rename enum_03 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10531,7 +10531,7 @@ preserve
 	generate issue_variable_name = "enum_03_o" 
 	rename enum_03_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_03_o_missing.dta", replace 
 	}
@@ -10554,7 +10554,7 @@ restore
 	generate issue_variable_name = "enum_04"
 	rename enum_04 print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	
     * Export the dataset to Excel conditional on there being an issue
     if _N > 0 {
@@ -10577,7 +10577,7 @@ preserve
 	generate issue_variable_name = "enum_04_o" 
 	rename enum_04_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_04_o_missing.dta", replace 
 	}
@@ -10599,7 +10599,7 @@ preserve
 	generate issue_variable_name = "enum_05_o" 
 	rename enum_05_o print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_05_o_missing.dta", replace 
 	}
@@ -10623,7 +10623,7 @@ replace ind_var = 1 if enum_06 == 5 & enum_07 == "."
 	generate issue_variable_name = "enum_07" 
 	rename enum_07 print_issue
 	tostring(print_issue), replace 
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue key
 	if _N > 0 {
 		save "$enum_observations\Issue_enum_07_missing.dta", replace 
 	}

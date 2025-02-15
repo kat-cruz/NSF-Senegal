@@ -94,7 +94,7 @@ balance_df <- read_dta(file_path_balance_tables_df)
 
 ```{r}
 
-
+balance_df
 
 # Adding a single categorical variable for household training categories
 balance_df <- balance_df %>%
@@ -122,7 +122,7 @@ balance_df <- balance_df %>%
 # Reshape the data
 long_data <- balance_df %>%
   pivot_longer(
-    cols = -c(hhid, treatment_group),  # Keep hhid and group as is, pivot all other columns
+    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
     names_to = "variable",    # Create a column named "variable" for former column names
     values_to = "value"       # Store values in a column named "value"
   )
@@ -135,7 +135,7 @@ long_data <- balance_df %>%
 
 long_data <- long_data %>%
   rename(group = treatment_group)
-
+long_data
 # long_data <- merge(long_data, survey_questions, by = "variable")
 # 
 # view(long_data)
@@ -178,10 +178,10 @@ long_data <- long_data %>%
 
 ```
 
-
-
 ```{r}
-
+# Load necessary libraries
+library(sandwich)
+library(lmtest)
 
 
 summary_stats <- long_data %>%
@@ -192,92 +192,65 @@ summary_stats <- long_data %>%
 
 summary_stats
 
-# Function to run t-tests and store results
-# run_t_tests <- function(df, vars) {
-#   results <- list()
-#   
-#   for (var in vars) {
-#     # Subset the data for the current variable
-#     df_var <- df %>% filter(variable == var)
-#     
-#     # Initialize storage for comparisons
-#     results[[var]] <- list()
-#     
-#     # Define all comparisons
-#     comparisons <- list(
-#       "Control vs Treatment1" = c("Control", "Treatment1"),
-#       "Control vs Treatment2" = c("Control", "Treatment2"),
-#       "Control vs Treatment3" = c("Control", "Treatment3"),
-#       "Treatment1 vs Treatment2" = c("Treatment1", "Treatment2"),
-#       "Treatment1 vs Treatment3" = c("Treatment1", "Treatment3"),
-#       "Treatment2 vs Treatment3" = c("Treatment2", "Treatment3")
-#     )
-#     
-#     # Run t-tests
-#     for (comp_name in names(comparisons)) {
-#       groups <- comparisons[[comp_name]]
-#       
-#       # Filter data for the two groups in the comparison
-#       df_subset <- df_var %>% filter(group %in% groups)
-#       
-#       # Run t-test without checking for missing groups
-#       results[[var]][[comp_name]] <- t.test(value ~ group, data = df_subset)
-#     }
-#   }
-#   
-#   return(results)
-# }
 
-run_t_tests <- function(df, vars) {
+run_regressions <- function(df, vars) {
   results <- list()
-  
+
+  # Loop over each variable to perform regressions
   for (var in vars) {
-    # Control vs. each treatment
     results[[var]] <- list()
-    results[[var]][["Control vs Treatment1"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment1"), variable == var))
-    results[[var]][["Control vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment2"), variable == var))
-    results[[var]][["Control vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment3"), variable == var))
+    
+    # Control vs. each treatment
+    results[[var]][["Control vs Treatment1"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment1"), variable == var))
+    results[[var]][["Control vs Treatment2"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment2"), variable == var))
+    results[[var]][["Control vs Treatment3"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment3"), variable == var))
     
     # Treatment pairwise comparisons
-    results[[var]][["Treatment1 vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment2"), variable == var))
-    results[[var]][["Treatment1 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment3"), variable == var))
-    results[[var]][["Treatment2 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment2", "Treatment3"), variable == var))
+    results[[var]][["Treatment1 vs Treatment2"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment2"), variable == var))
+    results[[var]][["Treatment1 vs Treatment3"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment3"), variable == var))
+    results[[var]][["Treatment2 vs Treatment3"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Treatment2", "Treatment3"), variable == var))
   }
+
+  # Cluster standard errors at the village level (hhid_village)
+  clustered_results <- lapply(results, function(model_list) {
+    lapply(model_list, function(model) {
+      coeftest(model, vcov = vcovCL(model, cluster = ~ hhid_village))
+    })
+  })
   
-  return(results)
+  return(clustered_results)
 }
 
-# Define the list of variables to test
-vars_to_test <- setdiff(names(balance_df), c("hhid", "treatment_group"))
-#vars_to_test <- ("species_3")
-vars_to_test
-# Run t-tests
-t_test_results <- run_t_tests(long_data, vars_to_test)
-t_test_results
-# Convert t-test results into a tidy format
-# tidy_results <- lapply(names(t_test_results), function(var) {
-#   bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
-#     tidy(t_test_results[[var]][[comp]]) %>%
-#       mutate(variable = var, comparison = comp)
-#   }))
-# }) %>%
-#   bind_rows() %>%
-#   select(variable, comparison, estimate, p.value) %>%
-#   pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
-# tidy_results
 
-tidy_results <- lapply(names(t_test_results), function(var) {
-  bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
-    tidy(t_test_results[[var]][[comp]]) %>%
+# Define the list of variables to test
+vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+vars_to_test
+# Run regressions with clustered standard errors
+regression_results <- run_regressions(long_data, vars_to_test)
+regression_results
+# Convert regression results into a tidy format
+# Convert regression results into a tidy format
+tidy_results <- lapply(names(regression_results), function(var) {
+  bind_rows(lapply(names(regression_results[[var]]), function(comp) {
+    # Use tidy() to convert the results to a tidy format
+    tidied <- tidy(regression_results[[var]][[comp]])
+    
+    # Add the variable and comparison to each row
+    tidied %>%
       mutate(variable = var, comparison = comp)
   }))
 }) %>%
   bind_rows() %>%
+  # Select relevant columns (estimate, p.value, variable, comparison)
   select(variable, comparison, estimate, p.value) %>%
+  # Round the estimates and p-values for neat presentation
   mutate(across(c(estimate, p.value), ~ round(.x, 2))) %>%
+  # Pivot the data to wide format so that estimates and p-values are separated by comparison
   pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
 
-# # Reshape the data for the final table: combine estimates and p-values
+# Check the structure of tidy_results
+head(tidy_results)
+# Reshape the data for the final table: combine estimates and p-values
 final_table <- summary_stats %>%
   left_join(tidy_results, by = "variable") %>%
   arrange(variable) %>%
@@ -289,25 +262,155 @@ final_table <- summary_stats %>%
                                                round(get(gsub("estimate", "p.value", cur_column())), 3), ")"),
                 .names = "{.col}_formatted")) %>%
   select(-contains("p.value"), -contains("estimate"))
-
-# Add parentheses around all values in rows where comparison = "p.value"
+final_table
+# Format numeric values
 final_table <- final_table %>%
-  mutate(across(where(is.numeric), ~ formatC(.x, format = "f", digits = 2))) %>%  # Round and format numeric columns to 2 decimal places
-  mutate(across(everything(), as.character)) %>%  # Convert all columns to character for manipulation
+  mutate(across(where(is.numeric), ~ formatC(.x, format = "f", digits = 2))) %>%
+  mutate(across(everything(), as.character)) %>%
   mutate(across(everything(), ~ ifelse(grepl("p.value", comparison), 
                                        paste0("(", .x, ")"), 
                                        .x)))  # Add parentheses for p.value rows
+
+# Remove redundant comparison and clean up
 final_table <- final_table %>%
   mutate(
     variable = ifelse(comparison == "(p.value)", "", variable),
     comparison = ifelse(comparison == "(p.value)", "", comparison)
   ) %>%
-select(-"comparison")
+  select(-"comparison")
 
 
-# Define the data with Unicode indentation
+```
 
-print(final_table)
+
+```{r}
+
+
+# 
+# summary_stats <- long_data %>%
+#   group_by(variable, group) %>%
+#   summarise(mean = mean(value, na.rm = TRUE), .groups = "drop") %>%
+#   pivot_wider(names_from = group, values_from = mean) %>%
+#   mutate(across(where(is.numeric), ~ round(.x, 2)))
+# 
+# summary_stats
+# 
+# # Function to run t-tests and store results
+# # run_t_tests <- function(df, vars) {
+# #   results <- list()
+# #   
+# #   for (var in vars) {
+# #     # Subset the data for the current variable
+# #     df_var <- df %>% filter(variable == var)
+# #     
+# #     # Initialize storage for comparisons
+# #     results[[var]] <- list()
+# #     
+# #     # Define all comparisons
+# #     comparisons <- list(
+# #       "Control vs Treatment1" = c("Control", "Treatment1"),
+# #       "Control vs Treatment2" = c("Control", "Treatment2"),
+# #       "Control vs Treatment3" = c("Control", "Treatment3"),
+# #       "Treatment1 vs Treatment2" = c("Treatment1", "Treatment2"),
+# #       "Treatment1 vs Treatment3" = c("Treatment1", "Treatment3"),
+# #       "Treatment2 vs Treatment3" = c("Treatment2", "Treatment3")
+# #     )
+# #     
+# #     # Run t-tests
+# #     for (comp_name in names(comparisons)) {
+# #       groups <- comparisons[[comp_name]]
+# #       
+# #       # Filter data for the two groups in the comparison
+# #       df_subset <- df_var %>% filter(group %in% groups)
+# #       
+# #       # Run t-test without checking for missing groups
+# #       results[[var]][[comp_name]] <- t.test(value ~ group, data = df_subset)
+# #     }
+# #   }
+# #   
+# #   return(results)
+# # }
+# 
+# run_t_tests <- function(df, vars) {
+#   results <- list()
+#   
+#   for (var in vars) {
+#     # Control vs. each treatment
+#     results[[var]] <- list()
+#     results[[var]][["Control vs Treatment1"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment1"), variable == var))
+#     results[[var]][["Control vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment2"), variable == var))
+#     results[[var]][["Control vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment3"), variable == var))
+#     
+#     # Treatment pairwise comparisons
+#     results[[var]][["Treatment1 vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment2"), variable == var))
+#     results[[var]][["Treatment1 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment3"), variable == var))
+#     results[[var]][["Treatment2 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment2", "Treatment3"), variable == var))
+#   }
+#   
+#   return(results)
+# }
+# 
+# # Define the list of variables to test
+# vars_to_test <- setdiff(names(balance_df), c("hhid", "treatment_group"))
+# #vars_to_test <- ("species_3")
+# vars_to_test
+# # Run t-tests
+# t_test_results <- run_t_tests(long_data, vars_to_test)
+# t_test_results
+# # Convert t-test results into a tidy format
+# # tidy_results <- lapply(names(t_test_results), function(var) {
+# #   bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+# #     tidy(t_test_results[[var]][[comp]]) %>%
+# #       mutate(variable = var, comparison = comp)
+# #   }))
+# # }) %>%
+# #   bind_rows() %>%
+# #   select(variable, comparison, estimate, p.value) %>%
+# #   pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+# # tidy_results
+# 
+# tidy_results <- lapply(names(t_test_results), function(var) {
+#   bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+#     tidy(t_test_results[[var]][[comp]]) %>%
+#       mutate(variable = var, comparison = comp)
+#   }))
+# }) %>%
+#   bind_rows() %>%
+#   select(variable, comparison, estimate, p.value) %>%
+#   mutate(across(c(estimate, p.value), ~ round(.x, 2))) %>%
+#   pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+# 
+# # # Reshape the data for the final table: combine estimates and p-values
+# final_table <- summary_stats %>%
+#   left_join(tidy_results, by = "variable") %>%
+#   arrange(variable) %>%
+#   select(variable, Control, contains("estimate"), contains("p.value")) %>%
+#   pivot_longer(cols = starts_with("estimate_") | starts_with("p.value_"),
+#                names_to = c("comparison", "stat"), names_pattern = "(.*)_(.*)", values_to = "value") %>%
+#   pivot_wider(names_from = stat, values_from = value) %>%  # Separate estimates and p-values
+#   mutate(across(contains("estimate"), ~ paste0(.x, " (",
+#                                                round(get(gsub("estimate", "p.value", cur_column())), 3), ")"),
+#                 .names = "{.col}_formatted")) %>%
+#   select(-contains("p.value"), -contains("estimate"))
+# 
+# # Add parentheses around all values in rows where comparison = "p.value"
+# final_table <- final_table %>%
+#   mutate(across(where(is.numeric), ~ formatC(.x, format = "f", digits = 2))) %>%  # Round and format numeric columns to 2 decimal places
+#   mutate(across(everything(), as.character)) %>%  # Convert all columns to character for manipulation
+#   mutate(across(everything(), ~ ifelse(grepl("p.value", comparison), 
+#                                        paste0("(", .x, ")"), 
+#                                        .x)))  # Add parentheses for p.value rows
+# final_table <- final_table %>%
+#   mutate(
+#     variable = ifelse(comparison == "(p.value)", "", variable),
+#     comparison = ifelse(comparison == "(p.value)", "", comparison)
+#   ) %>%
+# select(-"comparison")
+# 
+# 
+# # Define the data with Unicode indentation
+# 
+# print(final_table)
 
 
 

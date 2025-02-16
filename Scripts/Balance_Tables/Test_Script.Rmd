@@ -16,6 +16,125 @@ library(broom)
 ```
 
 
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(broom)
+library(lmtest)
+library(sandwich)
+
+# Generate synthetic data
+set.seed(42)
+n_households <- 500
+n_villages <- 50
+
+df <- data.frame(
+  hhid = 1:n_households,
+  hhid_village = sample(1:n_villages, n_households, replace = TRUE),
+  treatment = factor(sample(c("control", "treatment1", "treatment2", "treatment3"), n_households, replace = TRUE))
+)
+
+for (i in 1:8) {
+  df[[paste0("hh_", sprintf("%02d", i))]] <- rnorm(n_households)
+}
+
+run_regressions <- function(data, dep_vars, cluster_var, treat_var) {
+  treatment_arms <- c("treatment1", "treatment2", "treatment3")
+  results_list <- list()
+
+  for (var in dep_vars) {
+    control_mean <- mean(data[data[[treat_var]] == "control", var])
+    row <- c(variable = var, control_mean = as.character(round(control_mean, 2)))
+
+    for (treat in treatment_arms) {
+      model <- lm(as.formula(paste(var, "~", treat_var)), data = data)
+      vcov_cluster <- vcovCL(model, cluster = data[[cluster_var]])
+      coeftest_res <- coeftest(model, vcov_cluster)
+      t_stat <- round(coeftest_res[grepl(treat, rownames(coeftest_res)), "t value"], 2)
+      p_val <- round(coeftest_res[grepl(treat, rownames(coeftest_res)), "Pr(>|t|)"], 3)
+      row <- c(row, as.character(t_stat), paste0("(", p_val, ")"))
+    }
+
+    for (i in 1:(length(treatment_arms)-1)) {
+      for (j in (i+1):length(treatment_arms)) {
+        subset <- data[data[[treat_var]] %in% c(treatment_arms[i], treatment_arms[j]), ]
+        subset[[treat_var]] <- relevel(factor(subset[[treat_var]]), ref = treatment_arms[i])
+        model <- lm(as.formula(paste(var, "~", treat_var)), data = subset)
+        vcov_cluster <- vcovCL(model, cluster = subset[[cluster_var]])
+        coeftest_res <- coeftest(model, vcov_cluster)
+        t_stat <- round(coeftest_res[2, "t value"], 2)
+        p_val <- round(coeftest_res[2, "Pr(>|t|)"], 3)
+        row <- c(row, as.character(t_stat), paste0("(", p_val, ")"))
+      }
+    }
+
+    results_list[[var]] <- unlist(row, use.names = FALSE)  # Flatten to avoid list structure
+  }
+
+  results_df <- do.call(rbind, results_list) %>%
+    as.data.frame(stringsAsFactors = FALSE)
+
+  colnames(results_df) <- c("variable", "control_mean",
+                            "treatment1_vs_control_t", "treatment1_vs_control_p",
+                            "treatment2_vs_control_t", "treatment2_vs_control_p",
+                            "treatment3_vs_control_t", "treatment3_vs_control_p",
+                            "treatment1_vs_treatment2_t", "treatment1_vs_treatment2_p",
+                            "treatment1_vs_treatment3_t", "treatment1_vs_treatment3_p",
+                            "treatment2_vs_treatment3_t", "treatment2_vs_treatment3_p")
+
+  return(results_df)
+}
+
+dep_vars <- paste0("hh_", sprintf("%02d", 1:8))
+results_table <- run_regressions(df, dep_vars, cluster_var = "hhid_village", treat_var = "treatment")
+
+print(results_table)
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r}
 
 
@@ -295,6 +414,36 @@ library(broom)
 # print(final_table, n = Inf)
 ```
 
+```{r}
+# Generate synthetic data with village variable
+
+######################################################## first past at test using sythetic data #######################################
+# set.seed(123)
+# n <- 200  # Number of households
+# balance_test_df <- data.frame(
+#   hhid = rep(1:n, each = 3),
+#   village = rep(1:50, length.out = n * 3),  # Add village variable
+#   group = rep(c("Control", "Treatment1", "Treatment2", "Treatment3"), n),
+#   variable = rep(c("hh_08", "hh_09", "hh_10"), each = n),
+#   value = c(rnorm(n, mean = 0.5, sd = 0.1),
+#             rnorm(n, mean = 1.5, sd = 0.2),
+#             rnorm(n, mean = 2.5, sd = 0.3),
+#             rnorm(n, mean = 0.5, sd = 0.1),
+#             rnorm(n, mean = 1.5, sd = 0.2),
+#             rnorm(n, mean = 2.5, sd = 0.3),
+#             rnorm(n, mean = 0.5, sd = 0.1),
+#             rnorm(n, mean = 1.5, sd = 0.2),
+#             rnorm(n, mean = 2.5, sd = 0.3),
+#             rnorm(n, mean = 0.5, sd = 0.1),
+#             rnorm(n, mean = 1.5, sd = 0.2),
+#             rnorm(n, mean = 2.5, sd = 0.3)
+#   )
+# )
+# balance_test_df
+
+# Print final table
+#print(final_table, n = Inf)
+```
 
 
 ```{r}
@@ -304,6 +453,8 @@ library(broom)
 # library(tidyr)
 # library(broom)
 
+
+########################################################### first pass at tests - good intital table output #####################
 # Set seed for reproducibility
 set.seed(123)
 

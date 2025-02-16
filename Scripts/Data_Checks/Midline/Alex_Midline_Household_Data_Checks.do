@@ -536,59 +536,109 @@ forvalues i=1/5 {
 
 *** Agriculture Production Module ***
 *** Cereals ***
-forvalues i=1/6{
-	capture label variable cereals_consumption_`i' "Votre menage a t'il cultive du [cereals-name] durant cetter periode"
-	capture label variable cereals_01_`i' "Superficie en hecatre de [cereals-name]"
-	capture label variable cereals_02_`i' "Production totale en 2023 (kg) de [cereals-name]"
-	capture label variable cereals_03_`i' "Quantite autoconsommee en 2023 de [cereals-name]"
-	capture label variable cereals_04_`i' "Quantite vendue en kg en 2023 de [cereals-name]"
-	capture label variable cereals_05_`i' "Prix de vente actuel en FCFA/kg de [cereals-name]"
+local cereal1 "RIZ"
+local cereal2 "MAIS"
+local cereal3 "MIL"
+local cereal4 "SORGHO"
+local cereal5 "NIEBE"
+local cereal6 "AUTRES CÉRÉALES"
+
+*** Farines et Tubercules ***
+local farine1 "FARINE MANIOC VERT"
+local farine2 "MANIOC SÉCHÉ"
+local farine3 "PATATES DOUCES"
+local farine4 "POMMES DE TERRE"
+local farine5 "IGNAME"
+local farine6 "TARO"
+local farine7 "AUTRES TUBERCULES"
+
+*** Légumes ***
+local legume1 "BRÈDES"
+local legume2 "TOMATES"
+local legume3 "CAROTTES"
+local legume4 "OIGNONS"
+local legume5 "CONCOMBRES"
+local legume6 "POIVRONS"
+local legume7 "AUTRES LÉGUMES"
+
+*** Légumineuses Séchées ***
+local legumineuse1 "ARACHIDES"
+local legumineuse2 "HARICOTS SECS"
+local legumineuse3 "POIS"
+local legumineuse4 "LENTILLES"
+local legumineuse5 "AUTRES LÉGUMINEUSES"
+
+*** Végétation Aquatique ***
+local aquatique1 "VÉGÉTATION AQUATIQUE"
+
+*** Autres Cultures (User-Specified) ***
+local autre1 "AUTRES CULTURES"
+*** Agriculture Production Module ***
+*** Cereals ***
+forvalues i=1/6 {
+    local cereal_name `cereal`i''  
+
+    capture label variable cereals_consumption_`i' "Votre ménage a-t-il cultivé du `cereal_name' durant cette période?"
+    capture label variable cereals_01_`i' "Superficie en hectare de `cereal_name'"
+    capture label variable cereals_02_`i' "Production totale en 2023 (kg) de `cereal_name'"
+    capture label variable cereals_03_`i' "Quantité autoconsommée en 2023 de `cereal_name'"
+    capture label variable cereals_04_`i' "Quantité vendue en kg en 2023 de `cereal_name'"
+    capture label variable cereals_05_`i' "Prix de vente actuel en FCFA/kg de `cereal_name'"
 }
 
-*** Farines et tubercules ***
-forvalues i=1/6{
-	capture label variable farine_tubercules_consumption_`i' "Votre menage a t'il cultive du [farines_tubercules-name] durant cetter periode"
-	capture label variable farines_01_`i' "Superficie en hecatre de [farines_tubercules-name]"
-	capture label variable farines_02_`i' "Production totale en 2023 (kg) de [farines_tubercules-name]"
-	capture label variable farines_03_`i' "Quantite autoconsommee en 2023 de [farines_tubercules-name]"
-	capture label variable farines_04_`i' "Quantite vendue en kg en 2023 de [farines_tubercules-name]"
-	capture label variable farines_05_`i' "Prix de vente actuel en FCFA/kg de [farines_tubercules-name]"
+*** Farines et Tubercules ***
+forvalues i=1/7 {
+    local farine_name `farine`i''  
+
+    capture label variable farine_tubercules_consumption_`i' "Votre ménage a-t-il cultivé du `farine_name' durant cette période?"
+    capture label variable farines_01_`i' "Superficie en hectare de `farine_name'"
+    capture label variable farines_02_`i' "Production totale en 2023 (kg) de `farine_name'"
+    capture label variable farines_03_`i' "Quantité autoconsommée en 2023 de `farine_name'"
+    capture label variable farines_04_`i' "Quantité vendue en kg en 2023 de `farine_name'"
+    capture label variable farines_05_`i' "Prix de vente actuel en FCFA/kg de `farine_name'"
 }
 
-*** legumes ***
-forvalues i=1/6{
-	capture label variable legumes_consumption_`i' "Votre menage a t'il cultive du [legumes-name] durant cetter periode"
-	capture label variable legumes_01_`i' "Superficie en hecatre de [legumes-name]"
-	capture label variable legumes_02_`i' "Production totale en 2023 (kg) de [legumes-name]"
-	capture label variable legumes_03_`i' "Quantite autoconsommee en 2023 de [legumes-name]"
-	capture label variable legumes_04_`i' "Quantite vendue en kg en 2023 de [legumes-name]"
-	capture label variable legumes_05_`i' "Prix de vente actuel en FCFA/kg de [legumes-name]"
+*** Légumes ***
+forvalues i=1/7 {
+    local legume_name `legume`i''  
+
+    capture label variable legumes_consumption_`i' "Votre ménage a-t-il cultivé du `legume_name' durant cette période?"
+    capture label variable legumes_01_`i' "Superficie en hectare de `legume_name'"
+    capture label variable legumes_02_`i' "Production totale en 2023 (kg) de `legume_name'"
+    capture label variable legumes_03_`i' "Quantité autoconsommée en 2023 de `legume_name'"
+    capture label variable legumes_04_`i' "Quantité vendue en kg en 2023 de `legume_name'"
+    capture label variable legumes_05_`i' "Prix de vente actuel en FCFA/kg de `legume_name'"
 }
 
-*** Farines et tubercules ***
-forvalues i=1/5{
-	capture label variable legumineuses_consumption_`i' "Votre menage a t'il cultive du [legumineuses-name] durant cetter periode"
-	capture label variable legumineuses_01_`i' "Superficie en hecatre de [legumineuses-name]"
-	capture label variable legumineuses_02_`i' "Production totale en 2023 (kg) de [legumineuses-name]"
-	capture label variable legumineuses_03_`i' "Quantite autoconsommee en 2023 de [legumineuses-name]"
-	capture label variable legumineuses_04_`i' "Quantite vendue en kg en 2023 de [legumineuses-name]"
-	capture label variable legumineuses_05_`i' "Prix de vente actuel en FCFA/kg de [legumineuses-name]"
+*** Légumineuses Séchées ***
+forvalues i=1/5 {
+    local legumineuse_name `legumineuse`i''  
+
+    capture label variable legumineuses_consumption_`i' "Votre ménage a-t-il cultivé du `legumineuse_name' durant cette période?"
+    capture label variable legumineuses_01_`i' "Superficie en hectare de `legumineuse_name'"
+    capture label variable legumineuses_02_`i' "Production totale en 2023 (kg) de `legumineuse_name'"
+    capture label variable legumineuses_03_`i' "Quantité autoconsommée en 2023 de `legumineuse_name'"
+    capture label variable legumineuses_04_`i' "Quantité vendue en kg en 2023 de `legumineuse_name'"
+    capture label variable legumineuses_05_`i' "Prix de vente actuel en FCFA/kg de `legumineuse_name'"
 }
 
-*** aquatiques and other production ***
-	capture label variable aquatique_consumption_1 "Votre menage a t'il cultive du [aquatique-name] durant cette periode"
-	capture label variable aquatique_01_1 "Superficie en hecatre de [aquatique-name]"
-	capture label variable aquatique_02_1 "Production totale en 2023 (kg) de [aquatique-name]"
-	capture label variable aquatique_03_1 "Quantite autoconsommee en 2023 de [aquatique-name]"
-	capture label variable aquatique_04_1 "Quantite vendue en kg en 2023 de [aquatique-name]"
-	capture label variable aquatique_05_1 "Prix de vente actuel en FCFA/kg de [aquatique-name]"
-	capture label variable autre_culture_yesno "Est-ce qu'il y a un autre type de culture"
-	capture label variable autre_culture "Autre type de culture"
-	capture label variable o_culture_01 "Superficie en hectare de [autre-culture]"
-	capture label variable o_culture_02 "Production totale en 2023 (kg) de [autre-culture]"
-	capture label variable o_culture_03 "Quantite autoconsommee en 2023 de [autre-culture]"
-	capture label variable o_culture_04 "Qunatite vendue en kg en 2023 de [autre-culture]"
-	capture label variable o_culture_05 "Prix de vente actuel en FCFA/kg de [autre-culture]"
+*** Végétation Aquatique ***
+capture label variable aquatique_consumption_1 "Votre ménage a-t-il cultivé du `aquatique1' durant cette période?"
+capture label variable aquatique_01_1 "Superficie en hectare de `aquatique1'"
+capture label variable aquatique_02_1 "Production totale en 2023 (kg) de `aquatique1'"
+capture label variable aquatique_03_1 "Quantité autoconsommée en 2023 de `aquatique1'"
+capture label variable aquatique_04_1 "Quantité vendue en kg en 2023 de `aquatique1'"
+capture label variable aquatique_05_1 "Prix de vente actuel en FCFA/kg de `aquatique1'"
+
+*** Autres Cultures (User-Specified) ***
+capture label variable autre_culture_yesno "Est-ce qu'il y a un autre type de culture?"
+capture label variable autre_culture "Autre type de culture"
+capture label variable o_culture_01 "Superficie en hectare de `autre1'"
+capture label variable o_culture_02 "Production totale en 2023 (kg) de `autre1'"
+capture label variable o_culture_03 "Quantité autoconsommée en 2023 de `autre1'"
+capture label variable o_culture_04 "Quantité vendue en kg en 2023 de `autre1'"
+capture label variable o_culture_05 "Prix de vente actuel en FCFA/kg de `autre1'"
+
 
 *** Food consumption module ***
 	capture label variable food01 "Dans les douze (12) derniers mois, combien de mois a dure la periode de soudure"

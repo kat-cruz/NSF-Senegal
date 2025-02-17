@@ -34,6 +34,8 @@ if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
+**************************** data file paths ****************************`		`	''
+global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
 
 global village_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Village_Observations"
 global household_roster "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster"
@@ -46,15 +48,10 @@ global income "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midlin
 global standard_living "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Standard_Living"
 global beliefs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Beliefs" 
 global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Enumerator_Observations"
-
-************************* Baseline file path  **********************************
-
-global baseline "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
-
+global hh18 "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster\hh18_16Feb2025"
+global hh13 "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster\hh13_16Feb2025"
 
 ************************* Final output file path **********************************
-
-
 global issues "$master\Data_Management\External_Corrections\Issues for Justin and Amina\Midline\Issues"
 global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
 
@@ -261,9 +258,56 @@ global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midlin
 		*append using "$enum_observations\Enumerator_Issues.dta"
 		
 sort enqu_name issue_variable_name
-
+gen issue_variable_label = ""  
+foreach var of varlist issue_variable_name {  
+    replace issue_variable_label = "`: variable label `var''" if issue_variable_name == "`var'"
+}
+sort enqu_name issue_variable_name
 merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\\Updated_Midline_Survey_Questions.dta"
 
 * Export the dataset to Excel
-export excel using "$issues\Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
-export excel using "$issuesOriginal\Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
+//export excel using "$issues\Household_Issues_13Feb2025.xlsx", firstrow(variables) replace
+export excel using "$issuesOriginal\Part1_Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
+
+**** TIME USE QUESTIONS *****************
+	clear
+	local folder "$hh13"  
+
+	cd "`folder'"
+	local files: dir . files "*.dta"
+
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
+
+	gen issue_variable_label = ""  
+foreach var of varlist issue_variable_name {  
+    replace issue_variable_label = "`: variable label `var''" if issue_variable_name == "`var'"
+}
+sort enqu_name issue_variable_name
+
+merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\\Updated_Midline_Survey_Questions.dta"
+	save "$hh13\Part2_Household_Issues_16Feb2025.dta", replace 
+	
+**** TIME USE QUESTIONS *****************
+	clear
+	local folder "$hh18"  
+
+	cd "`folder'"
+	local files: dir . files "*.dta"
+
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
+	
+gen issue_variable_label = ""  
+foreach var of varlist issue_variable_name {  
+    replace issue_variable_label = "`: variable label `var''" if issue_variable_name == "`var'"
+}
+sort enqu_name issue_variable_name
+merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\\Updated_Midline_Survey_Questions.dta"
+	save "$hh18\Part3_Household_Issues_16Feb2025.dta", replace 
+	
+

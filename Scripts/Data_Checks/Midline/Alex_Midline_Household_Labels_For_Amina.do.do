@@ -1,5 +1,3 @@
-*==============================================================================
-
 clear all
 set mem 100m
 set maxvar 30000
@@ -10,21 +8,20 @@ set more off
 * SET FILE PATHS
 **************************************************
 
-* Set base Box path for each user
 if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
 if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
 if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
 if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
-
-**************************** data file paths ****************************`		`	''
-
 global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
 global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
 
-
 use "$issuesOriginal\Midline_Survey_Questions.dta", clear
+
+**************************************************
+* Define Replacement Variables
+**************************************************
 
 local cereal1 "RIZ"
 local cereal2 "MAIS"
@@ -58,7 +55,6 @@ local legumineuse5 "AUTRES LÉGUMINEUSES"
 local aquatique1 "VÉGÉTATION AQUATIQUE"
 local autre1 "AUTRES CULTURES"
 
-*** Livestock (Species) ***
 local species1 "BOVINS"
 local species2 "MOUTON"
 local species3 "CHEVRE"
@@ -68,93 +64,89 @@ local species6 "ANIMAUX DE TRAIT"
 local species7 "PORCS"
 local species8 "VOLAILLE"
 
-*** Sales Animals ***
-local sale_animales1 "BOVINS"
-local sale_animales2 "MOUTON"
-local sale_animales3 "CHEVRE"
-local sale_animales4 "CHEVAL (EQUIDE)"
-local sale_animales5 "ANE"
-local sale_animales6 "ANIMAUX DE TRAIT"
-local sale_animales7 "PORCS"
-local sale_animales8 "VOLAILLE"
-
-*** Other Agricultural Goods ***
 local goods1 "ENGRAIS"
 local goods2 "ALIMENTS POUR LE BETAIL"
 local goods3 "AUTRES DEPENSES"
 
+**************************************************
+* Replace Placeholders in `value` Column
+**************************************************
 
-replace value = subinstr(value, "[cereals-name]", "`cereal1'", .) if strpos(value, "[cereals-name]")
-replace value = subinstr(value, "[cereals-name]", "`cereal2'", .) if strpos(value, "[cereals-name]")
-replace value = subinstr(value, "[cereals-name]", "`cereal3'", .) if strpos(value, "[cereals-name]")
-replace value = subinstr(value, "[cereals-name]", "`cereal4'", .) if strpos(value, "[cereals-name]")
-replace value = subinstr(value, "[cereals-name]", "`cereal5'", .) if strpos(value, "[cereals-name]")
-replace value = subinstr(value, "[cereals-name]", "`cereal6'", .) if strpos(value, "[cereals-name]")
-
-replace value = subinstr(value, "[farines_tubercules-name]", "`farine1'", .) if strpos(value, "[farines_tubercules-name]")
-replace value = subinstr(value, "[farines_tubercules-name]", "`farine2'", .) if strpos(value, "[farines_tubercules-name]")
-replace value = subinstr(value, "[farines_tubercules-name]", "`farine3'", .) if strpos(value, "[farines_tubercules-name]")
-replace value = subinstr(value, "[farines_tubercules-name]", "`farine4'", .) if strpos(value, "[farines_tubercules-name]")
-replace value = subinstr(value, "[farines_tubercules-name]", "`farine5'", .) if strpos(value, "[farines_tubercules-name]")
-replace value = subinstr(value, "[farines_tubercules-name]", "`farine6'", .) if strpos(value, "[farines_tubercules-name]")
-replace value = subinstr(value, "[farines_tubercules-name]", "`farine7'", .) if strpos(value, "[farines_tubercules-name]")
-
-replace value = subinstr(value, "[legumes-name]", "`legume1'", .) if strpos(value, "[legumes-name]")
-replace value = subinstr(value, "[legumes-name]", "`legume2'", .) if strpos(value, "[legumes-name]")
-replace value = subinstr(value, "[legumes-name]", "`legume3'", .) if strpos(value, "[legumes-name]")
-replace value = subinstr(value, "[legumes-name]", "`legume4'", .) if strpos(value, "[legumes-name]")
-replace value = subinstr(value, "[legumes-name]", "`legume5'", .) if strpos(value, "[legumes-name]")
-replace value = subinstr(value, "[legumes-name]", "`legume6'", .) if strpos(value, "[legumes-name]")
-replace value = subinstr(value, "[legumes-name]", "`legume7'", .) if strpos(value, "[legumes-name]")
-
-replace value = subinstr(value, "[legumineuses-name]", "`legumineuse1'", .) if strpos(value, "[legumineuses-name]")
-replace value = subinstr(value, "[legumineuses-name]", "`legumineuse2'", .) if strpos(value, "[legumineuses-name]")
-replace value = subinstr(value, "[legumineuses-name]", "`legumineuse3'", .) if strpos(value, "[legumineuses-name]")
-replace value = subinstr(value, "[legumineuses-name]", "`legumineuse4'", .) if strpos(value, "[legumineuses-name]")
-replace value = subinstr(value, "[legumineuses-name]", "`legumineuse5'", .) if strpos(value, "[legumineuses-name]")
-
-replace value = subinstr(value, "[aquatique-name]", "`aquatique1'", .) if strpos(value, "[aquatique-name]")
-replace value = subinstr(value, "[autre-culture]", "`autre1'", .) if strpos(value, "[autre-culture]")
-
-*** Replace placeholders for cereals ***
+* Cereals
 forvalues i=1/6 {
     replace value = subinstr(value, "[cereals-name]", "`cereal`i''", .) if strpos(value, "[cereals-name]")
 }
 
-*** Replace placeholders for farines et tubercules ***
+* Farines et Tubercules
 forvalues i=1/7 {
     replace value = subinstr(value, "[farines_tubercules-name]", "`farine`i''", .) if strpos(value, "[farines_tubercules-name]")
 }
 
-*** Replace placeholders for légumes ***
+* Légumes
 forvalues i=1/7 {
     replace value = subinstr(value, "[legumes-name]", "`legume`i''", .) if strpos(value, "[legumes-name]")
 }
 
-*** Replace placeholders for légumineuses séchées ***
+* Légumineuses Séchées
 forvalues i=1/5 {
     replace value = subinstr(value, "[legumineuses-name]", "`legumineuse`i''", .) if strpos(value, "[legumineuses-name]")
 }
 
-*** Replace placeholders for aquatic vegetation ***
+* Végétation Aquatique
 replace value = subinstr(value, "[aquatique-name]", "`aquatique1'", .) if strpos(value, "[aquatique-name]")
 
-*** Replace placeholders for other cultures ***
+* Other Cultures
 replace value = subinstr(value, "[autre-culture]", "`autre1'", .) if strpos(value, "[autre-culture]")
 
-*** Replace placeholders for species ***
+* Species
 forvalues i=1/8 {
     replace value = subinstr(value, "[species-name]", "`species`i''", .) if strpos(value, "[species-name]")
 }
 
-*** Replace placeholders for livestock sales ***
-forvalues i=1/8 {
-    replace value = subinstr(value, "[sale_animales-name]", "`sale_animales`i''", .) if strpos(value, "[sale_animales-name]")
-}
-
-*** Replace placeholders for agricultural goods ***
+* Agricultural Goods
 forvalues i=1/3 {
     replace value = subinstr(value, "[goods-name]", "`goods`i''", .) if strpos(value, "[goods-name]")
 }
 
+**************************************************
+* **Fix Specific Variables**
+**************************************************
+
+* Rename health_5_12_1 -> health_5_12
+rename health_5_12_1 health_5_12
+replace value = "5.12. Quelle est la distance en km qui vous sépare de ce service ou de ce professionnel de santé ?" if issue_variable_name == "health_5_12"
+
+* Correct `correct_hh` label
+replace value = "Enquêteur : Utilisez les informations de la fénêtre précédente pour vérifier que vous êtes dans le même ménage où l’enquête de référence a été réalisée." if issue_variable_name == "correct_hh"
+
+* **Replace Placeholder for Revenue Frequencies**
+replace value = subinstr(value, "[agri_income_22]", "Pêche", .) if agri_income_22 == 1
+replace value = subinstr(value, "[agri_income_22]", "Forêt", .) if agri_income_22 == 2
+replace value = subinstr(value, "[agri_income_22]", "Artisanat", .) if agri_income_22 == 3
+replace value = subinstr(value, "[agri_income_22]", "Commerce", .) if agri_income_22 == 4
+replace value = subinstr(value, "[agri_income_22]", "Service", .) if agri_income_22 == 5
+replace value = subinstr(value, "[agri_income_22]", "Emploi salarié", .) if agri_income_22 == 6
+replace value = subinstr(value, "[agri_income_22]", "Transport", .) if agri_income_22 == 7
+replace value = subinstr(value, "[agri_income_22]", "Cueillette", .) if agri_income_22 == 8
+replace value = subinstr(value, "[agri_income_22]", "Autre (à préciser)", .) if agri_income_22 == 9
+
+* **Replace Placeholder in agri_income_23_1**
+replace value = subinstr(value, "[agri_income_22]", "Période en mois", .) if issue_variable_name == "agri_income_23_1"
+
+* **Fix Credit Loan Variables**
+replace value = subinstr(value, "[credit_ask-name]", "Montant du prêt", .) if issue_variable_name == "agri_income_36_2"
+
+* **Replace Placeholder for Product Expenses**
+forvalues i=1/8 {
+    replace value = subinstr(value, "[product-name]", "`goods`i''", .) if strpos(value, "[product-name]")
+}
+
+* **Replace Placeholder for Goods Expenses**
+forvalues i=1/3 {
+    replace value = subinstr(value, "[goods-name]", "`goods`i''", .) if strpos(value, "[goods-name]")
+}
+
+**************************************************
+* Save Updated File
+**************************************************
 save "$issuesOriginal\Updated_Midline_Survey_Questions.dta", replace

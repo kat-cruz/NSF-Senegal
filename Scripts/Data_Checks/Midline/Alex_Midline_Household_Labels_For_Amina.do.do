@@ -109,44 +109,6 @@ forvalues i=1/3 {
 }
 
 **************************************************
-* **Fix Specific Variables**
-**************************************************
-
-* Rename health_5_12_1 -> health_5_12
-rename health_5_12_1 health_5_12
-replace value = "5.12. Quelle est la distance en km qui vous sépare de ce service ou de ce professionnel de santé ?" if issue_variable_name == "health_5_12"
-
-* Correct `correct_hh` label
-replace value = "Enquêteur : Utilisez les informations de la fénêtre précédente pour vérifier que vous êtes dans le même ménage où l’enquête de référence a été réalisée." if issue_variable_name == "correct_hh"
-
-* **Replace Placeholder for Revenue Frequencies**
-replace value = subinstr(value, "[agri_income_22]", "Pêche", .) if agri_income_22 == 1
-replace value = subinstr(value, "[agri_income_22]", "Forêt", .) if agri_income_22 == 2
-replace value = subinstr(value, "[agri_income_22]", "Artisanat", .) if agri_income_22 == 3
-replace value = subinstr(value, "[agri_income_22]", "Commerce", .) if agri_income_22 == 4
-replace value = subinstr(value, "[agri_income_22]", "Service", .) if agri_income_22 == 5
-replace value = subinstr(value, "[agri_income_22]", "Emploi salarié", .) if agri_income_22 == 6
-replace value = subinstr(value, "[agri_income_22]", "Transport", .) if agri_income_22 == 7
-replace value = subinstr(value, "[agri_income_22]", "Cueillette", .) if agri_income_22 == 8
-replace value = subinstr(value, "[agri_income_22]", "Autre (à préciser)", .) if agri_income_22 == 9
-
-* **Replace Placeholder in agri_income_23_1**
-replace value = subinstr(value, "[agri_income_22]", "Période en mois", .) if issue_variable_name == "agri_income_23_1"
-
-* **Fix Credit Loan Variables**
-replace value = subinstr(value, "[credit_ask-name]", "Montant du prêt", .) if issue_variable_name == "agri_income_36_2"
-
-* **Replace Placeholder for Product Expenses**
-forvalues i=1/8 {
-    replace value = subinstr(value, "[product-name]", "`goods`i''", .) if strpos(value, "[product-name]")
-}
-
-* **Replace Placeholder for Goods Expenses**
-forvalues i=1/3 {
-    replace value = subinstr(value, "[goods-name]", "`goods`i''", .) if strpos(value, "[goods-name]")
-}
-
-**************************************************
 * Save Updated File
 **************************************************
 save "$issuesOriginal\Updated_Midline_Survey_Questions.dta", replace

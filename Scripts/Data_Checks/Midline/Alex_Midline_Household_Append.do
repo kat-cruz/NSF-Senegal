@@ -264,6 +264,17 @@ foreach var of varlist issue_variable_name {
 }
 sort enqu_name issue_variable_name
 merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\\Updated_Midline_Survey_Questions.dta"
+rename hh_name_complet_resp individ
+
+merge m:1 individ using "C:\Users\admmi\Box\NSF Senegal\Data_Management\_CRDES_CleanData\Baseline\Identified\All_Villages_With_Individual_IDs.dta"
+
+* Step 2: Keep only matched (`_merge == 3`) or cases where hh_name_complet_resp is 999
+keep if _merge == 3 | individ == "999"
+
+* Step 3: Keep only the specified variables
+keep villageid sup sup_name enqu enqu_name hh_phone hhid individ hh_name_complet_resp ///
+     hh_name_complet_resp_new hh_member_name print_issue key issue ///
+     issue_variable_name hh_age issue_variable_label value
 
 * Export the dataset to Excel
 //export excel using "$issues\Household_Issues_13Feb2025.xlsx", firstrow(variables) replace

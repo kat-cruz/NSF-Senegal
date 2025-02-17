@@ -1,0 +1,1070 @@
+---
+title: "Balance_Tables"
+author: "Kateri Mouawad"
+date: "2025-01-03"
+output: html_document
+---
+
+#START HERE - load packages
+
+```{r}
+
+#remotes::install_github("kwb-r/kwb.utils")
+
+#options(repos = c(
+#  kwbr = 'https://kwb-r.r-universe.dev',
+#  CRAN = 'https://cloud.r-project.org'))
+  
+# Download and install kwb.utils in R
+#install.packages('kwb.utils')
+
+
+
+
+# install.packages(officer)
+# install.packages(r2rtf)
+# install.packages(dplyr)
+# install.packages(ggplot2)
+# install.packages(kwb.utils)
+# install.packages(haven)
+# install.packages(data.table)
+# install.packages(rtf)
+# install.packages(tidyverse)
+# install.packages(estimatr)
+# install.packages(broom)
+#install.packages(reshape2)
+# install.packages("cobalt")
+# install.packages("RCT")
+#install.packages("purrr")
+
+#library(reshape2)
+#library(officer)
+#library(r2rtf)
+library(dplyr)
+library(readr)
+#library(ggplot2)
+#library(kwb.utils)
+library(haven)
+library(data.table)
+library(rtf)
+library(tidyverse)
+library(estimatr)
+library(broom)
+#library(RCT)
+#library(cobalt)
+
+```
+
+
+
+#File and Data paths
+```{r}
+
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data_Management/Output/Data_Analysis/Balance_Tables"
+  ))  
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data_Management/Output/Data_Analysis/Balance_Tables"
+  ))
+}
+
+
+file_path_balance_tables_df <- file.path(proj$p1, "baseline_balance_tables_data.dta")
+balance_df <- read_dta(file_path_balance_tables_df)
+
+#survey_questions <- read_csv(file.path(proj$p1, "Baseline_Survey_Questions.csv"))
+
+
+```
+
+
+
+###filter by treatment group
+
+```{r}
+
+balance_df
+
+# Adding a single categorical variable for household training categories
+balance_df <- balance_df %>%
+  mutate(
+    # Extract the two middle characters (e.g., 2A) from hhid
+    group = str_sub(hhid, 3, 4),
+    
+    # Assign treatment group based on the extracted group value
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1", # Public health trained
+      group %in% c("2A", "2B") ~ "Treatment2", # Private benefits trained
+      group %in% c("3A", "3B") ~ "Treatment3"  # Public and private trained
+    )
+  ) %>%
+  select(-group)
+
+#view(balance_df)
+
+
+# Ensure 'group' is character to avoid conflicts
+# balance_df <- balance_df %>%
+#   mutate(group = as.character(group)) 
+
+# Reshape the data
+long_data <- balance_df %>%
+  pivot_longer(
+    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+    names_to = "variable",    # Create a column named "variable" for former column names
+    values_to = "value"       # Store values in a column named "value"
+  )
+
+
+#view(long_data)
+# View the transformed dat
+
+###################### bring in survey questions to merge ###################################################
+
+long_data <- long_data %>%
+  rename(group = treatment_group)
+long_data
+# long_data <- merge(long_data, survey_questions, by = "variable")
+# 
+# view(long_data)
+# survey_questions
+
+# Adding indicator variables for household training categories
+# balance_df <- balance_df %>%
+#   mutate(
+#     # Extract the two middle characters (e.g., 2A) from hhid
+#     group = str_sub(hhid, 3, 4),
+#     
+#     # Add indicator variables based on the group value
+#     control = if_else(group %in% c("0A", "0B"), 1, 0),
+#     treatment1 = if_else(group %in% c("1A", "1B"), 1, 0), #public health trained
+#     treatment2 = if_else(group %in% c("2A", "2B"), 1, 0), # private benefits trained
+#     treatment3 = if_else(group %in% c("3A", "3B"), 1, 0) # public_and_private_trained
+#   ) #%>%
+#   # Drop the 'group' column if it's not needed
+#   #select(-group)
+# 
+# view(balance_df)
+
+# Adding indicator variables for household training categories
+# balance_df <- balance_df %>%
+#   mutate(
+#     # Extract the two middle characters (e.g., 2A) from hhid
+#     group = str_sub(hhid, 3, 4),
+#     
+#     # Add indicator variables based on the group value
+#     control = if_else(group %in% c("0A", "0B"), 1, 0),
+#     public_health_trained = if_else(group %in% c("1A", "1B"), 1, 0),
+#     private_benefits_trained = if_else(group %in% c("2A", "2B"), 1, 0),
+#     public_and_private_trained = if_else(group %in% c("3A", "3B"), 1, 0)
+#   ) %>%
+#   # Drop the 'group' column if it's not needed
+#   select(-group)
+# 
+# view(balance_df)
+
+
+```
+
+
+
+```{r}
+
+
+# Function to run regressions and extract t-stats and p-values
+run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+  results <- list()
+  for (var in vars_to_test) {
+    # Control vs each treatment
+    treatments <- unique(data[[treatment_col]])
+    treatments <- setdiff(treatments, 'control')
+    for (arm in treatments) {
+      subset <- data %>% filter(!!sym(treatment_col) %in% c('control', arm))
+      subset[[treatment_col]] <- ifelse(subset[[treatment_col]] == arm, 1, 0)
+      model <- lm(as.formula(paste(var, '~', treatment_col)), data = subset)
+      clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+      results <- append(results, list(data.frame(variable = var, comparison = paste('control vs', arm), t_stat = clustered_se[2, 3], p_value = clustered_se[2, 4])))
+    }
+    # Pairwise comparisons between treatments
+    for (i in 1:(length(treatments) - 1)) {
+      for (j in (i + 1):length(treatments)) {
+        subset <- data %>% filter(!!sym(treatment_col) %in% c(treatments[i], treatments[j]))
+        subset[[treatment_col]] <- ifelse(subset[[treatment_col]] == treatments[j], 1, 0)
+        model <- lm(as.formula(paste(var, '~', treatment_col)), data = subset)
+        clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+        results <- append(results, list(data.frame(variable = var, comparison = paste(treatments[i], 'vs', treatments[j]), t_stat = clustered_se[2, 3], p_value = clustered_se[2, 4])))
+      }
+    }
+  }
+  bind_rows(results)
+}
+balance_df
+# Run the regressions
+ vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+ regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test)
+vars_to_test
+long_data
+# Pivot table to display results
+final_table <- regression_results %>%
+  pivot_wider(names_from = comparison, values_from = c(t_stat, p_value))
+
+# View final table
+print(final_table)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+# Load necessary libraries
+# library(sandwich)
+# library(lmtest)
+# 
+# 
+# summary_stats <- long_data %>%
+#   group_by(variable, group) %>%
+#   summarise(mean = mean(value, na.rm = TRUE), .groups = "drop") %>%
+#   pivot_wider(names_from = group, values_from = mean) %>%
+#   mutate(across(where(is.numeric), ~ round(.x, 2)))
+# 
+# summary_stats
+# 
+# 
+# run_regressions <- function(df, vars) {
+#   results <- list()
+# 
+#   # Loop over each variable to perform regressions
+#   for (var in vars) {
+#     results[[var]] <- list()
+#     
+#     # Control vs. each treatment
+#     results[[var]][["Control vs Treatment1"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment1"), variable == var))
+#     results[[var]][["Control vs Treatment2"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment2"), variable == var))
+#     results[[var]][["Control vs Treatment3"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment3"), variable == var))
+#     
+#     # Treatment pairwise comparisons
+#     results[[var]][["Treatment1 vs Treatment2"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment2"), variable == var))
+#     results[[var]][["Treatment1 vs Treatment3"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment3"), variable == var))
+#     results[[var]][["Treatment2 vs Treatment3"]] <- lm(value ~ group, data = df %>% filter(group %in% c("Treatment2", "Treatment3"), variable == var))
+#   }
+# 
+#   # Cluster standard errors at the village level (hhid_village)
+#   clustered_results <- lapply(results, function(model_list) {
+#     lapply(model_list, function(model) {
+#       coeftest(model, vcov = vcovCL(model, cluster = ~ hhid_village))
+#     })
+#   })
+#   
+#   return(clustered_results)
+# }
+# 
+# 
+# # Define the list of variables to test
+# vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# vars_to_test
+# # Run regressions with clustered standard errors
+# regression_results <- run_regressions(long_data, vars_to_test)
+# regression_results
+# # Convert regression results into a tidy format
+# # Convert regression results into a tidy format
+# # tidy_results <- lapply(names(regression_results), function(var) {
+# #   bind_rows(lapply(names(regression_results[[var]]), function(comp) {
+# #     # Use tidy() to convert the results to a tidy format
+# #     tidied <- tidy(regression_results[[var]][[comp]])
+# #     
+# #     # Add the variable and comparison to each row
+# #     tidied %>%
+# #       mutate(variable = var, comparison = comp)
+# #   }))
+# # }) %>%
+# #   bind_rows() %>%
+# #   # Select relevant columns (estimate, p.value, variable, comparison)
+# #   select(variable, comparison, estimate, p.value) %>%
+# #   # Round the estimates and p-values for neat presentation
+# #   mutate(across(c(estimate, p.value), ~ round(.x, 2))) %>%
+# #   # Pivot the data to wide format so that estimates and p-values are separated by comparison
+# #   pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+# # 
+# # # Check the structure of tidy_results
+# # head(tidy_results)
+# # Reshape the data for the final table: combine estimates and p-values
+# t_tests_by_prefix <- function(df, prefix) {
+#   # Filter columns by prefix
+#   selected_columns <- grep(paste0("^", prefix), colnames(df), value = TRUE)
+#   
+#   if (length(selected_columns) == 0) {
+#     stop("No columns found with the specified prefix.")
+#   }
+#   
+#   # Create all pairwise combinations of treatment groups
+#   treatments <- unique(df$group)
+#   pairs <- combn(treatments, 2, simplify = FALSE)
+#   
+#   results <- list()
+#   
+#   for (col in selected_columns) {
+#     # Store results for this column
+#     col_results <- list()
+#     
+#     for (pair in pairs) {
+#       subset_data <- df %>% filter(group %in% pair)
+#       # Perform t-test
+#       t_result <- t.test(subset_data[[col]] ~ subset_data$group)
+#       # Add to column results
+#       col_results[[paste(pair, collapse = " vs ")]] <- t_result
+#     }
+#     results[[col]] <- col_results
+#   }
+#   
+#   # Return named list of results
+#   return(results)
+# }
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# final_table <- summary_stats %>%
+#   left_join(tidy_results, by = "variable") %>%
+#   arrange(variable) %>%
+#   select(variable, Control, contains("estimate"), contains("p.value")) %>%
+#   pivot_longer(cols = starts_with("estimate_") | starts_with("p.value_"),
+#                names_to = c("comparison", "stat"), names_pattern = "(.*)_(.*)", values_to = "value") %>%
+#   pivot_wider(names_from = stat, values_from = value) %>%  # Separate estimates and p-values
+#   mutate(across(contains("estimate"), ~ paste0(.x, " (",
+#                                                round(get(gsub("estimate", "p.value", cur_column())), 3), ")"),
+#                 .names = "{.col}_formatted")) %>%
+#   select(-contains("p.value"), -contains("estimate"))
+# final_table
+# # Format numeric values
+# final_table <- final_table %>%
+#   mutate(across(where(is.numeric), ~ formatC(.x, format = "f", digits = 2))) %>%
+#   mutate(across(everything(), as.character)) %>%
+#   mutate(across(everything(), ~ ifelse(grepl("p.value", comparison), 
+#                                        paste0("(", .x, ")"), 
+#                                        .x)))  # Add parentheses for p.value rows
+# 
+# # Remove redundant comparison and clean up
+# final_table <- final_table %>%
+#   mutate(
+#     variable = ifelse(comparison == "(p.value)", "", variable),
+#     comparison = ifelse(comparison == "(p.value)", "", comparison)
+#   ) %>%
+#   select(-"comparison")
+
+
+```
+
+
+```{r}
+
+
+
+summary_stats <- long_data %>%
+  group_by(variable, group) %>%
+  summarise(mean = mean(value, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = group, values_from = mean) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+summary_stats
+
+# Function to run t-tests and store results
+# run_t_tests <- function(df, vars) {
+#   results <- list()
+#
+#   for (var in vars) {
+#     # Subset the data for the current variable
+#     df_var <- df %>% filter(variable == var)
+#
+#     # Initialize storage for comparisons
+#     results[[var]] <- list()
+#
+#     # Define all comparisons
+#     comparisons <- list(
+#       "Control vs Treatment1" = c("Control", "Treatment1"),
+#       "Control vs Treatment2" = c("Control", "Treatment2"),
+#       "Control vs Treatment3" = c("Control", "Treatment3"),
+#       "Treatment1 vs Treatment2" = c("Treatment1", "Treatment2"),
+#       "Treatment1 vs Treatment3" = c("Treatment1", "Treatment3"),
+#       "Treatment2 vs Treatment3" = c("Treatment2", "Treatment3")
+#     )
+#
+#     # Run t-tests
+#     for (comp_name in names(comparisons)) {
+#       groups <- comparisons[[comp_name]]
+#
+#       # Filter data for the two groups in the comparison
+#       df_subset <- df_var %>% filter(group %in% groups)
+#
+#       # Run t-test without checking for missing groups
+#       results[[var]][[comp_name]] <- t.test(value ~ group, data = df_subset)
+#     }
+#   }
+#
+#   return(results)
+# }
+
+run_t_tests <- function(df, vars) {
+  results <- list()
+
+  for (var in vars) {
+    # Control vs. each treatment
+    results[[var]] <- list()
+    results[[var]][["Control vs Treatment1"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment1"), variable == var))
+    results[[var]][["Control vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment2"), variable == var))
+    results[[var]][["Control vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Control", "Treatment3"), variable == var))
+
+    # Treatment pairwise comparisons
+    results[[var]][["Treatment1 vs Treatment2"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment2"), variable == var))
+    results[[var]][["Treatment1 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment1", "Treatment3"), variable == var))
+    results[[var]][["Treatment2 vs Treatment3"]] <- t.test(value ~ group, data = df %>% filter(group %in% c("Treatment2", "Treatment3"), variable == var))
+  }
+
+  return(results)
+}
+
+# Define the list of variables to test
+vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+#vars_to_test <- ("species_3")
+vars_to_test
+# Run t-tests
+t_test_results <- run_t_tests(long_data, vars_to_test)
+t_test_results
+# Convert t-test results into a tidy format
+# tidy_results <- lapply(names(t_test_results), function(var) {
+#   bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+#     tidy(t_test_results[[var]][[comp]]) %>%
+#       mutate(variable = var, comparison = comp)
+#   }))
+# }) %>%
+#   bind_rows() %>%
+#   select(variable, comparison, estimate, p.value) %>%
+#   pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+# tidy_results
+
+tidy_results <- lapply(names(t_test_results), function(var) {
+  bind_rows(lapply(names(t_test_results[[var]]), function(comp) {
+    tidy(t_test_results[[var]][[comp]]) %>%
+      mutate(variable = var, comparison = comp)
+  }))
+}) %>%
+  bind_rows() %>%
+  select(variable, comparison, estimate, p.value) %>%
+  mutate(across(c(estimate, p.value), ~ round(.x, 2))) %>%
+  pivot_wider(names_from = comparison, values_from = c(estimate, p.value))
+tidy_results
+
+
+
+# # Reshape the data for the final table: combine estimates and p-values
+final_table <- summary_stats %>%
+  left_join(tidy_results, by = "variable") %>%
+  arrange(variable) %>%
+  select(variable, Control, contains("estimate"), contains("p.value")) %>%
+  pivot_longer(cols = starts_with("estimate_") | starts_with("p.value_"),
+               names_to = c("comparison", "stat"), names_pattern = "(.*)_(.*)", values_to = "value") %>%
+  pivot_wider(names_from = stat, values_from = value) %>%  # Separate estimates and p-values
+  mutate(across(contains("estimate"), ~ paste0(.x, " (",
+                                               round(get(gsub("estimate", "p.value", cur_column())), 3), ")"),
+                .names = "{.col}_formatted")) %>%
+  select(-contains("p.value"), -contains("estimate"))
+
+final_table
+# Add parentheses around all values in rows where comparison = "p.value"
+final_table <- final_table %>%
+  mutate(across(where(is.numeric), ~ formatC(.x, format = "f", digits = 2))) %>%  # Round and format numeric columns to 2 decimal places
+  mutate(across(everything(), as.character)) %>%  # Convert all columns to character for manipulation
+  mutate(across(everything(), ~ ifelse(grepl("p.value", comparison),
+                                       paste0("(", .x, ")"),
+                                       .x)))  # Add parentheses for p.value rows
+
+final_table
+final_table <- final_table %>%
+  mutate(
+    variable = ifelse(comparison == "(p.value)", "", variable),
+    comparison = ifelse(comparison == "(p.value)", "", comparison)
+  ) %>%
+select(-"comparison")
+
+
+# Define the data with Unicode indentation
+
+print(final_table)
+
+
+
+```
+
+##Clean up the table: 
+
+```{r}
+final_table <- final_table %>%
+  mutate(Question = NA_character_)
+vars_to_test
+final_table
+
+#add row in variable equal to the following: hh_education_skills == "" 
+#if variable =  hh_age_resp, replace Question == Age of the Respondent
+#if variable =  hh_gender_, replace Question == Gender
+#if variable =  hh_age_, replace Question == Age (in completed years)
+#if variable =  hh_education_skills_1 , replace Question == 3.7. Education - Skills (multiple choice)
+
+#if variable =  hh_education_skills, replace Question == hh_education_level_
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Archive 
+
+```{r}
+# final_table <- final_table %>%
+# mutate(
+#   Value = case_when(
+#     
+#     variable == "hh_gender" & is.na(Value) ~ "Male/Female",
+#     variable == "health_5_3_2"  ~ "N/A",
+#     variable == "health_5_5" ~ "Yes/No/I don't know",
+#     variable == "health_5_6"  ~ "Yes/No/I don't know",
+#     variable == "health_5_8" ~ "Yes/No/I don't know",
+#     variable == "health_5_9" ~ "Yes/No/I don't know",
+# 
+#     
+#     variable == "hh_12_1"  ~ "Fetched water for HH",
+#     variable == "hh_12_2"  ~ "Gave water to livestock",
+#     variable == "hh_12_3"  ~ "Fetched water for agriculture",
+#     variable == "hh_12_4"  ~ "Washed clothes",
+#     variable == "hh_12_5" ~ "Did the dishes",
+#     variable == "hh_12_6"  ~ "Harvested aquatic vegetation",
+#     variable == "hh_12_7"  ~ "Swam/bathed",
+#     variable == "hh_12_8" ~ "Played",
+#         
+#     variable == "hh_19_1"  ~ "Lake",
+#     variable == "hh_19_2"  ~ "Pond",
+#     variable == "hh_19_3" ~ "River",
+#     variable == "hh_19_4"  ~ "Irrigation channel",
+#     variable == "hh_19_99"  ~ "Other, give details",
+#     
+#     variable == "hh_31_1"  ~ "Graduated, studies completed",
+#     variable == "hh_31_2"  ~ "Moving to the next class",
+#     variable == "hh_31_3"  ~ "Failure, repetition",
+#     variable == "hh_31_4"  ~ "Failure, dismissal",
+#     variable == "hh_31_5"  ~ "Dropping out during the year",
+#     
+#     variable == "hh_33_1"  ~ "Lower",
+#     variable == "hh_33_2"  ~ "About the same",
+#     variable == "hh_33_3" ~ "Superior",
+#     
+#     variable == "living_01_1" ~ "Interior tap",
+#     variable == "living_01_2" ~ "Public tap",
+#     variable == "living_01_3" ~ "Neighbor’s tap",
+#     variable == "living_01_4" ~ "Protected well",
+#     variable == "living_01_5"  ~ "Unprotected well",
+#     variable == "living_01_6"  ~ "Drill hole",
+#     variable == "living_01_7"  ~ "Tanker service",
+#     variable == "living_01_8"  ~ "Water seller",
+#     variable == "living_01_9"  ~ "Source",
+#     variable == "living_01_10"  ~ "Stream",
+#     variable == "living_01_99"  ~ "Other",
+#     
+#     variable == "living_03_1"  ~ "Bleach/Aqua tabs",
+#     variable == "living_03_2"  ~ "Boil",
+#     variable == "living_03_3"  ~ "Filtration",
+#     variable == "living_03_99"  ~ "Other (to be specified)",
+#     
+#     variable == "living_04_1"  ~ "None/outside",
+#     variable == "living_04_2" ~ "Flush with sewer",
+#     variable == "living_04_3" ~ "Toilet flush with septic tank",
+#     variable == "living_04_4"  ~ "Bucket",
+#     variable == "living_04_5"  ~ "Covered pit latrines",
+#     variable == "living_04_6"  ~ "Uncovered pit latrines",
+#     variable == "living_04_7"  ~ "Improved latrines",
+#     variable == "living_04_99"  ~ "Others",
+#     
+#     TRUE ~ as.character(Value)  # Keep other values as they are
+#   )
+# )
+# 
+# 
+# 
+#   Survey_Question = case_when(
+#     str_detect(Variable, "^hh_gender") ~ "Gender of respondent?",
+#      str_detect(Variable, "^health_5_3_2") ~ "Had Bilharzia past 12 months?",
+#      str_detect(Variable, "^health_5_5") ~ "Has he/she received medication for the treatment of schistosomiasis in the past 12 months?",
+#      str_detect(Variable, "^health_5_6") ~ "Has this person ever been diagnosed with schistosomiasis?",
+#      str_detect(Variable, "^health_5_8") ~ "Has this person had blood in their urine in the past 12 months?",
+#      str_detect(Variable, "^health_5_9") ~ "Has this person had blood in their stools in the past 12 months?",
+#     str_detect(Variable, "^hh_12_") ~ "In the past 12 months, why did [Name] spend time near (< 1 m) or in the water source(s)?",
+#     str_detect(Variable, "^hh_19_") ~ "What source(s) of surface water?",
+#     str_detect(Variable, "^hh_31_") ~ "What result did [Name] achieve in the year 2022/2023?",
+#     str_detect(Variable, "^hh_33_") ~ "How does [Name]'s academic performance compare to other students: lower, the same, or higher?",
+#     str_detect(Variable, "^living_01") ~ "What is the main source of drinking water supply?",
+#     str_detect(Variable, "^living_03") ~ "If yes, how is the water treated?",
+#     str_detect(Variable, "^living_04") ~ "What is the main type of toilet used by your household?",
+#     TRUE ~ NA_character_  # Assign NA if no match
+#   )
+# ) %>%
+#   relocate(Survey_Question, .before = Variable) %>%
+#   relocate(Value, .before = N)
+
+```
+
+```{r}
+
+# 
+# # List of variables to test
+# vars_to_test <- setdiff(names(balance_df), c("hhid", "group", "control", 
+#                                              "public_health_trained", 
+#                                              "private_benefits_trained", 
+#                                              "public_and_private_trained"))
+# # Define treatment arms
+# treatment_arms <- c("public_health_trained", "private_benefits_trained", "public_and_private_trained")
+# 
+# # Compute balance tables
+# bal.tab(
+#   balance_df[, vars_to_test],          # The covariates to check for balance
+#   treat = balance_df$control,          # The treatment assignment (0 = control, 1 = treated)
+#   data = balance_df,                   # The dataset
+#   focal = 0,                            # Set the control group as the reference
+#   pairwise = TRUE,                      # Perform pairwise comparisons among treatment groups
+#   un = TRUE                             # Show unadjusted differences
+# )
+# 
+# 
+# 
+# balance_df$treatment_group <- if_else(balance_df$group %in% c("0A", "0B"), "Control",
+#                                       if_else(balance_df$group %in% c("1A", "1B"), "Public Health Trained",
+#                                               if_else(balance_df$group %in% c("2A", "2B"), "Private Benefits Trained",
+#                                                       "Public and Private Trained")))
+# 
+# bal.tab(
+#   balance_df[, vars_to_test],  # Variables you want to test for balance
+#   treat = balance_df$treatment_arms,  # New treatment variable with all arms
+#   un = TRUE,  # Display unweighted balance
+#   pairwise = TRUE,  # Make pairwise comparisons
+#   disp.means = TRUE,  # Display means
+#   disp.sd = TRUE,  # Display standard deviations
+#   disp.p = TRUE  # Display p-values
+# )
+# 
+# balance_df <- balance_df %>%
+#   mutate(
+#     # Extract the two middle characters (e.g., 2A) from hhid
+#     group = str_sub(hhid, 3, 4),
+#     
+#     # Create a new variable 'treatment_group' based on the 'group' value
+#     treatment_group = case_when(
+#       group %in% c("0A", "0B") ~ "Control",  # Define control group
+#       group %in% c("1A", "1B") ~ "Public Health Trained",  # Define public health trained group
+#       group %in% c("2A", "2B") ~ "Private Benefits Trained",  # Define private benefits trained group
+#       group %in% c("3A", "3B") ~ "Public and Private Trained",  # Define combined treatment group
+#       TRUE ~ NA_character_  # Handle cases that don't fit any group
+#     )
+#   )
+# 
+# balance_df
+# # Run balance checking using bal.tab()
+# bal.tab(
+#   balance_df[, vars_to_test],  # Specify variables you want to test for balance
+#   treat = balance_df$treatment_group,  # Use the newly created treatment_group variable
+#   un = TRUE,  # Display unweighted balance
+#   pairwise = TRUE,  # Perform pairwise comparisons
+#   disp.means = TRUE,  # Display means
+#   disp.sd = TRUE,  # Display standard deviations
+#   disp.p = TRUE  # Display p-values
+# )
+```
+
+
+
+```{r}
+
+
+
+
+
+
+
+
+
+
+
+
+# Define treatment groups
+# 
+# # Function to compute means and SDs
+# compute_summary_stats <- function(var, group_var) {
+#   balance_df %>%
+#     group_by(!!sym(group_var)) %>%   # Groups the data by the specified group variable
+#     summarise(
+#       mean = mean(.data[[var]], na.rm = TRUE),  # Computes mean of `var`, ignoring NAs
+#       sd = sd(.data[[var]], na.rm = TRUE),      # Computes standard deviation of `var`, ignoring NAs
+#       n = n(),                                  # Counts number of observations
+#       .groups = "drop"                          # Prevents unwanted grouping in later operations
+#     )
+# }
+# 
+# # Function to run t-tests
+# run_t_test <- function(var, group1, group2) {
+#   t_test <- t.test(
+#     balance_df[[var]][balance_df[[group1]] == 1],  # Subset `var` for group1
+#     balance_df[[var]][balance_df[[group2]] == 1],  # Subset `var` for group2
+#     var.equal = TRUE                               # Assume equal variance
+#   )
+#   
+#   return(
+#     tidy(t_test) %>% 
+#       mutate(variable = var, group1 = group1, group2 = group2)
+#   )
+# }
+# 
+# treatment_groups <- c("public_health_trained", "private_benefits_trained", "public_and_private_trained")
+# treatment_groups
+# # Generate summary stats for all variables by group
+# summary_stats <- map_dfr(vars_to_test, ~map_dfr(c("control", public_health_trained), 
+#                                                 ~compute_summary_stats(.x, .y), 
+#                                                 .id = "group"))
+# 
+# 
+# t_tests_vs_control <- cross_df(list(variable = vars_to_test, treatment = treatment_groups)) %>%
+#   mutate(results = map2(variable, treatment, ~run_t_test(.x, .y, "control"))) %>%
+#   unnest(results)
+# 
+# 
+# 
+# # Run pairwise t-tests among treatment groups
+# pairwise_tests <- expand.grid(variable = vars_to_test, 
+#                               group1 = treatment_groups, 
+#                               group2 = treatment_groups) %>%
+#   filter(group1 != group2) %>%
+#   mutate(results = map2(variable, paste(group1, group2, sep = "_"), 
+#                         ~run_t_test(.x, .y, .y))) %>%
+#   unnest(results)
+
+```
+
+
+```{r}
+
+
+# for individual-level variables, these need to be scaled to the household level
+    # 1) Understand the Variable: Is it continuous, binary, or categorical? What does it represent?
+    # 2) Decide What’s Meaningful: What summary statistic (mean, max, proportion) best represents the household for your analysis goals?
+
+# Filter rows to keep only 1s and 0s in the specified variables
+# binary_vars <- c()
+# 
+# 
+# balance_df <- balance_df %>%
+#   filter(across(all_of(binary_vars), ~ . %in% c(0, 1))) 
+# 
+#    
+# 
+# # Specify the individual-level variables to scale
+# individual_vars <- c("hh_education_year_achieve_", 
+#                      "hh_14_", 
+#                      "hh_16_", 
+#                      "agri_income_05", 
+#                      "hh_numero", 
+#                      "hh_03_", 
+#                      "hh_10_", 
+#                      "hh_14_",
+#                      "hh_16_"
+#                          ) 
+# 
+# household_id <- "hhid"  
+# 
+# 
+# 
+# # Create new variables in the original dataframe by scaling to household-level means
+# balance_df <- balance_df %>%
+#   group_by(!!sym(household_id)) %>%
+#   mutate(across(
+#     all_of(individual_vars), 
+#     ~ mean(.x, na.rm = TRUE), 
+#     .names = "{.col}mean"
+#   )) %>%
+#   ungroup()
+# 
+
+
+```
+
+
+```{r}
+####aggregate to hh level
+
+# for individual-level variables, these need to be scaled to the household level
+    # 1) Understand the Variable: Is it continuous, binary, or categorical? What does it represent?
+    # 2) Decide What’s Meaningful: What summary statistic (mean, max, proportion) best represents the household for your analysis goals?
+# Specify the individual-level variables to scale
+
+# scaled_vars <- balance_df %>%
+#   select(
+#     starts_with("hh_education_year_achieve_"),
+#     starts_with("hh_14_"),
+#     starts_with("hh_16_"),
+#     agri_income_05,
+#     hh_numero,
+#     starts_with("hh_03_"),
+#     starts_with("hh_10_"),
+#     matches("^hh_education_skills_[0-9]+$"),
+#     matches("^hh_education_level_[0-9]+$"),
+#     matches("^hh_11_[0-9]+$"),
+#     matches("^hh_15_[0-9]+$"),
+#     matches("^hh_13_[0-9]+$"),
+#     matches("^living_01_[0-9]+$"),
+#     matches("^living_03_[0-9]+$"),
+#     matches("^living_04_[0-9]+$"),
+#     matches("^living_05_[0-9]+$"),
+#     matches("^enum_03_[0-9]+$"),
+#     matches("^enum_04_[0-9]+$"),
+#     matches("^enum_05_[0-9]+$")
+#   ) 
+# # %>%
+# #   colnames()
+# 
+# view(scaled_vars)
+# 
+# # # Specify the individual-level variables to scale
+# # scaled_vars <- c("hh_education_year_achieve_",
+# #                      "hh_14_",
+# #                      "hh_16_",
+# #                      "agri_income_05",
+# #                      "hh_numero",
+# #                      "hh_03_",
+# #                      "hh_10_",
+# #                      "hh_14_",
+# #                      "hh_16_",
+# #                     matches("^hh_education_skills_[0-9]+$"),
+# #                     matches("^hh_education_level_[0-9]+$"),
+# #                     matches("^hh_11_[0-9]+$"),
+# #                     matches("^hh_15_[0-9]+$"),
+# #                     matches("^hh_13_[0-9]+$"),
+# #                     matches("^living_01_[0-9]+$"),
+# #                     matches("^living_03_[0-9]+$"),
+# #                     matches("^living_04_[0-9]+$"),
+# #                     matches("^living_05_[0-9]+$"),
+# #                     matches("^enum_03_[0-9]+$"),
+# #                     matches("^enum_04_[0-9]+$"),
+# #                     matches("^enum_05_[0-9]+$")
+# #                                           )
+# # scaled_vars <- c(
+# #   "hh_education_year_achieve_",
+# #   "hh_14_",
+# #   "hh_16_",
+# #   "agri_income_05",
+# #   "hh_numero",
+# #   "hh_03_",
+# #   "hh_10_",
+# #   "^hh_education_skills_[0-9]+$",
+# #   "^hh_education_level_[0-9]+$",
+# #   "^hh_11_[0-9]+$",
+# #   "^hh_15_[0-9]+$",
+# #   "^hh_13_[0-9]+$",
+# #   "^living_01_[0-9]+$",
+# #   "^living_03_[0-9]+$",
+# #   "^living_04_[0-9]+$",
+# #   "^living_05_[0-9]+$",
+# #   "^enum_03_[0-9]+$",
+# #   "^enum_04_[0-9]+$",
+# #   "^enum_05_[0-9]+$"
+# # )
+# 
+# 
+# 
+# ##NOTES: fix the NAs in the rest of the variables by adjusting the skip patterns 
+# 
+# household_id <- "hhid"
+# 
+# 
+# # Create new variables in the original dataframe by scaling to household-level means
+# balance_df <- balance_df %>%
+#   group_by(!!sym(scaled_vars)) %>%
+#   mutate(across(
+#     all_of(scaled_vars),
+#     ~ mean(.x, na.rm = TRUE),
+#     .names = "{.col}mean"
+#   )) %>%
+#   ungroup()
+
+
+
+```
+
+
+
+
+```{r}
+
+# Filter rows to keep only 1s and 0s in the specified variables
+# bin_vars <- c("hh_03_", "health_5_2_", "health_5_5_", "health_5_6_", "health_5_7_"  )
+# 
+# balance_df <- balance_df %>%
+#   filter(across(all_of(bin_vars), ~ . %in% c(0, 1)))
+
+
+###create binaries from categorical variables
+
+     #hh_education_level, hh_11, hh_12, hh_15, species living_05 enum_03 enum_04 enum_05
+
+
+# 
+# 
+# balance_df <- balance_df %>%
+#   mutate(
+#     hh_education_level_0 = if_else(hh_education_level_ == 0, 1, 0, missing = 0),
+#     hh_education_level_1 = if_else(hh_education_level_ == 1, 1, 0, missing = 0),
+#     hh_education_level_2 = if_else(hh_education_level_ == 2, 1, 0, missing = 0),
+#     hh_education_level_3 = if_else(hh_education_level_ == 3, 1, 0, missing = 0),
+#     hh_education_level_4 = if_else(hh_education_level_ == 4, 1, 0, missing = 0),
+#     hh_education_level_99 = if_else(hh_education_level_ == 99, 1, 0, missing = 0),
+# 
+#     hh_11_1 = if_else(hh_11_ == 1, 1, 0, missing = 0),
+#     hh_11_2 = if_else(hh_11_ == 2, 1, 0, missing = 0),
+#     hh_11_3 = if_else(hh_11_ == 3, 1, 0, missing = 0),
+#     hh_11_4 = if_else(hh_11_ == 4, 1, 0, missing = 0),
+#     hh_11_99 = if_else(hh_11_ == 99, 1, 0, missing = 0),
+# 
+#     hh_15_1 = if_else(hh_15_ == 1, 1, 0, missing = 0),
+#     hh_15_2 = if_else(hh_15_ == 2, 1, 0, missing = 0),
+#     hh_15_3 = if_else(hh_15_ == 3, 1, 0, missing = 0),
+#     hh_15_4 = if_else(hh_15_ == 4, 1, 0, missing = 0),
+#     hh_15_5 = if_else(hh_15_ == 5, 1, 0, missing = 0),
+#     hh_15_99 = if_else(hh_15_ == 99, 1, 0, missing = 0),
+# 
+#     living_01_1 = if_else(living_01 == 1, 1, 0, missing = 0),
+#     living_01_2 = if_else(living_01 == 2, 1, 0, missing = 0),
+#     living_01_3 = if_else(living_01 == 3, 1, 0, missing = 0),
+#     living_01_4 = if_else(living_01 == 4, 1, 0, missing = 0),
+#     living_01_5 = if_else(living_01 == 5, 1, 0, missing = 0),
+#     living_01_6 = if_else(living_01 == 6, 1, 0, missing = 0),
+#     living_01_7 = if_else(living_01 == 7, 1, 0, missing = 0),
+#     living_01_8 = if_else(living_01 == 8, 1, 0, missing = 0),
+#     living_01_9 = if_else(living_01 == 9, 1, 0, missing = 0),
+#     living_01_10 = if_else(living_01 == 10, 1, 0, missing = 0),
+#     living_01_99 = if_else(living_01 == 99, 1, 0, missing = 0),
+#     
+#     living_03_1 = if_else(living_03 == 1, 1, 0, missing = 0),
+#     living_03_2 = if_else(living_03 == 2, 1, 0, missing = 0),
+#     living_03_3 = if_else(living_03 == 3, 1, 0, missing = 0),
+#     living_03_99 = if_else(living_03 == 99, 1, 0, missing = 0),
+#     
+#     living_04_1 = if_else(living_04 == 1, 1, 0, missing = 0),
+#     living_04_2 = if_else(living_04 == 2, 1, 0, missing = 0),
+#     living_04_3 = if_else(living_04 == 3, 1, 0, missing = 0),
+#     living_04_4 = if_else(living_04 == 4, 1, 0, missing = 0),
+#     living_04_5 = if_else(living_04 == 5, 1, 0, missing = 0),
+#     living_04_6 = if_else(living_04 == 6, 1, 0, missing = 0),
+#     living_04_7 = if_else(living_04 == 7, 1, 0, missing = 0),
+#     living_04_99 = if_else(living_04 == 99, 1, 0, missing = 0),
+#     
+#     living_05_1 = if_else(living_05 == 1, 1, 0, missing = 0),
+#     living_05_2 = if_else(living_05 == 2, 1, 0, missing = 0),
+#     living_05_3 = if_else(living_05 == 3, 1, 0, missing = 0),
+#     living_05_4 = if_else(living_05 == 4, 1, 0, missing = 0),
+#     living_05_5 = if_else(living_05 == 5, 1, 0, missing = 0),
+#     living_05_6 = if_else(living_05 == 6, 1, 0, missing = 0),
+#     living_05_7 = if_else(living_05 == 7, 1, 0, missing = 0),
+#     living_05_99 = if_else(living_05 == 99, 1, 0, missing = 0),
+#     
+#     enum_03_1 = if_else(enum_03 == 1, 1, 0, missing = 0),
+#     enum_03_2 = if_else(enum_03 == 2, 1, 0, missing = 0),
+#     enum_03_3 = if_else(enum_03 == 3, 1, 0, missing = 0),
+#     enum_03_4 = if_else(enum_03 == 4, 1, 0, missing = 0),
+#     enum_03_99 = if_else(enum_03 == 99, 1, 0, missing = 0),
+#     
+#     enum_04_1 = if_else(enum_04 == 1, 1, 0, missing = 0),
+#     enum_04_2 = if_else(enum_04 == 2, 1, 0, missing = 0),
+#     enum_04_3 = if_else(enum_04 == 3, 1, 0, missing = 0),
+#     enum_04_4 = if_else(enum_04 == 4, 1, 0, missing = 0),
+#     enum_04_5 = if_else(enum_04 == 5, 1, 0, missing = 0),
+#     enum_04_6 = if_else(enum_04 == 6, 1, 0, missing = 0),
+#     enum_04_99 = if_else(enum_04 == 99, 1, 0, missing = 0),
+#     
+#     enum_05_1 = if_else(enum_05 == 1, 1, 0, missing = 0),
+#     enum_05_2 = if_else(enum_05 == 2, 1, 0, missing = 0),
+#     enum_05_3 = if_else(enum_05 == 3, 1, 0, missing = 0),
+#     enum_05_4 = if_else(enum_05 == 4, 1, 0, missing = 0),
+#     enum_05_5 = if_else(enum_05 == 5, 1, 0, missing = 0),
+#     enum_05_99 = if_else(enum_05 == 99, 1, 0, missing = 0)) %>%
+#    mutate(hh_gender_ = recode(hh_gender_, `2` = 0, .default = hh_gender_))
+# 
+# # Take care of NA's
+# view(balance_df)
+
+
+```
+
+
+
+
+
+
+

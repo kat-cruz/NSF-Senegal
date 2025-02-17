@@ -41,6 +41,7 @@ global income "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midlin
 global standard_living "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Standard_Living"
 global beliefs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Beliefs" 
 global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Enumerator_Observations"
+global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
 
 **************************** Import household data ****************************
 
@@ -879,7 +880,7 @@ forvalues i=1/15{
 	capture label variable enum_06 "Comment evaluez-vous la comprehension globale des questions par le repondant"
 	capture label variable enum_07 "Veuillez indiquer les parties difficiles"
 	capture label variable enum_08 "Veuillez donner votre avis sur le revenu du menage"
-	
+
 ***========================================================================================*** Data Checks ***========================================================================================***
 
 *********** COUNT THE NUMBER OF OBSERVATIONS PER VILLAGE *******************

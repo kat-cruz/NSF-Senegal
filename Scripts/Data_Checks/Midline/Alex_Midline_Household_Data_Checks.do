@@ -2029,7 +2029,7 @@ forvalues i = 1/57 {
 	
 	rename hh_13_`i'_total print_issue
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key hh_13_`i'_1  hh_13_`i'_2  hh_13_`i'_3 hh_13_`i'_4  hh_13_`i'_5 hh_13_`i'_6 hh_13_`i'_7 
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key hh_10_`i' hh_13_`i'_1  hh_13_`i'_2  hh_13_`i'_3 hh_13_`i'_4  hh_13_`i'_5 hh_13_`i'_6 hh_13_`i'_7 
 	  if _N > 0 {
         save "$household_roster\Issue_hh_13_`i'_total_unreasonable.dta", replace
     }
@@ -2066,7 +2066,7 @@ forvalues i = 1/57 {
    	generate issue_variable_name = "hh_21_total_`i'"
 	rename  hh_21_`i'_total print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3  hh_21_`i'_4  hh_21_`i'_5  hh_21_`i'_6 hh_21_`i'_7
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp hh_name_complet_resp_new issue_variable_name issue print_issue hh_member_name key hh_18_`i' hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3  hh_21_`i'_4  hh_21_`i'_5  hh_21_`i'_6 hh_21_`i'_7
 	
 	if _N > 0 {
         save "$household_roster\Issue_Household_sum_less_than_hh_18_`i'.dta", replace

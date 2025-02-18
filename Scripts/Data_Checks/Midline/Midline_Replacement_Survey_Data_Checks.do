@@ -1999,7 +1999,7 @@ forvalues i = 1/14 {
 	
 	rename hh_13_`i'_total print_issue
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp issue_variable_name issue print_issue hh_member_name key
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp issue_variable_name issue print_issue hh_member_name key hh_10_`i' hh_13_`i'_1  hh_13_`i'_2  hh_13_`i'_3
 	 
 	 if _N > 0 {
         save "$replacement_survey\Issue_hh_13_`i'_total_unreasonable.dta", replace
@@ -2036,7 +2036,7 @@ forvalues i = 1/14 {
    	generate issue_variable_name = "hh_21_total_`i'"
 	rename  hh_21_`i'_total print_issue 
 	tostring(print_issue), replace
-	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp issue_variable_name issue print_issue hh_member_name key
+	keep villageid hhid sup enqu sup_name enqu_name hh_phone hh_name_complet_resp issue_variable_name issue print_issue hh_member_name key hh_18_`i' hh_21_o_`i' hh_21_`i'_1  hh_21_`i'_2  hh_21_`i'_3 
 	
 	if _N > 0 {
         save "$replacement_survey\Issue_Household_sum_less_than_hh_18_`i'.dta", replace

@@ -50,6 +50,7 @@ global beliefs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midli
 global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Enumerator_Observations"
 global hh18 "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster\HH18"
 global hh13 "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster\HH13"
+global replacementsurvey "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Replacement_Survey"
 
 ************************* Final output file path **********************************
 global issues "$master\Data_Management\External_Corrections\Issues for Justin and Amina\Midline\Issues"
@@ -323,3 +324,24 @@ merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Ques
 	save "$hh18\Part3_Household_Issues_16Feb2025.dta", replace 
 	export excel using "$hh18\Part3_Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
 
+	
+***** Replacment Survey **************
+	clear
+	local folder "$replacementsurvey"  
+
+	cd "`folder'"
+	local files: dir . files "*.dta"
+
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
+	
+gen issue_variable_label = ""  
+foreach var of varlist issue_variable_name {  
+    replace issue_variable_label = "`: variable label `var''" if issue_variable_name == "`var'"
+}
+sort enqu_name issue_variable_name
+merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
+	save "$replacementsurvey\ReplacementSurvey_Issues_16Feb2025.dta", replace 
+	export excel using "$replacementsurvey\Replacement_Issues_16Feb2025.xlsx", firstrow(variables) replace

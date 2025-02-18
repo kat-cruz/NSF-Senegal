@@ -330,30 +330,30 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
 
 vars_to_test <- unique(data$variable)
 regression_results <- run_regressions(data, 'group', 'hhid_village', vars_to_test)
-
+regression_results
 # Convert t-stat and p-value to numeric and round to two decimal places
 regression_results <- regression_results %>%
-  mutate(across(c(stat, p), ~ round(.x, 2))) %>%  # Round t-stat and p-values
-  mutate(across(everything(), as.character))  # Convert all columns to character
+  mutate(across(c(stat, p), ~ round(.x, 2))) 
+#%>%  # Round t-stat and p-values
+  #mutate(across(everything(), as.character))  # Convert all columns to character
 
 # Pivot the table to have variables as rows and comparisons as columns
 final_table <- regression_results %>%
   pivot_wider(names_from = comparison, values_from = c(stat, p))
-
+final_table
 # Rearrange to stack t-stats and p-values in rows
 final_table <- final_table %>%
   pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
   separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
   pivot_wider(names_from = comparison, values_from = value)
-
+final_table
 # Add formatting to ensure two decimal places for all numeric values (t-stats and p-values)
 final_table <- final_table %>%
   mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Format with 2 decimals
   mutate(across(everything(), as.character)) %>%  # Ensure all columns are characters
   mutate(across(everything(), ~ ifelse(grepl("p", type),
-                                       paste0("(", .x, ")"),
+                                       paste0("(", trimws(.x), ")"),  # Trim any extra spaces around the value
                                        .x)))  # Add parentheses for p.value rows
-
 # Clean up column names (variable and type) for p-values
 final_table <- final_table %>%
   mutate(
@@ -365,10 +365,172 @@ final_table <- final_table %>%
 print(final_table)
 ```
 
+```{r}
+
+# Load necessary library
+library(nnet)
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Create fake dataset for 100 households
+n <- 100  # Number of households
+
+# Generate household-level variables
+hh_age_resp <- sample(18:65, n, replace = TRUE)  # Age of respondent
+hh_gender <- sample(c("Male", "Female"), n, replace = TRUE)  # Gender
+hh_income <- rnorm(n, mean = 30000, sd = 5000)  # Household income
+hh_education <- sample(c("None", "Primary", "Secondary", "Tertiary"), n, replace = TRUE)  # Education level
+hh_assets <- rnorm(n, mean = 5000, sd = 1500)  # Household assets value
+
+# Generate treatment assignment (Control, Treatment1, or Treatment2)
+group <- sample(c("Control", "Treatment1", "Treatment2"), n, replace = TRUE)
+
+# Create a data frame
+data <- data.frame(
+  hh_age_resp,
+  hh_gender,
+  hh_income,
+  hh_education,
+  hh_assets,
+  group
+)
+
+# Create binary treatment columns (one per treatment arm)
+data$treat_control <- ifelse(data$group == 'Control', 1, 0)
+data$treat_treatment1 <- ifelse(data$group == 'Treatment1', 1, 0)
+data$treat_treatment2 <- ifelse(data$group == 'Treatment2', 1, 0)
+
+# Fit the multinomial logistic regression model
+model <- multinom(group ~ hh_age_resp + hh_gender + hh_income + hh_education + hh_assets, data = data)
+
+# Print the model summary
+summary(model)
+
+# To get the predicted probabilities for each observation in the dataset
+predicted_probs <- predict(model, type = "probs")
+
+# To add the predicted probabilities to the data
+data$predicted_control <- predicted_probs[, 1]
+data$predicted_treatment1 <- predicted_probs[, 2]
+data$predicted_treatment2 <- predicted_probs[, 3]
+
+# View the updated data with predicted probabilities
+head(data)
+
+
+
+full_deviance <- 198.5455  # from your output
+
+# Fit the null model
+null_model <- multinom(group ~ 1, data = data)
+
+# Null model deviance
+null_deviance <- logLik(null_model)[1] * -2  # calculate deviance
+
+# Likelihood ratio statistic
+lr_statistic <- -2 * (null_deviance - full_deviance)
+
+# Degrees of freedom
+df <- length(coef(full_model))  # number of predictors
+
+# p-value for the LR test
+p_value <- 1 - pchisq(lr_statistic, df)
+
+# Output the result
+cat("LR Statistic:", lr_statistic, "\n")
+cat("p-value:", p_value, "\n")
 
 
 
 
+
+```
+
+
+
+
+```{r}
+# Load necessary libraries
+library(nnet)  # For multinomial logit model
+library(dplyr) # For data manipulation
+
+
+# Set a seed for reproducibility
+set.seed(123)
+
+# Step 1: Generate a fake dataset with 200 observations
+n <- 200  # Number of observations
+
+# Generate binary outcome variables (Treatment1, Treatment2, Treatment3)
+# Each household is assigned to one of the treatment arms
+group <- sample(c("Treatment1", "Treatment2", "Treatment3"), n, replace = TRUE)
+
+# Generate predictor variables (for example: age, gender, income, education)
+hh_age_resp <- rnorm(n, mean = 35, sd = 10)  # Age of the respondent
+hh_gender <- sample(c("Male", "Female"), n, replace = TRUE)  # Gender
+hh_income <- rnorm(n, mean = 5000, sd = 1500)  # Household income
+hh_education <- sample(c("Primary", "Secondary", "Tertiary"), n, replace = TRUE)  # Education level
+hh_assets <- rnorm(n, mean = 2000, sd = 800)  # Household assets
+
+# Create a data frame using the generated variables
+balance_data <- data.frame(
+  group = factor(group, levels = c("Treatment1", "Treatment2", "Treatment3")),  # Treatment group
+  hh_age_resp,
+  hh_gender,
+  hh_income,
+  hh_education,
+  hh_assets
+)
+
+# Check the first few rows of the data
+head(balance_data)
+
+# Step 1: Define your outcome variables (binary)
+outcome_vars <- c("Treatment1", "Treatment2", "Treatment3")  # Replace with your outcome variables
+
+# Step 2: Define the predictors
+predictors <- colnames(balance_data)  # All columns in balance_data will be predictors
+
+# Step 3: Prepare an empty vector to store F-statistics
+f_stats <- c()
+
+# Step 4: Run multinomial logit for each predictor variable in balance_data
+for (predictor in predictors) {
+  
+  # Step 4.1: Run the multinomial logit model
+  formula <- as.formula(paste("group ~", predictor))  # Use the variable as the predictor
+  model <- multinom(formula, data = balance_data)
+  
+  # Step 4.2: Extract the deviance values
+  full_deviance <- logLik(model)[1] * -2  # Full model deviance
+  
+  # Step 4.3: Fit the null model
+  null_model <- multinom(group ~ 1, data = balance_data)  # Null model (intercept only)
+  null_deviance <- logLik(null_model)[1] * -2  # Null model deviance
+  
+  # Step 4.4: Compute the likelihood ratio statistic (F-stat equivalent)
+  lr_statistic <- -2 * (null_deviance - full_deviance)
+  
+  # Step 4.5: Compute the degrees of freedom
+  df <- length(coef(model)) - 1  # Number of predictors (subtracting 1 for the intercept)
+  
+  # Step 4.6: Compute the p-value for the likelihood ratio test
+  p_value <- 1 - pchisq(lr_statistic, df)
+  
+  # Step 4.7: Store the results (F-stat and p-value) in the vector
+  f_stats <- c(f_stats, list(c(p_value, lr_statistic)))
+}
+f_stats
+# Step 5: Add the F-statistics to the final_table
+# final_table <- final_table %>%
+#   mutate(F_stat = unlist(f_stats)[, 2],  # Add F-statistic to final_table
+#          P_value = unlist(f_stats)[, 1])  # Add p-value to final_table
+# 
+# # Step 6: View the final table with F-stat and p-values
+# print(final_table)
+
+```
 
 
 

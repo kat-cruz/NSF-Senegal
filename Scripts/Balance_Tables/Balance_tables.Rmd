@@ -50,6 +50,7 @@ library(rtf)
 library(tidyverse)
 library(estimatr)
 library(broom)
+library(kableExtra)
 #library(RCT)
 #library(cobalt)
 
@@ -84,8 +85,7 @@ file_path_balance_tables_df <- file.path(proj$p1, "baseline_balance_tables_data.
 balance_df <- read_dta(file_path_balance_tables_df)
 
 #survey_questions <- read_csv(file.path(proj$p1, "Baseline_Survey_Questions.csv"))
-
-
+balance_df
 ```
 
 
@@ -179,74 +179,460 @@ long_data
 ```
 
 
+##run regressions and cluster SEs
+
 
 ```{r}
 
 
-# Function to run regressions and extract t-stats and p-values
 run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
   results <- list()
   for (var in vars_to_test) {
-    # Control vs each treatment
     treatments <- unique(data[[treatment_col]])
-    treatments <- setdiff(treatments, 'control')
+    treatments <- setdiff(treatments, 'Control')
     for (arm in treatments) {
-      subset <- data %>% filter(!!sym(treatment_col) %in% c('control', arm))
-      subset[[treatment_col]] <- ifelse(subset[[treatment_col]] == arm, 1, 0)
-      model <- lm(as.formula(paste(var, '~', treatment_col)), data = subset)
+      subset <- data %>% filter(.data[[treatment_col]] %in% c('Control', arm) & variable == var)
+      subset$treat <- ifelse(subset[[treatment_col]] == arm, 1, 0)
+      model <- lm(value ~ treat, data = subset)
       clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
-      results <- append(results, list(data.frame(variable = var, comparison = paste('control vs', arm), t_stat = clustered_se[2, 3], p_value = clustered_se[2, 4])))
+      results <- append(results, list(data.frame(variable = var, comparison = paste('Control vs', arm), 
+                                                 stat = round(clustered_se[2, 3], 2), 
+                                                 p = round(clustered_se[2, 4], 2))))
     }
-    # Pairwise comparisons between treatments
     for (i in 1:(length(treatments) - 1)) {
       for (j in (i + 1):length(treatments)) {
-        subset <- data %>% filter(!!sym(treatment_col) %in% c(treatments[i], treatments[j]))
-        subset[[treatment_col]] <- ifelse(subset[[treatment_col]] == treatments[j], 1, 0)
-        model <- lm(as.formula(paste(var, '~', treatment_col)), data = subset)
+        subset <- data %>% filter(.data[[treatment_col]] %in% c(treatments[i], treatments[j]) & variable == var)
+        subset$treat <- ifelse(subset[[treatment_col]] == treatments[j], 1, 0)
+        model <- lm(value ~ treat, data = subset)
         clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
-        results <- append(results, list(data.frame(variable = var, comparison = paste(treatments[i], 'vs', treatments[j]), t_stat = clustered_se[2, 3], p_value = clustered_se[2, 4])))
+        results <- append(results, list(data.frame(variable = var, comparison = paste(treatments[i], 'vs', treatments[j]), 
+                                                 stat = round(clustered_se[2, 3], 2), 
+                                                 p = round(clustered_se[2, 4], 2))))
       }
     }
   }
   bind_rows(results)
 }
-balance_df
-# Run the regressions
- vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
- regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test)
+
+###issue with rounding - need to first change into long format with everythingas doubles then stack pvalues, THEN change to characters to add parenthesis 
+
 vars_to_test
-long_data
-# Pivot table to display results
+vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test)
+
+# Convert t-stat and p-value to numeric and round to two decimal places
+regression_results <- regression_results %>%
+  mutate(across(c(stat, p), ~ round(.x, 2))) 
+#%>%  # Round t-stat and p-values
+  #mutate(across(everything(), as.character))  # Convert all columns to character
+regression_results
+# Pivot the table to have variables as rows and comparisons as columns
 final_table <- regression_results %>%
-  pivot_wider(names_from = comparison, values_from = c(t_stat, p_value))
+  pivot_wider(names_from = comparison, values_from = c(stat, p))
+final_table
+# Rearrange to stack t-stats and p-values in rows
+final_table <- final_table %>%
+  pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
+  separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
+  pivot_wider(names_from = comparison, values_from = value)
+final_table
+# Add formatting to ensure two decimal places for all numeric values (t-stats and p-values)
+final_table <- final_table %>%
+  mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Format with 2 decimals
+  mutate(across(everything(), as.character)) %>%  # Ensure all columns are characters
+  mutate(across(everything(), ~ ifelse(grepl("p", type),
+                                       paste0("(", trimws(.x), ")"),  # Trim any extra spaces around the value
+                                       .x)))  # Add parentheses for p.value rows
+# Clean up column names (variable and type) for p-values
+
+###KRM - add towards end 
+# final_table <- final_table %>%
+#   mutate(
+#     variable = ifelse(type == "(p)", "", variable),
+#     type = ifelse(type == "(p)", "", type)
+#   ) %>%
+#  select(-"type")
 
 # View final table
 print(final_table)
 ```
 
+####create some vars for organization 
+
+```{r}
+# 
+# final_table <- final_table %>%
+#   add_row(variable = "hh_education_skills_", .before = which(final_table$variable == "hh_education_skills_1_")[1])
+# final_table
+index <- which(final_table$variable == "hh_education_skills_1_")
+final_table <- add_row(final_table, variable = "hh_education_skills", .before = index)
+
+# Add "hh_12_1_" above "hh_12"
+index2 <- which(final_table$variable == "hh_12_1_")
+final_table <- add_row(final_table, variable = "hh_12", .before = index2)
+
+# Add "hh_13_1_" above "hh_12"
+index3 <- which(final_table$variable == "hh_13_1_")
+final_table <- add_row(final_table, variable = "hh_13", .before = index3)
+
+# Add "health_5_3" above "health_5_3_1_"
+# index4 <- which(final_table$variable == "health_5_3_1_")
+# final_table <- add_row(final_table, variable = "health_5_3", .before = index4)
+
+index5 <- which(final_table$variable == "species_1")
+final_table <- add_row(final_table, variable = "species", .before = index5)
+final_table
+
+
+```
+
+####add in survey questions
+
+```{r}
+
+#drop species_count
+
+##add for hh_12 In the last 12 months, why has <font color="blue"> ${hh_full_name_calc} </font> spent time near (< 1 m) or in the water source(s)? (multiple choice
+##vars to remove stats for hh_education_level_ hh_29_ hh_15_ living_01 living_03 living_04 living_05 enum_03 enum_04 enum_05
+final_table <- final_table %>%
+  mutate(Question = case_when(
+    variable == "hh_age_resp" ~ "Age of the Respondent",
+    variable == "hh_gender_" ~ "Gender",
+    variable == "hh_age_" ~ "Age",
+    variable == "hh_education_skills" ~ "Education - Skills (multiple choice)",
+    variable == "hh_education_skills_1_" ~ "\u00A0\u00A0\u00A0Can write a short letter to his family",
+    variable == "hh_education_skills_2_" ~ "\u00A0\u00A0\u00A0Comfortable with numbers and calculations",
+    variable == "hh_education_skills_3_" ~ "\u00A0\u00A0\u00A0Arabizing/can read the Quranin Arabic",
+    variable == "hh_education_skills_4_" ~ "\u00A0\u00A0\u00A0Fluent in Wolof/Pulaar",
+    variable == "hh_education_skills_5_" ~ "\u00A0\u00A0\u00A0Can read a newspaper in French",
+    variable == "hh_education_level_" ~ "Level of education achieved",
+    variable == "hh_education_level_0" ~ "\u00A0\u00A0\u00A0No level",
+    variable == "hh_education_level_1" ~ "\u00A0\u00A0\u00A0Primary level",
+    variable == "hh_education_level_2" ~ "\u00A0\u00A0\u00A0Secondary level",
+    variable == "hh_education_level_3" ~ "\u00A0\u00A0\u00A0Higher level",
+    variable == "hh_education_level_4" ~ "\u00A0\u00A0\u00A0Technical and vocational school",
+    variable == "hh_education_level_99" ~ "\u00A0\u00A0\u00A0Other",
+    variable == "hh_education_year_achieve_" ~ "Years of education completed",
+    variable == "hh_03_" ~ "Worked in domestic agricultural activities?",
+    variable == "(hh_03_)" ~ "\u00A0\u00A0\u00A0Yes/No",
+    variable == "hh_10_" ~ "Hours per week spend within 1 meter of surface water source",
+    variable == "hh_11_" ~ "Source(s) of surface water?",
+    variable == "hh_11_1" ~ "\u00A0\u00A0\u00A0Lake",
+    variable == "hh_11_2" ~ "\u00A0\u00A0\u00A0Pond",
+    variable == "hh_11_3" ~ "\u00A0\u00A0\u00A0River",
+    variable == "hh_11_4" ~ "\u00A0\u00A0\u00A0Irrigation channel",
+    variable == "hh_11_99" ~ "\u00A0\u00A0\u00A0Other, give details",
+    variable == "hh_12" ~ "In the past 12 months, why did [NAME] spend time near (< 1 m) or in the water source(s)?",
+    variable == "hh_12_1_" ~ "\u00A0\u00A0\u00A0Fetch water for the household",
+    variable == "hh_12_2_" ~ "\u00A0\u00A0\u00A0Give water to livestock",
+    variable == "hh_12_3_" ~ "\u00A0\u00A0\u00A0Fetch water for agriculture",
+    variable == "hh_12_4_" ~ "\u00A0\u00A0\u00A0Wash clothes",
+    variable == "hh_12_5_" ~ "\u00A0\u00A0\u00A0Do the dishes",
+    variable == "hh_12_6_" ~ "\u00A0\u00A0\u00A0Harvest aquatic vegetation",
+    variable == "hh_12_7_" ~ "\u00A0\u00A0\u00A0Swim/bathe",
+    variable == "hh_12_8_" ~ "\u00A0\u00A0\u00A0Play",
+    variable == "hh_13" ~ "On average how many hours per week did [NAME] spend at water source?",
+    variable == "hh_13_1_" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for the household",
+    variable == "hh_13_2_" ~ "\u00A0\u00A0\u00A0Hours spent giving water to livestock",
+    variable == "hh_13_3_" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for agriculture",
+    variable == "hh_13_4_" ~ "\u00A0\u00A0\u00A0Hours spent washing clothes",
+    variable == "hh_13_5_" ~ "\u00A0\u00A0\u00A0Hours spent washing the dishes",
+    variable == "hh_13_6_" ~ "\u00A0\u00A0\u00A0Hours spent harvesting aquatic vegetation",
+    variable == "hh_13_7_" ~ "\u00A0\u00A0\u00A0Hours spent simming/bathing",
+    #variable == "hh_13_8" ~ "Hours spent playing in the water ",
+    variable == "hh_14_" ~ "Of those who answered 'Harvest aquatic vegetation', how much aquatic vegetation did [NAME] collect?",
+    variable == "hh_15_" ~ "How did he use aquatic vegetation?",
+    variable == "hh_15_1" ~ "\u00A0\u00A0\u00A0Sell",
+    variable == "hh_15_2" ~ "\u00A0\u00A0\u00A0Fertilizer",
+    variable == "hh_15_3" ~ "\u00A0\u00A0\u00A0Livestock feed",
+    variable == "hh_15_4" ~ "\u00A0\u00A0\u00A0Raw material for thebiodigester",
+    variable == "hh_15_5" ~ "\u00A0\u00A0\u00A0Nothing",
+    variable == "hh_15_99" ~ "\u00A0\u00A0\u00A0Other",
+    variable == "hh_16_" ~ "Hours spend producing fertilizer, purchasing it, or applying it on the field",
+    variable == "hh_29_" ~ "Highest level and grade member achieved in school",
+    variable == "hh_29_1" ~ "\u00A0\u00A0\u00A0Primary – 1st year",
+    variable == "hh_29_2" ~ "\u00A0\u00A0\u00A0Primary – 2nd year",
+    variable == "hh_29_3" ~ "\u00A0\u00A0\u00A0Primary – 3rd year",
+    variable == "hh_29_4" ~ "\u00A0\u00A0\u00A0Primary – 4th year",
+    variable == "hh_29_5" ~ "\u00A0\u00A0\u00A0Primary – 5th year",
+    variable == "hh_29_6" ~ "\u00A0\u00A0\u00A0Primary – 6th year",
+    variable == "hh_29_7" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 7th year",
+    variable == "hh_29_8" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 8th year",
+    variable == "hh_29_9" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 9th year",
+    variable == "hh_29_10" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 10th year",
+    variable == "hh_29_11" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 11th year",
+    variable == "hh_29_12" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 12th year",
+    variable == "hh_29_13" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 13th year",
+    variable == "hh_29_14" ~ "\u00A0\u00A0\u00A0More than upper secondary (e.g. university)",
+    variable == "hh_29_99" ~ "\u00A0\u00A0\u00A0Other (to be specified)",
+    variable == "health_5_2_" ~ "Has [Name} been ill last 12 months ",
+    variable == "(health_5_2_)" ~ "\u00A0\u00A0\u00A0Yes/No",
+    variable == "health_5_3_" ~ "What type of illness or injury did he/she suffer from?",
+    variable == "health_5_3_1_" ~ "\u00A0\u00A0\u00A0Malaria",
+    variable == "health_5_3_2_" ~ "\u00A0\u00A0\u00A0Bilharzia",
+    variable == "health_5_3_3_" ~ "\u00A0\u00A0\u00A0Diarrhea",
+    variable == "health_5_3_4_" ~ "\u00A0\u00A0\u00A0Injuries",
+    variable == "health_5_3_5_" ~ "\u00A0\u00A0\u00A0Dental problems",
+    variable == "health_5_3_6_" ~ "\u00A0\u00A0\u00A0Skin Problems",
+    variable == "health_5_3_7_" ~ "\u00A0\u00A0\u00A0Eye problems",
+    variable == "health_5_3_8_" ~ "\u00A0\u00A0\u00A0Throat Problems",
+    variable == "health_5_3_9_" ~ "\u00A0\u00A0\u00A0Stomach aches",
+    variable == "health_5_3_10_" ~ "\u00A0\u00A0\u00A0Fatigue",
+    variable == "health_5_3_11_" ~ "\u00A0\u00A0\u00A0STI",
+    variable == "health_5_3_12_" ~ "\u00A0\u00A0\u00A0trachoma",
+    variable == "health_5_3_13_" ~ "\u00A0\u00A0\u00A0Onchocerciasis",
+    variable == "health_5_3_14_" ~ "\u00A0\u00A0\u00A0Lymphatic filariasis",
+    variable == "health_5_3_99_" ~ "\u00A0\u00A0\u00A0Other (to be specfied)",
+    variable == "health_5_5_" ~ "Received medication for the treatment of schistosomiasis?",
+    variable == "(health_5_5_)" ~ "\u00A0\u00A0\u00A0Yes/No",
+    variable == "health_5_6_" ~ "Person ever been diagnosed with schistosomiasis?",
+    variable == "(health_5_6_)" ~ "\u00A0\u00A0\u00A0Yes/No",
+    variable == "agri_6_15" ~ "How many plots within the fields cultivated by the household?",
+    variable == "agri_income_01" ~ "Did you (or any member of your household) engage in paid agricultural work in the last 12 months?",
+    variable == "(agri_income_01)" ~ "Yes/No",   
+    variable == "agri_income_05" ~ "Responded yes to agri_income_01; Amount received in kind and/or in cash for this work.",
+    variable == "species" ~ "What species do the owners have?",
+    variable == "species_1" ~ "\u00A0\u00A0\u00A0Cattle",
+    variable == "species_2" ~ "\u00A0\u00A0\u00A0Sheep",
+    variable == "species_3" ~ "\u00A0\u00A0\u00A0Goat",
+    variable == "species_4" ~ "\u00A0\u00A0\u00A0Horse (equine)",
+    variable == "species_5" ~ "\u00A0\u00A0\u00A0Donkey",
+    variable == "species_6" ~ "\u00A0\u00A0\u00A0Draft animals",
+    variable == "species_7" ~ "\u00A0\u00A0\u00A0Pigs",
+    variable == "species_8" ~ "\u00A0\u00A0\u00A0Poultry",
+    variable == "species_9" ~ "\u00A0\u00A0\u00A0Other",
+    variable == "living_01" ~ "Main source of drinking water supply",
+    variable == "living_01_1" ~ "\u00A0\u00A0\u00A0Interior tap",
+    variable == "living_01_2" ~ "\u00A0\u00A0\u00A0Public tap",
+    variable == "living_01_3" ~ "\u00A0\u00A0\u00A0Neighbor’s tap",
+    variable == "living_01_4" ~ "\u00A0\u00A0\u00A0Protected well",
+    variable == "living_01_5" ~ "\u00A0\u00A0\u00A0Unprotected well",
+    variable == "living_01_6" ~ "\u00A0\u00A0\u00A0Drill hole",
+    variable == "living_01_7" ~ "\u00A0\u00A0\u00A0Tanker service",
+    variable == "living_01_8" ~ "\u00A0\u00A0\u00A0Water seller",
+    variable == "living_01_9" ~ "\u00A0\u00A0\u00A0Source",
+    variable == "living_01_10" ~ "\u00A0\u00A0\u00A0Stream",
+    variable == "living_01_99" ~ "\u00A0\u00A0\u00A0Other",
+    variable == "living_03" ~ "How is the water treated?",
+    variable == "living_03_1" ~ "\u00A0\u00A0\u00A0Bleach/Aqua tabs",
+    variable == "living_03_2" ~ "\u00A0\u00A0\u00A0Boil",
+    variable == "living_03_3" ~ "\u00A0\u00A0\u00A0Filtration",
+    variable == "living_03_99" ~ "\u00A0\u00A0\u00A0Other (to be specified",
+    variable == "living_04" ~ "Main type of toilet",
+    variable == "living_04_1" ~ "\u00A0\u00A0\u00A0None/outside",
+    variable == "living_04_2" ~ "\u00A0\u00A0\u00A0Flush with sewe",
+    variable == "living_04_3" ~ "\u00A0\u00A0\u00A0Toilet flush with septic tank",
+    variable == "living_04_4" ~ "\u00A0\u00A0\u00A0Bucket",
+    variable == "living_04_5" ~ "\u00A0\u00A0\u00A0Covered pit latrines",
+    variable == "living_04_6" ~ "\u00A0\u00A0\u00A0Uncovered pit latrines",
+    variable == "living_04_7" ~ "\u00A0\u00A0\u00A0Improved latrines",
+    variable == "living_04_99" ~ "\u00A0\u00A0\u00A0Others",
+    variable == "living_05" ~ "Main fuel used for cooking",
+    variable == "living_05_1" ~ "\u00A0\u00A0\u00A0Charcoal",
+    variable == "living_05_2" ~ "\u00A0\u00A0\u00A0Firewood",
+    variable == "living_05_3" ~ "\u00A0\u00A0\u00A0Gas",
+    variable == "living_05_4" ~ "\u00A0\u00A0\u00A0Electricity",
+    variable == "living_05_5" ~ "\u00A0\u00A0\u00A0Gasoline/oil/ethanol",
+    variable == "living_05_6" ~ "\u00A0\u00A0\u00A0Animal waste/manure",
+    variable == "living_05_7" ~ "\u00A0\u00A0\u00A0Solar energy",
+    variable == "living_05_99" ~ "\u00A0\u00A0\u00A0Others",
+    variable == "montant_02" ~ "Amount paid by the respondent for game A: ________ FCFA",
+    variable == "montant_05" ~ "Amount paid by the respondent for game B: ________ FCFA",
+    variable == "face_04" ~ "Amount paid by the respondent for game B: ________ FCFA",
+    variable == "face_13" ~ "Amount paid by the respondent for game A: ________ FCFA",
+    variable == "enum_03" ~ "(Enumerator observation) Main materials used for the roof of the house",
+    variable == "enum_03_1" ~ "\u00A0\u00A0\u00A0Concrete/cement",
+    variable == "enum_03_2" ~ "\u00A0\u00A0\u00A0Tile/slate",
+    variable == "enum_03_3" ~ "\u00A0\u00A0\u00A0Zinc",
+    variable == "enum_03_4" ~ "\u00A0\u00A0\u00A0Thatch/straw",
+    variable == "enum_03_99" ~ "\u00A0\u00A0\u00A0Other",
+    variable == "enum_04" ~ "(Enumerator observation) Main materials used for the walls of the house where the head of the family sleeps?",
+    variable == "enum_04_1" ~ "\u00A0\u00A0\u00A0Cement bricks",
+    variable == "enum_04_2" ~ "\u00A0\u00A0\u00A0Mud Bricks",
+    variable == "enum_04_3" ~ "\u00A0\u00A0\u00A0Wood",
+    variable == "enum_04_4" ~ "\u00A0\u00A0\u00A0Sheet metal/zinc",
+    variable == "enum_04_5" ~ "\u00A0\u00A0\u00A0Clay",
+    variable == "enum_04_6" ~ "\u00A0\u00A0\u00A0Straw/stem",
+    variable == "enum_04_99" ~ "\u00A0\u00A0\u00A0Others",
+    variable == "enum_05" ~ "(Enumerator observation) Main materials of the main floor of the house",
+    variable == "enum_05_1" ~ "\u00A0\u00A0\u00A0Mud",
+    variable == "enum_05_2" ~ "\u00A0\u00A0\u00A0Earth",
+    variable == "enum_05_3" ~ "\u00A0\u00A0\u00A0Stone/terracotta",
+    variable == "enum_05_4" ~ "\u00A0\u00A0\u00A0Cement/concrete blocks",                                                        
+    variable == "enum_05_5" ~ "\u00A0\u00A0\u00A0Wood",
+    variable == "enum_05_99" ~ "\u00A0\u00A0\u00A0Other",
+    # variable == "" ~ "",
+    # variable == "" ~ "",
+    # variable == "" ~ "",
+    #   
+    
+  
+    TRUE ~ ""  # Default value if none of the conditions are met
+  ))
+
+
+#add row in variable equal to the following: hh_education_skills == "" 
+#if variable =  hh_age_resp, replace Question == Age of the Respondent
+#if variable =  hh_gender_, replace Question == Gender
+#if variable =  hh_age_, replace Question == Age (in completed years)
+#if variable =  hh_education_skills_1 , replace Question == 3.7. Education - Skills (multiple choice)
+
+#if variable =  hh_education_skills, replace Question == hh_education_level_
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
+#if variable =  , replace Question == 
 
 
 
 
 
+final_table
 
 
 
 
 
+```
+
+
+##clean up table
+```{r}
+
+
+final_table <- final_table %>% select(Question, everything())
+
+
+final_table <- final_table %>%
+  mutate(across(.cols = -c(variable, Question), 
+                .fns = ~ ifelse(variable %in% c("hh_education_level_", "hh_29_", "hh_15_", "living_01", "living_03", "living_04", "living_05", "enum_03", "enum_04", "enum_05"), 
+                                NA, .x)))
+# 
+# balance_df <- balance_df %>%
+#   mutate(health_5_3_ = ifelse(is.nan(health_5_3_) | rowSums(is.nan(.)) > 0, "", health_5_3_)) %>%
+#   mutate(health_5_3_ = ifelse(lag(variable) == "health_5_3_" & (is.nan(health_5_3_) | rowSums(is.nan(.)) > 0), "", health_5_3_))
+
+
+
+final_table <- final_table %>%
+  mutate(
+    variable = ifelse(type == "(p)" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and not NA
+    type = ifelse(type == "(p)" & !is.na(type), "", type)  # Clear type when type == "(p)" and not NA
+  ) %>%
+  select(-"type")  # Remove the 'type' column after modification
+
+
+final_table
+#output for now
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+knitr::kable(final_table, format = "html") %>% save_kable("final_table.html")
 
 
 
 
+```
+
+##Add the likelihood ratio test statistic
+```{r}
+
+
+# Step 1: Define your outcome variables (binary)
+outcome_vars <- c("Treatment1", "Treatment2", "Treatment3")  # Replace with your outcome variables
+
+# Step 2: Define the predictors
+
+predictors <- setdiff(colnames(balance_df), c("hhid", "hhid_village", "treatment_group"))
+predictors
+# Step 3: Prepare an empty vector to store F-statistics
+# f_stats <- c()
+# 
+# # Step 4: Run multinomial logit for each predictor variable in balance_data
+# for (predictor in predictors) {
+#   
+#   # Step 4.1: Run the multinomial logit model
+#   formula <- as.formula(paste("group ~", predictor))  # Use the variable as the predictor
+#   model <- multinom(formula, data = balance_df)
+#   
+#   # Step 4.2: Extract the deviance values
+#   full_deviance <- logLik(model)[1] * -2  # Full model deviance
+#   
+#   # Step 4.3: Fit the null model
+#   null_model <- multinom(group ~ 1, data = balance_df)  # Null model (intercept only)
+#   null_deviance <- logLik(null_model)[1] * -2  # Null model deviance
+#   
+#   # Step 4.4: Compute the likelihood ratio statistic (F-stat equivalent)
+#   lr_statistic <- -2 * (null_deviance - full_deviance)
+#   
+#   # Step 4.5: Compute the degrees of freedom
+#   df <- length(coef(model)) - 1  # Number of predictors (subtracting 1 for the intercept)
+#   
+#   # Step 4.6: Compute the p-value for the likelihood ratio test
+#   p_value <- 1 - pchisq(lr_statistic, df)
+#   
+#   # Step 4.7: Store the results (F-stat and p-value) in the vector
+#   f_stats <- c(f_stats, list(c(p_value, lr_statistic)))
+# }
+# 
+# # Step 5: Add the F-statistics to the final_table
+# final_table <- final_table %>%
+#   mutate(F_stat = unlist(f_stats)[, 2],  # Add F-statistic to final_table
+#          P_value = unlist(f_stats)[, 1])  # Add p-value to final_table
+# 
+# # Step 6: View the final table with F-stat and p-values
+# print(final_table)
+```
 
 
 
+```{r}
 
 
-
-
-
-
+# Function to run regressions and extract t-stats and p-values
+# run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+#   results <- list()
+#   for (var in vars_to_test) {
+#     # Control vs each treatment
+#     treatments <- unique(data[[treatment_col]])
+#     treatments <- setdiff(treatments, 'control')
+#     for (arm in treatments) {
+#       subset <- data %>% filter(!!sym(treatment_col) %in% c('control', arm))
+#       subset[[treatment_col]] <- ifelse(subset[[treatment_col]] == arm, 1, 0)
+#       model <- lm(as.formula(paste(var, '~', treatment_col)), data = subset)
+#       clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+#       results <- append(results, list(data.frame(variable = var, comparison = paste('control vs', arm), t_stat = clustered_se[2, 3], p_value = clustered_se[2, 4])))
+#     }
+#     # Pairwise comparisons between treatments
+#     for (i in 1:(length(treatments) - 1)) {
+#       for (j in (i + 1):length(treatments)) {
+#         subset <- data %>% filter(!!sym(treatment_col) %in% c(treatments[i], treatments[j]))
+#         subset[[treatment_col]] <- ifelse(subset[[treatment_col]] == treatments[j], 1, 0)
+#         model <- lm(as.formula(paste(var, '~', treatment_col)), data = subset)
+#         clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+#         results <- append(results, list(data.frame(variable = var, comparison = paste(treatments[i], 'vs', treatments[j]), t_stat = clustered_se[2, 3], p_value = clustered_se[2, 4])))
+#       }
+#     }
+#   }
+#   bind_rows(results)
+# }
+# balance_df
+# # Run the regressions
+#  vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+#  regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test)
+# vars_to_test
+# long_data
+# # Pivot table to display results
+# final_table <- regression_results %>%
+#   pivot_wider(names_from = comparison, values_from = c(t_stat, p_value))
+# 
+# # View final table
+# print(final_table)
+```
 
 
 ```{r}
@@ -535,13 +921,12 @@ print(final_table)
 
 ```
 
-##Clean up the table: 
 
 ```{r}
-final_table <- final_table %>%
-  mutate(Question = NA_character_)
-vars_to_test
-final_table
+# final_table <- final_table %>%
+#   mutate(Question = NA_character_)
+# vars_to_test
+# final_table
 
 #add row in variable equal to the following: hh_education_skills == "" 
 #if variable =  hh_age_resp, replace Question == Age of the Respondent

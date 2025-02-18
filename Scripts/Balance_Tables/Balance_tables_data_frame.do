@@ -128,8 +128,10 @@ forval i = 1/7 {
 
 	
 	reshape long hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ hh_education_level_ hh_education_year_achieve_ ///
-hh_number_ hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ ///
+hh_number_ hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_13_8_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ ///
 health_5_3_ health_5_5_ health_5_6_, i(hhid) j(id)
+
+ 
 
 
 *Collapse at hh level - default to mean, change to something else IEBaltab - balance table output 
@@ -187,10 +189,17 @@ foreach x in 1 2 3 4 99 {
     replace hh_11_`x' = 0 if missing(hh_11_)
 }
 
+
 * Creating binary variables for hh_15
 foreach x in 1 2 3 4 5 99 {
     gen hh_15_`x' = hh_15_ == `x'
     replace hh_15_`x' = 0 if missing(hh_15_)
+}
+
+* Creating binary variables for hh_29
+foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
+    gen hh_29_`x' = hh_29_ == `x'
+    replace hh_29_`x' = 0 if missing(hh_29_)
 }
 
 * Creating binary variables for living_01
@@ -242,49 +251,22 @@ recode hh_gender_ (2=0)
 ********************************************************* Reorder the variables & collapse at household level *********************************************************
 * drop empty/useless variables 
 
-drop id species health_5_3_ hh_number_
+drop id species hh_number_ health_5_3_15_  //health_5_3_15_ was an empty variable in SurveyCTO
+
+
 
 
 ** collaspe by mean at the household level 
-collapse (mean)  hh_age_resp hh_gender_ hh_age_ hh_education_year_achieve_ hh_03_ hh_10_ hh_14_ hh_16_ hh_29_ health_5_2_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_count montant_02 montant_05 face_04 face_13 ///
+collapse (mean)  hh_age_resp hh_gender_ hh_age_ hh_education_year_achieve_ hh_03_ hh_10_ hh_14_ hh_16_ hh_29_* health_5_2_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_count montant_02 montant_05 face_04 face_13 ///
     (sum) hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_* hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ 	   	hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_15_* ///
-    health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ ///
+    health_5_3_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_  health_5_3_99_ ///
     species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 ///
     living_01* living_03* living_04* living_05* enum_03* enum_04* enum_05*, by(hhid hhid_village)
 
 
-order hhid_village hhid hh_age_resp hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_* hh_education_year_achieve_ hh_03_ hh_10_ hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_* hh_16_ hh_29_ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01* living_03* living_04* living_05* montant_02 montant_05 face_04 face_13 enum_03* enum_04* enum_05*
+order hhid_village hhid hh_age_resp hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_* hh_education_year_achieve_ hh_03_ hh_10_ hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_* hh_16_ hh_29_*  health_5_2_ health_5_3_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_  health_5_3_99_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01* living_03* living_04* living_05* montant_02 montant_05 face_04 face_13 enum_03* enum_04* enum_05*
 
 drop if missing(hh_gender_) & missing(hh_age_)
-
-********************************************************* Bring in survey questions *********************************************************
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -48,8 +48,8 @@ global income "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midlin
 global standard_living "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Standard_Living"
 global beliefs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Beliefs" 
 global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Enumerator_Observations"
-global hh18 "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster\hh18_16Feb2025"
-global hh13 "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster\hh13_16Feb2025"
+global hh18 "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster\HH18"
+global hh13 "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster\HH13"
 
 ************************* Final output file path **********************************
 global issues "$master\Data_Management\External_Corrections\Issues for Justin and Amina\Midline\Issues"
@@ -298,8 +298,9 @@ foreach var of varlist issue_variable_name {
 }
 sort enqu_name issue_variable_name
 
-merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\\Updated_Midline_Survey_Questions.dta"
+merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
 	save "$hh13\Part2_Household_Issues_16Feb2025.dta", replace 
+	export excel using "$hh13\Part2_Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
 	
 **** TIME USE QUESTIONS *****************
 	clear
@@ -318,7 +319,7 @@ foreach var of varlist issue_variable_name {
     replace issue_variable_label = "`: variable label `var''" if issue_variable_name == "`var'"
 }
 sort enqu_name issue_variable_name
-merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\\Updated_Midline_Survey_Questions.dta"
+merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
 	save "$hh18\Part3_Household_Issues_16Feb2025.dta", replace 
-	
+	export excel using "$hh18\Part3_Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
 

@@ -42,16 +42,19 @@ output: html_document
 #library(r2rtf)
 library(dplyr)
 library(readr)
+library(tidyr)
 #library(ggplot2)
 #library(kwb.utils)
 library(haven)
 library(data.table)
-library(rtf)
+#library(rtf)
 library(tidyverse)
 library(estimatr)
 library(broom)
 library(kableExtra)
-#library(RCT)
+library(sandwich)
+library(lmtest)
+
 #library(cobalt)
 
 ```
@@ -83,9 +86,9 @@ if (file.exists(proj_paths$projects)) {
 
 file_path_balance_tables_df <- file.path(proj$p1, "baseline_balance_tables_data.dta")
 balance_df <- read_dta(file_path_balance_tables_df)
-
-#survey_questions <- read_csv(file.path(proj$p1, "Baseline_Survey_Questions.csv"))
 balance_df
+#survey_questions <- read_csv(file.path(proj$p1, "Baseline_Survey_Questions.csv"))
+#balance_df
 ```
 
 
@@ -216,8 +219,9 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
 
 ###issue with rounding - need to first change into long format with everythingas doubles then stack pvalues, THEN change to characters to add parenthesis 
 
-vars_to_test
+
 vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+vars_to_test
 regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test)
 
 # Convert t-stat and p-value to numeric and round to two decimal places

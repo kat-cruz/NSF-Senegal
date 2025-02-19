@@ -72,18 +72,16 @@ merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
 drop _merge 
 
 
-*** Version Control: ***
-global date = strofreal(date(c(current_date),"DMY"), "%tdYYNNDD")
-
-
 
 ********************************************************* Keep relevant variables *********************************************************
 
 
+** drop hh_education_year_achieve_ as it's correlated with hh_education_skills_
+
 keep hhid hhid_village ///
-     hh_gender* hh_age* ///
-     hh_education_skills* hh_education_level* hh_education_year_achieve* ///
-     hh_numero* hh_03* hh_10* hh_11* hh_12* hh_13* ///
+     hh_relation_with_* hh_gender* hh_age* hh_age_resp hh_gender_resp ///
+     hh_education_skills* hh_education_level*  ///
+     hh_numero* hh_03* hh_10* hh_11* hh_12* hh_12index_* hh_13* ///
      hh_14* hh_15* hh_16* hh_29* ///
      health_5_2* health_5_3* health_5_5* health_5_6* ///
      agri_6_15* species* agri_income_01 agri_income_05 ///
@@ -93,7 +91,7 @@ keep hhid hhid_village ///
      enum_03* enum_04* enum_05*
 
 ********************************************************* Drop unecessary variables *********************************************************
-
+	
 
 
 */ Drop variables with numbered suffixes (1 to 55) for specific patterns
@@ -102,11 +100,11 @@ forval i = 1/55 {
 }
 
 * Drop variables matching specific patterns
-drop hh_12_o* hh_12_a* hh_13_s* hh_13_o*  ///
+drop hh_relation_with_o* hh_12_o* hh_12_a* hh_13_s* hh_13_o*  ///
      living_01_o living_03_o living_04_o living_05_o ///
      enum_03_o enum_04_o enum_05_o species_o ///
-	hh_12_r* hh_12name_* hh_12_calc_* hh_12index_* hh_education_level_o_* ///
-     hh_11_o_* hh_education_skills_0_* hh_15_o_* hh_gender_res* hh_29_o* health_5_3_o* ///
+	hh_12_r* hh_12name_* hh_12_calc_* hh_education_level_o_* ///
+     hh_11_o_* hh_education_skills_0_* hh_15_o_* hh_29_o* health_5_3_o* ///
 	 speciesindex* species_autre speciesname* 
 
 
@@ -123,20 +121,54 @@ forval i = 1/7 {
     }
 }
 
+
+* Reshape long with hhid and id
+forval i = 1/7 {
+    * Loop over the second index (1 to 55)
+    forval j = 1/55 {
+        * Construct the old and new variable names
+        local oldname = "hh_12index_`j'_`i'"
+        local newname = "hh_12index_`i'_`j'"
+        
+        * Rename if the old variable exists
+        cap rename `oldname' `newname'
+    }
+}
+
+
 ********************************************************* Reshape the data *********************************************************
 
-
 	
-	reshape long hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ hh_education_level_ hh_education_year_achieve_ ///
-hh_number_ hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_13_8_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ ///
+	reshape long hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ hh_education_level_ ///
+hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
+hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ ///
 health_5_3_ health_5_5_ health_5_6_, i(hhid) j(id)
 
  
+********************************************************* filter variable *********************************************************
+
+forvalues j = 1/8 {
+    gen hh_13_0`j' = .
+    forvalues i = 1/7 {
+        replace hh_13_0`j' = hh_13_`i' if hh_12index_`i' == `j'
+    }
+}
+
+
+drop hh_13_7_ hh_13_6_ hh_13_5_ hh_13_4_ hh_13_3_ hh_13_2_ hh_13_1_ 
+drop hh_12index_7_ hh_12index_6_ hh_12index_5_ hh_12index_4_ hh_12index_3_ hh_12index_2_ hh_12index_1_
 
 
 *Collapse at hh level - default to mean, change to something else IEBaltab - balance table output 
 
 ********************************************************* Replace missings by accounting for skip patterns *********************************************************
+
+** replace 2s for hh_03 health_5_2 health_5_5 health_5_6 health_5_7 as missings 
+
+foreach var in hh_03_ health_5_2_ health_5_5_ health_5_6_ {
+    replace `var' = .a if `var' == 2
+}
+
 
 *replace agri_income_05 = 0 if agri_income_01 == 0
 * hh_14 relevance: ${hh_10} > 0 and selected(${hh_12}, "6")
@@ -168,7 +200,8 @@ replace hh_16_ = 0 if hh_10_ == 0
 * hh_education_year_achieve: {hh_education_level} != 0
  */
 
-replace hh_education_year_achieve_ = 0 if hh_education_level_ == 0
+ ** Dropped var 
+*replace hh_education_year_achieve_ = 0 if hh_education_level_ == 0
 
 
 ** Note **
@@ -253,18 +286,43 @@ recode hh_gender_ (2=0)
 
 drop id species hh_number_ health_5_3_15_  //health_5_3_15_ was an empty variable in SurveyCTO
 
+** aggregate by HH head 
 
+* Loop through the variables and create the corresponding head variables
+foreach var in hh_age_ hh_gender_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ {
+    * Create new variable for each
+    gen `var'head = . 
+    
+    * Replace the new variable with the value from the original variable if hh_relation_with_ == 1
+    replace `var'head = `var' if hh_relation_with_ == 1
+}
 
+** maybe use?? 
+
+*drop hh_age_ hh_gender_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_
 
 ** collaspe by mean at the household level 
-collapse (mean)  hh_age_resp hh_gender_ hh_age_ hh_education_year_achieve_ hh_03_ hh_10_ hh_14_ hh_16_ hh_29_* health_5_2_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_count montant_02 montant_05 face_04 face_13 ///
-    (sum) hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_* hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ 	   	hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_15_* ///
+ 
+collapse (mean) ///
+	hh_age_resp hh_gender_resp hh_age_ hh_age_head hh_gender_ hh_gender_head hh_education_skills*  ///
+	hh_03_ hh_10_ hh_14_ hh_16_ hh_29_* health_5_2_ health_5_5_ health_5_6_ ///
+	agri_6_15 agri_income_01 agri_income_05 montant_02 montant_05 face_04 face_13 ///
+	hh_education_level_* hh_11_* hh_12_*  hh_13_* hh_15_* ///
+	health_5_3_* ///
+    species_* ///
+    living_01* living_03* living_04* living_05* enum_03* enum_04* enum_05*, by(hhid hhid_village)
+
+
+/*
+collapse (mean)  hh_age_resp hh_gender_ hh_age_ hh_03_ hh_10_ hh_14_ hh_16_ hh_29_* health_5_2_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_count montant_02 montant_05 face_04 face_13 ///
+    (sum) hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_* hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_01 hh_13_02 	   	hh_13_03 hh_13_04 hh_13_05 hh_13_06 hh_13_07 hh_13_08 hh_15_* ///
     health_5_3_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_  health_5_3_99_ ///
     species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 ///
     living_01* living_03* living_04* living_05* enum_03* enum_04* enum_05*, by(hhid hhid_village)
 
+*/
 
-order hhid_village hhid hh_age_resp hh_gender_ hh_age_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_* hh_education_year_achieve_ hh_03_ hh_10_ hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_* hh_16_ hh_29_*  health_5_2_ health_5_3_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_  health_5_3_99_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01* living_03* living_04* living_05* montant_02 montant_05 face_04 face_13 enum_03* enum_04* enum_05*
+order hhid_village hhid hh_age_resp hh_gender_ hh_gender_head hh_gender_resp hh_age_head hh_age_ hh_education_skills_* hh_education_level_* hh_03_ hh_10_ hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_01 hh_13_02 hh_13_03 hh_13_04 hh_13_05 hh_13_06 hh_13_07 hh_13_08 hh_14_ hh_15_* hh_16_ hh_29_*  health_5_2_ health_5_3_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_  health_5_3_99_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01* living_03* living_04* living_05* montant_02 montant_05 face_04 face_13 enum_03* enum_04* enum_05*
 
 drop if missing(hh_gender_) & missing(hh_age_)
 

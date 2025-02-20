@@ -298,10 +298,11 @@ foreach var of varlist issue_variable_name {
     replace issue_variable_label = "`: variable label `var''" if issue_variable_name == "`var'"
 }
 sort enqu_name issue_variable_name
+order villageid sup sup_name enqu enqu_name hh_phone hhid hh_name_complet_resp hh_name_complet_resp_new hh_member_name hh_13* hh_10*
 
 merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
-	save "$hh13\Part2_Household_Issues_16Feb2025.dta", replace 
-	export excel using "$hh13\Part2_Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
+	save "$hh13\Part2_Household_Issues_19Feb2025.dta", replace 
+	export excel using "$hh13\Part2_Household_Issues_19Feb2025.xlsx", firstrow(variables) replace
 	
 **** TIME USE QUESTIONS *****************
 	clear
@@ -320,9 +321,10 @@ foreach var of varlist issue_variable_name {
     replace issue_variable_label = "`: variable label `var''" if issue_variable_name == "`var'"
 }
 sort enqu_name issue_variable_name
+order villageid sup sup_name enqu enqu_name hh_phone hhid hh_name_complet_resp hh_name_complet_resp_new hh_member_name hh_21* hh_18_*
 merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
-	save "$hh18\Part3_Household_Issues_16Feb2025.dta", replace 
-	export excel using "$hh18\Part3_Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
+	save "$hh18\Part3_Household_Issues_19Feb2025.dta", replace 
+	export excel using "$hh18\Part3_Household_Issues_19Feb2025.xlsx", firstrow(variables) replace
 
 	
 ***** Replacment Survey **************
@@ -343,5 +345,5 @@ foreach var of varlist issue_variable_name {
 }
 sort enqu_name issue_variable_name
 merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
-	save "$replacementsurvey\ReplacementSurvey_Issues_16Feb2025.dta", replace 
-	export excel using "$replacementsurvey\Replacement_Issues_16Feb2025.xlsx", firstrow(variables) replace
+	save "$replacementsurvey\ReplacementSurvey_Issues_19Feb2025.dta", replace 
+	export excel using "$replacementsurvey\Replacement_Issues_19Feb2025.xlsx", firstrow(variables) replace

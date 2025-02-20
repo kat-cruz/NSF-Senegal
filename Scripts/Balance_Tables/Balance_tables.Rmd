@@ -97,7 +97,6 @@ balance_df
 
 ```{r}
 
-balance_df
 
 # Adding a single categorical variable for household training categories
 balance_df <- balance_df %>%
@@ -219,9 +218,10 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
 
 ###issue with rounding - need to first change into long format with everythingas doubles then stack pvalues, THEN change to characters to add parenthesis 
 
-
+names(balance_df)
 vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-vars_to_test
+vars_to_test <- c("hh_education_skills_1_") 
+
 regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test)
 
 # Convert t-stat and p-value to numeric and round to two decimal places

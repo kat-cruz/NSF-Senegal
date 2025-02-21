@@ -22,7 +22,7 @@ global master "$box_path\Data_Management"
 * Define specific paths for output and input data
 global dailyupdates "$master\Output\Data_Quality_Checks\Midline\Midline_Daily_Updates"
 * UPDATE WITH DATE
-global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_10Feb2025.csv"
+global data "$master\_CRDES_RawData\Midline\Household_Survey_Data\DISES_Enquête_ménage_midline_VF_WIDE_19Feb2025.csv"
 global baselinedata "$master\_CRDES_CleanData\Baseline\Identified\DISES_Baseline_Complete_PII.dta"
 global training "$master\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 global respond "$master\_CRDES_CleanData\Baseline\Identified\respondent_index.dta"
@@ -30,13 +30,21 @@ global issues "$master\External_Corrections\Issues for Justin and Amina\Midline\
 
 ***************************************************
 * UPDATE WITH DATE
-putexcel set "$dailyupdates\DISES_DailyChecks_12Feb.xlsx", replace
+putexcel set "$dailyupdates\DISES_DailyChecks_19Feb.xlsx", replace
 
 * Write Revisit and Attrition Rates
 putexcel A1 = "Metric" B1 = "Value"
 
 * Load midline data
 import delimited "$data", clear varnames(1) bindquote(strict)
+
+* Drop non-consenting households
+drop if (consent == 0 | consent == 2)  
+duplicates drop hh_global_id, force
+
+
+* Count unique households revisited at midline
+egen total_midline = count(hh_global_id)
 
 * For computing attrition/revisit rates: *
 egen midline_count = count(hh_global_id), by(hhid_village)
@@ -223,15 +231,6 @@ putexcel A13 = "Trained HH Recall Attending Training at Midline" B13 = `total_ov
 putexcel A14 = "Share of Trained HH Recall Attending Training (%)" B14 = `share_overlap_attended'
 putexcel A15 = "Trained HH Heard Training at Midline" B15 = `total_overlap_heard'
 putexcel A16 = "Share of Trained HH Heard about Training (%)" B16 = `share_overlap_heard'
-
-
-***************************************************
-* Export Tabulation of HHID_Village to Excel
-***************************************************
-* see how many hh's are missing from each village
-estpost tab hhid_village
-esttab using "$dailyupdates\Village_Counts_12Feb.xlsx", cells("b(label(Count)) pct(label(Percent))") replace
-
 
 
 

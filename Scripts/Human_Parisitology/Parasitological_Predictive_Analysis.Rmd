@@ -54,17 +54,18 @@ proj_paths <- list(
 if (file.exists(proj_paths$projects)) {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$projects,
-    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Clean Data"
+    p1 = "<projects>/Data_Management/Output/Data_Analysis/Parasitological_Analysis_Data/Analysis_Data"
   ))
 } else {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$alternative_projects,
-    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Clean Data"
+    p1 = "<projects>/Data_Management/Output/Data_Analysis/Parasitological_Analysis_Data/Analysis_Data"
   ))
 }
 
-file_path_infection_df <- file.path(proj$p1, "child_infection_dataframe_features.dta")
+file_path_infection_df <- file.path(proj$p1, "base_child_infection_dataframe.dta")
 infection_df <- read_dta(file_path_infection_df)
+
 
 
 ```
@@ -199,7 +200,7 @@ total_egg = sm_egg_count + sh_egg_count
 )
 
 #Scale watercontact variable 
-
+view(matched_only_df)
 # create total time variable. Replace "h" with ":" and calculate total time
 matched_only_df$total_time <- as.numeric(difftime(
   as.POSIXct(gsub("h", ":", matched_only_df$Endsamplingtime), format = "%H:%M"),

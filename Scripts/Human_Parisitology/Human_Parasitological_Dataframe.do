@@ -340,7 +340,7 @@ keep individual_id_crdes health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ healt
 save "${dataframe}\temp_features_reshaped.dta", replace
 
 * Load main dataset 
-use "${dataframe}\child_infection_dataframe.dta", clearx	
+use "${dataframe}\child_infection_dataframe.dta", clear
 
 * Merge health variables where individual_id_crdes matches
 merge m:1 individual_id_crdes using "${dataframe}\temp_features_reshaped.dta", ///

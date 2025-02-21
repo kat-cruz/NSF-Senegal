@@ -28,23 +28,23 @@ set more off
 * SET FILE PATHS
 **************************************************
 * Set base Box path for each user
-if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box"
-if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box"
-if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
-if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
-if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box"
+if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
+if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
+if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
 
-if "`c(username)'"=="km978" global git_path "C:\Users\Kateri\Downloads\GIT-Senegal\NSF-Senegal"
-if "`c(username)'"=="Kateri" global git_path "C:\Users\km978\Downloads\GIT-Senegal\NSF-Senegal"
+if "`c(username)'"=="km978" global gitmaster "C:\Users\Kateri\Downloads\GIT-Senegal\NSF-Senegal"
+if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Senegal\NSF-Senegal"
 
 
 
 * Define project-specific paths
 
-global data "${box_path}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
+global data "${master}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
 
 ***** Data folders *****
-global dataOutput "${box_path}\Data_Management\Output\Data_Analysis\Balance_Tables" 
+global dataOutput "${master}\Data_Management\Output\Data_Analysis\Balance_Tables" 
 global latexOutput "$git_path\Latex_Output\Balance_Tables"
 
 use "$data\Complete_Baseline_Household_Roster.dta", clear 
@@ -83,7 +83,7 @@ keep hhid hhid_village ///
      hh_education_skills* hh_education_level*  ///
      hh_numero* hh_03* hh_10* hh_11* hh_12* hh_12index_* hh_13* ///
      hh_14* hh_15* hh_16* hh_29* ///
-     health_5_2* health_5_3* health_5_5* health_5_6* ///
+     health_5_2* health_5_3* health_5_5* health_5_6* health_5_12* ///
      agri_6_15* species* agri_income_01 agri_income_05 ///
      living_01* living_03* living_04* living_05* ///
      montant_02* montant_05* ///
@@ -142,7 +142,7 @@ forval i = 1/7 {
 	reshape long hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ hh_education_level_ ///
 hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
 hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ ///
-health_5_3_ health_5_5_ health_5_6_, i(hhid) j(id)
+health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
 
  
 ********************************************************* filter variable *********************************************************
@@ -211,71 +211,161 @@ replace hh_16_ = 0 if hh_10_ == 0
 ********************************************************* Encode variables to binaries  *********************************************************
 
 * Creating binary variables for hh_education_level
+/*
 foreach x in 0 1 2 3 4 99 {
     gen hh_education_level_`x' = hh_education_level_ == `x'
     replace hh_education_level_`x' = 0 if missing(hh_education_level_)
 }
 
+*/
+** update this ** 
+
+** maybe adjust?
+
+** Level of education achieved
+** 2: Secondary level
+** 3: Higher level
+** 4: Technical and vocational school
+
+
+gen hh_education_level_bin = 0
+replace hh_education_level_bin = 1 if hh_education_level_ == 2 | hh_education_level_ == 3 | hh_education_level_ == 4
+
+
+**Education - Skills (multiple choice)
+
+** 2.Comfortable with numbers and calculations
+** 3. Arabizing/can read the Quranin Arabic
+** 4. Fluent in Wolof/Pulaar
+** 5. Can read a newspaper inFrench
+
+
+gen hh_education_skills_bin = 0
+replace hh_education_skills_bin = 1 if hh_education_skills_2_ == 1 | hh_education_skills_3_ == 1 | hh_education_skills_4_ == 1 | hh_education_skills_5_ == 5
+
+
+** source(s) of surface water?
+
+** source(s) of surface water?
 * Creating binary variables for hh_11
 foreach x in 1 2 3 4 99 {
     gen hh_11_`x' = hh_11_ == `x'
     replace hh_11_`x' = 0 if missing(hh_11_)
 }
 
-
+*How did he use aquatic vegetation?
 * Creating binary variables for hh_15
 foreach x in 1 2 3 4 5 99 {
     gen hh_15_`x' = hh_15_ == `x'
     replace hh_15_`x' = 0 if missing(hh_15_)
 }
 
+** dropping variable
+/*
 * Creating binary variables for hh_29
 foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
     gen hh_29_`x' = hh_29_ == `x'
     replace hh_29_`x' = 0 if missing(hh_29_)
 }
+*/
 
+/*
 * Creating binary variables for living_01
 foreach x in 1 2 3 4 5 6 7 8 9 10 99 {
     gen living_01_`x' = living_01 == `x'
     replace living_01_`x' = 0 if missing(living_01)
 }
+*/
+
+** main source of drinking water supply
+**1 = Interior tap
+**2 = Public tap
+**3 = Neighbor's tap
+
+gen living_01_bin = 0
+replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 
 
 * Creating binary variables for living_03
+/*
 foreach x in 1 2 3 99 {
     gen living_03_`x' = living_03 == `x'
     replace living_03_`x' = 0 if missing(living_03)
 }
+*/
 
+
+/*
 * Creating binary variables for living_04
 foreach x in 1 2 3 4 5 6 7 99 {
     gen living_04_`x' = living_04 == `x'
     replace living_04_`x' = 0 if missing(living_04)
 }
+*/
 
+** Main type of toilet 
+**1 Flush with sewer
+**2 Toilet flush with 
+
+
+gen living_04_bin = 0
+replace living_04_bin = 1 if living_04 == 1 | living_04 == 2 
+
+/*
 * Creating binary variables for living_05
 foreach x in 1 2 3 4 5 6 7 99 {
     gen living_05_`x' = living_05 == `x'
     replace living_05_`x' = 0 if missing(living_05)
 }
+*/
+
+** main fuel used for cooking
+**4 Electricity
+gen living_05_bin = 0
+replace living_05_bin = 1 if living_05 == 4 
 
 * Creating binary variables for enum_03
+/*
 foreach x in 1 2 3 4 99 {
     gen enum_03_`x' = enum_03 == `x'
     replace enum_03_`x' = 0 if missing(enum_03)
 }
+*/
+
+** has cement for roof 
+
+gen enum_03_bin = 0
+replace enum_03_bin = 1 if enum_03 == 1 
 
 * Creating binary variables for enum_04
+/*
 foreach x in 1 2 3 4 5 6 99 {
     gen enum_04_`x' = enum_04 == `x'
     replace enum_04_`x' = 0 if missing(enum_04)
 }
+*/
+
+** has cement for walls for head of the family
+gen enum_04_bin = 0
+replace enum_04_bin = 1 if enum_04 == 1 
 
 * Creating binary variables for enum_05
+/*
 foreach x in 1 2 3 4 5 99 {
     gen enum_05_`x' = enum_05 == `x'
     replace enum_05_`x' = 0 if missing(enum_05)
 }
+*/
+
+**main materials of the main floor of the house 
+** 4 = cement
+
+gen enum_05_bin = 0
+replace enum_05_bin = 1 if enum_05 == 4
+
+** had bilharzia or diarrhea
+gen health_5_3_bin = 0
+replace health_5_3_bin = 1 if health_5_3_2_ == 1 | health_5_3_3_ == 1
+
 
 * Recode hh_gender_ (change 2 to 0, leave others unchanged)
 recode hh_gender_ (2=0)
@@ -284,17 +374,18 @@ recode hh_gender_ (2=0)
 ********************************************************* Reorder the variables & collapse at household level *********************************************************
 * drop empty/useless variables 
 
-drop id species hh_number_ health_5_3_15_  //health_5_3_15_ was an empty variable in SurveyCTO
+drop id species health_5_3_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_99_ health_5_3_9_ 
 
 ** aggregate by HH head 
-
+rename hh_age_ hh_age 
+rename hh_gender_ hh_gender
 * Loop through the variables and create the corresponding head variables
-foreach var in hh_age_ hh_gender_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ {
+foreach var in hh_age hh_gender hh_education_skills_bin hh_education_level_bin {
     * Create new variable for each
-    gen `var'head = . 
+    gen `var'_h = . 
     
     * Replace the new variable with the value from the original variable if hh_relation_with_ == 1
-    replace `var'head = `var' if hh_relation_with_ == 1
+    replace `var'_h = `var' if hh_relation_with_ == 1
 }
 
 ** maybe use?? 
@@ -304,13 +395,13 @@ foreach var in hh_age_ hh_gender_ hh_education_skills_1_ hh_education_skills_2_ 
 ** collaspe by mean at the household level 
  
 collapse (mean) ///
-	hh_age_resp hh_gender_resp hh_age_ hh_age_head hh_gender_ hh_gender_head hh_education_skills*  ///
-	hh_03_ hh_10_ hh_14_ hh_16_ hh_29_* health_5_2_ health_5_5_ health_5_6_ ///
+	hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero ///
+	hh_03_ hh_10_ hh_14_ hh_16_  health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
 	agri_6_15 agri_income_01 agri_income_05 montant_02 montant_05 face_04 face_13 ///
-	hh_education_level_* hh_11_* hh_12_*  hh_13_* hh_15_* ///
-	health_5_3_* ///
+	hh_11_* hh_12_*  hh_13_* hh_15_* ///
     species_* ///
-    living_01* living_03* living_04* living_05* enum_03* enum_04* enum_05*, by(hhid hhid_village)
+    living_01_bin living_04_bin living_05_bin ///
+	enum_03_bin enum_04_bin enum_05_bin, by(hhid hhid_village)
 
 
 /*
@@ -322,10 +413,15 @@ collapse (mean)  hh_age_resp hh_gender_ hh_age_ hh_03_ hh_10_ hh_14_ hh_16_ hh_2
 
 */
 
-order hhid_village hhid hh_age_resp hh_gender_ hh_gender_head hh_gender_resp hh_age_head hh_age_ hh_education_skills_* hh_education_level_* hh_03_ hh_10_ hh_11_* hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_01 hh_13_02 hh_13_03 hh_13_04 hh_13_05 hh_13_06 hh_13_07 hh_13_08 hh_14_ hh_15_* hh_16_ hh_29_*  health_5_2_ health_5_3_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_  health_5_3_99_ health_5_5_ health_5_6_ agri_6_15 agri_income_01 agri_income_05 species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_count living_01* living_03* living_04* living_05* montant_02 montant_05 face_04 face_13 enum_03* enum_04* enum_05*
+order hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero ///
+	hh_03_ hh_10_ hh_14_ hh_16_  health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
+	agri_6_15 agri_income_01 agri_income_05 montant_02 montant_05 face_04 face_13 ///
+	hh_11_* hh_12_*  hh_13_* hh_15_* ///
+    species_* ///
+    living_01_bin living_04_bin living_05_bin ///
+	enum_03_bin enum_04_bin enum_05_bin
 
-drop if missing(hh_gender_) & missing(hh_age_)
-
+*drop if missing(hh_gender_) & missing(hh_age_)
 
 
 ********************************************************* Save the final dataset *********************************************************

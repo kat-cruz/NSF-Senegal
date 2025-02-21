@@ -18,8 +18,9 @@ else if "`c(username)'"=="km978" {
 }
 
 *** additional file paths ***
-global data "$master\Data Management\Output\Data Corrections"
-global ids "$master\Data Management\Output\Household IDs"
+global data "$master\Data_Management\Output\Data_Corrections\Baseline"
+global ids "$master\Data_Management\Output\Household_IDs"
+
 
 *** import complete data for geographic and preliminary information ***
 use "$data\DISES_Baseline_Household_Corrected_PII", clear 
@@ -38,3 +39,4 @@ append using "$data\DISES_Baseline_Household_Corrected_Additional_PII", force
 
 *** save complete identified dataset ***
 save "$data\DISES_Baseline_Complete_PII", replace
+

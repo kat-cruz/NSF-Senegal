@@ -3,30 +3,25 @@
 *** File Last Updated By: Molly Doruska ***
 *** File Last Updated On: October 14, 2024 ***
 
+
 clear all 
 
 set maxvar 20000
 
 **** Master file path  ****
-if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Data Management"
-}
-else if "`c(username)'"=="kls329" {
-                global master "/Users/kls329\Box\NSF Senegal\Data Management"
-}
-else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Data Management"
-}
-else if "`c(username)'"=="Kateri" {
-                global master "C:\Users\Kateri\Box\NSF Senegal\Data Management"
-}
+if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
+if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
+if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
+
 
 *** additional file paths ***
-global data "$master\Output\Data Corrections\Baseline"
-global data_raw "$master\_CRDES_RawData\Baseline"
-global hhids "$master\Output\Household IDs"
-global data_deidentified "$master\_CRDES_CleanData\Baseline\Deidentified"
-global data_identified "$master\_CRDES_CleanData\Baseline\Identified"
+global data "$master\Data_Management\Output\Data_Corrections\Baseline"
+global data_raw "$master\Data_Management\_CRDES_RawData\Baseline"
+global hhids "$master\Data_Management\Output\Household_IDs"
+global data_deidentified "$master\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
+global data_identified "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
 
 *** import complete data for geographic and preliminary information ***
 use "$data\DISES_Baseline_Household_Corrected_PII", clear 

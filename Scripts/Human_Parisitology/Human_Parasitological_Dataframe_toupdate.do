@@ -30,3 +30,4 @@ global data "$master\Data_Management\_PartnerData\Parasitological_Analysis_Dataf
 global output "$master\Data_Management\_Partner_CleanData\Parasitological_Analysis_Data\Analysis_Data"
 
 use "$data\child_infection_dataframe_features.dta", replace
+

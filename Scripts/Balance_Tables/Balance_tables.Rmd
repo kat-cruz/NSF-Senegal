@@ -220,7 +220,6 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
 
 names(balance_df)
 vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-vars_to_test <- c("hh_education_skills_1_") 
 
 regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test)
 
@@ -268,15 +267,15 @@ print(final_table)
 # final_table <- final_table %>%
 #   add_row(variable = "hh_education_skills_", .before = which(final_table$variable == "hh_education_skills_1_")[1])
 # final_table
-index <- which(final_table$variable == "hh_education_skills_1_")
-final_table <- add_row(final_table, variable = "hh_education_skills", .before = index)
+# index <- which(final_table$variable == "hh_education_skills_1_")
+# final_table <- add_row(final_table, variable = "hh_education_skills", .before = index)
 
 # Add "hh_12_1_" above "hh_12"
 index2 <- which(final_table$variable == "hh_12_1_")
 final_table <- add_row(final_table, variable = "hh_12", .before = index2)
 
 # Add "hh_13_1_" above "hh_12"
-index3 <- which(final_table$variable == "hh_13_1_")
+index3 <- which(final_table$variable == "hh_13_01")
 final_table <- add_row(final_table, variable = "hh_13", .before = index3)
 
 # Add "health_5_3" above "health_5_3_1_"
@@ -298,25 +297,32 @@ final_table
 
 ##add for hh_12 In the last 12 months, why has <font color="blue"> ${hh_full_name_calc} </font> spent time near (< 1 m) or in the water source(s)? (multiple choice
 ##vars to remove stats for hh_education_level_ hh_29_ hh_15_ living_01 living_03 living_04 living_05 enum_03 enum_04 enum_05
+
+    
 final_table <- final_table %>%
-  mutate(Question = case_when(
-    variable == "hh_age_resp" ~ "Age of the Respondent",
-    variable == "hh_gender_" ~ "Gender",
-    variable == "hh_age_" ~ "Age",
-    variable == "hh_education_skills" ~ "Education - Skills (multiple choice)",
-    variable == "hh_education_skills_1_" ~ "\u00A0\u00A0\u00A0Can write a short letter to his family",
-    variable == "hh_education_skills_2_" ~ "\u00A0\u00A0\u00A0Comfortable with numbers and calculations",
-    variable == "hh_education_skills_3_" ~ "\u00A0\u00A0\u00A0Arabizing/can read the Quranin Arabic",
-    variable == "hh_education_skills_4_" ~ "\u00A0\u00A0\u00A0Fluent in Wolof/Pulaar",
-    variable == "hh_education_skills_5_" ~ "\u00A0\u00A0\u00A0Can read a newspaper in French",
-    variable == "hh_education_level_" ~ "Level of education achieved",
-    variable == "hh_education_level_0" ~ "\u00A0\u00A0\u00A0No level",
-    variable == "hh_education_level_1" ~ "\u00A0\u00A0\u00A0Primary level",
-    variable == "hh_education_level_2" ~ "\u00A0\u00A0\u00A0Secondary level",
-    variable == "hh_education_level_3" ~ "\u00A0\u00A0\u00A0Higher level",
-    variable == "hh_education_level_4" ~ "\u00A0\u00A0\u00A0Technical and vocational school",
-    variable == "hh_education_level_99" ~ "\u00A0\u00A0\u00A0Other",
-    variable == "hh_education_year_achieve_" ~ "Years of education completed",
+  mutate(Question = case_when(    
+    variable == "hh_age_h" ~ "Household head age",
+    variable == "hh_gender_h" ~ "Household head gender",
+    variable == "hh_education_skills_bin_h" ~ "Indicator for household head education skills:",
+    variable == "(hh_education_skills_bin_h)" ~ "\u00A0\u00A0\u00A0Writing, Numbers, Quran in Arabic, Wolof/Pulaar, French reading",
+    
+    # variable == "hh_education_skills" ~ "Household head education skills: can ",
+    # variable == "hh_education_skills_1_" ~ "\u00A0\u00A0\u00A0Can write a short letter to his family",
+    # variable == "hh_education_skills_2_" ~ "\u00A0\u00A0\u00A0Comfortable with numbers and calculations",
+    # variable == "hh_education_skills_3_" ~ "\u00A0\u00A0\u00A0Arabizing/can read the Quranin Arabic",
+    # variable == "hh_education_skills_4_" ~ "\u00A0\u00A0\u00A0Fluent in Wolof/Pulaar",
+    # variable == "hh_education_skills_5_" ~ "\u00A0\u00A0\u00A0Can read a newspaper in French",
+    # variable == "hh_education_level_" ~ "Level of education achieved",
+    # variable == "hh_education_level_0" ~ "\u00A0\u00A0\u00A0No level",
+    # variable == "hh_education_level_1" ~ "\u00A0\u00A0\u00A0Primary level",
+    # variable == "hh_education_level_2" ~ "\u00A0\u00A0\u00A0Secondary level",
+    # variable == "hh_education_level_3" ~ "\u00A0\u00A0\u00A0Higher level",
+    # variable == "hh_education_level_4" ~ "\u00A0\u00A0\u00A0Technical and vocational school",
+    # variable == "hh_education_level_99" ~ "\u00A0\u00A0\u00A0Other",
+    # variable == "hh_education_year_achieve_" ~ "Years of education completed",
+    variable == "hh_education_level_bin_h" ~ "Indicator for selected household head education level:",
+    variable == "(hh_education_level_bin_h)" ~ "\u00A0\u00A0\u00A0Secondary, Higher, Technical/vocational",
+    variable ==  "hh_numero" ~ "Size of household",
     variable == "hh_03_" ~ "Worked in domestic agricultural activities?",
     variable == "(hh_03_)" ~ "\u00A0\u00A0\u00A0Yes/No",
     variable == "hh_10_" ~ "Hours per week spend within 1 meter of surface water source",
@@ -336,14 +342,14 @@ final_table <- final_table %>%
     variable == "hh_12_7_" ~ "\u00A0\u00A0\u00A0Swim/bathe",
     variable == "hh_12_8_" ~ "\u00A0\u00A0\u00A0Play",
     variable == "hh_13" ~ "On average how many hours per week did [NAME] spend at water source?",
-    variable == "hh_13_1_" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for the household",
-    variable == "hh_13_2_" ~ "\u00A0\u00A0\u00A0Hours spent giving water to livestock",
-    variable == "hh_13_3_" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for agriculture",
-    variable == "hh_13_4_" ~ "\u00A0\u00A0\u00A0Hours spent washing clothes",
-    variable == "hh_13_5_" ~ "\u00A0\u00A0\u00A0Hours spent washing the dishes",
-    variable == "hh_13_6_" ~ "\u00A0\u00A0\u00A0Hours spent harvesting aquatic vegetation",
-    variable == "hh_13_7_" ~ "\u00A0\u00A0\u00A0Hours spent simming/bathing",
-    #variable == "hh_13_8" ~ "Hours spent playing in the water ",
+    variable == "hh_13_01" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for the household",
+    variable == "hh_13_02" ~ "\u00A0\u00A0\u00A0Hours spent giving water to livestock",
+    variable == "hh_13_03" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for agriculture",
+    variable == "hh_13_04" ~ "\u00A0\u00A0\u00A0Hours spent washing clothes",
+    variable == "hh_13_05" ~ "\u00A0\u00A0\u00A0Hours spent washing the dishes",
+    variable == "hh_13_06" ~ "\u00A0\u00A0\u00A0Hours spent harvesting aquatic vegetation",
+    variable == "hh_13_07" ~ "\u00A0\u00A0\u00A0Hours spent simming/bathing",
+    variable == "hh_13_08" ~ "Hours spent playing in the water ",
     variable == "hh_14_" ~ "Of those who answered 'Harvest aquatic vegetation', how much aquatic vegetation did [NAME] collect?",
     variable == "hh_15_" ~ "How did he use aquatic vegetation?",
     variable == "hh_15_1" ~ "\u00A0\u00A0\u00A0Sell",
@@ -353,48 +359,49 @@ final_table <- final_table %>%
     variable == "hh_15_5" ~ "\u00A0\u00A0\u00A0Nothing",
     variable == "hh_15_99" ~ "\u00A0\u00A0\u00A0Other",
     variable == "hh_16_" ~ "Hours spend producing fertilizer, purchasing it, or applying it on the field",
-    variable == "hh_29_" ~ "Highest level and grade member achieved in school",
-    variable == "hh_29_1" ~ "\u00A0\u00A0\u00A0Primary – 1st year",
-    variable == "hh_29_2" ~ "\u00A0\u00A0\u00A0Primary – 2nd year",
-    variable == "hh_29_3" ~ "\u00A0\u00A0\u00A0Primary – 3rd year",
-    variable == "hh_29_4" ~ "\u00A0\u00A0\u00A0Primary – 4th year",
-    variable == "hh_29_5" ~ "\u00A0\u00A0\u00A0Primary – 5th year",
-    variable == "hh_29_6" ~ "\u00A0\u00A0\u00A0Primary – 6th year",
-    variable == "hh_29_7" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 7th year",
-    variable == "hh_29_8" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 8th year",
-    variable == "hh_29_9" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 9th year",
-    variable == "hh_29_10" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 10th year",
-    variable == "hh_29_11" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 11th year",
-    variable == "hh_29_12" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 12th year",
-    variable == "hh_29_13" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 13th year",
-    variable == "hh_29_14" ~ "\u00A0\u00A0\u00A0More than upper secondary (e.g. university)",
-    variable == "hh_29_99" ~ "\u00A0\u00A0\u00A0Other (to be specified)",
+    # variable == "hh_29_" ~ "Highest level and grade member achieved in school",
+    # variable == "hh_29_1" ~ "\u00A0\u00A0\u00A0Primary – 1st year",
+    # variable == "hh_29_2" ~ "\u00A0\u00A0\u00A0Primary – 2nd year",
+    # variable == "hh_29_3" ~ "\u00A0\u00A0\u00A0Primary – 3rd year",
+    # variable == "hh_29_4" ~ "\u00A0\u00A0\u00A0Primary – 4th year",
+    # variable == "hh_29_5" ~ "\u00A0\u00A0\u00A0Primary – 5th year",
+    # variable == "hh_29_6" ~ "\u00A0\u00A0\u00A0Primary – 6th year",
+    # variable == "hh_29_7" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 7th year",
+    # variable == "hh_29_8" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 8th year",
+    # variable == "hh_29_9" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 9th year",
+    # variable == "hh_29_10" ~ "\u00A0\u00A0\u00A0Secondary 1 (Middle) - 10th year",
+    # variable == "hh_29_11" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 11th year",
+    # variable == "hh_29_12" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 12th year",
+    # variable == "hh_29_13" ~ "\u00A0\u00A0\u00A0Secondary 2 (Higher) - 13th year",
+    # variable == "hh_29_14" ~ "\u00A0\u00A0\u00A0More than upper secondary (e.g. university)",
+    # variable == "hh_29_99" ~ "\u00A0\u00A0\u00A0Other (to be specified)",
     variable == "health_5_2_" ~ "Has [Name} been ill last 12 months ",
     variable == "(health_5_2_)" ~ "\u00A0\u00A0\u00A0Yes/No",
-    variable == "health_5_3_" ~ "What type of illness or injury did he/she suffer from?",
+    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months",
     variable == "health_5_3_1_" ~ "\u00A0\u00A0\u00A0Malaria",
-    variable == "health_5_3_2_" ~ "\u00A0\u00A0\u00A0Bilharzia",
-    variable == "health_5_3_3_" ~ "\u00A0\u00A0\u00A0Diarrhea",
-    variable == "health_5_3_4_" ~ "\u00A0\u00A0\u00A0Injuries",
-    variable == "health_5_3_5_" ~ "\u00A0\u00A0\u00A0Dental problems",
-    variable == "health_5_3_6_" ~ "\u00A0\u00A0\u00A0Skin Problems",
-    variable == "health_5_3_7_" ~ "\u00A0\u00A0\u00A0Eye problems",
-    variable == "health_5_3_8_" ~ "\u00A0\u00A0\u00A0Throat Problems",
-    variable == "health_5_3_9_" ~ "\u00A0\u00A0\u00A0Stomach aches",
-    variable == "health_5_3_10_" ~ "\u00A0\u00A0\u00A0Fatigue",
-    variable == "health_5_3_11_" ~ "\u00A0\u00A0\u00A0STI",
-    variable == "health_5_3_12_" ~ "\u00A0\u00A0\u00A0trachoma",
-    variable == "health_5_3_13_" ~ "\u00A0\u00A0\u00A0Onchocerciasis",
-    variable == "health_5_3_14_" ~ "\u00A0\u00A0\u00A0Lymphatic filariasis",
-    variable == "health_5_3_99_" ~ "\u00A0\u00A0\u00A0Other (to be specfied)",
+    # variable == "health_5_3_2_" ~ "\u00A0\u00A0\u00A0Bilharzia",
+    # variable == "health_5_3_3_" ~ "\u00A0\u00A0\u00A0Diarrhea",
+    # variable == "health_5_3_4_" ~ "\u00A0\u00A0\u00A0Injuries",
+    # variable == "health_5_3_5_" ~ "\u00A0\u00A0\u00A0Dental problems",
+    # variable == "health_5_3_6_" ~ "\u00A0\u00A0\u00A0Skin Problems",
+    # variable == "health_5_3_7_" ~ "\u00A0\u00A0\u00A0Eye problems",
+    # variable == "health_5_3_8_" ~ "\u00A0\u00A0\u00A0Throat Problems",
+    # variable == "health_5_3_9_" ~ "\u00A0\u00A0\u00A0Stomach aches",
+    # variable == "health_5_3_10_" ~ "\u00A0\u00A0\u00A0Fatigue",
+    # variable == "health_5_3_11_" ~ "\u00A0\u00A0\u00A0STI",
+    # variable == "health_5_3_12_" ~ "\u00A0\u00A0\u00A0trachoma",
+    # variable == "health_5_3_13_" ~ "\u00A0\u00A0\u00A0Onchocerciasis",
+    # variable == "health_5_3_14_" ~ "\u00A0\u00A0\u00A0Lymphatic filariasis",
+    # variable == "health_5_3_99_" ~ "\u00A0\u00A0\u00A0Other (to be specfied)",
     variable == "health_5_5_" ~ "Received medication for the treatment of schistosomiasis?",
     variable == "(health_5_5_)" ~ "\u00A0\u00A0\u00A0Yes/No",
     variable == "health_5_6_" ~ "Person ever been diagnosed with schistosomiasis?",
     variable == "(health_5_6_)" ~ "\u00A0\u00A0\u00A0Yes/No",
+     variable == "health_5_12_" ~ "What is the distance in km to this service or healthcare professional?",
     variable == "agri_6_15" ~ "How many plots within the fields cultivated by the household?",
     variable == "agri_income_01" ~ "Did you (or any member of your household) engage in paid agricultural work in the last 12 months?",
     variable == "(agri_income_01)" ~ "Yes/No",   
-    variable == "agri_income_05" ~ "Responded yes to agri_income_01; Amount received in kind and/or in cash for this work.",
+    variable == "agri_income_05" ~ "Answered 'yes' to agri_income_01: Amount received in kind/cash for this work",
     variable == "species" ~ "What species do the owners have?",
     variable == "species_1" ~ "\u00A0\u00A0\u00A0Cattle",
     variable == "species_2" ~ "\u00A0\u00A0\u00A0Sheep",
@@ -405,66 +412,72 @@ final_table <- final_table %>%
     variable == "species_7" ~ "\u00A0\u00A0\u00A0Pigs",
     variable == "species_8" ~ "\u00A0\u00A0\u00A0Poultry",
     variable == "species_9" ~ "\u00A0\u00A0\u00A0Other",
-    variable == "living_01" ~ "Main source of drinking water supply",
-    variable == "living_01_1" ~ "\u00A0\u00A0\u00A0Interior tap",
-    variable == "living_01_2" ~ "\u00A0\u00A0\u00A0Public tap",
-    variable == "living_01_3" ~ "\u00A0\u00A0\u00A0Neighbor’s tap",
-    variable == "living_01_4" ~ "\u00A0\u00A0\u00A0Protected well",
-    variable == "living_01_5" ~ "\u00A0\u00A0\u00A0Unprotected well",
-    variable == "living_01_6" ~ "\u00A0\u00A0\u00A0Drill hole",
-    variable == "living_01_7" ~ "\u00A0\u00A0\u00A0Tanker service",
-    variable == "living_01_8" ~ "\u00A0\u00A0\u00A0Water seller",
-    variable == "living_01_9" ~ "\u00A0\u00A0\u00A0Source",
-    variable == "living_01_10" ~ "\u00A0\u00A0\u00A0Stream",
-    variable == "living_01_99" ~ "\u00A0\u00A0\u00A0Other",
-    variable == "living_03" ~ "How is the water treated?",
-    variable == "living_03_1" ~ "\u00A0\u00A0\u00A0Bleach/Aqua tabs",
-    variable == "living_03_2" ~ "\u00A0\u00A0\u00A0Boil",
-    variable == "living_03_3" ~ "\u00A0\u00A0\u00A0Filtration",
-    variable == "living_03_99" ~ "\u00A0\u00A0\u00A0Other (to be specified",
-    variable == "living_04" ~ "Main type of toilet",
-    variable == "living_04_1" ~ "\u00A0\u00A0\u00A0None/outside",
-    variable == "living_04_2" ~ "\u00A0\u00A0\u00A0Flush with sewe",
-    variable == "living_04_3" ~ "\u00A0\u00A0\u00A0Toilet flush with septic tank",
-    variable == "living_04_4" ~ "\u00A0\u00A0\u00A0Bucket",
-    variable == "living_04_5" ~ "\u00A0\u00A0\u00A0Covered pit latrines",
-    variable == "living_04_6" ~ "\u00A0\u00A0\u00A0Uncovered pit latrines",
-    variable == "living_04_7" ~ "\u00A0\u00A0\u00A0Improved latrines",
-    variable == "living_04_99" ~ "\u00A0\u00A0\u00A0Others",
-    variable == "living_05" ~ "Main fuel used for cooking",
-    variable == "living_05_1" ~ "\u00A0\u00A0\u00A0Charcoal",
-    variable == "living_05_2" ~ "\u00A0\u00A0\u00A0Firewood",
-    variable == "living_05_3" ~ "\u00A0\u00A0\u00A0Gas",
-    variable == "living_05_4" ~ "\u00A0\u00A0\u00A0Electricity",
-    variable == "living_05_5" ~ "\u00A0\u00A0\u00A0Gasoline/oil/ethanol",
-    variable == "living_05_6" ~ "\u00A0\u00A0\u00A0Animal waste/manure",
-    variable == "living_05_7" ~ "\u00A0\u00A0\u00A0Solar energy",
-    variable == "living_05_99" ~ "\u00A0\u00A0\u00A0Others",
+    
+    variable == "living_01_bin" ~ "Indicator for selected main source of drinking water:",
+    variable == "(living_01_bin)" ~ "\u00A0\u00A0\u00A0Interior tap, Public tap, Neighbor’s tap",
+    # variable == "living_01" ~ "Main source of drinking water supply",
+    # variable == "living_01_1" ~ "\u00A0\u00A0\u00A0Interior tap",
+    # variable == "living_01_2" ~ "\u00A0\u00A0\u00A0Public tap",
+    # variable == "living_01_3" ~ "\u00A0\u00A0\u00A0Neighbor’s tap",
+    # variable == "living_01_4" ~ "\u00A0\u00A0\u00A0Protected well",
+    # variable == "living_01_5" ~ "\u00A0\u00A0\u00A0Unprotected well",
+    # variable == "living_01_6" ~ "\u00A0\u00A0\u00A0Drill hole",
+    # variable == "living_01_7" ~ "\u00A0\u00A0\u00A0Tanker service",
+    # variable == "living_01_8" ~ "\u00A0\u00A0\u00A0Water seller",
+    # variable == "living_01_9" ~ "\u00A0\u00A0\u00A0Source",
+    # variable == "living_01_10" ~ "\u00A0\u00A0\u00A0Stream",
+    # variable == "living_01_99" ~ "\u00A0\u00A0\u00A0Other",
+    # variable == "living_03" ~ "How is the water treated?",
+    # variable == "living_03_1" ~ "\u00A0\u00A0\u00A0Bleach/Aqua tabs",
+    # variable == "living_03_2" ~ "\u00A0\u00A0\u00A0Boil",
+    # variable == "living_03_3" ~ "\u00A0\u00A0\u00A0Filtration",
+    # variable == "living_03_99" ~ "\u00A0\u00A0\u00A0Other (to be specified",
+    # variable == "living_04" ~ "Main type of toilet",
+    # variable == "living_04_1" ~ "\u00A0\u00A0\u00A0None/outside",
+    # variable == "living_04_2" ~ "\u00A0\u00A0\u00A0Flush with sewer",
+    # variable == "living_04_3" ~ "\u00A0\u00A0\u00A0Toilet flush with septic tank",
+    # variable == "living_04_4" ~ "\u00A0\u00A0\u00A0Bucket",
+    # variable == "living_04_5" ~ "\u00A0\u00A0\u00A0Covered pit latrines",
+    # variable == "living_04_6" ~ "\u00A0\u00A0\u00A0Uncovered pit latrines",
+    # variable == "living_04_7" ~ "\u00A0\u00A0\u00A0Improved latrines",
+    # variable == "living_04_99" ~ "\u00A0\u00A0\u00A0Others",
+    variable == "living_04_bin" ~ "Indicator for selected main type of toilet: Flush with sewer, Flush with septic tank",
+    
+    variable == "living_05_bin" ~ "Indicator for electricity as main cooking fuel",
+    # variable == "living_05_1" ~ "\u00A0\u00A0\u00A0Charcoal",
+    # variable == "living_05_2" ~ "\u00A0\u00A0\u00A0Firewood",
+    # variable == "living_05_3" ~ "\u00A0\u00A0\u00A0Gas",
+    # variable == "living_05_4" ~ "\u00A0\u00A0\u00A0Electricity",
+    # variable == "living_05_5" ~ "\u00A0\u00A0\u00A0Gasoline/oil/ethanol",
+    # variable == "living_05_6" ~ "\u00A0\u00A0\u00A0Animal waste/manure",
+    # variable == "living_05_7" ~ "\u00A0\u00A0\u00A0Solar energy",
+    # variable == "living_05_99" ~ "\u00A0\u00A0\u00A0Others",
     variable == "montant_02" ~ "Amount paid by the respondent for game A: ________ FCFA",
     variable == "montant_05" ~ "Amount paid by the respondent for game B: ________ FCFA",
     variable == "face_04" ~ "Amount paid by the respondent for game B: ________ FCFA",
     variable == "face_13" ~ "Amount paid by the respondent for game A: ________ FCFA",
-    variable == "enum_03" ~ "(Enumerator observation) Main materials used for the roof of the house",
-    variable == "enum_03_1" ~ "\u00A0\u00A0\u00A0Concrete/cement",
-    variable == "enum_03_2" ~ "\u00A0\u00A0\u00A0Tile/slate",
-    variable == "enum_03_3" ~ "\u00A0\u00A0\u00A0Zinc",
-    variable == "enum_03_4" ~ "\u00A0\u00A0\u00A0Thatch/straw",
-    variable == "enum_03_99" ~ "\u00A0\u00A0\u00A0Other",
-    variable == "enum_04" ~ "(Enumerator observation) Main materials used for the walls of the house where the head of the family sleeps?",
-    variable == "enum_04_1" ~ "\u00A0\u00A0\u00A0Cement bricks",
-    variable == "enum_04_2" ~ "\u00A0\u00A0\u00A0Mud Bricks",
-    variable == "enum_04_3" ~ "\u00A0\u00A0\u00A0Wood",
-    variable == "enum_04_4" ~ "\u00A0\u00A0\u00A0Sheet metal/zinc",
-    variable == "enum_04_5" ~ "\u00A0\u00A0\u00A0Clay",
-    variable == "enum_04_6" ~ "\u00A0\u00A0\u00A0Straw/stem",
-    variable == "enum_04_99" ~ "\u00A0\u00A0\u00A0Others",
-    variable == "enum_05" ~ "(Enumerator observation) Main materials of the main floor of the house",
-    variable == "enum_05_1" ~ "\u00A0\u00A0\u00A0Mud",
-    variable == "enum_05_2" ~ "\u00A0\u00A0\u00A0Earth",
-    variable == "enum_05_3" ~ "\u00A0\u00A0\u00A0Stone/terracotta",
-    variable == "enum_05_4" ~ "\u00A0\u00A0\u00A0Cement/concrete blocks",                                                        
-    variable == "enum_05_5" ~ "\u00A0\u00A0\u00A0Wood",
-    variable == "enum_05_99" ~ "\u00A0\u00A0\u00A0Other",
+    variable == "enum_03_bin" ~ "(Enumerator observation) Indicator if concrete/cement is main material for the house roof",
+    variable == "enum_03_bin" ~ "(Enumerator observation) Indicator if concrete/cement is main material for the house roof",
+    # variable == "enum_03_1" ~ "\u00A0\u00A0\u00A0Concrete/cement",
+    # variable == "enum_03_2" ~ "\u00A0\u00A0\u00A0Tile/slate",
+    # variable == "enum_03_3" ~ "\u00A0\u00A0\u00A0Zinc",
+    # variable == "enum_03_4" ~ "\u00A0\u00A0\u00A0Thatch/straw",
+    # variable == "enum_03_99" ~ "\u00A0\u00A0\u00A0Other",
+    variable == "	species_count" ~ "Number of livestock",
+    # variable == "enum_04_1" ~ "\u00A0\u00A0\u00A0Cement bricks",
+    # variable == "enum_04_2" ~ "\u00A0\u00A0\u00A0Mud Bricks",
+    # variable == "enum_04_3" ~ "\u00A0\u00A0\u00A0Wood",
+    # variable == "enum_04_4" ~ "\u00A0\u00A0\u00A0Sheet metal/zinc",
+    # variable == "enum_04_5" ~ "\u00A0\u00A0\u00A0Clay",
+    # variable == "enum_04_6" ~ "\u00A0\u00A0\u00A0Straw/stem",
+    # variable == "enum_04_99" ~ "\u00A0\u00A0\u00A0Others",
+    variable == "enum_05_bin" ~ "(Enumerator observation) Indicator if concrete/cement is main material for the house floor",
+    # variable == "enum_05_1" ~ "\u00A0\u00A0\u00A0Mud",
+    # variable == "enum_05_2" ~ "\u00A0\u00A0\u00A0Earth",
+    # variable == "enum_05_3" ~ "\u00A0\u00A0\u00A0Stone/terracotta",
+    # variable == "enum_05_4" ~ "\u00A0\u00A0\u00A0Cement/concrete blocks",                                                        
+    # variable == "enum_05_5" ~ "\u00A0\u00A0\u00A0Wood",
+    # variable == "enum_05_99" ~ "\u00A0\u00A0\u00A0Other",
     # variable == "" ~ "",
     # variable == "" ~ "",
     # variable == "" ~ "",
@@ -513,15 +526,14 @@ final_table
 final_table <- final_table %>% select(Question, everything())
 
 
-final_table <- final_table %>%
-  mutate(across(.cols = -c(variable, Question), 
-                .fns = ~ ifelse(variable %in% c("hh_education_level_", "hh_29_", "hh_15_", "living_01", "living_03", "living_04", "living_05", "enum_03", "enum_04", "enum_05"), 
-                                NA, .x)))
+# final_table <- final_table %>%
+#   mutate(across(.cols = -c(variable, Question), 
+#                 .fns = ~ ifelse(variable %in% c("hh_education_level_", "hh_29_", "hh_15_", "living_01", "living_03", "living_04", "living_05", "enum_03", "enum_04", "enum_05"), 
+#                                 NA, .x)))
 # 
 # balance_df <- balance_df %>%
 #   mutate(health_5_3_ = ifelse(is.nan(health_5_3_) | rowSums(is.nan(.)) > 0, "", health_5_3_)) %>%
 #   mutate(health_5_3_ = ifelse(lag(variable) == "health_5_3_" & (is.nan(health_5_3_) | rowSums(is.nan(.)) > 0), "", health_5_3_))
-
 
 
 final_table <- final_table %>%
@@ -532,10 +544,15 @@ final_table <- final_table %>%
   select(-"type")  # Remove the 'type' column after modification
 
 
+final_table <- final_table %>%
+  mutate_all(~ ifelse(is.na(.), "", .))
+
+
+
 final_table
 #output for now
 setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
-knitr::kable(final_table, format = "html") %>% save_kable("final_table.html")
+knitr::kable(final_table, format = "html") %>% save_kable("balance_tablev2.html")
 
 
 

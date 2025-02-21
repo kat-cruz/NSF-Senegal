@@ -16,18 +16,18 @@ clear all
 set maxvar 20000
 
 **** Master file path  ****
-
-if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
-}
-else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Baseline Data Collection"
-				
-}
+if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
+if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
+if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
 
 *** additional file paths ***
-global data "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
-global data2 "$master\Surveys\Baseline CRDES data (April 2024)"
+global clean_data "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
+*global data2 "$master\Surveys\Baseline CRDES data (April 2024)"
+global corrected_data "$master\Data_Management\Output\Data_Corrections\Baseline"
+global raw_data "$master\Data_Management\_CRDES_RawData\Baseline"
+global ids   "$master\Data_Management\Output\Household_IDs"
 
 global village_observations "$master\Data Quality Checks\Code\Village_Household_Identifiers"
 global household_roster "$master\Data Quality Checks\Code\Household_Roster"
@@ -43,12 +43,29 @@ global public_goods "$master\Data Quality Checks\Code\Public_Goods"
 global enum_observations "$master\Data Quality Checks\Code\Enumerator_Observations"
 global april_id "$master\Data Quality Checks\April Output\Village_Household_Identifiers"
 
+import delimited "$raw_data\DISES_enquete_ménage_FINALE_WIDE_27Feb24.csv", clear varnames(1) bindquote(strict)
 
+gen villageid = substr(village_select_o, 1, 4)
+
+*** drop duplicated data *** 
+drop if key == "uuid:37e8d522-be4e-4376-8bb7-91a970c58ece"
+drop if key == "uuid:aa78d511-792e-413c-8c48-fe865ef31541"
+drop if key == "uuid:c5c17b00-deb1-4c85-a135-2acc0ef130c5"
+drop if key == "uuid:9017f1e5-a04c-44d9-89d0-d44eea3306e5"
+drop if key == "uuid:c36d6125-ffb7-42f1-93cb-0159eaff1bd7"
+drop if key == "uuid:a916410b-c591-437b-bffd-7e867ed25fc9"
+drop if key == "uuid:c27692fc-dbf2-4516-8352-113dbba436f1"
+drop if key == "uuid:eda339a8-b704-4ef4-9a40-6db0bbc3924d"
+drop if key == "uuid:e02da6a0-cc1a-4ef7-887a-37198091a7aa"
+drop if key == "uuid:b992c83d-579b-474d-9163-856b0c5c8ae1"
+
+
+merge 1:m hh_phone hh_head_name_complet hh_name_complet_resp villageid using "$ids\household_ids_8Feb24"
 
 /*
 *** Step 1, merge in household identifiers to match the correction file *** 
 *** Import data checks household ID numbers to merge *** 
-import excel "$village_observations\HouseholdIDs_8Feb24.xlsx", clear firstrow
+import delimited "$raw_data\DISES_enquete_ménage_FINALE_WIDE_27Feb24.csv", clear varnames(1) bindquote(strict)
 
 gen villageid = substr(hhid, 1, 4)
 
@@ -3530,8 +3547,6 @@ replace agri_6_28_4 = 0 if hhid == "020A09"
 
 replace aquatique_01 = 1 if hhid == "043B06"
 
-replace hh_education_level_5 = 82 if hhid == "030A17"
-
 replace agri_income_46_4_1 = 1 if hhid_village == "081B" & hh_name_complet_resp == "AMINATA BOCAR MBODJI" 
 replace agri_income_46_4_1 = 1 if hhid_village == "081B" & hh_name_complet_resp == "YAKHOUBA MAMADOU DIALLO" 
 replace agri_income_46_4_1 = 1 if hhid_village == "081B" & hh_name_complet_resp == "BATEL SOW" 
@@ -4029,6 +4044,22 @@ egen hhid = concat(hhid_village hh_id_num)
 
 save "$data\DISES_Baseline_Household_Corrected_PII"
 */
+
+
+*** Additional corrections ***
+
+use "$corrected_data\DISES_Baseline_Household_Corrected_PII.dta", clear 
+
+replace hh_education_level_5 = 3 if hhid == "030A17" 
+replace hh_education_level_5 = 1 if hhid == "030A02"
+
+save "$corrected_data\DISES_Baseline_Household_Corrected_PII.dta", replace 
+
+
+
+
+
+
 
 ************************************ New 16 Villages CHECKS **********************************************
 *** Import data checks household ID numbers to merge *** 

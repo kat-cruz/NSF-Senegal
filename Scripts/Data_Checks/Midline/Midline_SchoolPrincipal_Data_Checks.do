@@ -746,7 +746,10 @@ foreach grade in 1 2 3 4 5 6 {
         replace ind_issue = 1 if `classroom_count_var' >= `class' & missing(passing_2024_total_`grade'_`class')
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_total_`grade'_`class' < 0
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_total_`grade'_`class' > enrollment_2024_total_`grade'_`class'
-		replace ind_issue = 0 if inlist(key, "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5", "uuid:9d8e7068-1bdc-4c3d-8575-29eb68d1794b", "uuid:9c94b876-40a4-43e5-8be6-1510e5fdf3ba") & inlist(passing_2024_total_`grade'_`class', -999, -9)
+		replace ind_issue = 0 if (key == "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5") & (passing_2024_total_`grade'_`class' == -999 | passing_2024_total_`grade'_`class' == -9)
+replace ind_issue = 0 if (key == "uuid:9d8e7068-1bdc-4c3d-8575-29eb68d1794b") & (passing_2024_total_`grade'_`class' == -999 | passing_2024_total_`grade'_`class' == -9)
+replace ind_issue = 0 if (key == "uuid:9c94b876-40a4-43e5-8be6-1510e5fdf3ba") & (passing_2024_total_`grade'_`class' == -999 | passing_2024_total_`grade'_`class' == -9)
+
 // villages the principal was new/ does not have access to last years registry
         keep if ind_issue == 1
 		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_total_`grade'_`class' key
@@ -777,7 +780,10 @@ foreach grade in 1 2 3 4 5 6 {
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' < 0
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' > passing_2024_total_`grade'_`class'
         replace ind_issue = 1 if `classroom_count_var' >= `class' & passing_2024_female_`grade'_`class' > enrollment_2024_female_`grade'_`class'
-        replace ind_issue = 0 if inlist(key, "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5", "uuid:9d8e7068-1bdc-4c3d-8575-29eb68d1794b", "uuid:9c94b876-40a4-43e5-8be6-1510e5fdf3ba") & inlist(passing_2024_female_`grade'_`class', -999, -9)
+        replace ind_issue = 0 if key == "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5" & (passing_2024_female_`grade'_`class' == -999 | passing_2024_female_`grade'_`class' == -9)
+replace ind_issue = 0 if key == "uuid:9d8e7068-1bdc-4c3d-8575-29eb68d1794b" & (passing_2024_female_`grade'_`class' == -999 | passing_2024_female_`grade'_`class' == -9)
+replace ind_issue = 0 if key == "uuid:9c94b876-40a4-43e5-8be6-1510e5fdf3ba" & (passing_2024_female_`grade'_`class' == -999 | passing_2024_female_`grade'_`class' == -9)
+
  // one village the principal was new and does not have access to last years registry
 		keep if ind_issue == 1
 

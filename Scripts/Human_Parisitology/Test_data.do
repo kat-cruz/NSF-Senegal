@@ -1,4 +1,5 @@
 * Step 1: Generate fake data
+/*
 clear
 set obs 10
 gen BegeningTimesampling = "11h03"
@@ -55,3 +56,51 @@ gen total_time = (Endsamplingtime_time - BegeningTimesampling_time) / 60000  // 
 
 * Step 9: Handle missing values in the total time
 replace total_time = 0 if missing(total_time)
+*/
+
+clear
+set obs 10  // Create 10 observations
+
+* Generate fake Beginning Time Sampling
+gen BegeningTimesampling = ""
+replace BegeningTimesampling = "14h27'" in 1/5
+replace BegeningTimesampling = "15h10'" in 6/10
+
+* Generate fake End Sampling Time (including "missed" values)
+gen Endsamplingtime = ""
+replace Endsamplingtime = "15h27'" in 1/3
+replace Endsamplingtime = "missed" in 4/5
+replace Endsamplingtime = "16h00'" in 6/10
+
+* Check the generated fake data
+list BegeningTimesampling Endsamplingtime
+
+* Convert "missed" values to missing (.)
+replace Endsamplingtime = "" if Endsamplingtime == "missed"
+
+* Convert time strings to proper time format
+gen start_time = clock(BegeningTimesampling, "	")
+gen end_time = clock(Endsamplingtime, "hhmm")
+
+* Convert to minutes for calculation
+gen start_time_min = start_time / 60000
+gen end_time_min = end_time / 60000
+
+* Calculate total time in minutes
+gen total_time = end_time_min - start_time_min
+
+* Display results
+list BegeningTimesampling Endsamplingtime total_time if total_time != .
+
+
+
+
+
+
+
+
+
+
+
+
+

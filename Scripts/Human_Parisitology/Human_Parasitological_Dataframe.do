@@ -313,7 +313,7 @@ merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta"
 
 
 	keep hhid hh_age_resp hh_age* hh_gender* hh_ethnicity_* ///
-		health_5_3_2_* health_5_4_* health_5_5_* health_5_6_* health_5_7_* health_5_8_* health_5_9_* health_5_10_* ///
+		health_5_3_2_* health_5_4_* health_5_5_* health_5_6_* health_5_8_* health_5_9_* health_5_10_* ///
 		hh_10_* hh_12_* hh_13_* hh_18_* hh_19_* hh_22_* hh_26_* hh_29_* hh_30_* hh_31_* hh_32_* hh_33_* hh_37_* ///
 		living_01 living_02 living_03 living_04 ///
 		list_actifscount list_actifs* ///
@@ -328,10 +328,26 @@ foreach i of numlist 1/55 {
 }
 
 
+* Reshape long with hhid and id
+forval i = 1/7 {
+    * Loop over the second index (1 to 55)
+    forval j = 1/55 {
+        * Construct the old and new variable names
+        local oldname = "hh_13_`j'_`i'"
+        local newname = "hh_13_`i'_`j'"
+        
+        * Rename if the old variable exists
+        cap rename `oldname' `newname'
+    }
+}
+
+
+
+
 *variables removed: hh_age hh_gender living_01 living_02 living_03 living_04
 
 * Reshape long with hhid and id
-	reshape long health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ hh_ethnicity_  hh_10_  ///
+	reshape long health_5_3_2_ health_5_4_ health_5_5_ health_5_6_  health_5_8_ health_5_9_ health_5_10_ hh_ethnicity_  hh_10_  ///
 	hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ ///
 	hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_18_ hh_19_ hh_22_ hh_26_ hh_29_ hh_30_ hh_31_ hh_32_ hh_33_ hh_37_ hh_age_ hh_gender_, ///
 		i(hhid) j(id)
@@ -363,7 +379,7 @@ drop hh_12index_7_ hh_12index_6_ hh_12index_5_ hh_12index_4_ hh_12index_3_ hh_12
 
 * **Keep only individual_id_crdes and variables of interest to avoid conflicts**
 keep individual_id_crdes  hh_ethnicity_ hh_age_ hh_gender_ hh_age_resp ///
-		health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ ///
+		health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_8_ health_5_9_ health_5_10_ ///
 		hh_10_ hh_12_* hh_13_0* hh_18_ hh_19_ hh_22_ hh_26_ hh_29_ hh_30_ hh_31_ hh_32_ hh_33_ hh_37_ ///
 		living_01 living_02 living_03 living_04 ///
 		wealthindex list_actifscount list_actifs ///
@@ -413,7 +429,7 @@ drop Notes sex_crdes
 
 order   village_id village_name individual_id_crdes hhid_crdes epls_ucad_id match_score age_crdes epls_or_ucad data_source ///
 		sex_hp age_hp hh_age_resp  hh_age_ hh_gender_ hh_ethnicity_  ///
-		health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_  ///
+		health_5_3_2_ health_5_4_ health_5_5_ health_5_6_ health_5_8_ health_5_9_ health_5_10_  ///
 		hh_10_ hh_12_* hh_13_0* hh_18_ hh_19_ hh_22_ hh_26_ hh_29_ hh_30_ hh_31_ hh_32_ hh_33_ hh_37_  ///
 		living_01 living_02 living_03 living_04 ///
 		list_actifs list_actifscount wealthindex  ///

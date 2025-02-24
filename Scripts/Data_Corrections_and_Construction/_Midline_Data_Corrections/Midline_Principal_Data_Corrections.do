@@ -36,9 +36,8 @@ global corrected "$master\Output\Data_Corrections\Midline"
 **************************************************
 * IMPORT AND PROCESS CORRECTIONS FILE
 **************************************************
-
 /*
-import excel "$corrections\CORRECTIONS_QUESTIONNAIRE_PRINCIPAL_5Feb2025.xlsx", clear firstrow
+import excel "$corrections\CORRECTIONS_QUESTIONNAIRE_PRINCIPAL_Feb2025.xlsx", clear firstrow
 
 * Save as a temporary file for later use
 tempfile corrections_temp
@@ -50,6 +49,7 @@ duplicates drop hhid_village sup_name respondent_name respondent_phone_primary i
 
 // save temp file of these corrections from Amina
 save `corrections_temp'
+
 
 **************************************************
 * IMPORT ISSUES FILE AND MERGE WITH CORRECTIONS
@@ -80,7 +80,7 @@ export excel using "$issues\CORRECTIONS_QUESTIONNAIRE_PRINCIPAL_5Feb2025_key.xls
 * APPLY CORRECTIONS TO SURVEY DATASET
 **************************************************
 
-import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_24Feb2025.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_13Feb2025.csv", clear varnames(1) bindquote(strict)
 
 * Dealt with the ones commented out in the daily checks because those are actually valid answers of i dont know
 replace school_name = "ECOLE PRIMAIRE KASACK NORD" if key == "433515e7-f57f-4968-9fd1-d83a2cc493ed"

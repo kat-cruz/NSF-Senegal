@@ -26,7 +26,7 @@ global data "$box_path\Data_Management\_CRDES_RawData\Midline\Community_Survey_D
 global corrected "$box_path\Data_Management\Output\Data_Corrections\Midline"
 
 *** import community survey data ***
-import excel using "$corrected\CORRECTED_Community_Survey_16Feb2025", firstrow
+import excel using "$corrected\CORRECTED_Community_Survey_24Feb2025", firstrow
 
 *** rename variables to distinguish from baseline *** 
 rename q52 q52_a 
@@ -660,7 +660,20 @@ restore
 	gen ind_issue = . 
 	replace ind_issue = 1 if q_43 < 0 & q_43 != -9
 	replace ind_issue = 1 if q_43 > 45
-	replace ind_issue = 0 if phone_resp == 779829326 & q_43 == 180
+	replace ind_issue = 0 if phone_resp == 777923023 & q_43 == 180
+	replace ind_issue = 0 if phone_resp == 775624831 & q_43 == 60
+	replace ind_issue = 0 if phone_resp == 777258909 & q_43 == 60
+	replace ind_issue = 0 if phone_resp == 770795899 & q_43 == 60
+	replace ind_issue = 0 if phone_resp == 775163723 & q_43 == 60
+	replace ind_issue = 0 if phone_resp == 774159313 & q_43 == 60
+	replace ind_issue = 0 if phone_resp == 777083631 & q_43 == 60
+	replace ind_issue = 0 if phone_resp == 772735684 & q_43 == 60
+	replace ind_issue = 0 if phone_resp == 775333280 & q_43 == 60
+	replace ind_issue = 0 if phone_resp == 778711457 & q_43 == 240
+	replace ind_issue = 0 if phone_resp == 774984439 & q_43 == 240
+	replace ind_issue = 0 if phone_resp == 771712651 & q_43 == 420
+	
+	
 	keep if ind_issue == 1 
 	
     *keep if `var' < 0 | `var' > 45 | `var' != -9
@@ -721,6 +734,7 @@ restore
 	gen ind_issue = . 
 	replace ind_issue = 1 if q_45 < 0 & q_45 != -9
 	replace ind_issue = 1 if q_45 > 300
+	replace ind_issue = 0 if phone_resp == 771712651 & q_45 == 420
 	keep if ind_issue == 1 
 	
 	keep hhid_village sup_label full_name phone_resp q_45
@@ -748,6 +762,7 @@ restore
 	gen ind_issue = . 
 	replace ind_issue = 1 if q_46 < 0 & q_46 != -9
 	replace ind_issue = 1 if q_46 > 300
+	replace ind_issue = 0 if phone_resp == 771712651 & q_45 == 420
 	keep if ind_issue == 1 
 	
 	keep hhid_village sup_label full_name phone_resp q_46
@@ -1507,6 +1522,7 @@ restore
     generate ind_var = 0
 	replace ind_var = 1 if q64 < 0 & q64 != -9
 	replace ind_var = 1 if q64 > 5000
+	replace ind_var = 0 if phone_resp == 775151153 & q64 == 6250
 	
 	* Keep and add variables to export 
 	keep if ind_var == 1 
@@ -1566,6 +1582,9 @@ restore
     generate ind_var = 0
 	replace ind_var = 1 if q66 < 0 & q66 != -9
 	replace ind_var = 1 if q66 > 5000
+	replace ind_var = 0 if phone_resp == 771871077 & q66 == 6000
+	replace ind_var = 0 if phone_resp == 773584945 & q66 == 6000
+	replace ind_var = 0 if phone_resp == 775151153 & q66 == 10000
 	
 	* Keep and add variables to export 
 	keep if ind_var == 1 
@@ -2071,7 +2090,7 @@ foreach file in `files' {
 **************** EXPORT DATA  ***********************
 ** UPDATE DATE IN FILE NAME 
 * check that this is working 
-	export excel using "$community\Community_Issues_16Feb2025.xlsx", firstrow(variables) replace  
+	export excel using "$community\Community_Issues_24Feb2025.xlsx", firstrow(variables) replace  
 *	export excel using "$communityOriginal\Community_Issues_05Feb2025.xlsx", firstrow(variables) replace  
 *	save "$communityOriginal\Community_Issues_05Feb2025.dta", replace 
 

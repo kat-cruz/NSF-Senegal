@@ -1,6 +1,7 @@
 *** DISES Household Survey replacmeent corrections ***
 *** File originally created By: Alex Mills ***
 *** Updates recorded in GitHub ***
+* excel formula
 
 
 clear all
@@ -1322,11 +1323,354 @@ replace ind_issue = 0 if key == "uuid:a9d8381b-470f-4704-9042-4af983b17990" & hh
 import excel "$corrections\PART_3 CORRECTED", clear firstrow
 
 **** Keep those issues they confirmed [Lots of -9's lets check this with molly]
-keep if print_issue == correction
+keep if !(correction == "64" & key == "uuid:480e7175-e4f0-467b-ae3d-d2d3c957d314")
+keep if !(correction == "38" & key == "uuid:61ae58e8-67ed-407f-94e6-c83fe4454247")
+keep if !(correction == "73" & key == "uuid:4219536c-3d1b-4d77-a065-f63913f70d0e")
+keep if !(correction == "52" & key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0")
 
 **** Export the confirmed... and use the following excel formula to add to the checks to skip over these for now
 save "$corrected\DISES_Household_Corrections_Confirmed_Part3.dta", replace
 export delimited "$corrected\DISES_Household_Corrections_Confirmed_Part3.csv", replace
+
+* excel formula
+* ="replace ind_issue = 0 if key == "&CHAR(34)&D2&CHAR(34)&" & "&N2&" == "&P2
+/*
+replace ind_issue = 0 if key == "uuid:d7add78b-5c6b-4f09-a15b-ee9ff0de69e8" & hh_21_total_10 == 4
+replace ind_issue = 0 if key == "uuid:8fdb6f45-873e-4460-b1b7-1ef184fa4ab6" & hh_21_total_11 == 3
+replace ind_issue = 0 if key == "uuid:57bb8e54-caf8-49c9-a0f5-fd636d2a2592" & hh_21_total_2 == 4
+replace ind_issue = 0 if key == "uuid:950634d7-6af7-48f4-81f2-23e84812d304" & hh_21_total_4 == 28
+replace ind_issue = 0 if key == "uuid:07815cfd-fc9e-42e6-823e-83d93c2b9461" & hh_21_total_4 == 12
+replace ind_issue = 0 if key == "uuid:f7b4c6d1-f700-43ec-b688-c5722030e939" & hh_21_total_4 == 10
+replace ind_issue = 0 if key == "uuid:4997f527-1ec1-4a4b-8a9f-85356a6369d7" & hh_21_total_6 == 3
+replace ind_issue = 0 if key == "uuid:a420540e-7ac1-4fdb-ae20-2072c04e743d" & hh_21_total_1 == 3
+replace ind_issue = 0 if key == "uuid:0b0fb3f0-5253-417a-a40c-b4225652ad7f" & hh_21_total_1 == 25
+replace ind_issue = 0 if key == "uuid:7e856dd9-4999-4581-8a10-a211bb7e63b4" & hh_21_total_1 == 18
+replace ind_issue = 0 if key == "uuid:74eb9e02-c087-424c-b7a0-cb63be8a36c7" & hh_21_total_1 == 8
+replace ind_issue = 0 if key == "uuid:d27907d8-f6aa-4b80-81cc-9a1006e1012e" & hh_21_total_12 == 14
+replace ind_issue = 0 if key == "uuid:a420540e-7ac1-4fdb-ae20-2072c04e743d" & hh_21_total_19 == 53
+replace ind_issue = 0 if key == "uuid:a420540e-7ac1-4fdb-ae20-2072c04e743d" & hh_21_total_3 == 15
+replace ind_issue = 0 if key == "uuid:ac8a29b2-ae30-4212-9ae5-d826788cf727" & hh_21_total_3 == 8
+replace ind_issue = 0 if key == "uuid:94d8e8c9-df2a-466b-b173-f7d1403ac905" & hh_21_total_4 == 10
+replace ind_issue = 0 if key == "uuid:0b0fb3f0-5253-417a-a40c-b4225652ad7f" & hh_21_total_4 == 32
+replace ind_issue = 0 if key == "uuid:0b0fb3f0-5253-417a-a40c-b4225652ad7f" & hh_21_total_5 == 31
+replace ind_issue = 0 if key == "uuid:f72c4194-1658-4baa-9e40-7e6b0ea2b3a8" & hh_21_total_6 == 21
+replace ind_issue = 0 if key == "uuid:a63d364d-8238-4c51-a32c-a0b5c9ec3e6a" & hh_21_total_6 == 50
+replace ind_issue = 0 if key == "uuid:a58331c4-b5ce-40a8-af97-c1e0292d8ef1" & hh_21_total_6 == 3
+replace ind_issue = 0 if key == "uuid:b9e97e2c-cb4b-4f65-8865-ff559d932464" & hh_21_total_7 == 52
+replace ind_issue = 0 if key == "uuid:59712e0a-1ba5-483d-8601-552eb329e796" & hh_21_total_8 == 6
+replace ind_issue = 0 if key == "uuid:3d62ede2-09be-4490-8ccf-918371d1b1b9" & hh_21_total_8 == 5
+replace ind_issue = 0 if key == "uuid:94d8e8c9-df2a-466b-b173-f7d1403ac905" & hh_21_total_9 == 62
+replace ind_issue = 0 if key == "uuid:e4d9ab46-b30f-4d93-a47b-9b0e1c367d58" & hh_21_total_9 == 3
+replace ind_issue = 0 if key == "uuid:359accaa-e1f8-4d1c-9aff-706313f0ca4c" & hh_21_total_1 == 7
+replace ind_issue = 0 if key == "uuid:c9c6c412-ce94-4805-96fb-3acb3e1c0732" & hh_21_total_2 == 3
+replace ind_issue = 0 if key == "uuid:fa7f73fd-c387-457f-99aa-da844bb4e83e" & hh_21_total_2 == 7
+replace ind_issue = 0 if key == "uuid:f45cf2eb-9dd7-44c0-b6d1-1b9176ed0dae" & hh_21_total_4 == 5
+replace ind_issue = 0 if key == "uuid:d6b64852-9250-4d85-8208-6fb7b8945ff8" & hh_21_total_4 == 7
+replace ind_issue = 0 if key == "uuid:1f8316b4-c849-40b4-8ced-4cb30d7d5944" & hh_21_total_6 == 11
+replace ind_issue = 0 if key == "uuid:359accaa-e1f8-4d1c-9aff-706313f0ca4c" & hh_21_total_7 == 4
+replace ind_issue = 0 if key == "uuid:3dd76816-ae15-4852-b0bb-9596df462e1a" & hh_21_total_8 == 4
+replace ind_issue = 0 if key == "uuid:ac7acb5b-cc03-405a-b699-c7049bbb6f16" & hh_21_total_1 == 14
+replace ind_issue = 0 if key == "uuid:8b5fa358-6317-4e65-a16f-0fce2d44c6b5" & hh_21_total_1 == 21
+replace ind_issue = 0 if key == "uuid:ac7acb5b-cc03-405a-b699-c7049bbb6f16" & hh_21_total_3 == 14
+replace ind_issue = 0 if key == "uuid:8b5fa358-6317-4e65-a16f-0fce2d44c6b5" & hh_21_total_3 == 14
+replace ind_issue = 0 if key == "uuid:e6d61f8b-bae8-4a27-bda4-6422e002efe7" & hh_21_total_3 == 5
+replace ind_issue = 0 if key == "uuid:14699177-2dd1-4010-8df4-7acc69d307da" & hh_21_total_9 == 6
+replace ind_issue = 0 if key == "uuid:d7cf7d20-89ae-405c-af0f-c9f04d222f68" & hh_21_total_1 == 12
+replace ind_issue = 0 if key == "uuid:17d10f64-73a3-47f9-b5cc-d3181be64f21" & hh_21_total_1 == 8
+replace ind_issue = 0 if key == "uuid:c7c6ac20-be3f-47ba-b2b4-eb17e08123c4" & hh_21_total_11 == 8
+replace ind_issue = 0 if key == "uuid:d7cf7d20-89ae-405c-af0f-c9f04d222f68" & hh_21_total_3 == 16
+replace ind_issue = 0 if key == "uuid:924ae568-e479-4dc0-9311-dd77acb165c1" & hh_21_total_4 == 10
+replace ind_issue = 0 if key == "uuid:ded54860-db67-4e1a-a05c-19603fb0ed65" & hh_21_total_7 == 10
+replace ind_issue = 0 if key == "uuid:5bde4af2-d8dc-4fae-8884-fc042a5d12a6" & hh_21_total_1 == 6
+replace ind_issue = 0 if key == "uuid:e1f57db1-c71f-4b6b-8e34-e79a83b811e1" & hh_21_total_1 == 2
+replace ind_issue = 0 if key == "uuid:94643380-9b5b-4ec2-ac9c-a3fd30a51af7" & hh_21_total_1 == 2
+replace ind_issue = 0 if key == "uuid:82b29ac5-2558-4aa3-a780-b48b45483422" & hh_21_total_1 == 5
+replace ind_issue = 0 if key == "uuid:155e4011-7e23-4a13-9190-c8859bb3641f" & hh_21_total_10 == 7
+replace ind_issue = 0 if key == "uuid:f05825dc-a539-40ff-8384-8edaef71070b" & hh_21_total_2 == 5
+replace ind_issue = 0 if key == "uuid:1a323a88-f1d7-4a74-b448-7ce2d7858fa4" & hh_21_total_2 == 4
+replace ind_issue = 0 if key == "uuid:3836b5eb-ccd2-4c6b-bd5f-bf42d09c166c" & hh_21_total_2 == 15
+replace ind_issue = 0 if key == "uuid:82b29ac5-2558-4aa3-a780-b48b45483422" & hh_21_total_3 == 6
+replace ind_issue = 0 if key == "uuid:3254047a-1f16-4015-a8fd-33c4a15e8787" & hh_21_total_3 == 6
+replace ind_issue = 0 if key == "uuid:7d6f6d9d-c257-4195-8a67-0aecd4e1b233" & hh_21_total_3 == 5
+replace ind_issue = 0 if key == "uuid:347b10a5-29e2-4221-9079-08b5d95c139b" & hh_21_total_3 == 2
+replace ind_issue = 0 if key == "uuid:d7d885fe-9a4f-4a10-8991-80d5fd4dd3f9" & hh_21_total_4 == 5
+replace ind_issue = 0 if key == "uuid:f05825dc-a539-40ff-8384-8edaef71070b" & hh_21_total_4 == 35
+replace ind_issue = 0 if key == "uuid:3836b5eb-ccd2-4c6b-bd5f-bf42d09c166c" & hh_21_total_4 == 6
+replace ind_issue = 0 if key == "uuid:3f50a371-1256-4562-a655-945198622f86" & hh_21_total_4 == 2
+replace ind_issue = 0 if key == "uuid:82b29ac5-2558-4aa3-a780-b48b45483422" & hh_21_total_4 == 12
+replace ind_issue = 0 if key == "uuid:d5f48d8a-650d-40bc-b6ad-a365623fda48" & hh_21_total_4 == 10
+replace ind_issue = 0 if key == "uuid:72625c8e-580a-478f-9989-882ad5867012" & hh_21_total_5 == 6
+replace ind_issue = 0 if key == "uuid:155e4011-7e23-4a13-9190-c8859bb3641f" & hh_21_total_5 == 3
+replace ind_issue = 0 if key == "uuid:94643380-9b5b-4ec2-ac9c-a3fd30a51af7" & hh_21_total_5 == 5
+replace ind_issue = 0 if key == "uuid:d5f48d8a-650d-40bc-b6ad-a365623fda48" & hh_21_total_6 == 10
+replace ind_issue = 0 if key == "uuid:ab7d5d15-0083-4d38-8abb-bb1b924d1b88" & hh_21_total_6 == 7
+replace ind_issue = 0 if key == "uuid:72625c8e-580a-478f-9989-882ad5867012" & hh_21_total_6 == 4
+replace ind_issue = 0 if key == "uuid:347b10a5-29e2-4221-9079-08b5d95c139b" & hh_21_total_6 == 5
+replace ind_issue = 0 if key == "uuid:742d4881-da1e-4e85-9270-0c5bd07d1b00" & hh_21_total_7 == 2
+replace ind_issue = 0 if key == "uuid:94643380-9b5b-4ec2-ac9c-a3fd30a51af7" & hh_21_total_7 == 2
+replace ind_issue = 0 if key == "uuid:1b5acef1-09c9-4be9-ad74-366a633b2c73" & hh_21_total_7 == 4
+replace ind_issue = 0 if key == "uuid:3836b5eb-ccd2-4c6b-bd5f-bf42d09c166c" & hh_21_total_7 == 8
+replace ind_issue = 0 if key == "uuid:f05825dc-a539-40ff-8384-8edaef71070b" & hh_21_total_7 == 5
+replace ind_issue = 0 if key == "uuid:5af3703a-9fbb-417b-9462-88d93d4254f2" & hh_21_total_8 == 3
+replace ind_issue = 0 if key == "uuid:155e4011-7e23-4a13-9190-c8859bb3641f" & hh_21_total_8 == 5
+replace ind_issue = 0 if key == "uuid:ab7d5d15-0083-4d38-8abb-bb1b924d1b88" & hh_21_total_8 == 3
+replace ind_issue = 0 if key == "uuid:7d9f8b44-84f1-4118-b829-ec224829dc78" & hh_21_total_9 == 5
+replace ind_issue = 0 if key == "uuid:94197cc7-302a-4613-b051-35f3647de14f" & hh_21_total_2 == 12
+replace ind_issue = 0 if key == "uuid:bb44cf98-9d46-4333-b702-8f56f6d685b7" & hh_21_total_4 == 4
+replace ind_issue = 0 if key == "uuid:cb40e206-5485-4e94-8ea2-4fb5ab806bc0" & hh_21_total_5 == 5
+replace ind_issue = 0 if key == "uuid:844ab214-bd8f-4cfd-b13e-38ce3bba59a8" & hh_21_total_1 == 7
+replace ind_issue = 0 if key == "uuid:0243f237-580f-48db-81ac-af07d0ec3c7d" & hh_21_total_11 == 7
+replace ind_issue = 0 if key == "uuid:e2eb2697-0ed5-4a5c-8049-b1ea036fbe9c" & hh_21_total_4 == 6
+replace ind_issue = 0 if key == "uuid:74fd4109-e990-42e8-a69a-43a2c2411c7f" & hh_21_total_4 == 6
+replace ind_issue = 0 if key == "uuid:b747834b-3cc5-4e16-a003-c746781d4c3b" & hh_21_total_5 == 7
+replace ind_issue = 0 if key == "uuid:74fd4109-e990-42e8-a69a-43a2c2411c7f" & hh_21_total_5 == 6
+replace ind_issue = 0 if key == "uuid:446cce08-7cc4-44c1-be46-e651f216e5bc" & hh_21_total_6 == 6
+replace ind_issue = 0 if key == "uuid:63a429a2-c4af-4377-9060-8489190a5491" & hh_21_total_7 == 4
+replace ind_issue = 0 if key == "uuid:b508a3ab-9afd-4b4d-ae57-9b3b9c7214de" & hh_21_total_7 == 14
+replace ind_issue = 0 if key == "uuid:e2eb2697-0ed5-4a5c-8049-b1ea036fbe9c" & hh_21_total_7 == 6
+replace ind_issue = 0 if key == "uuid:8f4cbc6a-8472-4738-b738-7057a87ab85e" & hh_21_total_8 == 3
+replace ind_issue = 0 if key == "uuid:e2eb2697-0ed5-4a5c-8049-b1ea036fbe9c" & hh_21_total_8 == 5
+replace ind_issue = 0 if key == "uuid:e2eb2697-0ed5-4a5c-8049-b1ea036fbe9c" & hh_21_total_9 == 5
+replace ind_issue = 0 if key == "uuid:eb71f1ee-5f44-4a52-926b-7db730824f49" & hh_21_total_10 == 6
+replace ind_issue = 0 if key == "uuid:6fd4bf23-18ad-4397-b6e5-51b08c474051" & hh_21_total_2 == 10
+replace ind_issue = 0 if key == "uuid:6aed25d4-b44d-4a4a-95db-cb4659ba83f7" & hh_21_total_4 == 4
+replace ind_issue = 0 if key == "uuid:c3b488c2-9c9d-45fe-a3fa-6576aa6fa1f3" & hh_21_total_7 == 3
+replace ind_issue = 0 if key == "uuid:fd300527-e33a-4519-8ba2-1df30a653a0c" & hh_21_total_1 == 14
+replace ind_issue = 0 if key == "uuid:f74852e0-f784-45df-9ba6-40933da3b8d1" & hh_21_total_1 == 32
+replace ind_issue = 0 if key == "uuid:92bf8c6e-ed5e-45f9-a303-3edb224aa9a9" & hh_21_total_1 == 4
+replace ind_issue = 0 if key == "uuid:33059fa7-c2ec-4757-925c-e9caca8b3365" & hh_21_total_1 == 13
+replace ind_issue = 0 if key == "uuid:c336de53-c390-436d-8371-5e5bc87a526c" & hh_21_total_1 == 17
+replace ind_issue = 0 if key == "uuid:76360573-efa2-4b0d-9979-a990ca4571a4" & hh_21_total_1 == 23
+replace ind_issue = 0 if key == "uuid:e1cd6dc2-003a-44ab-8c0f-3dc63c59ba14" & hh_21_total_1 == 2
+replace ind_issue = 0 if key == "uuid:68e479ee-1a91-4b2c-99d0-cfb335f8aeeb" & hh_21_total_1 == 19
+replace ind_issue = 0 if key == "uuid:7f450507-9f4a-40a5-99e4-8b63c95b4d2c" & hh_21_total_10 == 8
+replace ind_issue = 0 if key == "uuid:e59e2eae-b1ae-449a-8842-d4641331f136" & hh_21_total_10 == 18
+replace ind_issue = 0 if key == "uuid:4a0fe362-32d1-4dad-ba8c-ca382d519c63" & hh_21_total_11 == 3
+replace ind_issue = 0 if key == "uuid:92171a8f-7a48-4292-a5ef-6850b6c04333" & hh_21_total_13 == 8
+replace ind_issue = 0 if key == "uuid:92171a8f-7a48-4292-a5ef-6850b6c04333" & hh_21_total_19 == 8
+replace ind_issue = 0 if key == "uuid:9d9dda6a-deb5-4cce-bd4c-ed3f2bc00381" & hh_21_total_2 == 15
+replace ind_issue = 0 if key == "uuid:b89a7ed1-e6ea-4835-8e6d-2e374b8d1cdb" & hh_21_total_2 == 23
+replace ind_issue = 0 if key == "uuid:e59e2eae-b1ae-449a-8842-d4641331f136" & hh_21_total_2 == 9
+replace ind_issue = 0 if key == "uuid:7df04366-985d-4f5e-895f-61ec47f30529" & hh_21_total_2 == 9
+replace ind_issue = 0 if key == "uuid:1df09cfd-b5f7-4fa5-8227-199fa261ae20" & hh_21_total_2 == 20
+replace ind_issue = 0 if key == "uuid:f5bfd38e-c47c-4d7f-aa1f-37602fef6c9c" & hh_21_total_2 == 7
+replace ind_issue = 0 if key == "uuid:902f961e-7553-4463-81b7-39f9ad8f7903" & hh_21_total_3 == 43
+replace ind_issue = 0 if key == "uuid:e59e2eae-b1ae-449a-8842-d4641331f136" & hh_21_total_3 == 15
+replace ind_issue = 0 if key == "uuid:f5bfd38e-c47c-4d7f-aa1f-37602fef6c9c" & hh_21_total_3 == 7
+replace ind_issue = 0 if key == "uuid:ea66090c-4853-434a-8501-93e90526a596" & hh_21_total_3 == 10
+replace ind_issue = 0 if key == "uuid:5624be26-ca0a-4378-8cf8-c7d181e23ce3" & hh_21_total_3 == 8
+replace ind_issue = 0 if key == "uuid:731b2b96-2cc9-4c40-ab3d-1c8eca615b1d" & hh_21_total_3 == 17
+replace ind_issue = 0 if key == "uuid:7f450507-9f4a-40a5-99e4-8b63c95b4d2c" & hh_21_total_3 == 12
+replace ind_issue = 0 if key == "uuid:a671b107-d7f9-4662-9727-5a5ee7218919" & hh_21_total_3 == 18
+replace ind_issue = 0 if key == "uuid:731b2b96-2cc9-4c40-ab3d-1c8eca615b1d" & hh_21_total_4 == 24
+replace ind_issue = 0 if key == "uuid:38e50014-cbb3-4ccf-a592-222277e3c778" & hh_21_total_4 == 10
+replace ind_issue = 0 if key == "uuid:021408c0-3c5f-42ad-bf3c-4df9fc199963" & hh_21_total_4 == 23
+replace ind_issue = 0 if key == "uuid:f74852e0-f784-45df-9ba6-40933da3b8d1" & hh_21_total_4 == 20
+replace ind_issue = 0 if key == "uuid:c336de53-c390-436d-8371-5e5bc87a526c" & hh_21_total_4 == 33
+replace ind_issue = 0 if key == "uuid:4f33e08d-f88b-4c66-9f8c-5c6ffcb99c7e" & hh_21_total_4 == 12
+replace ind_issue = 0 if key == "uuid:35f6931b-c1e5-4ed4-ac86-d169b66b7963" & hh_21_total_4 == 5
+replace ind_issue = 0 if key == "uuid:e692401a-2af4-4a0f-9e12-1d7bb0856037" & hh_21_total_4 == 12
+replace ind_issue = 0 if key == "uuid:b89a7ed1-e6ea-4835-8e6d-2e374b8d1cdb" & hh_21_total_4 == 7
+replace ind_issue = 0 if key == "uuid:76360573-efa2-4b0d-9979-a990ca4571a4" & hh_21_total_5 == 35
+replace ind_issue = 0 if key == "uuid:0aa1bd0b-c8f4-493d-a32e-5256cc8a58d0" & hh_21_total_5 == 14
+replace ind_issue = 0 if key == "uuid:38e50014-cbb3-4ccf-a592-222277e3c778" & hh_21_total_5 == 24
+replace ind_issue = 0 if key == "uuid:a671b107-d7f9-4662-9727-5a5ee7218919" & hh_21_total_5 == 29
+replace ind_issue = 0 if key == "uuid:c840f2ec-d0ec-4652-9e94-39ce87bad68a" & hh_21_total_5 == 8
+replace ind_issue = 0 if key == "uuid:4c778d8f-97d4-47fa-af7d-7e3314c48feb" & hh_21_total_5 == 6
+replace ind_issue = 0 if key == "uuid:0aa1bd0b-c8f4-493d-a32e-5256cc8a58d0" & hh_21_total_6 == 18
+replace ind_issue = 0 if key == "uuid:27c99328-fe86-4b31-956f-6c9aaf3b1284" & hh_21_total_6 == 3
+replace ind_issue = 0 if key == "uuid:38e50014-cbb3-4ccf-a592-222277e3c778" & hh_21_total_6 == 19
+replace ind_issue = 0 if key == "uuid:c549c58d-ef59-4d7f-a241-ebe47316e790" & hh_21_total_6 == 5
+replace ind_issue = 0 if key == "uuid:68e479ee-1a91-4b2c-99d0-cfb335f8aeeb" & hh_21_total_6 == 9
+replace ind_issue = 0 if key == "uuid:731b2b96-2cc9-4c40-ab3d-1c8eca615b1d" & hh_21_total_7 == 13
+replace ind_issue = 0 if key == "uuid:76360573-efa2-4b0d-9979-a990ca4571a4" & hh_21_total_7 == 14
+replace ind_issue = 0 if key == "uuid:92171a8f-7a48-4292-a5ef-6850b6c04333" & hh_21_total_7 == 6
+replace ind_issue = 0 if key == "uuid:8cb164e9-bedb-4168-b1fa-f5ce9354c2a9" & hh_21_total_7 == 15
+replace ind_issue = 0 if key == "uuid:bbf5c02a-b6e2-4645-bae2-8854d894931f" & hh_21_total_7 == 6
+replace ind_issue = 0 if key == "uuid:e59e2eae-b1ae-449a-8842-d4641331f136" & hh_21_total_7 == 5
+replace ind_issue = 0 if key == "uuid:4a0fe362-32d1-4dad-ba8c-ca382d519c63" & hh_21_total_7 == 3
+replace ind_issue = 0 if key == "uuid:4c778d8f-97d4-47fa-af7d-7e3314c48feb" & hh_21_total_7 == 6
+replace ind_issue = 0 if key == "uuid:ea66090c-4853-434a-8501-93e90526a596" & hh_21_total_9 == 52
+replace ind_issue = 0 if key == "uuid:b1fae32c-057b-45c3-a10b-5fbdf289d4d6" & hh_21_total_9 == 6
+replace ind_issue = 0 if key == "uuid:72ed82ab-7a9a-4eb1-bff3-db27dcae2ad8" & hh_21_total_1 == 14
+replace ind_issue = 0 if key == "uuid:1e25364f-6fd7-4898-9631-7343b0d1b0f7" & hh_21_total_1 == 14
+replace ind_issue = 0 if key == "uuid:dbaf39d5-e977-4dad-a0fd-d3f8f978a2c5" & hh_21_total_1 == 6
+replace ind_issue = 0 if key == "uuid:16671bba-7134-410e-adcc-d943d1515258" & hh_21_total_1 == 28
+replace ind_issue = 0 if key == "uuid:ce5549e0-79b0-4bde-9e8b-37fab5eedf2f" & hh_21_total_1 == 21
+replace ind_issue = 0 if key == "uuid:885049cc-1088-4324-82a2-6a3d1aa5c3bf" & hh_21_total_1 == 42
+replace ind_issue = 0 if key == "uuid:37867bda-7341-492f-a065-8037d1e444de" & hh_21_total_1 == 28
+replace ind_issue = 0 if key == "uuid:4a93facc-81f2-47bf-834f-ade9801ee7c8" & hh_21_total_1 == 14
+replace ind_issue = 0 if key == "uuid:4a93facc-81f2-47bf-834f-ade9801ee7c8" & hh_21_total_10 == 14
+replace ind_issue = 0 if key == "uuid:da41eaad-41fa-4adb-b7c6-7c521bc678cf" & hh_21_total_11 == 10
+replace ind_issue = 0 if key == "uuid:20c6f12b-0474-449e-88cf-7e4bb8572ccf" & hh_21_total_2 == 28
+replace ind_issue = 0 if key == "uuid:16671bba-7134-410e-adcc-d943d1515258" & hh_21_total_2 == 14
+replace ind_issue = 0 if key == "uuid:5dacec94-0b4b-459d-bc8d-7ca6379119bc" & hh_21_total_2 == 35
+replace ind_issue = 0 if key == "uuid:51bbc017-d8de-4e30-9a9b-3594922d7738" & hh_21_total_2 == 28
+replace ind_issue = 0 if key == "uuid:7927b2e6-e46d-4be1-8163-7669e0733149" & hh_21_total_2 == 55
+replace ind_issue = 0 if key == "uuid:7549994f-023a-4e2f-a015-225aaf53ff2b" & hh_21_total_2 == 12
+replace ind_issue = 0 if key == "uuid:dbaf39d5-e977-4dad-a0fd-d3f8f978a2c5" & hh_21_total_2 == 73
+replace ind_issue = 0 if key == "uuid:61144d37-6700-447a-b358-647e4312819f" & hh_21_total_2 == 7
+replace ind_issue = 0 if key == "uuid:4894e36a-965b-440d-aa57-d70254caa566" & hh_21_total_2 == 22
+replace ind_issue = 0 if key == "uuid:dfbffc80-1e52-496c-ba85-f1692acbd5f0" & hh_21_total_2 == 21
+replace ind_issue = 0 if key == "uuid:37867bda-7341-492f-a065-8037d1e444de" & hh_21_total_2 == 28
+replace ind_issue = 0 if key == "uuid:cb84f382-f029-467d-bb51-4ee455ca0c9d" & hh_21_total_2 == 21
+replace ind_issue = 0 if key == "uuid:72ed82ab-7a9a-4eb1-bff3-db27dcae2ad8" & hh_21_total_2 == 28
+replace ind_issue = 0 if key == "uuid:952f24db-030b-475b-a2cb-f383305e65e3" & hh_21_total_3 == 14
+replace ind_issue = 0 if key == "uuid:4a93facc-81f2-47bf-834f-ade9801ee7c8" & hh_21_total_3 == 14
+replace ind_issue = 0 if key == "uuid:7927b2e6-e46d-4be1-8163-7669e0733149" & hh_21_total_3 == 55
+replace ind_issue = 0 if key == "uuid:51bbc017-d8de-4e30-9a9b-3594922d7738" & hh_21_total_3 == 23
+replace ind_issue = 0 if key == "uuid:01639e53-ecd4-43fe-bf12-bd59d60e79e6" & hh_21_total_3 == 48
+replace ind_issue = 0 if key == "uuid:72ed82ab-7a9a-4eb1-bff3-db27dcae2ad8" & hh_21_total_3 == 6
+replace ind_issue = 0 if key == "uuid:885049cc-1088-4324-82a2-6a3d1aa5c3bf" & hh_21_total_3 == 56
+replace ind_issue = 0 if key == "uuid:d9a96108-6ff6-4a01-b035-8c4edbc3d016" & hh_21_total_4 == 21
+replace ind_issue = 0 if key == "uuid:4894e36a-965b-440d-aa57-d70254caa566" & hh_21_total_4 == 14
+replace ind_issue = 0 if key == "uuid:cb84f382-f029-467d-bb51-4ee455ca0c9d" & hh_21_total_4 == 28
+replace ind_issue = 0 if key == "uuid:58f97ff1-d328-4186-b783-6e4eb46e1683" & hh_21_total_4 == 8
+replace ind_issue = 0 if key == "uuid:72ed82ab-7a9a-4eb1-bff3-db27dcae2ad8" & hh_21_total_4 == 21
+replace ind_issue = 0 if key == "uuid:6995a33b-0e9c-458f-9e49-d08266c63a04" & hh_21_total_4 == 21
+replace ind_issue = 0 if key == "uuid:16671bba-7134-410e-adcc-d943d1515258" & hh_21_total_4 == 16
+replace ind_issue = 0 if key == "uuid:44e9ec51-4de3-4be7-985d-1aed9746258a" & hh_21_total_4 == 28
+replace ind_issue = 0 if key == "uuid:952f24db-030b-475b-a2cb-f383305e65e3" & hh_21_total_5 == 21
+replace ind_issue = 0 if key == "uuid:10cdabf2-f022-4539-8c2b-7eaa1bead1d1" & hh_21_total_5 == 42
+replace ind_issue = 0 if key == "uuid:1e25364f-6fd7-4898-9631-7343b0d1b0f7" & hh_21_total_5 == 14
+replace ind_issue = 0 if key == "uuid:4a93facc-81f2-47bf-834f-ade9801ee7c8" & hh_21_total_5 == 14
+replace ind_issue = 0 if key == "uuid:e256772b-6441-4b1e-9274-0991789ff4e9" & hh_21_total_5 == 14
+replace ind_issue = 0 if key == "uuid:dbaf39d5-e977-4dad-a0fd-d3f8f978a2c5" & hh_21_total_5 == 63
+replace ind_issue = 0 if key == "uuid:72ed82ab-7a9a-4eb1-bff3-db27dcae2ad8" & hh_21_total_5 == 14
+replace ind_issue = 0 if key == "uuid:16671bba-7134-410e-adcc-d943d1515258" & hh_21_total_6 == 8
+replace ind_issue = 0 if key == "uuid:21a44c69-6d8a-4ded-b1b8-98280d8f04c1" & hh_21_total_6 == 18
+replace ind_issue = 0 if key == "uuid:4894e36a-965b-440d-aa57-d70254caa566" & hh_21_total_6 == 14
+replace ind_issue = 0 if key == "uuid:175f92a9-aded-464b-a5ef-684193f755d6" & hh_21_total_6 == 25
+replace ind_issue = 0 if key == "uuid:22fd68b3-1f05-41ef-8b1e-3e4abd12196f" & hh_21_total_6 == 70
+replace ind_issue = 0 if key == "uuid:51bbc017-d8de-4e30-9a9b-3594922d7738" & hh_21_total_6 == 28
+replace ind_issue = 0 if key == "uuid:44e9ec51-4de3-4be7-985d-1aed9746258a" & hh_21_total_6 == 14
+replace ind_issue = 0 if key == "uuid:cb84f382-f029-467d-bb51-4ee455ca0c9d" & hh_21_total_7 == 35
+replace ind_issue = 0 if key == "uuid:4894e36a-965b-440d-aa57-d70254caa566" & hh_21_total_7 == 14
+replace ind_issue = 0 if key == "uuid:da41eaad-41fa-4adb-b7c6-7c521bc678cf" & hh_21_total_8 == 26
+replace ind_issue = 0 if key == "uuid:2da18445-e0f4-4b04-a536-bfdaaf05e974" & hh_21_total_8 == 21
+replace ind_issue = 0 if key == "uuid:da41eaad-41fa-4adb-b7c6-7c521bc678cf" & hh_21_total_9 == 33
+replace ind_issue = 0 if key == "uuid:1a3c002d-843a-4466-8c9d-e1ce3192481f" & hh_21_total_1 == 11
+replace ind_issue = 0 if key == "uuid:677eb96e-7e1d-4cce-93d3-f743b6c3290c" & hh_21_total_1 == 28
+replace ind_issue = 0 if key == "uuid:30adca5f-189e-48eb-9f04-aea83e6e68ac" & hh_21_total_1 == 13
+replace ind_issue = 0 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0" & hh_21_total_1 == 22
+replace ind_issue = 0 if key == "uuid:215540ae-d768-4832-817a-9fdcc1755eb2" & hh_21_total_1 == 2
+replace ind_issue = 0 if key == "uuid:7663f63b-a20a-4f80-82df-873214c2f9c4" & hh_21_total_1 == 4
+replace ind_issue = 0 if key == "uuid:31c89eaf-8d8c-4319-a80a-e476001b5a9e" & hh_21_total_1 == 21
+replace ind_issue = 0 if key == "uuid:4219536c-3d1b-4d77-a065-f63913f70d0e" & hh_21_total_1 == 20
+replace ind_issue = 0 if key == "uuid:9211237f-7b08-4c13-b007-2bc27f4fe27b" & hh_21_total_1 == 10
+replace ind_issue = 0 if key == "uuid:869babf6-be9d-49ad-a3e6-b949d3719a28" & hh_21_total_1 == 13
+replace ind_issue = 0 if key == "uuid:7857f5dd-b97f-42c2-9506-5fa8bf7847cf" & hh_21_total_10 == 22
+replace ind_issue = 0 if key == "uuid:31c89eaf-8d8c-4319-a80a-e476001b5a9e" & hh_21_total_10 == 28
+replace ind_issue = 0 if key == "uuid:83dde2f0-83a6-4399-a31b-7067f8553efc" & hh_21_total_10 == 63
+replace ind_issue = 0 if key == "uuid:f7c1d3b1-0f51-495c-9ed5-7fd642518c73" & hh_21_total_11 == 9
+replace ind_issue = 0 if key == "uuid:e73c95dc-e245-49a9-abb6-1f9f95bc5fb1" & hh_21_total_11 == 14
+replace ind_issue = 0 if key == "uuid:f7c1d3b1-0f51-495c-9ed5-7fd642518c73" & hh_21_total_12 == 13
+replace ind_issue = 0 if key == "uuid:e73c95dc-e245-49a9-abb6-1f9f95bc5fb1" & hh_21_total_12 == 28
+replace ind_issue = 0 if key == "uuid:f7c1d3b1-0f51-495c-9ed5-7fd642518c73" & hh_21_total_16 == 8
+replace ind_issue = 0 if key == "uuid:001728aa-dfd3-4b19-88d9-daa7c05791c6" & hh_21_total_2 == 3
+replace ind_issue = 0 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0" & hh_21_total_2 == 69
+replace ind_issue = 0 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f" & hh_21_total_2 == 61
+replace ind_issue = 0 if key == "uuid:e73c95dc-e245-49a9-abb6-1f9f95bc5fb1" & hh_21_total_2 == 28
+replace ind_issue = 0 if key == "uuid:31c89eaf-8d8c-4319-a80a-e476001b5a9e" & hh_21_total_2 == 40
+replace ind_issue = 0 if key == "uuid:28908175-7036-4f13-8443-f8d32671115a" & hh_21_total_2 == 48
+replace ind_issue = 0 if key == "uuid:c2de282c-8658-4964-9675-354e51d41670" & hh_21_total_2 == 14
+replace ind_issue = 0 if key == "uuid:757230ee-0ed7-43a2-ab87-de28c4339fd7" & hh_21_total_2 == 9
+replace ind_issue = 0 if key == "uuid:9211237f-7b08-4c13-b007-2bc27f4fe27b" & hh_21_total_2 == 14
+replace ind_issue = 0 if key == "uuid:f46febb7-4f27-4491-8bcb-e26865df976b" & hh_21_total_3 == 21
+replace ind_issue = 0 if key == "uuid:31c89eaf-8d8c-4319-a80a-e476001b5a9e" & hh_21_total_3 == 29
+replace ind_issue = 0 if key == "uuid:95d5efa7-920e-4c24-a832-47290c8adf86" & hh_21_total_3 == 5
+replace ind_issue = 0 if key == "uuid:869babf6-be9d-49ad-a3e6-b949d3719a28" & hh_21_total_3 == 8
+replace ind_issue = 0 if key == "uuid:7857f5dd-b97f-42c2-9506-5fa8bf7847cf" & hh_21_total_3 == 18
+replace ind_issue = 0 if key == "uuid:61ae58e8-67ed-407f-94e6-c83fe4454247" & hh_21_total_3 == 61
+replace ind_issue = 0 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f" & hh_21_total_3 == 8
+replace ind_issue = 0 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f" & hh_21_total_4 == 10
+replace ind_issue = 0 if key == "uuid:9211237f-7b08-4c13-b007-2bc27f4fe27b" & hh_21_total_4 == 10
+replace ind_issue = 0 if key == "uuid:3adf763f-622e-4cf3-9e2e-cb5a9909deb2" & hh_21_total_4 == 14
+replace ind_issue = 0 if key == "uuid:372c5f3a-79bf-45ce-a55d-6f9b02144b35" & hh_21_total_4 == 7
+replace ind_issue = 0 if key == "uuid:869babf6-be9d-49ad-a3e6-b949d3719a28" & hh_21_total_4 == 3
+replace ind_issue = 0 if key == "uuid:53fe3ce0-e78b-4d9e-b72e-9f0f0563cd82" & hh_21_total_4 == 24
+replace ind_issue = 0 if key == "uuid:31c89eaf-8d8c-4319-a80a-e476001b5a9e" & hh_21_total_5 == 9
+replace ind_issue = 0 if key == "uuid:001728aa-dfd3-4b19-88d9-daa7c05791c6" & hh_21_total_5 == 3
+replace ind_issue = 0 if key == "uuid:f7c1d3b1-0f51-495c-9ed5-7fd642518c73" & hh_21_total_5 == 18
+replace ind_issue = 0 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f" & hh_21_total_5 == 52
+replace ind_issue = 0 if key == "uuid:af2c741b-183a-419c-aac4-334755418d88" & hh_21_total_5 == 28
+replace ind_issue = 0 if key == "uuid:887b6285-2eca-449b-885e-3e8a3e9733ac" & hh_21_total_5 == 10
+replace ind_issue = 0 if key == "uuid:e73c95dc-e245-49a9-abb6-1f9f95bc5fb1" & hh_21_total_5 == 8
+replace ind_issue = 0 if key == "uuid:2ec47a04-9451-4eae-863a-709abcb0f494" & hh_21_total_6 == 11
+replace ind_issue = 0 if key == "uuid:95d5efa7-920e-4c24-a832-47290c8adf86" & hh_21_total_6 == 13
+replace ind_issue = 0 if key == "uuid:f46febb7-4f27-4491-8bcb-e26865df976b" & hh_21_total_6 == 12
+replace ind_issue = 0 if key == "uuid:3adf763f-622e-4cf3-9e2e-cb5a9909deb2" & hh_21_total_6 == 9
+replace ind_issue = 0 if key == "uuid:9211237f-7b08-4c13-b007-2bc27f4fe27b" & hh_21_total_6 == 9
+replace ind_issue = 0 if key == "uuid:28908175-7036-4f13-8443-f8d32671115a" & hh_21_total_6 == 13
+replace ind_issue = 0 if key == "uuid:e73c95dc-e245-49a9-abb6-1f9f95bc5fb1" & hh_21_total_6 == 36
+replace ind_issue = 0 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0" & hh_21_total_6 == 49
+replace ind_issue = 0 if key == "uuid:757230ee-0ed7-43a2-ab87-de28c4339fd7" & hh_21_total_6 == 10
+replace ind_issue = 0 if key == "uuid:70dadb25-9ae1-4772-b406-419c7d134f96" & hh_21_total_6 == 27
+replace ind_issue = 0 if key == "uuid:61ae58e8-67ed-407f-94e6-c83fe4454247" & hh_21_total_6 == 18
+replace ind_issue = 0 if key == "uuid:dce059c7-c3d8-4f48-9e71-2e6e6ced417b" & hh_21_total_6 == 4
+replace ind_issue = 0 if key == "uuid:7857f5dd-b97f-42c2-9506-5fa8bf7847cf" & hh_21_total_7 == 36
+replace ind_issue = 0 if key == "uuid:65cbfec8-d9d7-4cda-9341-546edf1ffc8b" & hh_21_total_7 == 15
+replace ind_issue = 0 if key == "uuid:31c89eaf-8d8c-4319-a80a-e476001b5a9e" & hh_21_total_7 == 13
+replace ind_issue = 0 if key == "uuid:e73c95dc-e245-49a9-abb6-1f9f95bc5fb1" & hh_21_total_7 == 77
+replace ind_issue = 0 if key == "uuid:e8949caf-47ee-4e5e-8b89-3eced60feb3d" & hh_21_total_7 == 3
+replace ind_issue = 0 if key == "uuid:95d5efa7-920e-4c24-a832-47290c8adf86" & hh_21_total_7 == 9
+replace ind_issue = 0 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f" & hh_21_total_7 == 24
+replace ind_issue = 0 if key == "uuid:677eb96e-7e1d-4cce-93d3-f743b6c3290c" & hh_21_total_7 == 30
+replace ind_issue = 0 if key == "uuid:f46febb7-4f27-4491-8bcb-e26865df976b" & hh_21_total_7 == 22
+replace ind_issue = 0 if key == "uuid:29afbbec-6664-48db-9cc4-024245c48be8" & hh_21_total_7 == 17
+replace ind_issue = 0 if key == "uuid:a0e2eb23-b126-46c1-a2e9-5f81cfc2e9be" & hh_21_total_8 == 15
+replace ind_issue = 0 if key == "uuid:7857f5dd-b97f-42c2-9506-5fa8bf7847cf" & hh_21_total_8 == 28
+replace ind_issue = 0 if key == "uuid:887b6285-2eca-449b-885e-3e8a3e9733ac" & hh_21_total_8 == 20
+replace ind_issue = 0 if key == "uuid:9211237f-7b08-4c13-b007-2bc27f4fe27b" & hh_21_total_8 == 7
+replace ind_issue = 0 if key == "uuid:e73c95dc-e245-49a9-abb6-1f9f95bc5fb1" & hh_21_total_8 == 14
+replace ind_issue = 0 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f" & hh_21_total_8 == 16
+replace ind_issue = 0 if key == "uuid:887b6285-2eca-449b-885e-3e8a3e9733ac" & hh_21_total_9 == 21
+replace ind_issue = 0 if key == "uuid:e73c95dc-e245-49a9-abb6-1f9f95bc5fb1" & hh_21_total_9 == 19
+replace ind_issue = 0 if key == "uuid:7857f5dd-b97f-42c2-9506-5fa8bf7847cf" & hh_21_total_9 == 28
+replace ind_issue = 0 if key == "uuid:9211237f-7b08-4c13-b007-2bc27f4fe27b" & hh_21_total_9 == 10
+replace ind_issue = 0 if key == "uuid:86eb5846-fbde-44a1-b04c-7dab574f678b" & hh_21_total_1 == 5
+replace ind_issue = 0 if key == "uuid:c07e60ea-2961-45fb-b5ef-06d4a42f3112" & hh_21_total_1 == 3
+replace ind_issue = 0 if key == "uuid:a389351c-405b-4fcf-bc2d-4f9b647cd821" & hh_21_total_1 == 4
+replace ind_issue = 0 if key == "uuid:1cf5e8e5-012a-4791-a399-071c5984af16" & hh_21_total_10 == 7
+replace ind_issue = 0 if key == "uuid:28e5893e-1205-4647-b375-2ab2e07290f8" & hh_21_total_11 == 8
+replace ind_issue = 0 if key == "uuid:86eb5846-fbde-44a1-b04c-7dab574f678b" & hh_21_total_2 == 2
+replace ind_issue = 0 if key == "uuid:9395c227-458d-4a0c-a7ff-11cb8e93046b" & hh_21_total_2 == 24
+replace ind_issue = 0 if key == "uuid:fc088a43-edd6-4622-af6c-63532af6f8d7" & hh_21_total_3 == 6
+replace ind_issue = 0 if key == "uuid:66c36843-1e4c-4576-9c41-c73386bee59b" & hh_21_total_3 == 4
+replace ind_issue = 0 if key == "uuid:ad62df08-a2f4-412c-9a12-33d751c33145" & hh_21_total_4 == 8
+replace ind_issue = 0 if key == "uuid:a389351c-405b-4fcf-bc2d-4f9b647cd821" & hh_21_total_4 == 3
+replace ind_issue = 0 if key == "uuid:1cf5e8e5-012a-4791-a399-071c5984af16" & hh_21_total_4 == 7
+replace ind_issue = 0 if key == "uuid:883f0ef3-0cc3-4683-a943-c3ffce7e8be4" & hh_21_total_6 == 21
+replace ind_issue = 0 if key == "uuid:28e5893e-1205-4647-b375-2ab2e07290f8" & hh_21_total_7 == 14
+replace ind_issue = 0 if key == "uuid:28e5893e-1205-4647-b375-2ab2e07290f8" & hh_21_total_9 == 9
+replace ind_issue = 0 if key == "uuid:a9b198b5-e8e9-457d-9967-1ac777669d76" & hh_21_total_1 == 42
+replace ind_issue = 0 if key == "uuid:1e699d0e-8fd7-45b6-9918-675b0fa7ec72" & hh_21_total_1 == 10
+replace ind_issue = 0 if key == "uuid:b4135843-09e3-44e8-b649-7f6dbd35f542" & hh_21_total_10 == 6
+replace ind_issue = 0 if key == "uuid:f2320249-e402-4c29-aea1-6c2dab838a8b" & hh_21_total_11 == 4
+replace ind_issue = 0 if key == "uuid:8befef83-7f84-46ca-87f6-742b686956e6" & hh_21_total_2 == 14
+replace ind_issue = 0 if key == "uuid:747bb817-d058-45b2-8f6d-e714a957afe6" & hh_21_total_2 == 12
+replace ind_issue = 0 if key == "uuid:43b22eb4-baf0-4a10-ad3f-06206f134da1" & hh_21_total_2 == 4
+replace ind_issue = 0 if key == "uuid:90d1e1e8-e397-433d-9199-1031cac8b8b2" & hh_21_total_3 == 9
+replace ind_issue = 0 if key == "uuid:f2320249-e402-4c29-aea1-6c2dab838a8b" & hh_21_total_9 == 5
+replace ind_issue = 0 if key == "uuid:5997c696-23e5-4aff-8dcc-4c0351688c8a" & hh_21_total_10 == 10
+replace ind_issue = 0 if key == "uuid:648cabd0-d8bb-4edd-b54d-79f43e1898f6" & hh_21_total_13 == 7
+replace ind_issue = 0 if key == "uuid:b9db8503-f920-47d7-8c51-d6479521ef3b" & hh_21_total_16 == 8
+replace ind_issue = 0 if key == "uuid:f953cc65-f449-4a67-bab4-853b16aabad1" & hh_21_total_2 == 7
+replace ind_issue = 0 if key == "uuid:79cf1220-8069-4576-9ce5-5bafd31008a2" & hh_21_total_3 == 5
+replace ind_issue = 0 if key == "uuid:648cabd0-d8bb-4edd-b54d-79f43e1898f6" & hh_21_total_4 == 14
+replace ind_issue = 0 if key == "uuid:322ec7b2-ba87-45b9-812d-dbfdaa8e84b9" & hh_21_total_6 == 7
+replace ind_issue = 0 if key == "uuid:834bc878-e406-4f6e-88bc-c90a37031753" & hh_21_total_7 == 4
+replace ind_issue = 0 if key == "uuid:008de754-4ff1-43e5-ae4d-21d1760039e2" & hh_21_total_9 == 3
+replace ind_issue = 0 if key == "uuid:1a6dbc16-0aa9-4f14-8d83-03032f5156b9" & hh_21_total_1 == 12
+replace ind_issue = 0 if key == "uuid:4cfdebc5-579b-42d0-b794-b15ca3d76d05" & hh_21_total_2 == 10
+replace ind_issue = 0 if key == "uuid:afc485f1-70e0-4936-8c2c-66328f28ee3d" & hh_21_total_3 == 3
+replace ind_issue = 0 if key == "uuid:8a5eda95-e722-4569-9fcc-33134c4bae2a" & hh_21_total_6 == 14
+replace ind_issue = 0 if key == "uuid:e08a2cc4-c24a-4e63-801c-5ab205695c7b" & hh_21_total_6 == 4
+replace ind_issue = 0 if key == "uuid:927795d3-0966-4cc6-9bd2-0ceee0f8bbe8" & hh_21_total_9 == 5
+replace ind_issue = 0 if key == "uuid:a177145f-c36f-42f1-9595-bb4e759b7923" & hh_21_total_4 == 3
+replace ind_issue = 0 if key == "uuid:44f20f67-c22c-4c86-86d2-0b468d0b47cd" & hh_21_total_6 == 3
+replace ind_issue = 0 if key == "uuid:a0188f55-5d08-45c9-b274-70b5ba016033" & hh_21_total_4 == 4
+*/
 
 import delimited "$data\DISES_Enquête_ménage_midline_VF_WIDE_24Feb2025.csv", clear varnames(1) bindquote(strict)
 
@@ -3003,4 +3347,13 @@ replace hh_21_total_9 = 52 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0"
 replace hh_21_9_1 = 24 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0"
 replace hh_21_9_2 = 14 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0"
 replace hh_21_9_3 = 14 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0"
+
+
+
+
+
+
+
+
+
 

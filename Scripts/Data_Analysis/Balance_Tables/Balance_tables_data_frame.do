@@ -6,6 +6,21 @@
 * Created: December 2024
 * Updates recorded in GitHub 
 
+
+ ** This file processes: 
+	* Complete_Baseline_Household_Roster.dta
+	* Complete_Baseline_Health.dta
+	* Complete_Baseline_Agriculture.dta
+	* Complete_Baseline_Income.dta
+	* Complete_Baseline_Standard_Of_Living.dta
+	* Complete_Baseline_Public_Goods_Game.dta
+	* Complete_Baseline_Enumerator_Observations.dta
+	* Complete_Baseline_Community.dta
+	
+ ** This file outputs:
+ 
+ 
+ 
 *<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~~~ Read Me! ~~~~ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	* This script merges selects, cleans, and orders the baseline data to setup the dataframe for analysis for the balance tables. 
@@ -52,7 +67,6 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 merge 1:1 hhid using "$data\Complete_Baseline_Health.dta"
 drop _merge 
 
-
 merge 1:1 hhid using "$data\Complete_Baseline_Agriculture.dta"
 drop _merge 
 
@@ -76,17 +90,28 @@ drop _merge
 ********************************************************* Keep relevant variables *********************************************************
 
 
-** drop hh_education_year_achieve_ as it's correlated with hh_education_skills_
+** hh_26: 3.41. <font color = "blue"> ${hh_scoohl-name}  </font>a-t-il fait ou fait-il des études actuellement dans une école formelle? 1=oui, 2=non [si non, skip à hh_27]
+
+** hh_27: 3.42. Did <font color = "blue"> ${hh_scoohl-name}  </font> attend non-formal school or non-formal training ? 1=yes, 2=no
+
+** hh_31: 3.46. What result did <font color = "blue"> ${hh_scoohl-name}  </font> achieve during the 2023/2024 school year ?
+
+** hh_38: 3.53. During the last seven days, how many days did <font color = "blue"> ${hh_scoohl-name}  </font> go to school for classes ?
+
+** hh_37: 3.52. During the last 12 months, has <font color = "blue"> ${hh_scoohl-name}  </font> ever missed more than one consecutive week of school due to illness ?
 
 
 keep hhid hhid_village ///
-	 q_51  ///
+	 q_51  ///  // village level var 
      hh_relation_with_* hh_gender* hh_age* hh_age_resp hh_gender_resp ///
      hh_education_skills* hh_education_level*  ///
-     hh_numero* hh_03* hh_10* hh_11* hh_12* hh_12index_* hh_13* ///
-     hh_14* hh_15* hh_16* hh_29* ///
+     hh_numero* hh_03* hh_10* hh_11* hh_12* hh_12index_* hh_13* hh_14* hh_15* hh_16* hh_29* /// 	
+	 hh_31* hh_33* ///  //edu vars 
      health_5_2* health_5_3* health_5_5* health_5_6* health_5_12* ///
      agri_6_15* species* agri_income_01 agri_income_05 ///
+	 agri_6_21*  /// // surface area of plot 
+	 agri_6_32* agri_6_36* /// // used fertilizer vars
+	 agri_6_38_a* agri_6_39_a* agri_6_40_a* agri_6_41_a* /// // quantity of fertilizer
      living_01* living_03* living_04* living_05* living_06* ///
      montant_02* montant_05* ///
      face_04* face_13* ///
@@ -107,8 +132,8 @@ drop hh_relation_with_o* hh_12_o* hh_12_a* hh_13_s* hh_13_o*  ///
      enum_03_o enum_04_o enum_05_o species_o ///
 	hh_12_r* hh_12name_* hh_12_calc_* hh_education_level_o_* ///
      hh_11_o_* hh_education_skills_0_* hh_15_o_* hh_29_o* health_5_3_o* ///
-	 speciesindex* species_autre speciesname* living_06_o
-
+	 speciesindex* species_autre speciesname* living_06_o ///
+	agri_6_38_a_code_o* agri_6_39_a_code_o* agri_6_40_a_code_o* agri_6_41_a_code_o*
 
 * Reshape long with hhid and id
 forval i = 1/7 {
@@ -143,8 +168,8 @@ forval i = 1/7 {
 	
 	reshape long hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ hh_education_level_ ///
 hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
-hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ health_5_2_ ///
-health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
+hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_29_ hh_31_ hh_33_ ///
+health_5_2_ health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
 
  
 ********************************************************* filter variable *********************************************************
@@ -412,7 +437,7 @@ save `water_access'
 
 use `balance_table_ata'
 merge m:m hhid_village using `water_access'
-
+drop _merge
 
 *** create TLU species variable 
 
@@ -442,7 +467,20 @@ replace TLU = TLU + (0.01) if species_8 == 1 // Poultry
 * List the final TLU variable
 list hhid species TLU
 
-** label variables
+** create grouped variables for fertilizer amount
+   *agri_6_15 // how many plots cultivated 
+   *agri_6_21*  /// // surface area of plot 
+	agri_6_32* agri_6_36* /// // used fertilizer vars
+	agri_6_38_a* agri_6_39_a* agri_6_40_a* agri_6_41_a*
+	
+	
+	
+
+
+** bring in Asset index 
+
+merge m:m hhid using "$dataOutput\PCA_asset_index_var.dta"
+
 
 
 ******************************************************** Reorder the variables & collapse at household level *********************************************************

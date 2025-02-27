@@ -127,7 +127,7 @@ global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midlin
 ************************* COMBINE AGRICULTURE INPUTS FILES *****************
 * Note: check to see what was output
 
-
+/*
 	clear
 	local folder "$agriculture_inputs"  
 
@@ -141,7 +141,7 @@ global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midlin
 
 
 	save "$agriculture_inputs\Ag_Inputs_Issues.dta", replace 
-
+*/
 
 ************************* COMBINE AGRICULTURE PRODUCITON FILES *****************
 * Note: check to see what was output
@@ -251,7 +251,7 @@ global issuesOriginal "$master\Data_Management\Output\Data_Quality_Checks\Midlin
 		use "$household_roster\Roster_Issues.dta", replace
 		*append using "$knowledge\Knoweldge_Issues.dta"
 		append using "$health\Health_Issues.dta"
-		append using "$agriculture_inputs\Ag_Inputs_Issues.dta"
+		*append using "$agriculture_inputs\Ag_Inputs_Issues.dta"
 		append using "$agriculture_production\Ag_Production_Issues.dta"
 		*append using "$food_consumption\Food_Consumption_Issues.dta"
 		append using "$income\Income_Issues.dta"
@@ -264,8 +264,9 @@ foreach var of varlist issue_variable_name {
     replace issue_variable_label = "`: variable label `var''" if issue_variable_name == "`var'"
 }
 sort enqu_name issue_variable_name
-merge m:m hhid hh_individ_complet_resp using "$issuesOriginal\\Updated_Midline_Survey_Questions.dta"
+merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
 rename hh_name_complet_resp individ
+drop _merge
 
 merge m:1 individ using "C:\Users\admmi\Box\NSF Senegal\Data_Management\_CRDES_CleanData\Baseline\Identified\All_Villages_With_Individual_IDs.dta"
 
@@ -273,13 +274,11 @@ merge m:1 individ using "C:\Users\admmi\Box\NSF Senegal\Data_Management\_CRDES_C
 keep if _merge == 3 | individ == "999"
 
 * Step 3: Keep only the specified variables
-keep villageid sup sup_name enqu enqu_name hh_phone hhid individ hh_name_complet_resp ///
-     hh_name_complet_resp_new hh_member_name print_issue key issue ///
-     issue_variable_name hh_age issue_variable_label value
-
 * Export the dataset to Excel
 //export excel using "$issues\Household_Issues_13Feb2025.xlsx", firstrow(variables) replace
-export excel using "$issuesOriginal\Part1_Household_Issues_16Feb2025.xlsx", firstrow(variables) replace
+merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
+drop _merge
+export excel using "$issuesOriginal\Part1_Household_Issues_26Feb2025.xlsx", firstrow(variables) replace
 
 **** TIME USE QUESTIONS *****************
 	clear
@@ -300,6 +299,7 @@ foreach var of varlist issue_variable_name {
 sort enqu_name issue_variable_name
 order villageid sup sup_name enqu enqu_name hh_phone hhid hh_name_complet_resp hh_name_complet_resp_new hh_member_name hh_13* hh_10*
 
+drop
 merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
 	save "$hh13\Part2_Household_Issues_19Feb2025.dta", replace 
 	export excel using "$hh13\Part2_Household_Issues_19Feb2025.xlsx", firstrow(variables) replace
@@ -345,5 +345,5 @@ foreach var of varlist issue_variable_name {
 }
 sort enqu_name issue_variable_name
 merge m:m issue_variable_name using "$issuesOriginal\Updated_Midline_Survey_Questions.dta"
-	save "$replacementsurvey\ReplacementSurvey_Issues_19Feb2025.dta", replace 
-	export excel using "$replacementsurvey\Replacement_Issues_19Feb2025.xlsx", firstrow(variables) replace
+	save "$replacementsurvey\ReplacementSurvey_Issues_26Feb2025.dta", replace 
+	export excel using "$replacementsurvey\Replacement_Issues_26Feb2025.xlsx", firstrow(variables) replace

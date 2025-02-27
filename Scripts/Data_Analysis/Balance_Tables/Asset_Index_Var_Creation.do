@@ -6,11 +6,7 @@
 * Created: February 2024
 * Updates recorded in GitHub 
 
-<<<<<<< HEAD:Scripts/Data_Analysis/Balance_Tables/Asset_Index_Var_Creation.do
 *<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~~~ Read Me! ~~~~ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-=======
 
  ** This file processes: 
 	* Complete_Baseline_Household_Roster.dta
@@ -41,9 +37,6 @@
 		* 6) Create index
 		* 7) Save variable with hhid. 
 
-
-
->>>>>>> 89633cdbc976cb851be9185e49f4af732979f56b:Scripts/Balance_Tables/Asset_Index_Var_Creation.do
 clear all
 set mem 100m
 set maxvar 30000
@@ -98,8 +91,6 @@ merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
 drop _merge 
 
 
-<<<<<<< HEAD:Scripts/Data_Analysis/Balance_Tables/Asset_Index_Var_Creation.do
-
 * agri_income_23	8.26 Income by frequency
 * agri_income_24	8.27 Total annual income
 * agri_income_25    8.28 Do you have employees for your non-agricultural activities?
@@ -115,14 +106,7 @@ drop _merge
 * living_06	9.6 What is the primary fuel used for lighting?
 
 
-
-keep  	enum_03* enum_04* enum_05* ///
-		living_01* living_03* living_04* living_05* living_06* ///
-		agri_6_15* species* agri_income_01 agri_income_05 ///
-		list_actifs* agri_6_6 agri_income_23* agri_income_24* agri_income_05 agri_income_34 agri_income_40
-             ///
-=======
-*** physical assets or durable goods ****
+** physical assets or durable goods ****
 keep hhid hhid_village hh_numero agri_6_6 agri_6_23* agri_6_5*  ///
 enum_05* enum_03* enum_04* ///
 living_05* living_06* living_02* living_01* ///
@@ -155,22 +139,8 @@ list_actifs list_actifs_o living_06_o
 
 gen living_01_bin = 0
 replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 
->>>>>>> 89633cdbc976cb851be9185e49f4af732979f56b:Scripts/Balance_Tables/Asset_Index_Var_Creation.do
 
 
-
-
-<<<<<<< HEAD:Scripts/Data_Analysis/Balance_Tables/Asset_Index_Var_Creation.do
-
-
-*** to create:
-
-* household_density
-
-
-
-
-=======
 ** living_02
 ** 9.2 Is the water used treated in the household?
 ** Yes
@@ -321,8 +291,6 @@ preserve
 save "$dataOutput\PCA_asset_index_var.dta", replace
 
 restore 
->>>>>>> 89633cdbc976cb851be9185e49f4af732979f56b:Scripts/Balance_Tables/Asset_Index_Var_Creation.do
-
 
 
 

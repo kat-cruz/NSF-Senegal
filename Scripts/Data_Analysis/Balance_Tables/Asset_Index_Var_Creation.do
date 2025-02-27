@@ -64,16 +64,21 @@ drop _merge
 
 
 
-
-
-
-
 * agri_income_23	8.26 Income by frequency
 * agri_income_24	8.27 Total annual income
 * agri_income_25    8.28 Do you have employees for your non-agricultural activities?
 * agri_income_40	8.43 Have you (or a member of your household) lent money to others during this year?
 * agri_income_26    8.29 If yes, please specify the number.
 * agri_income_27    8.30 Are these employees paid? Question relevant when: 0
+* agri_income_40	8.43 Have you (or a member of your household) lent money to others during this year?
+* iving_01	9.1 What is the main source of drinking water supply?
+* living_02	9.2 Is the water used treated in the household?
+* living_03	9.3 If yes, how do you treat the water?
+* living_04	9.4 What type of toilet facilities does the household use?
+* living_05	9.5 What is the primary fuel used for cooking?
+* living_06	9.6 What is the primary fuel used for lighting?
+
+
 
 keep  	enum_03* enum_04* enum_05* ///
 		living_01* living_03* living_04* living_05* living_06* ///

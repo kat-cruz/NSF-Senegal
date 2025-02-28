@@ -26,9 +26,9 @@ This folder contains scripts for data analysis, summarization, and manipulation 
   * `Balance_Tables_Data_Frame.do`
     *  This .do file creates the data frame for the baseline balance tables.
   *  `Asset_Index_Var_Creation.do`
-    *  This .do file creates the assest index variable using principal component analysis
+     *  This .do file creates the assest index variable using principal component analysis
   *  `Balance_Tables.Rmd`
-    *  This markdown computes and outputs the balance tables and summary statistics for the relevant variables. 
+      *   This markdown computes and outputs the balance tables and summary statistics for the relevant variables. 
   *  `asset_index_TEST.do` and `balance_table_TEST.Rmd` are test scripts that simulated the process for developing the asset variable and balance tables.
 * `Human_Parasitology`
   

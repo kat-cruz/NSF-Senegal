@@ -65,7 +65,7 @@ label variable hh_time "Heure"
 
 *** labels for household members - loop through all member numbers ***
 *** check the data to ensure this is the maximum number of members in a household ***
-forvalues i = 1/28{
+forvalues i = 1/55{
 	label variable hh_first_name_`i' "Prenom"
 	label variable hh_name_`i' "Nom"
 	label variable hh_surname_`i' "Surnom"
@@ -240,7 +240,7 @@ label variable knowledge_23_o "Autre raison"
 
 *** health module indiviudals - this is for member index 1 ***
 *** verify maximum number in data set ****
-forvalues i=1/28 {
+forvalues i=1/55 {
     label variable health_5_2_`i' "Est-ce que [health-name] est tombe malade au cours des 12 derniers mois"
 	label variable health_5_3_`i' "De quel type de maladie ou de blessure a-t-il/elle souffert"
 	label variable health_5_3_1_`i' "Paludisme"

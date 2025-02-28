@@ -15,6 +15,7 @@
 	* Complete_Baseline_Standard_Of_Living.dta
 	* Complete_Baseline_Public_Goods_Game.dta
 	* Complete_Baseline_Enumerator_Observations.dta
+	* Complete_Baseline_Beleifs.dta
 	* Complete_Baseline_Community.dta
 	* Treated_variables_df.dta
 	* PCA_asset_index_var.dta
@@ -94,6 +95,9 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 	merge 1:1 hhid using "$data\Complete_Baseline_Enumerator_Observations.dta"
 		drop _merge 
 
+	merge 1:1 hhid using "$data\Complete_Baseline_Beliefs.dta"
+		drop _merge 	
+		
 	merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
 		drop _merge 
 
@@ -116,6 +120,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 		 agri_6_15* agri_6_21*  agri_6_22* /// // how many parcels & surface area of plot & unit
 		 agri_6_32* agri_6_36* /// // used fertilizer vars
 		 living_01* living_03* living_04* living_05* living_06* ///
+		 beliefs_0* /// // beliefs module
 		 montant_02* montant_05* ///
 		 face_04* face_13* ///
 		 enum_03* enum_04* enum_05*
@@ -142,7 +147,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 
 
 
-  *^*^* Label the variables - will disapear in the reshape, but I'm leaving this here for reference regardless. 
+  *^*^* Label the variables - will disapear in the reshape, but I'm leaving this here for reference regardless. - KRM
   forvalues i = 1/55{
   
 	label variable hh_gender_`i' "Genre"
@@ -219,6 +224,17 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 	label variable species_6 "Animaux de trait"
 	label variable species_7 "Porcs"
 	label variable species_8 "Volaille"
+	* Beleifs section 
+	label variable beliefs_01 "Quelle est la probabilite que vous contractiez la bilharziose au cours des 12 prochains mois"
+	label variable beliefs_02 "Quelle est la probabilite qu'un membre de votre menage contracte la bilharziose au cours des 12 prochains mois"
+	label variable beliefs_03 "Quelle est la probabilite qu'un enfant choisi au hasard dans votre village, age de 5 a 14 ans, contracte la bilharziose au cours des 12 prochains mois"
+	label variable beliefs_04 "Dans quelle mesure etes-vous d'accord avec l'affirmation suivante : Les terres de ce village devraient appartenir a la communaute et non a des individus"
+	label variable beliefs_05 "Dans quelle mesure etes-vous d'accord avec l'affirmation suivante : Les sources d'eau de ce village devraient appartenir a la communaute et non aux individus"
+	label variable beliefs_06 "Dans quelle mesure etes-vous d'accord avec l'affirmation suivante : Si je travaille sur mes propres terres, j'ai le droit d'utiliser les produits que j'ai obtenus grace a mon travail."
+	label variable beliefs_07 "Dans quelle mesure etes-vous d'accord avec l'affirmation suivante : Si je travaille sur des terres appartenant a la communaute, j'ai le droit d'utiliser les produits que j'ai obtenus par mon travail."
+	label variable beliefs_08 "Dans quelle mesure etes-vous d'accord avec l'affirmation suivante : Si je peche dans une source d'eau appartenant a la communaute, j'ai le droit d'utiliser les produits que j'ai obtenus par mon travail."
+	label variable beliefs_09 "Dans quelle mesure êtes-vous d'accord avec l'affirmation suivante : Si je recolte des produits dans une source d'eau appartenant a la communaute, j'ai le droit d'utiliser les produits que j'ai obtenus par mon travail."
+	
 	label variable agri_income_01 "Avez-vous (ou un membre de votre menage) effectue un travail remunere au cours des 12 derniers mois"
 	label variable agri_income_05 "Montant recu en nature et/ou en especes (FCFA) pour ce travail"
 	label variable living_01 "Quelle est la principale source d'approvisionnement en eau potable"
@@ -270,12 +286,13 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 *<><<><><>><><<><><>>
 
 		
-		reshape long hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ hh_education_level_ ///
-	hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
-	hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
-	health_5_2_ health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
+		reshape long hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_ ///
+		        hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
+				hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
+				health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ ///
+				health_5_2_ health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
 
- 
+		 
   *^*^* filter variable 
 	forvalues j = 1/8 {
 		gen hh_13_0`j' = .
@@ -598,11 +615,41 @@ save `balance_table_ata'
 		forvalues i = 1/11 {
 			replace agri_6_36_bin = 1 if agri_6_36_`i' == 1
 		}
+		
+		
+* Create beliefs binarys since these are ordinal variables 
+   ** check the distribution
 
+	foreach var of varlist beliefs_01 - beliefs_09 {
+		di "`var'"  // Display variable name
+		tab `var', missing
+	}
+
+   ** choose a cutoff (e.g., above median)
+	foreach var of varlist beliefs_01 - beliefs_09 {
+		summarize `var', detail  // Look at percentiles
+		}
+
+	** create a Binary Indicator
+		*If most responses are ≤2 (Agree/Strongly Agree) → use beliefs_var <= 2 as the binary indicator.
+		*If responses are more evenly spread, consider using ≤3 (including Neutral).
+		*If disagreement dominates, use beliefs_var >= 4 instead.
+		
+		gen beliefs_01_bin = (beliefs_01 <= 2)  // 59.38% responded 1 or 2
+		gen beliefs_02_bin = (beliefs_02 <= 2)  // 65.58% responded 1 or 2
+		gen beliefs_03_bin = (beliefs_03 <= 2)  // 76.97% responded 1 or 2
+		gen beliefs_04_bin = (beliefs_04 <= 2)  // 85.38% responded 1 or 2 
+		gen beliefs_05_bin = (beliefs_05 <= 2) 	// 90.43% responded 1 or 2
+		gen beliefs_06_bin = (beliefs_06 <= 2)  // 90.82% responded 1 or 2
+		gen beliefs_07_bin = (beliefs_07 <= 2)  // 67.50% responded 1 or 2
+		gen beliefs_08_bin = (beliefs_08 <= 2)  // 83.46% responded 1 or 2
+		gen beliefs_09_bin = (beliefs_09 <= 2)  // 77.40% responded 1 or 2
+
+	
 * Create aution_village variables
 
 	
-gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B") | ///
+	gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B") | ///
                      inlist(hhid_village, "123B", "153A", "121A", "131A", "141A") | ///
                      hhid_village == "142A"
 					 
@@ -659,6 +706,7 @@ gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B"
 			species_* TLU ///
 			agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///  // parcel amount & fertilizer & land plot
 			living_01_bin living_04_bin living_05_bin ///  //living standards 
+			beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///  //beliefs
 			enum_03_bin enum_04_bin enum_05_bin ///
 			asset_index asset_index_std, by(hhid hhid_village num_water_access_points q_51 target_village)
 
@@ -672,6 +720,7 @@ gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B"
 			species_* TLU ///
 			agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///
 			living_01_bin living_04_bin living_05_bin ///
+			beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///  //beliefs
 			enum_03_bin enum_04_bin enum_05_bin ///
 			asset_index asset_index_std ///
 			num_water_access_points q_51 target_village
@@ -685,6 +734,7 @@ gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B"
 			label variable hh_education_skills_bin_h "Indicator for household head education skills"
 			label variable hh_education_level_bin_h "Indicator for selected household head education level"
 			label variable hh_numero "Size of household"
+			
 			label variable hh_03_ "Worked in domestic agricultural activities?"
 			label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
 			label variable hh_11_ "Source(s) of surface water?"
@@ -713,16 +763,22 @@ gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B"
 			label variable hh_31_ "School performance during the 2023/2024 year"
 			label variable hh_38_ "Days attended school in the past 7 days"
 			label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 2=No)"
+		
 			label variable health_5_2_ "Has [Name] been ill last 12 months"
 			label variable health_5_3_bin "Indicator for bilharzia or diarrhea in the past 12 months"
 			label variable health_5_5_ "Received medication for the treatment of schistosomiasis?"
 			label variable health_5_6_ "Person ever been diagnosed with schistosomiasis?"
 			label variable health_5_12_ "What is the distance in km to this service or healthcare professional?"
+			
 			label variable agri_6_15 "How many plots within the fields cultivated by the household?"
 			label variable agri_6_32_bin "Used any organic fertilizer"
 			label variable agri_6_36_bin  "Used any inorganic/chemical fertilizer"
 			label variable agri_income_01 "Did you (or any member of your household) engage in paid agricultural work in the last 12 months?"
 			label variable agri_income_05 "Amount received in kind/cash for agricultural work"
+			label variable asset_index "PCA Asset Index"
+			label variable asset_index_std "Standardized PCA Asset Index"
+			
+		
 			label variable species_1 "Cattle"
 			label variable species_2 "Sheep"
 			label variable species_3 "Goat"
@@ -732,38 +788,71 @@ gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B"
 			label variable species_7 "Pigs"
 			label variable species_8 "Poultry"
 			label variable species_9 "Other"
+			label variable species_count "Number of livestock"
 			label variable TLU "Tropical livestock units"
+			
 			label variable living_01_bin "Indicator for selected main source of drinking water"
 			label variable living_04_bin "Indicator for selected main type of toilet: Flush with sewer, Flush with septic tank"
 			label variable living_05_bin "Indicator for electricity as main cooking fuel"
+			
+			label variable beliefs_01_bin "Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+			label variable beliefs_02_bin "Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+			label variable beliefs_03_bin "Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+			label variable beliefs_04_bin "Agree: Village land should belong to the community, not individuals (1=Strongly agree/Agree)"
+			label variable beliefs_05_bin "Agree: Village water sources should belong to the community, not individuals (1=Strongly agree/Agree)"
+			label variable beliefs_06_bin "Agree: I should have rights to products from my land (1=Strongly agree/Agree)"
+			label variable beliefs_07_bin "Agree: I should have rights to products from community land I work on (1=Strongly agree/Agree)"
+			label variable beliefs_08_bin "Agree: I should have rights to products from community water sources I fish in (1=Strongly agree/Agree)"
+			label variable beliefs_09_bin "Agree: I should have rights to products from community water sources I harvest from (1=Strongly agree/Agree)"
+			
 			label variable montant_02 "Amount paid by the respondent for game A: ________ FCFA"
 			label variable montant_05 "Amount paid by the respondent for game B: ________ FCFA"
 			label variable face_04 "Amount paid by the respondent for game B: ________ FCFA"
 			label variable face_13 "Amount paid by the respondent for game A: ________ FCFA"
+			
 			label variable enum_03_bin "(Enumerator observation) Indicator if concrete/cement is main material for the house roof"
 			label variable enum_05_bin "(Enumerator observation) Indicator if concrete/cement is main material for the house floor"
 			label variable enum_04_bin "(Enumerator observation) Indicator if walls in household head's room made of concrete or cement."
-			label variable species_count "Number of livestock"
+			
 			label variable num_water_access_points "Number of village water access points"
 			label variable target_village  "Indicator for auction village"
 			label variable q_51  "Distance to nearest healthcare center (km)"
 
+			
+*<><<><><>><><<><><>> 
+* SAVE THE FINAL DATASET 
+*<><<><><>><><<><><>>
+
+		save "${dataOutput}\baseline_balance_tables_data.dta", replace
 
 
 *<><<><><>><><<><><>>
 * Keep JUST PAP variables 
 *<><<><><>><><<><><>>
 
+preserve 
 
-		* keep hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero ///
+		 keep hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero  ///
+		 hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_01 hh_13_02 hh_13_03 hh_13_04 hh_13_05 hh_13_06 hh_13_07 hh_13_08 hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
+		 living_01_bin montant_02 montant_05 species_count  ///
+		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///
+		 agri_income_01 agri_income_05 asset_index asset_index_std  ///
+		 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin face_04 face_13 ///
+		 health_5_12_ health_5_3_bin health_5_6_ ///
+		 num_water_access_points q_51 target_village
+		 
+		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero  ///
+		 hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_01 hh_13_02 hh_13_03 hh_13_04 hh_13_05 hh_13_06 hh_13_07 hh_13_08 hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
+		 living_01_bin montant_02 montant_05 species_count  ///
+		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///
+		 agri_income_01 agri_income_05 asset_index asset_index_std  ///
+		 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin face_04 face_13 ///
+		 health_5_12_ health_5_3_bin health_5_6_ ///
+		 num_water_access_points q_51 target_village
+		 
+		 save "${dataOutput}\baseline_balance_tables_data_PAP.dta", replace
 
-*drop if missing(hh_gender_) & missing(hh_age_)
+restore 
 
-
-*<><<><><>><><<><><>> 
-* SAVE THE FINAL DATASET 
-*<><<><><>><><<><><>>
-
-		save "${dataOutput}\baseline_balance_tables_data.dta", replace
 
 

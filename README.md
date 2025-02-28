@@ -20,8 +20,15 @@ We organize our scripts in the following parts:
 
 ## What to expect in each folder  
 
-### Data_Analysis  
-This folder contains scripts for data analysis, summarization, and manipulation with the intention of interpreting the results. Currently, the following scripts are stored here:  
-* `Balance_Tables.do`  
-* `Human_Parasitology.R`
+### Data_Analysis  <i class="fas fa-chart-line"></i> </h1>
+This folder contains scripts for data analysis, summarization, and manipulation with the intention of interpreting the results. Currently, the following subfolders are stored here:  
+* `Balance_Tables`
+* * `Balance_Tables_Data_Frame.do`
+  *  This .do file creates the data frame for the baseline balance tables.
+  *  `Asset_Index_Var_Creation.do`
+  *  This .do file creates the assest index variable using principal component analysis
+  *  `Balance_Tables.Rmd`
+  *  This markdown computes and outputs the balance tables and summary statistics for the relevant variables. 
+  *  `asset_index_TEST.do` and `balance_table_TEST.Rmd` are test scripts that simulated the process for developing the asset variable and balance tables.
+* `Human_Parasitology`
   

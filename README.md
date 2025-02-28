@@ -20,7 +20,7 @@ We organize our scripts in the following parts:
 
 ## What to expect in each folder  
 
-### Data_Analysis 📊 
+### `Data_Analysis` 📊 
 This folder contains scripts for data analysis, summarization, and manipulation with the intention of interpreting the results. Currently, the following subfolders are stored here:  
 * `Balance_Tables`
   * `Balance_Tables_Data_Frame.do`

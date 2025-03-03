@@ -6,8 +6,6 @@
 * Created: February 2024
 * Updates recorded in GitHub 
 
-*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~~~ Read Me! ~~~~ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
  ** This file processes: 
 	* Complete_Baseline_Household_Roster.dta
 	* Complete_Baseline_Health.dta
@@ -23,8 +21,7 @@
    * PCA_asset_index_var.dta
 	
 
-*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~~~ Read Me! ~~~~ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+* <><<><><>> Read Me * <><<><><>>
 
  *This file outputs an asset index following the Principle Component Analaysis method. 
 		* 1) merge in the data
@@ -37,58 +34,65 @@
 		* 6) Create index
 		* 7) Save variable with hhid. 
 
-clear all
-set mem 100m
-set maxvar 30000
-set matsize 11000
-set more off
+*<><<><><>><><<><><>>
+* BEGIN INITIATION	
+*<><<><><>><><<><><>>		
+		
+		
+	clear all
+	set mem 100m
+	set maxvar 30000
+	set matsize 11000
+	set more off
 
-**************************************************
+*<><<><><>><><<><><>>
 * SET FILE PATHS
-**************************************************
+*<><<><><>><><<><><>>
+
 * Set base Box path for each user
-if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
-if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
-if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
-if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
-if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
+	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
+	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
+	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+	if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
 
-if "`c(username)'"=="km978" global gitmaster "C:\Users\Kateri\Downloads\GIT-Senegal\NSF-Senegal"
-if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Senegal\NSF-Senegal"
-
-
-
-* Define project-specific paths
-
-global data "${master}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
-
-***** Data folders *****
-global dataOutput "${master}\Data_Management\Output\Data_Analysis\Balance_Tables" 
-global latexOutput "$git_path\Latex_Output\Balance_Tables"
-
-use "$data\Complete_Baseline_Household_Roster.dta", clear 
-
-merge 1:1 hhid using "$data\Complete_Baseline_Health.dta"
-drop _merge 
+	if "`c(username)'"=="km978" global gitmaster "C:\Users\Kateri\Downloads\GIT-Senegal\NSF-Senegal"
+	if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Senegal\NSF-Senegal"
 
 
-merge 1:1 hhid using "$data\Complete_Baseline_Agriculture.dta"
-drop _merge 
+  *^*^* Define project-specific paths
 
-merge 1:1 hhid using "$data\Complete_Baseline_Income.dta"
-drop _merge 
+	global data "${master}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
 
-merge 1:1 hhid using "$data\Complete_Baseline_Standard_Of_Living.dta"
-drop _merge 
+  *^*^* Output folders 
+	global dataOutput "${master}\Data_Management\Output\Data_Analysis\Balance_Tables" 
+	global latexOutput "$git_path\Latex_Output\Balance_Tables"
+	
+  *^*^*  Bring in data 
 
-merge 1:1 hhid using "$data\Complete_Baseline_Public_Goods_Game.dta"
-drop _merge 
+	use "$data\Complete_Baseline_Household_Roster.dta", clear 
 
-merge 1:1 hhid using "$data\Complete_Baseline_Enumerator_Observations.dta"
-drop _merge 
+	merge 1:1 hhid using "$data\Complete_Baseline_Health.dta"
+		drop _merge 
 
-merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
-drop _merge 
+
+	merge 1:1 hhid using "$data\Complete_Baseline_Agriculture.dta"
+		drop _merge 
+
+	merge 1:1 hhid using "$data\Complete_Baseline_Income.dta"
+		drop _merge 
+
+	merge 1:1 hhid using "$data\Complete_Baseline_Standard_Of_Living.dta"
+		drop _merge 
+
+	merge 1:1 hhid using "$data\Complete_Baseline_Public_Goods_Game.dta"
+		drop _merge 
+
+	merge 1:1 hhid using "$data\Complete_Baseline_Enumerator_Observations.dta"
+		drop _merge 
+
+	merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
+		drop _merge 
 
 
 * agri_income_23	8.26 Income by frequency
@@ -106,21 +110,23 @@ drop _merge
 * living_06	9.6 What is the primary fuel used for lighting?
 
 
-** physical assets or durable goods ****
-keep hhid hhid_village hh_numero agri_6_6 agri_6_23* agri_6_5*  ///
-enum_05* enum_03* enum_04* ///
-living_05* living_06* living_02* living_01* ///
-list_actifs* species*
+  *^*^* physical assets or durable goods
+	keep hhid hhid_village hh_numero agri_6_6 agri_6_23* agri_6_5*  ///
+	enum_05* enum_03* enum_04* ///
+	living_05* living_06* living_02* living_01* ///
+	list_actifs* species*
 
 
 ** drop unneeded vars
 
-drop agri_6_23_o* living_01_o living_05_o ///
-enum_03_o enum_04_o enum_05_o ///
-species species_autre speciesindex* speciesname* species_o ///   
-list_actifs list_actifs_o living_06_o
+	drop agri_6_23_o* living_01_o living_05_o ///
+	enum_03_o enum_04_o enum_05_o ///
+	species species_autre speciesindex* speciesname* species_o ///   
+	list_actifs list_actifs_o living_06_o
 
-************************************************* Create new vars *************************************************
+*<><<><><>><><<><><>>
+* CREATE NEW VARS 
+*<><<><><>><><<><><>>
 
 			 
 ** Living_01 = 1 & 2 & 3
@@ -137,8 +143,8 @@ list_actifs list_actifs_o living_06_o
 ** 10 = Stream
 ** 99 = Other
 
-gen living_01_bin = 0
-replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 
+	gen living_01_bin = 0
+		replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 
 
 
 ** living_02
@@ -147,8 +153,8 @@ replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3
 ** No
 ** Don't know/did not answer
 
-gen living_02_bin = 0
-replace living_02_bin = 1 if living_02 == 1
+	gen living_02_bin = 0
+		replace living_02_bin = 1 if living_02 == 1
 
 ** Living_04 == 1 & 2
 
@@ -161,9 +167,8 @@ replace living_02_bin = 1 if living_02 == 1
 ** 6 Improved latrines
 ** 99 Others
 
-gen living_04_bin = 0
-replace living_04_bin = 1 if living_04 == 1 | living_04 == 2 
-
+	gen living_04_bin = 0
+		replace living_04_bin = 1 if living_04 == 1 | living_04 == 2 
 
 
 ***** living_05  - options we keep 
@@ -174,8 +179,8 @@ replace living_04_bin = 1 if living_04 == 1 | living_04 == 2
 ** 7 Solar
 
 
-gen living_05_bin = 0
-replace living_05_bin = 1 if living_05 == 3 | living_05 == 4 | living_05 == 5 | living_05 == 6 | living_05 == 7 
+	gen living_05_bin = 0
+		replace living_05_bin = 1 if living_05 == 3 | living_05 == 4 | living_05 == 5 | living_05 == 6 | living_05 == 7 
 
 
 ** Living_06 == 1 & 2 &3
@@ -188,15 +193,15 @@ replace living_05_bin = 1 if living_05 == 3 | living_05 == 4 | living_05 == 5 | 
 ** 7 Torchlight
 ** 99 Other
 
-gen living_06_bin = 0
-replace living_06_bin = 1 if living_06 == 2 | living_06 == 3
+	gen living_06_bin = 0
+		replace living_06_bin = 1 if living_06 == 2 | living_06 == 3
 
 
 * Create binary agri_6_5 = 2
 ** 6.5. Did you rent the house or are you the owner?
 
-gen agri_6_5_bin = 0
-replace agri_6_5_bin = 1 if agri_6_5 == 2 
+	gen agri_6_5_bin = 0
+		replace agri_6_5_bin = 1 if agri_6_5 == 2 
 
 
 *** create TLU species variable 
@@ -212,77 +217,73 @@ replace agri_6_5_bin = 1 if agri_6_5 == 2
 ** Poultry	          0.01
 
 
-gen TLU = 0  // Start with TLU equal to 0 for all households
+	gen TLU = 0  // Start with TLU equal to 0 for all households
 
-* Assign TLU values based on animal species
-replace TLU = TLU + (1.0) if species_1 == 1  // Cattle
-replace TLU = TLU + (0.1) if species_2 == 1  // Sheep
-replace TLU = TLU + (0.1) if species_3 == 1  // Goat
-replace TLU = TLU + (1.0) if species_4 == 1  // Horse (equine)
-replace TLU = TLU + (0.5) if species_5 == 1  // Donkey
-replace TLU = TLU + (1.0) if species_6 == 1  // Draft animals
-replace TLU = TLU + (0.2) if species_7 == 1  // Pigs
-replace TLU = TLU + (0.01) if species_8 == 1 // Poultry
+		* Assign TLU values based on animal species
+		replace TLU = TLU + (1.0) if species_1 == 1  // Cattle
+		replace TLU = TLU + (0.1) if species_2 == 1  // Sheep
+		replace TLU = TLU + (0.1) if species_3 == 1  // Goat
+		replace TLU = TLU + (1.0) if species_4 == 1  // Horse (equine)
+		replace TLU = TLU + (0.5) if species_5 == 1  // Donkey
+		replace TLU = TLU + (1.0) if species_6 == 1  // Draft animals
+		replace TLU = TLU + (0.2) if species_7 == 1  // Pigs
+		replace TLU = TLU + (0.01) if species_8 == 1 // Poultry
 
 * List the final TLU variable
-list hhid TLU
+	list hhid TLU
 
 ** Create rooms per member variable
 
-gen rooms_per_member = hh_numero / agri_6_6 if agri_6_6 > 0
+	gen rooms_per_member = hh_numero / agri_6_6 if agri_6_6 > 0 	
 
 ** create binary for agri_6_23
 
-gen agri_6_23_bin = 0  
-foreach var of varlist agri_6_23_1-agri_6_23_11 {  
-    replace agri_6_23_bin = 1 if `var' == 1  
-}
+	gen agri_6_23_bin = 0  
+	foreach var of varlist agri_6_23_1-agri_6_23_11 {  
+		replace agri_6_23_bin = 1 if `var' == 1  
+	}
 
 
 * Check data summary
-summarize list_actifs_* ///
-living_01_bin living_02_bin living_04_bin living_05_bin living_06_bin ///
-agri_6_5_bin agri_6_23_bin ///
-TLU rooms_per_member 
+	summarize list_actifs_* ///
+	living_01_bin living_02_bin living_05_bin living_06_bin ///
+	agri_6_5_bin agri_6_23_bin ///
+	TLU rooms_per_member 
 
 
 * Standardize continuous variables before PCA
-foreach var in rooms_per_member TLU {
-    egen z_`var' = std(`var')  // Create z-score versions
-}
+	foreach var in rooms_per_member TLU {
+		egen z_`var' = std(`var')  // Create z-score versions
+	}
 
 ** The correlation matrix standardizes the data, making comparisons between these variables possible, and prevents highly correlated variables (such as the binary ones) from distorting the PCA results.
-pca list_actifs_* ///
-living_01_bin living_02_bin living_04_bin living_05_bin living_06_bin ///
-agri_6_5_bin agri_6_23_bin ///
-TLU rooms_per_member list_actifs_* ///
-living_01_bin living_02_bin living_04_bin living_05_bin living_06_bin ///
-agri_6_5_bin agri_6_23_bin ///
-z_rooms_per_member z_TLU
+	pca list_actifs_* ///
+	living_01_bin living_02_bin living_05_bin living_06_bin ///
+	agri_6_5_bin agri_6_23_bin ///
+	TLU rooms_per_member 
 
+*removed living_04_bin because it had 0 variance 
 
 * Display variance explained by each component
-screeplot, ytitle("Proportion of Variance Explained") 
+	screeplot, ytitle("Proportion of Variance Explained") 
 
 
 **   PC1 (the first principal component) is typically used as the asset index because it explains the most variation in the data and is often interpreted as a measure of wealth or socioeconomic status in the context of PCA.
 
 * Extract the first principal component (PC1) as the asset index
-predict asset_index if e(sample), score
+	predict asset_index if e(sample), score
 
 * Normalize the asset index for better interpretability
-egen asset_index_std = std(asset_index)
+	egen asset_index_std = std(asset_index)
 
 * Display results
-list list_actifs_* ///
-living_01_bin living_02_bin living_04_bin living_05_bin living_06_bin ///
-agri_6_5_bin agri_6_23_bin ///
-TLU rooms_per_member list_actifs_* ///
-living_01_bin living_02_bin living_04_bin living_05_bin living_06_bin ///
-agri_6_5_bin agri_6_23_bin ///
-z_rooms_per_member z_TLU ///
- if _n <= 10, sep(0)
-  
+	list list_actifs_* ///
+	living_01_bin living_02_bin living_04_bin living_05_bin living_06_bin ///
+	agri_6_5_bin agri_6_23_bin ///
+	TLU rooms_per_member  ///
+	z_rooms_per_member z_TLU ///
+	 if _n <= 10, sep(0)
+	  
 
 preserve 
 

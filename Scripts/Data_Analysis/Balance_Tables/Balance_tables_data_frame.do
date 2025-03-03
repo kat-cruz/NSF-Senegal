@@ -23,7 +23,7 @@
  ** This file outputs:
  
  
-* <><<><><>> Read Me * <><<><><>>
+* <><<><><>> Read Me  <><<><><>>
 
 	* This script merges selects, cleans, and orders the baseline data to setup the dataframe for analysis for the balance tables. 
 	* Step 1)
@@ -381,7 +381,7 @@ foreach x in 0 1 2 3 4 99 {
 			replace hh_education_level_bin = 1 if hh_education_level_ == 2 | hh_education_level_ == 3 | hh_education_level_ == 4
 
 
-**Education - Skills (multiple choice)
+** Education - Skills (multiple choice)
 
 		** 2.Comfortable with numbers and calculations
 		** 3. Arabizing/can read the Quranin Arabic
@@ -562,7 +562,7 @@ save `balance_table_ata'
 	merge m:m hhid_village using `water_access'
 	drop _merge
 
-*** create TLU species variable 
+  *^*^* create TLU species variable 
 
 ** Species	      TLU Equivalent
 ** Cattle	          1.0

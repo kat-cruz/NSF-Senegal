@@ -50,7 +50,7 @@
 *<><<><><>><><<><><>>
 
 * Set base Box path for each user
-	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
+	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
 	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
 	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
 	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
@@ -260,7 +260,7 @@
 	pca list_actifs_* ///
 	living_01_bin living_02_bin living_05_bin living_06_bin ///
 	agri_6_5_bin agri_6_23_bin ///
-	TLU rooms_per_member 
+	z_TLU z_rooms_per_member 
 
 *removed living_04_bin because it had 0 variance 
 
@@ -280,7 +280,6 @@
 	list list_actifs_* ///
 	living_01_bin living_02_bin living_04_bin living_05_bin living_06_bin ///
 	agri_6_5_bin agri_6_23_bin ///
-	TLU rooms_per_member  ///
 	z_rooms_per_member z_TLU ///
 	 if _n <= 10, sep(0)
 	  

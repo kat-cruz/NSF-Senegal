@@ -111,6 +111,7 @@ long_data <- balance_df %>%
 ```{r}
 
 
+
 compute_summary_stats <- function(df) {
   df %>%
     group_by(group, variable) %>%
@@ -122,14 +123,17 @@ compute_summary_stats <- function(df) {
     pivot_longer(cols = c(mean_value, sd_value), names_to = "stat_type", values_to = "stat_value") %>%
     mutate(stat_type = ifelse(stat_type == "mean_value", "Mean", "SD")) %>%
     pivot_wider(names_from = group, values_from = stat_value) %>%
-    arrange(variable, stat_type)  # Ensures that mean is always followed by SD
+    arrange(variable, stat_type) %>%
+    # This ensures the 'variable' and 'stat_type' columns come first
+    select(variable, stat_type, everything()) %>%
+    # Explicitly ensure 'variable' is ordered as it appears in the original data
+    arrange(match(variable, unique(df$variable))) 
 }
 
+summary_table <- compute_summary_stats(long_data)
 
-  summary_table <- compute_summary_stats(long_data)
-  
-  # View output
-  print(summary_table)
+# View output
+print(summary_table)
 
 
 
@@ -140,108 +144,93 @@ compute_summary_stats <- function(df) {
 
 ```{r}
 
-index2 <- which(summary_table$variable == "hh_12_1_")
-  summary_table <- add_row(summary_table, variable = "hh_12", .before = index2)
+# index2 <- which(summary_table$variable == "hh_12_1_")
+#   summary_table <- add_row(summary_table, variable = "hh_12", .before = index2)
 
 # Add "hh_13_1_" above "hh_12"
-index3 <- which(summary_table$variable == "hh_13_01")
-  summary_table <- add_row(summary_table, variable = "hh_13", .before = index3)
+# index3 <- which(summary_table$variable == "hh_13_01")
+#   summary_table <- add_row(summary_table, variable = "hh_13", .before = index3)
 
-index5 <- which(summary_table$variable == "species_1")
-  final_summary_tabletable <- add_row(summary_table, variable = "species", .before = index5)
+# index5 <- which(summary_table$variable == "species_1")
+#   final_summary_tabletable <- add_row(summary_table, variable = "species", .before = index5)
 
 summary_table <- summary_table %>%
   mutate(
-    variable = ifelse(stat_type == "SD" & !is.na(stat_type), "", variable),  # Clear variable when stat_type == "(SD)" and not NA
-    stat_type = ifelse(stat_type == "SD" & !is.na(stat_type), "", stat_type)  )
+    variable = ifelse(stat_type == "SD" & !is.na(stat_type), "", variable),  # Clear variable for SD rows
+    stat_type = ifelse(stat_type == "SD" & !is.na(stat_type), "", stat_type)  # Clear stat_type for SD rows
+  ) %>%
+  mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%
+  mutate(across(everything(), as.character)) %>%  # Ensure all columns are character type
+  mutate(across(
+    Control:Treatment3,  # Apply only to numeric columns
+    ~ ifelse(stat_type == "", paste0("(", trimws(.), ")"), .)  # Add parentheses for SD values
+  ))
+
+
+summary_table
 
 summary_table <- summary_table %>%
-  mutate(Question = case_when(    
+  mutate(Question = case_when(
+    variable == "hhid_village" ~ "Village ID",
+    variable == "hhid" ~ "Household ID",
     variable == "trained_hh" ~ "Trained household",
     variable == "hh_age_h" ~ "Household head age",
-    variable == "hh_gender_h" ~ "Household head gender",
-    variable == "hh_education_skills_bin_h" ~ "Indicator for household head education skills",
     variable == "hh_education_level_bin_h" ~ "Indicator for selected household head education level",
+    variable == "hh_education_skills_5_h" ~ "Indicator that household head is literate (1=Yes, 0=No)",
+    variable == "hh_gender_h" ~ "Household head gender",
     variable == "hh_numero" ~ "Size of household",
-    variable == "hh_03_" ~ "Worked in domestic agricultural activities?",
+    
+    variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities (1=Yes, 0=No) ",
     variable == "hh_10_" ~ "Hours per week spent within 1 meter of surface water source",
-    variable == "hh_11_" ~ "Source(s) of surface water?",
-    variable == "hh_12_8_" ~ "\u00A0\u00A0\u00A0Play",
-    variable == "hh_12_7_" ~ "\u00A0\u00A0\u00A0Swim/bathe",
-    variable == "hh_12_6_" ~ "\u00A0\u00A0\u00A0Harvest aquatic vegetation",
-    variable == "hh_12_5_" ~ "\u00A0\u00A0\u00A0Do the dishes",
-    variable == "hh_12_4_" ~ "\u00A0\u00A0\u00A0Wash clothes",
-    variable == "hh_12_3_" ~ "\u00A0\u00A0\u00A0Fetch water for agriculture",
-    variable == "hh_12_2_" ~ "\u00A0\u00A0\u00A0Give water to livestock",
-    variable == "hh_12_1_" ~ "\u00A0\u00A0\u00A0Fetch water for the household",
-    variable == "hh_13_08" ~ "\u00A0\u00A0\u00A0Hours spent playing in the water",
-    variable == "hh_13_07" ~ "\u00A0\u00A0\u00A0Hours spent swimming/bathing",
-    variable == "hh_13_06" ~ "\u00A0\u00A0\u00A0Hours spent harvesting aquatic vegetation",
-    variable == "hh_13_05" ~ "\u00A0\u00A0\u00A0Hours spent washing the dishes",
-    variable == "hh_13_04" ~ "\u00A0\u00A0\u00A0Hours spent washing clothes",
-    variable == "hh_13_03" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for agriculture",
-    variable == "hh_13_02" ~ "\u00A0\u00A0\u00A0Hours spent giving water to livestock",
-    variable == "hh_13_01" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for the household",
-    variable == "hh_14_" ~ "Of those who answered 'Harvest aquatic vegetation', how much aquatic vegetation did [NAME] collect?",
-    variable == "hh_15_" ~ "How did he use aquatic vegetation?",
-    variable == "hh_16_" ~ "Hours spent producing fertilizer, purchasing it, or applying it on the field",
-    variable == "hh_26_" ~ "Currently enrolled in formal school? (1=Yes, 2=No)",
-    variable == "hh_27_" ~ "Attended non-formal school or training? (1=Yes, 2=No)",
-    variable == "hh_29_" ~ "Highest level and grade completed in school",
-    variable == "hh_31_" ~ "School performance during the 2023/2024 year",
-    variable == "hh_38_" ~ "Days attended school in the past 7 days",
-    variable == "hh_37_" ~ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 2=No)",
-    variable == "health_5_2_" ~ "Has [Name] been ill last 12 months",
-    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months",
-    variable == "health_5_5_" ~ "Received medication for the treatment of schistosomiasis?",
-    variable == "health_5_6_" ~ "Person ever been diagnosed with schistosomiasis?",
-    variable == "health_5_12_" ~ "What is the distance in km to this service or healthcare professional?",
-    variable == "agri_6_15" ~ "How many plots within the fields cultivated by the household?",
+    variable == "hh_12_6_" ~ "Harvest aquatic vegetation",
+    variable == "hh_16_" ~ "Hours spent producing, purchasing, or applying fertilizer",
+    variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source",
+    
+    variable == "hh_26_" ~ "Currently enrolled in formal school? (1=Yes, 2=No, asked to children)",
+    variable == "hh_27_" ~ "Attended non-formal school or training? (1=Yes, 2=No, asked to children)",
+    variable == "hh_29_bin" ~ "Indicator if achieved any level higher than primary 6th grade (Asked to children)",
+    variable == "hh_31_" ~ "School performance during the 2023/2024 year (Asked to children)",
+    variable == "hh_37_" ~ "Missed >1 consecutive week of school due to illness? (1=Yes, 2=No, asked to children)",
+    variable == "hh_38_" ~ "Days attended school in the past 7 days (Asked to children)",
+    
+    variable == "living_01_bin" ~ "Selected tap water as main drinking source",
+    variable == "game_A_total" ~ "Total paid for Game A",
+    variable == "game_B_total" ~ "Total paid for Game B",
+    
+    variable == "TLU" ~ "Tropical livestock units",
+    variable == "agri_6_15" ~ "Number of cultivated plots",
     variable == "agri_6_32_bin" ~ "Used any organic fertilizer",
     variable == "agri_6_36_bin" ~ "Used any inorganic/chemical fertilizer",
-    variable == "agri_income_01" ~ "Did you (or any member of your household) engage in paid agricultural work in the last 12 months?",
-    variable == "agri_income_05" ~ "Amount received in kind/cash for agricultural work",
-    variable == "asset_index" ~ "PCA Asset Index",
-    variable == "asset_index_std" ~ "Standardized PCA Asset Index",
-    variable == "species_1" ~ "Cattle",
-    variable == "species_2" ~ "Sheep",
-    variable == "species_3" ~ "Goat",
-    variable == "species_4" ~ "Horse (equine)",
-    variable == "species_5" ~ "Donkey",
-    variable == "species_6" ~ "Draft animals",
-    variable == "species_7" ~ "Pigs",
-    variable == "species_8" ~ "Poultry",
-    variable == "species_9" ~ "Other",
-    variable == "species_count" ~ "Number of livestock",
-    variable == "TLU" ~ "Tropical livestock units",
-    variable == "living_01_bin" ~ "Indicator for selected main source of drinking water",
-    variable == "living_04_bin" ~ "Indicator for selected main type of toilet: Flush with sewer, Flush with septic tank",
-    variable == "living_05_bin" ~ "Indicator for electricity as main cooking fuel",
-    variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)",
-    variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)",
-    variable == "beliefs_03_bin" ~ "Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)",
-    variable == "beliefs_04_bin" ~ "Agree: Village land should belong to the community, not individuals (1=Strongly agree/Agree)",
-    variable == "beliefs_05_bin" ~ "Agree: Village water sources should belong to the community, not individuals (1=Strongly agree/Agree)",
-    variable == "beliefs_06_bin" ~ "Agree: I should have rights to products from my land (1=Strongly agree/Agree)",
-    variable == "beliefs_07_bin" ~ "Agree: I should have rights to products from community land I work on (1=Strongly agree/Agree)",
-    variable == "beliefs_08_bin" ~ "Agree: I should have rights to products from community water sources I fish in (1=Strongly agree/Agree)",
-    variable == "beliefs_09_bin" ~ "Agree: I should have rights to products from community water sources I harvest from (1=Strongly agree/Agree)",
-    variable == "montant_02" ~ "Amount paid by the respondent for game A: ________ FCFA",
-    variable == "montant_05" ~ "Amount paid by the respondent for game B: ________ FCFA",
-    variable == "face_04" ~ "Amount paid by the respondent for game B: ________ FCFA",
-    variable == "face_13" ~ "Amount paid by the respondent for game A: ________ FCFA",
-    variable == "enum_03_bin" ~ "(Enumerator observation) Indicator if concrete/cement is main material for the house roof",
-    variable == "enum_05_bin" ~ "(Enumerator observation) Indicator if concrete/cement is main material for the house floor",
-    variable == "enum_04_bin" ~ "(Enumerator observation) Indicator if walls in household head's room made of concrete or cement",
+    variable == "total_land_ha" ~ "Total land owned (hectares)",
+    variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No)",
+    
+    variable == "agri_income_01" ~ "Engaged in paid agricultural work in last 12 months?",
+    variable == "agri_income_05" ~ "Amount received for agricultural work",
+    
+    variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree)",
+    variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia",
+    variable == "beliefs_03_bin" ~ "Probability of a child contracting bilharzia",
+    variable == "beliefs_04_bin" ~ "Agree: Village land should belong to community",
+    variable == "beliefs_05_bin" ~ "Agree: Village water sources should belong to community",
+    variable == "beliefs_06_bin" ~ "Agree: Right to products from own land",
+    variable == "beliefs_07_bin" ~ "Agree: Right to products from community land worked on",
+    variable == "beliefs_08_bin" ~ "Agree: Right to products from community water sources fished in",
+    variable == "beliefs_09_bin" ~ "Agree: Right to products from community water sources harvested from",
+    
+    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months ((1=Yes, 0=No, among those reporting illness)",
+    variable == "health_5_6_" ~ "Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No)",
+    
     variable == "num_water_access_points" ~ "Number of village water access points",
-    variable == "target_village" ~ "Indicator for auction village",
     variable == "q_51" ~ "Distance to nearest healthcare center (km)",
-    TRUE ~ ""  # Default value if none of the conditions are met
+    variable == "target_village" ~ "Indicator for auction village",
+    
+    TRUE ~ variable  # Default case
   ))
 
 
 summary_table <- summary_table %>% select(Question, everything()) %>%
-  select(-"stat_type")  # Remove the 'stat_type' column after modification
+  select(-"stat_type") 
+#%>%   filter(variable != "target_village")
 
 summary_table <- summary_table %>%
   mutate_all(~ ifelse(is.na(.), "", .))
@@ -249,7 +238,7 @@ summary_table <- summary_table %>%
 summary_table
 
  setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
- knitr::kable(summary_table, format = "html") %>% save_kable("SS_balance_table.html")
+ knitr::kable(summary_table, format = "html") %>% save_kable("SS_balance_tableV2.html")
 
 ```
 

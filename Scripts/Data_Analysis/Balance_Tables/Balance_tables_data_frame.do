@@ -116,7 +116,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 		 hh_numero* hh_03* hh_10* hh_11* hh_12* hh_12index_* hh_13* hh_14* hh_15* hh_16* hh_29* /// 	
 		 hh_26* hh_27* hh_31* hh_37* hh_38* ///  //edu vars 
 		 health_5_2* health_5_3* health_5_5* health_5_6* health_5_12* ///
-		 agri_6_15* species* agri_income_01 agri_income_05 ///
+		 agri_6_15* species* agri_income_01 agri_income_05 agri_6_34_comp* ///
 		 agri_6_15* agri_6_21*  agri_6_22* /// // how many parcels & surface area of plot & unit
 		 agri_6_32* agri_6_36* /// // used fertilizer vars
 		 living_01* living_03* living_04* living_05* living_06* ///
@@ -210,7 +210,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
   label variable agri_6_21_`i' "Quelle est la superficie de la parcelle selon l'exploitant ? (Indiquer la superficie en hectares ou en metres carres avec deux decimales)"
   label variable agri_6_32_`i' "Quelle quantite de fumier avez-vous appliquee sur la parcelle"
   label variable agri_6_36_`i' "Avez-vous utilise des engrais inorganiques/chimiques sur cette parcelle au cours de cette campagne agricole"
-	
+  label variable agri_6_34_comp_`i' "Did you use compost on this plot during this campaign?"
 	}
 	
 	label variable q_51 "How far is the nearest health infrastructure (in kilometers)?"
@@ -286,11 +286,11 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 *<><<><><>><><<><><>>
 
 		
-		reshape long hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_ ///
-		        hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
-				hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
-				health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ ///
-				health_5_2_ health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
+	reshape long hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_  ///
+			hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
+			hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
+			health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ ///
+			health_5_2_ health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
 
 		 
   *^*^* filter variable 
@@ -314,9 +314,11 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 
 ** replace 2s for hh_03 health_5_2 health_5_5 health_5_6 as missings 
 
-	foreach var in hh_03_ health_5_2_ health_5_5_ health_5_6_ {
-		replace `var' = .a if `var' == 2
-	}
+foreach var in hh_03_ health_5_2_ health_5_5_ health_5_6_ ///
+    agri_6_34_comp_1 agri_6_34_comp_2 agri_6_34_comp_3 agri_6_34_comp_4 agri_6_34_comp_5 ///
+    agri_6_34_comp_6 agri_6_34_comp_7 agri_6_34_comp_8 agri_6_34_comp_9 agri_6_34_comp_10 agri_6_34_comp_11 {
+    replace `var' = .a if `var' == 2
+}
 
 
 		*replace agri_income_05 = 0 if agri_income_01 == 0
@@ -386,12 +388,14 @@ foreach x in 0 1 2 3 4 99 {
 		** 2.Comfortable with numbers and calculations
 		** 3. Arabizing/can read the Quranin Arabic
 		** 4. Fluent in Wolof/Pulaar
-		** 5. Can read a newspaper inFrench
+		** 5. Can read a newspaper in French
 
-
+/*
 		gen hh_education_skills_bin = 0
-			replace hh_education_skills_bin = 1 if hh_education_skills_2_ == 1 | hh_education_skills_3_ == 1 | 	hh_education_skills_4_ == 1 | hh_education_skills_5_ == 5
+			replace hh_education_skills_bin = 1 if hh_education_skills_2_ == 1 | hh_education_skills_3_ == 1 | 	hh_education_skills_4_ == 1 | hh_education_skills_5_ == 1
+*/
 
+       * Update - want only if HH head is LITERATE, so we just need hh_education_skills_5_
 
 ** source(s) of surface water?
 
@@ -410,8 +414,11 @@ foreach x in 0 1 2 3 4 99 {
 			}
 
 ** dropping variable
-/*
+
 * Creating binary variables for hh_29
+			gen hh_29_bin = (hh_29 > 6) ///greater than primary level
+
+/*
 foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
     gen hh_29_`x' = hh_29_ == `x'
     replace hh_29_`x' = 0 if missing(hh_29_)
@@ -597,11 +604,15 @@ save `balance_table_ata'
    * agri_6_32 quantity of organic fertilizer
 	
 	* Convert land area to hectares
-		gen total_land_ha = 0
+		
 		forvalues i = 1/11 {
-			replace agri_6_21_`i' = agri_6_21_`i' / 10000 if agri_6_22_`i' == 2  // Convert m² to Ha
-			replace total_land_ha = total_land_ha + agri_6_21_`i'
+			replace agri_6_21_`i' = agri_6_21_`i' / 10000 if agri_6_22_`i' == 2 // Convert m² to Ha
 		}
+					
+	 *Create variable that captures total hectares
+	 
+		egen total_land_ha = rowtotal(agri_6_21_1 - agri_6_21_11)
+
 
 * Create binary variable for nonzero agri_6_32 values
 		gen agri_6_32_bin = 0
@@ -616,7 +627,21 @@ save `balance_table_ata'
 			replace agri_6_36_bin = 1 if agri_6_36_`i' == 1
 		}
 		
+* Create agri_6_34_comp binary variable that aggregates to if any of the parcels had organic fertilizer  	
+	
+	gen agri_6_34_comp_any = 0  // Initialize new variable as 0
+
+		foreach var of varlist agri_6_34_comp_1-agri_6_34_comp_11 {
+			replace agri_6_34_comp_any = 1 if `var' == 1
+		}
 		
+* Create new variables that takes the sume for game A: montant_05 face_13 & game B: montant_05 	face_04
+
+
+		egen game_A_total = rowtotal(montant_05 face_13)
+		egen game_B_total = rowtotal(montant_05 face_04)
+
+				
 * Create beliefs binarys since these are ordinal variables 
    ** check the distribution
 
@@ -670,6 +695,8 @@ save `balance_table_ata'
 	  *^*^* bring in Asset index 
 
 		merge m:m hhid using "$dataOutput\PCA_asset_index_var.dta"
+		
+		
 
 *<><<><><>><><<><><>> 
 * REORDER THE VARIABLES & COLLAPSE AT HOUSEHOLD LEVEL
@@ -684,8 +711,9 @@ save `balance_table_ata'
 ** aggregate by HH head 
 				rename hh_age_ hh_age 
 				rename hh_gender_ hh_gender
+				rename hh_education_skills_5_ hh_education_skills_5
 * Loop through the variables and create the corresponding head variables
-			foreach var in hh_age hh_gender hh_education_skills_bin hh_education_level_bin {
+			foreach var in hh_age hh_gender hh_education_skills_5 hh_education_level_bin {
 				* Create new variable for each
 				gen `var'_h = . 
 				
@@ -697,29 +725,29 @@ save `balance_table_ata'
   *^*^* collaspe by mean at the household level & order variables
   
 		collapse (mean) ///
-			hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero trained_hh ///
-			hh_03_ hh_10_ hh_11_ hh_12_*  hh_13_* hh_14_ hh_15_ hh_16_ hh_29_ /// 	
+			hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
+			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_bin /// 	
 			hh_26_ hh_27_ hh_31_ hh_37_ hh_38_ ///  //edu vars 
 			health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
 			agri_income_01 agri_income_05 ///
-			montant_02 montant_05 face_04 face_13 ///
+			montant_02 montant_05 face_04 face_13 game_A_total game_B_total ///
 			species_* TLU ///
-			agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///  // parcel amount & fertilizer & land plot
+			agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///  // parcel amount & fertilizer & land plot
 			living_01_bin living_04_bin living_05_bin ///  //living standards 
 			beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///  //beliefs
 			enum_03_bin enum_04_bin enum_05_bin ///
 			asset_index asset_index_std, by(hhid hhid_village num_water_access_points q_51 target_village)
 
 
-		order hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero trained_hh ///
-			hh_03_ hh_10_ hh_11_ hh_12_*  hh_13_* hh_14_ hh_15_ hh_16_ hh_29_ /// 	
+		order hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
+			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_bin /// 	
 			hh_26_ hh_27_ hh_31_ hh_37_ hh_38_ ///  //edu vars 
 			health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
 			agri_income_01 agri_income_05 ///
-			montant_02 montant_05 face_04 face_13 ///
+			montant_02 montant_05 face_04 face_13 game_A_total game_B_total ///
 			species_* TLU ///
 			agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///
-			living_01_bin living_04_bin living_05_bin ///
+			living_01_bin living_04_bin living_05_bin agri_6_34_comp_any ///
 			beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///  //beliefs
 			enum_03_bin enum_04_bin enum_05_bin ///
 			asset_index asset_index_std ///
@@ -731,13 +759,18 @@ save `balance_table_ata'
 			label variable trained_hh "Trained household"
 			label variable hh_age_h "Household head age"
 			label variable hh_gender_h "Household head gender"
-			label variable hh_education_skills_bin_h "Indicator for household head education skills"
+			label variable hh_education_skills_5_h "Indicator that household head is literate (1=Yes, 0=No)"
 			label variable hh_education_level_bin_h "Indicator for selected household head education level"
 			label variable hh_numero "Size of household"
 			
 			label variable hh_03_ "Worked in domestic agricultural activities?"
 			label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
 			label variable hh_11_ "Source(s) of surface water?"
+			label variable hh_11_1 "Lake"
+			label variable hh_11_2 "Pond"
+			label variable hh_11_3 "River"
+			label variable hh_11_4 "Irrigation channel"
+			label variable hh_11_99 "Other, give details"
 			label variable hh_12_8_ "Play"
 			label variable hh_12_7_ "Swim/bathe"
 			label variable hh_12_6_ "Harvest aquatic vegetation"
@@ -756,10 +789,16 @@ save `balance_table_ata'
 			label variable hh_13_01 "Hours spent fetching water for the household"
 			label variable hh_14_ "Of those who answered 'Harvest aquatic vegetation', how much aquatic vegetation did [NAME] collect?"
 			label variable hh_15_ "How did he use aquatic vegetation?"
+			label variable hh_15_1 "Sell"
+			label variable hh_15_2 "Fertilizer"
+			label variable hh_15_3 "Livestock feed"
+			label variable hh_15_4 "Raw material for the biodigester"
+			label variable hh_15_5 "Nothing"
+			label variable hh_15_99 "Other (to be specified)"
 			label variable hh_16_ "Hours spent producing fertilizer, purchasing it, or applying it on the field"
 			label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
 			label variable hh_27_ "Attended non-formal school or training? (1=Yes, 2=No)"
-			label variable hh_29 "Highest level and grade completed in school"
+			label variable hh_29_bin "Highest level and grade completed in school"
 			label variable hh_31_ "School performance during the 2023/2024 year"
 			label variable hh_38_ "Days attended school in the past 7 days"
 			label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 2=No)"
@@ -773,6 +812,7 @@ save `balance_table_ata'
 			label variable agri_6_15 "How many plots within the fields cultivated by the household?"
 			label variable agri_6_32_bin "Used any organic fertilizer"
 			label variable agri_6_36_bin  "Used any inorganic/chemical fertilizer"
+			label variable agri_6_34_comp_any  "Indicator if a houshold used any compost on any parcel (1=Yes, 0=No)"
 			label variable agri_income_01 "Did you (or any member of your household) engage in paid agricultural work in the last 12 months?"
 			label variable agri_income_05 "Amount received in kind/cash for agricultural work"
 			label variable asset_index "PCA Asset Index"
@@ -791,7 +831,7 @@ save `balance_table_ata'
 			label variable species_count "Number of livestock"
 			label variable TLU "Tropical livestock units"
 			
-			label variable living_01_bin "Indicator for selected main source of drinking water"
+			label variable living_01_bin "Indicator for selected tap water as main source of drinking water"
 			label variable living_04_bin "Indicator for selected main type of toilet: Flush with sewer, Flush with septic tank"
 			label variable living_05_bin "Indicator for electricity as main cooking fuel"
 			
@@ -809,6 +849,9 @@ save `balance_table_ata'
 			label variable montant_05 "Amount paid by the respondent for game B: ________ FCFA"
 			label variable face_04 "Amount paid by the respondent for game B: ________ FCFA"
 			label variable face_13 "Amount paid by the respondent for game A: ________ FCFA"
+			label variable game_A_total "Total amount paid for Game A"
+			label variable game_B_total "Total amount paid for Game B"
+			
 			
 			label variable enum_03_bin "(Enumerator observation) Indicator if concrete/cement is main material for the house roof"
 			label variable enum_05_bin "(Enumerator observation) Indicator if concrete/cement is main material for the house floor"
@@ -823,7 +866,7 @@ save `balance_table_ata'
 * SAVE THE FINAL DATASET 
 *<><<><><>><><<><><>>
 
-		save "${dataOutput}\baseline_balance_tables_data.dta", replace
+		*save "${dataOutput}\baseline_balance_tables_data.dta", replace
 
 
 *<><<><><>><><<><><>>
@@ -832,22 +875,22 @@ save `balance_table_ata'
 
 preserve 
 
-		 keep hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero  ///
-		 hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_01 hh_13_02 hh_13_03 hh_13_04 hh_13_05 hh_13_06 hh_13_07 hh_13_08 hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
-		 living_01_bin montant_02 montant_05 species_count  ///
-		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///
-		 agri_income_01 agri_income_05 asset_index asset_index_std  ///
-		 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin face_04 face_13 ///
-		 health_5_12_ health_5_3_bin health_5_6_ ///
+		 keep hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
+		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_27_ hh_29_bin hh_31_ hh_37_ hh_38_  ///
+		 living_01_bin game_A_total game_B_total   ///
+		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
+		 agri_income_01 agri_income_05 ///
+		 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin  ///
+		 health_5_3_bin health_5_6_ ///
 		 num_water_access_points q_51 target_village
 		 
-		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_bin_h hh_gender_h hh_numero  ///
-		 hh_03_ hh_10_ hh_11_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_01 hh_13_02 hh_13_03 hh_13_04 hh_13_05 hh_13_06 hh_13_07 hh_13_08 hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
-		 living_01_bin montant_02 montant_05 species_count  ///
-		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///
-		 agri_income_01 agri_income_05 asset_index asset_index_std  ///
-		 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin face_04 face_13 ///
-		 health_5_12_ health_5_3_bin health_5_6_ ///
+		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
+		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_27_ hh_29_bin hh_31_ hh_37_ hh_38_  ///
+		 living_01_bin game_A_total game_B_total   ///
+		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
+		 agri_income_01 agri_income_05 ///
+		 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin  ///
+		 health_5_3_bin health_5_6_ ///
 		 num_water_access_points q_51 target_village
 		 
 		 save "${dataOutput}\baseline_balance_tables_data_PAP.dta", replace

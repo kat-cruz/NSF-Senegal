@@ -49,7 +49,7 @@ global corrected "$master\Data_Management\Output\Data_Corrections\Midline"
 
 //import delimited "$data\DISES_Enquête_ménage_midline_VF_WIDE_19Feb2025.csv", clear varnames(1) bindquote(strict)
 
-use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_24Feb2025.dta"
+use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_5Mar2025.dta"
 
 **************************** rename variables ****************************
 rename hh_size_actual _household_roster_count
@@ -1683,6 +1683,7 @@ replace ind_var = 0 if key == "uuid:274749b0-85ce-4907-97b2-f15fae16e9bb" & hh_a
 replace ind_var = 0 if key == "uuid:c5be1602-4373-4562-8647-30703fddb2d2" & hh_age_5 == 91
 replace ind_var = 0 if key == "uuid:6bc3c04b-1957-4811-8f2f-2c62506708f3" & hh_age_5 == 92
 replace ind_var = 0 if key == "uuid:443cfabd-f98c-4336-8e20-80f8957bad20" & hh_age_8 == -9
+replace ind_var = 0 if key == "uuid:5ac7ee7b-7dfa-4cf2-8d51-31ad6a4e0d9d" & hh_age_3 == 95
   
     	* keep and add variables to export *
 	keep if ind_var == 1 	
@@ -1738,6 +1739,7 @@ replace ind_var = 0 if key == "uuid:140ccd1f-98cc-4f31-ae6e-948f6b7c88c8" & hh_e
 replace ind_var = 0 if key == "uuid:c5a9ad94-512d-4d5e-86be-32bbaea376a8" & hh_education_level_6 == 3
 replace ind_var = 0 if key == "uuid:ce4348d4-f8dc-4f45-859b-f7fb9e9c8222" & hh_education_level_7 == 3
 replace ind_var = 0 if key == "uuid:fe78ae3a-df95-4ba8-9205-133a78bb7675" & hh_education_level_8 == 3
+replace ind_var = 0 if key == "uuid:83d16bd0-281f-4b48-9619-8e53f666105d" & hh_education_level_1 == 4
 	
   	
 	* keep and add variables to export *
@@ -3077,7 +3079,7 @@ replace ind_var = 0 if key == "uuid:927795d3-0966-4cc6-9bd2-0ceee0f8bbe8"
 replace ind_var = 0 if key == "uuid:a177145f-c36f-42f1-9595-bb4e759b7923"
 replace ind_var = 0 if key == "uuid:44f20f67-c22c-4c86-86d2-0b468d0b47cd"
 replace ind_var = 0 if key == "uuid:a0188f55-5d08-45c9-b274-70b5ba016033"
-
+replace ind_var = 0 if key == "uuid:480e7175-e4f0-467b-ae3d-d2d3c957d314"
 	
 	keep if ind_var == 1 
      
@@ -3958,6 +3960,9 @@ replace ind_var = 0 if key == "uuid:8915a062-0f9a-4c85-a7a6-1b4fa6b3e3f1" & hh_1
 replace ind_var = 0 if key == "uuid:dedd712c-634c-4665-a874-f139341ecd5f" & hh_14_b_5 == -9
 replace ind_var = 0 if key == "uuid:20bb7007-297f-432d-8909-7bea1973059d" & hh_14_b_8 == -9
 replace ind_var = 0 if key == "uuid:dedd712c-634c-4665-a874-f139341ecd5f" & hh_14_b_8 == -9
+replace ind_var = 0 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e" & hh_14_b_1 == 100
+replace ind_var = 0 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e" & hh_14_b_12 == 100
+replace ind_var = 0 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e" & hh_14_b_8 == 100
 	keep if ind_var == 1	
 	
     generate issue = "Unreasonable value"
@@ -4675,6 +4680,8 @@ forvalues i = 1/57 {
 	
 	gen ind_var = 0 
 	replace ind_var = 1 if hh_26_`i' == . 
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_26_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_26_5 == 0
 	keep if ind_var == 1 
 	
 	generate issue = "Issue found: hh_26_`i' value is missing"
@@ -4708,6 +4715,8 @@ preserve
 	//keep if  `hh_26' == 0
 	keep if hh_age_`i' >= 4 & hh_age_`i' <= 18 
     replace ind_var = 1 if `hh_27' == .
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_27_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_27_5 == 0
 	keep if ind_var == 1
 
 		
@@ -5129,6 +5138,8 @@ forvalues i = 1/57 {
     gen ind_var = 0
     replace ind_var = 1 if missing(`hh_39')
 	replace ind_var = 1 if `hh_39' < -6 & `hh_39' > 60
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_39_2 == -6
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_39_5 == -6
     keep if ind_var == 1
 
     generate issue = "Missing"
@@ -5160,6 +5171,8 @@ forvalues i = 1/57 {
   
     replace ind_var = 1 if missing(`hh_40')
 	replace ind_var = 1 if `hh_40' < -6 & `hh_40' > 60
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_40_2 == -6
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_40_5 == -6
     keep if ind_var == 1
 
     generate issue = "Missing"
@@ -5198,6 +5211,9 @@ forvalues i = 1/57 {
     keep if `hh_26' == 1
     replace ind_var = 1 if missing(`hh_41')
 	replace ind_var = 1 if `hh_41' > hh_age_`i'
+	replace ind_var = 0 if key == "uuid:801e11ec-467f-4cc9-9eb6-0dec8dbec2a5" & hh_41_4 == 7
+replace ind_var = 0 if key == "uuid:ce5549e0-79b0-4bde-9e8b-37fab5eedf2f" & hh_41_5 == 5
+replace ind_var = 0 if key == "uuid:d5c7ff2b-5a98-48e6-ab1c-afdf20b145df" & hh_41_8 == 7
 	rename hh_age_`i' hh_age
 	replace ind_var = 0 if key == "uuid:45e97396-5ee5-4b55-ac86-cbd4824e8263" & hh_41_1 == 6 
 replace ind_var = 0 if key == "uuid:9559913d-fb26-4d88-a5f2-27f2142af0ee" & hh_41_1 == 10
@@ -5439,6 +5455,8 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_a' == .
 	replace ind_var = 1 if `hh_47_a' < 0 & `hh_47_a' > 100000
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_a_2 == 8000
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_a_5 == 8000
 	*replace ind_var = 0 if _household_roster_count < `i'
    
     	* keep and add variables to export *
@@ -5481,6 +5499,8 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_b' == .
 	replace ind_var = 1 if `hh_47_b' < 0 & `hh_47_b' > 100000
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_b_2 == 15000
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_b_5 == 15000
  	*replace ind_var = 0 if _household_roster_count < `i'
 
    
@@ -5523,6 +5543,8 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_c' == .
 	replace ind_var = 1 if `hh_47_c' < 0 & `hh_47_c' > 100000
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_c_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_c_5 == 0
  	*replace ind_var = 0 if _household_roster_count < `i'
 
    
@@ -5558,6 +5580,8 @@ forvalues i = 1/57 {
 	gen ind_var = 0
     replace ind_var = 1 if `hh_47_d' == .
 	replace ind_var = 1 if `hh_47_d' < 0 & `hh_47_d' > 100000
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_d_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_d_5 == 0
  	*replace ind_var = 0 if _household_roster_count < `i'
 
     	* keep and add variables to export *
@@ -5593,7 +5617,8 @@ forvalues i = 1/57 {
 	replace ind_var = 1 if `hh_47_e' == .
 	replace ind_var = 1 if `hh_47_e' < 0 & `hh_47_e' > 100000
  	replace ind_var = 0 if _household_roster_count < `i'
-
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_e_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_e_5 == 0
    
     	* keep and add variables to export *
 	keep if ind_var == 1 
@@ -5627,7 +5652,8 @@ forvalues i = 1/57 {
 	replace ind_var = 1 if `hh_47_f' == .
 	replace ind_var = 1 if `hh_47_f' < 0 & `hh_47_f' > 100000
  	replace ind_var = 0 if _household_roster_count < `i'
-
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_f_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_f_5 == 0
    
     	* keep and add variables to export *
 	keep if ind_var == 1 
@@ -5661,6 +5687,8 @@ forvalues i = 1/57 {
     replace ind_var = 1 if `hh_47_g' == .
 	replace ind_var = 1 if `hh_47_g' < 0 & `hh_47_g' > 100000
  	replace ind_var = 0 if _household_roster_count < `i'
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_g_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_g_5 == 0
 
    
     	* keep and add variables to export *
@@ -5696,6 +5724,8 @@ forvalues i = 1/57 {
     gen ind_var = 0
     keep if `hh_47_g' > 0  // Ensure hh_47_g is greater than 0 before proceeding
     replace ind_var = 1 if missing(`hh_47_oth')
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_oth_2 == ""
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_oth_5 == .
 
     keep if ind_var == 1
 
@@ -5736,6 +5766,8 @@ forvalues i = 1/57 {
     replace ind_var = 1 if missing(`hh_48')
 	replace ind_var = 1  if `hh_48' != 0 & `hh_48' != 1  & `hh_48' != 2
 	*replace ind_var = 0 if _household_roster_count < `i'
+	replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_48_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_48_5 == 0
     keep if ind_var == 1
 
     generate issue = "Missing"
@@ -5765,6 +5797,7 @@ forvalues i = 1/57 {
 
     gen ind_var = 0
     replace ind_var = 1 if `hh_32' ==1 & !inlist(hh_50_`i', 0, 1, 2 )
+
     keep if ind_var == 1
 
     generate issue = "Missing"
@@ -8360,6 +8393,8 @@ replace ind_var = 0 if key == "uuid:5268be61-f198-4614-8dbe-6f18904c78be" & cere
 replace ind_var = 0 if key == "uuid:2b46e567-634a-45f4-abbd-e0174c03900d" & cereals_02_1 == 25000
 replace ind_var = 0 if key == "uuid:beafc02c-dc0d-4a2f-896e-e06ddfbebdab" & cereals_02_1 == 17700
 replace ind_var = 0 if key == "uuid:49e1ea67-b6bc-4685-822a-04e4963bbd19" & cereals_02_5 == -9
+replace ind_var = 0 if key == "uuid:8320c233-c8cb-4feb-b803-9ba786d6a34d" & cereals_02_1 == 62400
+replace ind_var = 0 if key == "uuid:7ae9095f-5f7c-4631-81e1-b41e9161fec1" & cereals_02_1 == 12000
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8406,6 +8441,15 @@ replace ind_var = 0 if key == "uuid:a2b50444-1316-4e2d-b47c-b3cbb7b7e46e" & cere
 replace ind_var = 0 if key == "uuid:f9ca4556-2c20-499a-b7fb-03eb3be07b5d" & cereals_03_1 == 500
 replace ind_var = 0 if key == "uuid:41d0680a-3871-4f2a-92a6-52d45e652010" & cereals_03_1 == 1000
 replace ind_var = 0 if key == "uuid:ea66090c-4853-434a-8501-93e90526a596" & cereals_03_5 == 1000
+replace ind_var = 0 if key == "uuid:bc16c47a-d6eb-4e45-97a7-b5275bfd1f91" & cereals_03_1 == 4150
+replace ind_var = 0 if key == "uuid:d84a37d5-09e5-45ee-94fc-da2954f60d2b" & cereals_03_1 == 5200
+replace ind_var = 0 if key == "uuid:614b075d-1253-46f3-ba62-eae586e7fd4b" & cereals_03_1 == 4000
+replace ind_var = 0 if key == "uuid:f64dd1f9-662f-4e01-b1af-d99bd9d2725f" & cereals_03_1 == 6200
+replace ind_var = 0 if key == "uuid:d4febba0-ef62-4a2d-b215-9f2edf88d392" & cereals_03_1 == 5000
+replace ind_var = 0 if key == "uuid:742d4881-da1e-4e85-9270-0c5bd07d1b00" & cereals_03_1 == 1000
+replace ind_var = 0 if key == "uuid:9e068357-e209-4055-a615-2ceeefc71a06" & cereals_03_1 == 100
+replace ind_var = 0 if key == "uuid:b508a3ab-9afd-4b4d-ae57-9b3b9c7214de" & cereals_03_3 == 800
+replace ind_var = 0 if key == "uuid:27733143-0061-401d-840a-10ef22c379b5" & cereals_03_3 == 250
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8443,6 +8487,19 @@ replace ind_var = 0 if key == "uuid:ee6bb3fb-0c11-44c0-ab45-561b54edfcdc" & cere
 replace ind_var = 0 if key == "uuid:9e068357-e209-4055-a615-2ceeefc71a06" & cereals_04_1 == 0
 replace ind_var = 0 if key == "uuid:e9086ca8-03e3-49fb-b7ca-01c40f858435" & cereals_04_6 == 8000
 replace ind_var = 0 if key == "uuid:43c5f3aa-5f3e-4087-98de-31d897566c82" & cereals_04_6 == 1400
+replace ind_var = 0 if key == "uuid:d84a37d5-09e5-45ee-94fc-da2954f60d2b" & cereals_04_1 == 18200
+replace ind_var = 0 if key == "uuid:bc16c47a-d6eb-4e45-97a7-b5275bfd1f91" & cereals_04_1 == 10790
+replace ind_var = 0 if key == "uuid:843e9a2d-5908-409a-a7ce-e315a6048975" & cereals_04_1 == 22100
+replace ind_var = 0 if key == "uuid:aab4e4e3-d006-4431-b647-f138d25f3b07" & cereals_04_1 == 19550
+replace ind_var = 0 if key == "uuid:f64dd1f9-662f-4e01-b1af-d99bd9d2725f" & cereals_04_1 == 4000
+replace ind_var = 0 if key == "uuid:614b075d-1253-46f3-ba62-eae586e7fd4b" & cereals_04_1 == 1000
+replace ind_var = 0 if key == "uuid:d4febba0-ef62-4a2d-b215-9f2edf88d392" & cereals_04_1 == 8600
+replace ind_var = 0 if key == "uuid:b39da8c4-f8e6-48bb-b75b-9a498d140b43" & cereals_04_1 == 2200
+replace ind_var = 0 if key == "uuid:742d4881-da1e-4e85-9270-0c5bd07d1b00" & cereals_04_1 == 2000
+replace ind_var = 0 if key == "uuid:ba2ff202-cbd1-4993-b0e8-098121069f93" & cereals_04_1 == 1200
+replace ind_var = 0 if key == "uuid:4ea2408a-89a2-4bd4-8bac-9a8ebbffadd7" & cereals_04_1 == 34000
+replace ind_var = 0 if key == "uuid:a6c6ad01-0cb0-4c9f-823c-dc6dc4a14256" & cereals_04_1 == 20500
+replace ind_var = 0 if key == "uuid:b0a54e9c-c1e3-4274-8dd3-f3e452663310" & cereals_04_1 == 1350
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8569,6 +8626,7 @@ replace ind_var = 0 if key == "uuid:02a39efd-23f1-4815-9b17-ff8b43173d90" & fari
 replace ind_var = 0 if key == "uuid:d0347b16-5aee-4340-b320-cdd8a2cc8196" & farines_02_2 == -9
 replace ind_var = 0 if key == "uuid:78498830-729b-4669-a8b0-ddb3ba898a73" & farines_02_2 == -9
 replace ind_var = 0 if key == "uuid:a1ac2ac5-36fc-4a12-ac9b-45b86f0dc84e" & farines_02_2 == -9
+replace ind_var = 0 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3" & farines_02_2 == -9
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8596,6 +8654,7 @@ forvalue i = 1/6 {
 	*** generate indicator variable *** 
 	gen ind_var = 0 
 	replace ind_var = 1 if farines_03_`i' > farines_02_`i' 
+	replace ind_var = 0 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3" & farines_03_2 == -9
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8625,6 +8684,14 @@ forvalue i = 1/6 {
 	replace ind_var = 1 if farines_04_`i' > farines_02_`i' 
 	replace ind_var = 0 if key == "uuid:d0347b16-5aee-4340-b320-cdd8a2cc8196" & farines_04_1 == 79760
 replace ind_var = 0 if key == "uuid:5af529e5-54e6-40aa-96d8-39fff3fe8f29" & farines_04_2 == 14420
+replace ind_var = 0 if key == "uuid:6213c19b-f969-425e-8066-f6eee952d92b" & farines_04_1 == 35900
+replace ind_var = 0 if key == "uuid:9dd87d99-ba8b-4d5e-9075-4ef5adbed212" & farines_04_1 == 4800
+replace ind_var = 0 if key == "uuid:b23d6c34-7e39-4cb2-a08f-4e4731c59360" & farines_04_1 == 55930
+replace ind_var = 0 if key == "uuid:081d8522-c607-4fa4-8a13-568ab0f5464b" & farines_04_1 == 5000
+replace ind_var = 0 if key == "uuid:6a21258a-e5af-4762-ad75-fd2a7001d74f" & farines_04_1 == 1185
+replace ind_var = 0 if key == "uuid:4b9d032f-e2ac-4e4f-b7f2-bad5b9917eaf" & farines_04_1 == 970
+replace ind_var = 0 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3" & farines_04_2 == -9
+replace ind_var = 0 if key == "uuid:370d88ef-b3d9-4646-8cfc-1135fc57197a" & farines_04_4 == 3192
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8652,6 +8719,8 @@ forvalue i = 1/6 {
 	*** generate indicator variable *** 
 	gen ind_var = 0 
 	replace ind_var = 1 if farines_05_`i' < 0 | farines_05_`i' > 5000
+	replace ind_var = 0 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3" & farines_05_2 == -9
+replace ind_var = 0 if key == "uuid:86eb5846-fbde-44a1-b04c-7dab574f678b" & farines_05_2 == -9
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8681,6 +8750,8 @@ forvalue i = 1/6 {
 	replace ind_var = 1 if legumes_01_`i' < 0 | legumes_01_`i' > 50
 	replace ind_var = 0 if key == "uuid:dc9a29e3-3292-4ed0-a27b-33446ca8640b" & legumes_01_1 == -9   
 replace ind_var = 0 if key == "uuid:a174f3ae-1533-4f24-9056-c76dc2c8ec40" & legumes_01_3 == -9
+replace ind_var = 0 if key == "uuid:a9c38dbd-844b-4ae2-9ef9-c817fdf5317e" & legumes_01_3 == 0.4
+replace ind_var = 0 if key == "uuid:6fc34a13-7455-46b5-9d1a-5bafa2e11b9e" & legumes_01_3 == 0.4
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8741,6 +8812,13 @@ replace ind_var = 0 if key == "uuid:397fd602-9a30-4d8b-a9ba-7f46497e6648" & legu
 replace ind_var = 0 if key == "uuid:abb87752-4a63-446c-9b08-114b67de3f6e" & legumes_02_4 == -9
 replace ind_var = 0 if key == "uuid:90310a87-9d8f-4524-b415-99b443a9cd71" & legumes_02_6 == 18000
 replace ind_var = 0 if key == "uuid:08f0ed54-98f9-4427-9b44-4e660b0b587d" & legumes_02_6 == 12000
+replace ind_var = 0 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2" & legumes_02_3 == -9
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8769,6 +8847,14 @@ forvalue i = 1/6 {
 	gen ind_var = 0 
 	replace ind_var = 1 if legumes_03_`i' > legumes_02_`i' 
 	replace ind_var = 0 if key == "uuid:397fd602-9a30-4d8b-a9ba-7f46497e6648" & legumes_03_3 == 150
+	replace ind_var = 0 if key == "uuid:7e459848-09f8-4b84-a8c8-08c5e708cf5d" & legumes_03_3 == 225
+replace ind_var = 0 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec" & legumes_03_3 == -9
+replace ind_var = 0 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d" & legumes_03_3 == 50
+replace ind_var = 0 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258" & legumes_03_3 == 100
+replace ind_var = 0 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b" & legumes_03_3 == 200
+replace ind_var = 0 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096" & legumes_03_3 == 90
+replace ind_var = 0 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7" & legumes_03_3 == 200
+replace ind_var = 0 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2" & legumes_03_3 == 100
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8797,6 +8883,31 @@ forvalue i = 1/6 {
 	gen ind_var = 0 
 	replace ind_var = 1 if legumes_04_`i' > legumes_02_`i' 
 	replace ind_var = 0 if key == "uuid:a6aa6572-4ca2-4c8d-8be7-3027d7d09a1b" & legumes_04_6 == 250
+	replace ind_var = 0 if key == "uuid:64030e2d-2504-47b4-874f-d8b9206b9b4b" & legumes_04_1 == 3600
+replace ind_var = 0 if key == "uuid:9bed3f13-6182-4946-973e-c84ebdb7e64d" & legumes_04_1 == 1450
+replace ind_var = 0 if key == "uuid:667efd5f-8ca5-4590-9186-f6d5a55eb42e" & legumes_04_3 == 11250
+replace ind_var = 0 if key == "uuid:7e459848-09f8-4b84-a8c8-08c5e708cf5d" & legumes_04_3 == 11250
+replace ind_var = 0 if key == "uuid:07374a46-8b35-4535-8e7f-aee405e62880" & legumes_04_3 == 12500
+replace ind_var = 0 if key == "uuid:e25110ba-6df8-467a-b38e-577b9986dd00" & legumes_04_3 == 12400
+replace ind_var = 0 if key == "uuid:e1500728-8f0d-4082-aa0b-7151e4c98c24" & legumes_04_3 == 17200
+replace ind_var = 0 if key == "uuid:dfd04b1f-4f0e-4bf0-a42c-51e756a93966" & legumes_04_3 == 17100
+replace ind_var = 0 if key == "uuid:924e4381-5ab0-4f49-9c41-ddb4d0b33b3d" & legumes_04_3 == 11100
+replace ind_var = 0 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096" & legumes_04_3 == 18135
+replace ind_var = 0 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b" & legumes_04_3 == 5500
+replace ind_var = 0 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d" & legumes_04_3 == 11200
+replace ind_var = 0 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7" & legumes_04_3 == 17000
+replace ind_var = 0 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2" & legumes_04_3 == 12000
+replace ind_var = 0 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258" & legumes_04_3 == 12484
+replace ind_var = 0 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec" & legumes_04_3 == 52000
+replace ind_var = 0 if key == "uuid:f7c1d3b1-0f51-495c-9ed5-7fd642518c73" & legumes_04_3 == 8000
+replace ind_var = 0 if key == "uuid:869babf6-be9d-49ad-a3e6-b949d3719a28" & legumes_04_3 == 13000
+replace ind_var = 0 if key == "uuid:3e4fa814-7e80-4e40-b3a6-f6e938bcc106" & legumes_04_3 == 8000
+replace ind_var = 0 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0" & legumes_04_3 == 11400
+replace ind_var = 0 if key == "uuid:2fba3e48-9d7b-4b32-ab2d-990fc6d2d413" & legumes_04_3 == 8000
+replace ind_var = 0 if key == "uuid:b1d8b6b0-f899-427b-b0a2-96a43f2a092b" & legumes_04_3 == 10200
+replace ind_var = 0 if key == "uuid:c1858219-77cd-4076-8cf8-4059b7d80d2d" & legumes_04_3 == 10200
+replace ind_var = 0 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f" & legumes_04_3 == 16800
+replace ind_var = 0 if key == "uuid:d64a294e-43b9-44cd-aab0-d14bc88d71de" & legumes_04_6 == 8750
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8827,6 +8938,7 @@ forvalue i = 1/6 {
 	replace ind_var = 0 if key == "uuid:dc9a29e3-3292-4ed0-a27b-33446ca8640b" & legumes_05_1 == -9
 replace ind_var = 0 if key == "uuid:a174f3ae-1533-4f24-9056-c76dc2c8ec40" & legumes_05_3 == -9
 replace ind_var = 0 if key == "uuid:abb87752-4a63-446c-9b08-114b67de3f6e" & legumes_05_4 == -9
+
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8855,6 +8967,7 @@ forvalue i = 1/5 {
 	gen ind_var = 0 
 	replace ind_var = 1 if legumineuses_01_`i' < 0 | legumineuses_01_`i' > 50
 	replace ind_var = 0 if key == "uuid:8b114889-8bbb-45c2-94f2-eb752a16fe0e" & legumineuses_01_1 == -9
+	replace ind_var = 0 if key == "uuid:cfd81b39-f5e3-40d4-aab0-4b7c3d2da1bd" & legumineuses_01_5 == 0.3
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8892,6 +9005,7 @@ replace ind_var = 0 if key == "uuid:32246f7b-b517-478d-b4f2-f8ab414ee1b2" & legu
 replace ind_var = 0 if key == "uuid:3edcedd7-4992-486e-a924-22eb67a877b3" & legumineuses_02_1 == 13500
 replace ind_var = 0 if key == "uuid:8ca82313-2f21-45dd-9c4b-6cd68d8052a8" & legumineuses_02_5 == -9
 replace ind_var = 0 if key == "uuid:a9b198b5-e8e9-457d-9967-1ac777669d76" & legumineuses_02_5 == -9
+
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -8946,6 +9060,9 @@ forvalue i = 1/5 {
 	*** generate indicator variable *** 
 	gen ind_var = 0 
 	replace ind_var = 1 if legumineuses_04_`i' > legumineuses_02_`i' 
+	replace ind_var = 0 if key == "uuid:09622dd4-4613-46e3-939b-c3a43a585bb5" & legumineuses_04_1 == 1000
+replace ind_var = 0 if key == "uuid:3b860b05-1279-4807-9ebb-cccdf410537f" & legumineuses_04_1 == 7500
+replace ind_var = 0 if key == "uuid:e9086ca8-03e3-49fb-b7ca-01c40f858435" & legumineuses_04_1 == 1800
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -9171,6 +9288,7 @@ preserve
 	*** generate indicator variable *** 
 	gen ind_var = 0 
 	replace ind_var = 1 if o_culture_02 < 0 | o_culture_02 > 10000
+	replace ind_var = 0 if key == "uuid:b89a7ed1-e6ea-4835-8e6d-2e374b8d1cdb" & o_culture_02 == 12800
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -9220,6 +9338,7 @@ preserve
 	gen ind_var = 0 
 	replace ind_var = 1 if o_culture_04 > o_culture_02 
 	replace ind_var = 0 if key == "uuid:20bb7007-297f-432d-8909-7bea1973059d" & o_culture_04 == 400
+	replace ind_var = 0 if key == "uuid:57dd6094-f7b5-43e7-9c80-108266eac06b" & o_culture_04 == 2900
 	
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -9762,6 +9881,9 @@ preserve
 	replace ind_var = 0 if key == "uuid:f8968dc5-d7d2-48ef-b238-31677e5060f8" & agri_income_06 == -9
 	replace ind_var = 0 if key == "uuid:f0bebe93-a4f0-40a0-8936-233682b356d1" & agri_income_06 == -9
 	replace ind_var = 0 if key == "uuid:a398b76a-7378-444c-8717-36fb8d3d46df" & agri_income_06 == -9
+	replace ind_var = 0 if key == "uuid:c4551c9e-c0c0-4f4a-b080-e07648e53697" & agri_income_06 == -9
+	replace ind_var = 0 if key == "uuid:0b37d7f9-43b1-4a23-b3f0-b41470b1fc34" & agri_income_06 == -9
+	replace ind_var = 0 if key == "uuid:14173965-524c-42ed-881d-7ba303969f5f" & agri_income_06 == -9
 
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -9805,6 +9927,9 @@ forvalues i = 1/5{
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_08_`i' > 0 & agri_income_08_`i' != . & agri_income_09_`i' == .
+	replace ind_var = 0 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6" & agri_income_09_1 == .
+	replace ind_var = 0 if key == "uuid:f0e95d05-f703-4242-bb05-cdf1c7be4e16" & agri_income_09_2 == -9
+	replace ind_var = 0 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6" & agri_income_09_3 == .
 	
 	*** keep and add variables to export 
 	keep if ind_var == 1 
@@ -9855,6 +9980,9 @@ forvalues i = 1/5{
 	replace ind_var = 1 if agri_income_10_`i' < 0 | agri_income_10_`i' > 1000000
 	replace ind_var = 0 if key == "uuid:53f60c19-7569-47c2-9423-ee4f516907c9" & agri_income_10_1 == -9 // were confirmed in checks
 	replace ind_var = 0 if key == "uuid:446cce08-7cc4-44c1-be46-e651f216e5bc" & agri_income_10_2 == -9
+	replace ind_var = 0 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6" & agri_income_10_1 == 150000
+	replace ind_var = 0 if key == "uuid:f0e95d05-f703-4242-bb05-cdf1c7be4e16" & agri_income_10_2 == -9
+	replace ind_var = 0 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6" & agri_income_10_3 == 150000
 	
 	*** keep and add variables to export 
 	keep if ind_var == 1 
@@ -9881,6 +10009,7 @@ preserve
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_07_o < 0 | agri_income_07_o > 500
+	replace ind_var = 0 if key == "uuid:07815cfd-fc9e-42e6-823e-83d93c2b9461" & agri_income_07_o == -9
 
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -9906,6 +10035,7 @@ preserve
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_08_o < 0 | agri_income_08_o > 500
+	replace ind_var = 0 if key == "uuid:07815cfd-fc9e-42e6-823e-83d93c2b9461" & agri_income_08_o == -9
 
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -10818,6 +10948,8 @@ forvalues i = 1/2 {
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_39_`i' > agri_income_36_`i' | ((agri_income_36_`i' - agri_income_38_`i') < agri_income_39_`i')
 	replace ind_var = 0 if credit_askindex_`i' == . 
+	replace ind_var = 0 if key == "uuid:b66b0159-426b-41be-af40-5d9f2ef3c0e4" & agri_income_39_1 == 182000
+
 
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -11369,6 +11501,15 @@ drop if key == "uuid:a3b4a2de-dfd2-4985-9f7f-88f577cbde09" & agri_income_23_2 ==
 drop if key == "uuid:2bb8d593-96ee-4652-8db4-65eae2b880fe" & agri_income_23_2 == -9
 drop if key == "uuid:af2fa2b6-d183-4406-8d00-4be4c168e97b" & agri_income_23_2 == -9
 drop if key == "uuid:af2fa2b6-d183-4406-8d00-4be4c168e97b" & agri_income_23_3 == -9
+drop if key == "uuid:e25110ba-6df8-467a-b38e-577b9986dd00" & agri_income_23_1 == -9
+drop if key == "uuid:ebb30e88-28c3-475e-9280-687cff7de2dc" & agri_income_23_1 == -9
+drop if key == "uuid:a5be4dc8-b7e6-428a-a5c2-15ca12079878" & agri_income_23_1 == 85000
+drop if key == "uuid:85c3253f-8039-4374-b28f-b9a389c51b66" & agri_income_23_1 == -9
+drop if key == "uuid:8e7bd22b-c4fc-43d1-a4c2-dc797a036e43" & agri_income_23_1 == -9
+drop if key == "uuid:63404b01-6729-4607-9f41-3e8b9153b9ee" & agri_income_23_2 == -9
+drop if key == "uuid:ebb30e88-28c3-475e-9280-687cff7de2dc" & agri_income_23_2 == -9
+drop if key == "uuid:920076db-929a-4cd7-9cd9-62e37f877a5c" & agri_income_23_2 == 67000
+drop if key == "uuid:66b0b7d0-c37f-4ed4-9b1f-72bb0583ba96" & agri_income_23_2 == 150000
 	
 	generate issue = "Issue found: unreasonable value"
 	generate issue_variable_name = "agri_income_23_`i'"
@@ -11392,6 +11533,8 @@ drop if key == "uuid:2086c8e7-cfb1-472b-ad6d-f21b87b90881" & agri_income_23_o ==
 drop if key == "uuid:8be12456-9c4d-4e61-917b-2f94584d4796" & agri_income_23_o == -9
 drop if key == "uuid:d3de785c-2ad1-45a0-a8c0-5e41e53483da" & agri_income_23_o == -9
 drop if key == "uuid:dbcf5c48-d38a-4900-934d-1589c334478b" & agri_income_23_o == -9
+drop if key == "uuid:88a033cc-ae5d-4bd6-860b-3f14ff81a0f0" & agri_income_23_o == -9
+drop if key == "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089" & agri_income_23_o == -9
 	
 	generate issue = "Issue found: unreasonable value"
 	generate issue_variable_name = "agri_income_23_o"
@@ -11448,6 +11591,8 @@ drop if key == "uuid:896ef294-6ea0-45d0-9468-3f1bdf54924e" & agri_income_45_6 ==
 drop if key == "uuid:481263fb-d102-43b2-8504-d72a780bd7e8" & agri_income_45_6 == -9
 drop if key == "uuid:f0e95d05-f703-4242-bb05-cdf1c7be4e16" & agri_income_45_7 == -9
 drop if key == "uuid:801e11ec-467f-4cc9-9eb6-0dec8dbec2a5" & agri_income_45_7 == -9
+drop if key == "uuid:6e690859-4817-4dcd-8672-cf08f71f164b" & agri_income_45_10 == 6000
+drop if key == "uuid:398fb50b-ed82-412f-948c-8c9b36a4d647" & agri_income_45_8 == -9
 	generate issue = "Unreasonable value"
 	generate issue_variable_name = "`var'"
 	rename `var' print_issue 

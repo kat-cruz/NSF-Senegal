@@ -31,4 +31,10 @@ This folder contains scripts for data analysis, summarization, and manipulation 
       *   This markdown computes and outputs the balance tables and summary statistics for the relevant variables. 
   *  `asset_index_TEST.do` and `balance_table_TEST.Rmd` are test scripts that simulated the process for developing the asset variable and balance tables.
 * `Human_Parasitology`
-  
+  *  `Parasitological_Predictive_Analysis.Rmd`
+     *  This markdown runs the predictive analysis. 
+  *  `Parasitological_EDA.Rmd`
+     *  This markdown creates scatter plots and summary stats for initial review 
+  *  `Parisitology_Summary_Stats.do`
+  *  `Human_Parasitological_Dataframe_toupdate.do`
+      *  This .Do file creates the Parasitological data frame used to run analysis. 

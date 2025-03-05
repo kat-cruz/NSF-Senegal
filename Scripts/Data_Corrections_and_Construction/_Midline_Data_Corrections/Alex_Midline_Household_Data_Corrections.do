@@ -3,7 +3,6 @@
 *** Updates recorded in GitHub ***
 * excel formula
 
-
 clear all
 set mem 100m
 set maxvar 30000
@@ -13,7 +12,6 @@ set more off
 **************************************************
 * SET FILE PATHS
 **************************************************
-**# Bookmark #2
 
 * Set base Box path for each user
 if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
@@ -43,7 +41,7 @@ save "$corrected\DISES_Household_Corrections_Confirmed_Part1.dta", replace
 export delimited "$corrected\DISES_Household_Corrections_Confirmed_Part1.csv", replace
 
 * excel formula
-* ="replace ind_issue = 0 if key == "&CHAR(34)&[[key]]&CHAR(34)&" & "&[[issue_variable_name]]&" == "&[print_issue]]&
+* ="replace ind_var = 0 if key == "&CHAR(34)&[[key]]&CHAR(34)&" & "&[[issue_variable_name]]&" == "&[print_issue]]&
 /*
 replace ind_issue = 0 if key == "uuid:99d26de9-4785-4ce7-8789-37db41354980" & agri_6_21_1 == -9 // added to check
 replace ind_issue = 0 if key == "uuid:99d26de9-4785-4ce7-8789-37db41354980" & agri_6_37_1 == -9 // added to check
@@ -1672,7 +1670,7 @@ replace ind_issue = 0 if key == "uuid:44f20f67-c22c-4c86-86d2-0b468d0b47cd" & hh
 replace ind_issue = 0 if key == "uuid:a0188f55-5d08-45c9-b274-70b5ba016033" & hh_21_total_4 == 4
 */
 
-import delimited "$data\DISES_Enquête_ménage_midline_VF_WIDE_24Feb2025.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Enquête_ménage_midline_VF_WIDE_5Mar2025.csv", clear varnames(1) bindquote(strict)
 
 **** CORRECTIONS 2/24/2025 PART 1
 replace o_culture_05 = 500 if key == "uuid:c95998af-5ec9-4610-bf71-4620da7a54e4"
@@ -3333,6 +3331,392 @@ replace hh_21_9_2 = 14 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0"
 replace hh_21_9_3 = 14 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0"
 
 * Save the corrected dataset
-export delimited using "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_24Feb2025.csv", replace
+export delimited using "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_5Mar2025.csv", replace
 
-save "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_24Feb2025.dta", replace
+save "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_5Mar2025.dta", replace
+
+
+************************
+*** CORRECTIONS 26Feb2025
+************************
+* excel formula
+* ="replace ind_var = 0 if key == "&CHAR(34)&D2&CHAR(34)&" & "&M2&" == "&J2
+
+* for the checks
+/*
+replace ind_var = 0 if key == "uuid:c4551c9e-c0c0-4f4a-b080-e07648e53697" & agri_income_06 == -9
+replace ind_var = 0 if key == "uuid:0b37d7f9-43b1-4a23-b3f0-b41470b1fc34" & agri_income_06 == -9
+replace ind_var = 0 if key == "uuid:14173965-524c-42ed-881d-7ba303969f5f" & agri_income_06 == -9
+
+replace ind_var = 0 if key == "uuid:07815cfd-fc9e-42e6-823e-83d93c2b9461" & agri_income_07_o == -9
+
+replace ind_var = 0 if key == "uuid:07815cfd-fc9e-42e6-823e-83d93c2b9461" & agri_income_08_o == -9
+
+replace ind_var = 0 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6" & agri_income_09_1 == Dépenses familiales
+replace ind_var = 0 if key == "uuid:f0e95d05-f703-4242-bb05-cdf1c7be4e16" & agri_income_09_2 == -9
+replace ind_var = 0 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6" & agri_income_09_3 == Dépenses familiales
+
+replace ind_var = 0 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6" & agri_income_10_1 == 150000
+replace ind_var = 0 if key == "uuid:f0e95d05-f703-4242-bb05-cdf1c7be4e16" & agri_income_10_2 == -9
+replace ind_var = 0 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6" & agri_income_10_3 == 150000
+
+replace ind_var = 0 if key == "uuid:e25110ba-6df8-467a-b38e-577b9986dd00" & agri_income_23_1 == -9
+replace ind_var = 0 if key == "uuid:ebb30e88-28c3-475e-9280-687cff7de2dc" & agri_income_23_1 == -9
+replace ind_var = 0 if key == "uuid:a5be4dc8-b7e6-428a-a5c2-15ca12079878" & agri_income_23_1 == 85000
+replace ind_var = 0 if key == "uuid:85c3253f-8039-4374-b28f-b9a389c51b66" & agri_income_23_1 == -9
+replace ind_var = 0 if key == "uuid:8e7bd22b-c4fc-43d1-a4c2-dc797a036e43" & agri_income_23_1 == -9
+replace ind_var = 0 if key == "uuid:63404b01-6729-4607-9f41-3e8b9153b9ee" & agri_income_23_2 == -9
+replace ind_var = 0 if key == "uuid:ebb30e88-28c3-475e-9280-687cff7de2dc" & agri_income_23_2 == -9
+replace ind_var = 0 if key == "uuid:920076db-929a-4cd7-9cd9-62e37f877a5c" & agri_income_23_2 == 67000
+replace ind_var = 0 if key == "uuid:66b0b7d0-c37f-4ed4-9b1f-72bb0583ba96" & agri_income_23_2 == 150000
+
+replace ind_var = 0 if key == "uuid:88a033cc-ae5d-4bd6-860b-3f14ff81a0f0" & agri_income_23_o == -9
+replace ind_var = 0 if key == "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089" & agri_income_23_o == -9
+
+replace ind_var = 0 if key == "uuid:b66b0159-426b-41be-af40-5d9f2ef3c0e4" & agri_income_39_1 == 182000
+
+replace ind_var = 0 if key == "uuid:6e690859-4817-4dcd-8672-cf08f71f164b" & agri_income_45_10 == 6000
+replace ind_var = 0 if key == "uuid:398fb50b-ed82-412f-948c-8c9b36a4d647" & agri_income_45_8 == -9
+
+replace ind_var = 0 if key == "uuid:8320c233-c8cb-4feb-b803-9ba786d6a34d" & cereals_02_1 == 62400
+replace ind_var = 0 if key == "uuid:7ae9095f-5f7c-4631-81e1-b41e9161fec1" & cereals_02_1 == 12000
+
+replace ind_var = 0 if key == "uuid:bc16c47a-d6eb-4e45-97a7-b5275bfd1f91" & cereals_03_1 == 4150
+replace ind_var = 0 if key == "uuid:d84a37d5-09e5-45ee-94fc-da2954f60d2b" & cereals_03_1 == 5200
+replace ind_var = 0 if key == "uuid:614b075d-1253-46f3-ba62-eae586e7fd4b" & cereals_03_1 == 4000
+replace ind_var = 0 if key == "uuid:f64dd1f9-662f-4e01-b1af-d99bd9d2725f" & cereals_03_1 == 6200
+replace ind_var = 0 if key == "uuid:d4febba0-ef62-4a2d-b215-9f2edf88d392" & cereals_03_1 == 5000
+replace ind_var = 0 if key == "uuid:742d4881-da1e-4e85-9270-0c5bd07d1b00" & cereals_03_1 == 1000
+replace ind_var = 0 if key == "uuid:9e068357-e209-4055-a615-2ceeefc71a06" & cereals_03_1 == 100
+replace ind_var = 0 if key == "uuid:b508a3ab-9afd-4b4d-ae57-9b3b9c7214de" & cereals_03_3 == 800
+replace ind_var = 0 if key == "uuid:27733143-0061-401d-840a-10ef22c379b5" & cereals_03_3 == 250
+
+replace ind_var = 0 if key == "uuid:d84a37d5-09e5-45ee-94fc-da2954f60d2b" & cereals_04_1 == 18200
+replace ind_var = 0 if key == "uuid:bc16c47a-d6eb-4e45-97a7-b5275bfd1f91" & cereals_04_1 == 10790
+replace ind_var = 0 if key == "uuid:843e9a2d-5908-409a-a7ce-e315a6048975" & cereals_04_1 == 22100
+replace ind_var = 0 if key == "uuid:aab4e4e3-d006-4431-b647-f138d25f3b07" & cereals_04_1 == 19550
+replace ind_var = 0 if key == "uuid:f64dd1f9-662f-4e01-b1af-d99bd9d2725f" & cereals_04_1 == 4000
+replace ind_var = 0 if key == "uuid:614b075d-1253-46f3-ba62-eae586e7fd4b" & cereals_04_1 == 1000
+replace ind_var = 0 if key == "uuid:d4febba0-ef62-4a2d-b215-9f2edf88d392" & cereals_04_1 == 8600
+replace ind_var = 0 if key == "uuid:b39da8c4-f8e6-48bb-b75b-9a498d140b43" & cereals_04_1 == 2200
+replace ind_var = 0 if key == "uuid:742d4881-da1e-4e85-9270-0c5bd07d1b00" & cereals_04_1 == 2000
+replace ind_var = 0 if key == "uuid:ba2ff202-cbd1-4993-b0e8-098121069f93" & cereals_04_1 == 1200
+replace ind_var = 0 if key == "uuid:4ea2408a-89a2-4bd4-8bac-9a8ebbffadd7" & cereals_04_1 == 34000
+replace ind_var = 0 if key == "uuid:a6c6ad01-0cb0-4c9f-823c-dc6dc4a14256" & cereals_04_1 == 20500
+replace ind_var = 0 if key == "uuid:b0a54e9c-c1e3-4274-8dd3-f3e452663310" & cereals_04_1 == 1350
+
+replace ind_var = 0 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3" & farines_02_2 == -9
+
+replace ind_var = 0 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3" & farines_03_2 == -9
+
+replace ind_var = 0 if key == "uuid:6213c19b-f969-425e-8066-f6eee952d92b" & farines_04_1 == 35900
+replace ind_var = 0 if key == "uuid:9dd87d99-ba8b-4d5e-9075-4ef5adbed212" & farines_04_1 == 4800
+replace ind_var = 0 if key == "uuid:b23d6c34-7e39-4cb2-a08f-4e4731c59360" & farines_04_1 == 55930
+replace ind_var = 0 if key == "uuid:081d8522-c607-4fa4-8a13-568ab0f5464b" & farines_04_1 == 5000
+replace ind_var = 0 if key == "uuid:6a21258a-e5af-4762-ad75-fd2a7001d74f" & farines_04_1 == 1185
+replace ind_var = 0 if key == "uuid:4b9d032f-e2ac-4e4f-b7f2-bad5b9917eaf" & farines_04_1 == 970
+replace ind_var = 0 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3" & farines_04_2 == -9
+replace ind_var = 0 if key == "uuid:370d88ef-b3d9-4646-8cfc-1135fc57197a" & farines_04_4 == 3192
+
+replace ind_var = 0 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3" & farines_05_2 == -9
+replace ind_var = 0 if key == "uuid:86eb5846-fbde-44a1-b04c-7dab574f678b" & farines_05_2 == -9
+
+replace ind_var = 0 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e" & hh_14_b_1 == 100
+replace ind_var = 0 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e" & hh_14_b_12 == 100
+replace ind_var = 0 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e" & hh_14_b_8 == 100
+
+replace ind_var = 0 if key == "uuid:480e7175-e4f0-467b-ae3d-d2d3c957d314" & hh_21_total_4 == 50
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_26_2 == Non
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_26_5 == Non
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_27_2 == Non
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_27_5 == Non
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_39_2 == vivant mais ne résidant pas dans le même ménage
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_39_5 == vivant mais ne résidant pas dans le même ménage
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_40_2 == vivant mais ne résidant pas dans le même ménage
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_40_5 == vivant mais ne résidant pas dans le même ménage
+
+replace ind_var = 0 if key == "uuid:801e11ec-467f-4cc9-9eb6-0dec8dbec2a5" & hh_41_4 == 7
+replace ind_var = 0 if key == "uuid:ce5549e0-79b0-4bde-9e8b-37fab5eedf2f" & hh_41_5 == 5
+replace ind_var = 0 if key == "uuid:d5c7ff2b-5a98-48e6-ab1c-afdf20b145df" & hh_41_8 == 7
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_a_2 == 8000
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_a_5 == 8000
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_b_2 == 15000
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_b_5 == 15000
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_c_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_c_5 == 0
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_d_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_d_5 == 0
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_e_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_e_5 == 0
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_f_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_f_5 == 0
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_g_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_g_5 == 0
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_47_oth_2 == 0
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_47_oth_5 == 0
+
+replace ind_var = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783" & hh_48_2 == Non
+replace ind_var = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4" & hh_48_5 == Non
+
+replace ind_var = 0 if key == "uuid:5ac7ee7b-7dfa-4cf2-8d51-31ad6a4e0d9d" & hh_age_3 == 95
+
+replace ind_var = 0 if key == "uuid:83d16bd0-281f-4b48-9619-8e53f666105d" & hh_education_level_1 == 4
+
+replace ind_var = 0 if key == "uuid:a9c38dbd-844b-4ae2-9ef9-c817fdf5317e" & legumes_01_3 == 0.4
+replace ind_var = 0 if key == "uuid:6fc34a13-7455-46b5-9d1a-5bafa2e11b9e" & legumes_01_3 == 0.4
+
+replace ind_var = 0 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7" & legumes_02_3 == -9
+replace ind_var = 0 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2" & legumes_02_3 == -9
+
+replace ind_var = 0 if key == "uuid:7e459848-09f8-4b84-a8c8-08c5e708cf5d" & legumes_03_3 == 225
+replace ind_var = 0 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec" & legumes_03_3 == -9
+replace ind_var = 0 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d" & legumes_03_3 == 50
+replace ind_var = 0 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258" & legumes_03_3 == 100
+replace ind_var = 0 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b" & legumes_03_3 == 200
+replace ind_var = 0 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096" & legumes_03_3 == 90
+replace ind_var = 0 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7" & legumes_03_3 == 200
+replace ind_var = 0 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2" & legumes_03_3 == 100
+
+replace ind_var = 0 if key == "uuid:64030e2d-2504-47b4-874f-d8b9206b9b4b" & legumes_04_1 == 3600
+replace ind_var = 0 if key == "uuid:9bed3f13-6182-4946-973e-c84ebdb7e64d" & legumes_04_1 == 1450
+replace ind_var = 0 if key == "uuid:667efd5f-8ca5-4590-9186-f6d5a55eb42e" & legumes_04_3 == 11250
+replace ind_var = 0 if key == "uuid:7e459848-09f8-4b84-a8c8-08c5e708cf5d" & legumes_04_3 == 11250
+replace ind_var = 0 if key == "uuid:07374a46-8b35-4535-8e7f-aee405e62880" & legumes_04_3 == 12500
+replace ind_var = 0 if key == "uuid:e25110ba-6df8-467a-b38e-577b9986dd00" & legumes_04_3 == 12400
+replace ind_var = 0 if key == "uuid:e1500728-8f0d-4082-aa0b-7151e4c98c24" & legumes_04_3 == 17200
+replace ind_var = 0 if key == "uuid:dfd04b1f-4f0e-4bf0-a42c-51e756a93966" & legumes_04_3 == 17100
+replace ind_var = 0 if key == "uuid:924e4381-5ab0-4f49-9c41-ddb4d0b33b3d" & legumes_04_3 == 11100
+replace ind_var = 0 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096" & legumes_04_3 == 18135
+replace ind_var = 0 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b" & legumes_04_3 == 5500
+replace ind_var = 0 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d" & legumes_04_3 == 11200
+replace ind_var = 0 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7" & legumes_04_3 == 17000
+replace ind_var = 0 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2" & legumes_04_3 == 12000
+replace ind_var = 0 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258" & legumes_04_3 == 12484
+replace ind_var = 0 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec" & legumes_04_3 == 52000
+replace ind_var = 0 if key == "uuid:f7c1d3b1-0f51-495c-9ed5-7fd642518c73" & legumes_04_3 == 8000
+replace ind_var = 0 if key == "uuid:869babf6-be9d-49ad-a3e6-b949d3719a28" & legumes_04_3 == 13000
+replace ind_var = 0 if key == "uuid:3e4fa814-7e80-4e40-b3a6-f6e938bcc106" & legumes_04_3 == 8000
+replace ind_var = 0 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0" & legumes_04_3 == 11400
+replace ind_var = 0 if key == "uuid:2fba3e48-9d7b-4b32-ab2d-990fc6d2d413" & legumes_04_3 == 8000
+replace ind_var = 0 if key == "uuid:b1d8b6b0-f899-427b-b0a2-96a43f2a092b" & legumes_04_3 == 10200
+replace ind_var = 0 if key == "uuid:c1858219-77cd-4076-8cf8-4059b7d80d2d" & legumes_04_3 == 10200
+replace ind_var = 0 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f" & legumes_04_3 == 16800
+replace ind_var = 0 if key == "uuid:d64a294e-43b9-44cd-aab0-d14bc88d71de" & legumes_04_6 == 8750
+
+replace ind_var = 0 if key == "uuid:cfd81b39-f5e3-40d4-aab0-4b7c3d2da1bd" & legumineuses_01_5 == 0.3
+
+replace ind_var = 0 if key == "uuid:09622dd4-4613-46e3-939b-c3a43a585bb5" & legumineuses_04_1 == 1000
+replace ind_var = 0 if key == "uuid:3b860b05-1279-4807-9ebb-cccdf410537f" & legumineuses_04_1 == 7500
+replace ind_var = 0 if key == "uuid:e9086ca8-03e3-49fb-b7ca-01c40f858435" & legumineuses_04_1 == 1800
+
+replace ind_var = 0 if key == "uuid:b89a7ed1-e6ea-4835-8e6d-2e374b8d1cdb" & o_culture_02 == 12800
+
+replace ind_var = 0 if key == "uuid:57dd6094-f7b5-43e7-9c80-108266eac06b" & o_culture_04 == 2900
+*/
+
+* corrections 
+replace agri_income_06 = -9 if key == "uuid:c4551c9e-c0c0-4f4a-b080-e07648e53697"
+replace agri_income_06 = -9 if key == "uuid:0b37d7f9-43b1-4a23-b3f0-b41470b1fc34"
+replace agri_income_06 = -9 if key == "uuid:14173965-524c-42ed-881d-7ba303969f5f"
+
+replace agri_income_07_o = -9 if key == "uuid:07815cfd-fc9e-42e6-823e-83d93c2b9461"
+
+replace agri_income_08_o = -9 if key == "uuid:07815cfd-fc9e-42e6-823e-83d93c2b9461"
+
+replace agri_income_09_1 = -9 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6"
+replace agri_income_09_2 = -9 if key == "uuid:f0e95d05-f703-4242-bb05-cdf1c7be4e16"
+replace agri_income_09_3 = -9 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6"
+
+replace agri_income_10_1 = 150000 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6"
+replace agri_income_10_2 = -9 if key == "uuid:f0e95d05-f703-4242-bb05-cdf1c7be4e16"
+replace agri_income_10_3 = 150000 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b6"
+
+replace agri_income_23_1 = -9 if key == "uuid:e25110ba-6df8-467a-b38e-577b9986dd00"
+replace agri_income_23_1 = -9 if key == "uuid:ebb30e88-28c3-475e-9280-687cff7de2dc"
+replace agri_income_23_1 = 85000 if key == "uuid:a5be4dc8-b7e6-428a-a5c2-15ca12079878"
+replace agri_income_23_1 = -9 if key == "uuid:85c3253f-8039-4374-b28f-b9a389c51b66"
+replace agri_income_23_1 = -9 if key == "uuid:8e7bd22b-c4fc-43d1-a4c2-dc797a036e43"
+replace agri_income_23_2 = -9 if key == "uuid:63404b01-6729-4607-9f41-3e8b9153b9ee"
+replace agri_income_23_2 = -9 if key == "uuid:ebb30e88-28c3-475e-9280-687cff7de2dc"
+replace agri_income_23_2 = 67000 if key == "uuid:920076db-929a-4cd7-9cd9-62e37f877a5c"
+replace agri_income_23_2 = 150000 if key == "uuid:66b0b7d0-c37f-4ed4-9b1f-72bb0583ba96"
+replace agri_income_23_o = -9 if key == "uuid:88a033cc-ae5d-4bd6-860b-3f14ff81a0f0"
+replace agri_income_23_o = -9 if key == "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089"
+
+replace agri_income_39_1 = 182000 if key == "uuid:b66b0159-426b-41be-af40-5d9f2ef3c0e4"
+
+replace agri_income_45_10 = 6000 if key == "uuid:6e690859-4817-4dcd-8672-cf08f71f164b"
+replace agri_income_45_8 = -9 if key == "uuid:398fb50b-ed82-412f-948c-8c9b36a4d647"
+
+replace cereals_02_1 = 62400 if key == "uuid:8320c233-c8cb-4feb-b803-9ba786d6a34d"
+replace cereals_02_1 = 12000 if key == "uuid:7ae9095f-5f7c-4631-81e1-b41e9161fec1"
+
+replace cereals_03_1 = 4150 if key == "uuid:bc16c47a-d6eb-4e45-97a7-b5275bfd1f91"
+replace cereals_03_1 = 5200 if key == "uuid:d84a37d5-09e5-45ee-94fc-da2954f60d2b"
+replace cereals_03_1 = 4000 if key == "uuid:614b075d-1253-46f3-ba62-eae586e7fd4b"
+replace cereals_03_1 = 6200 if key == "uuid:f64dd1f9-662f-4e01-b1af-d99bd9d2725f"
+replace cereals_03_1 = 5000 if key == "uuid:d4febba0-ef62-4a2d-b215-9f2edf88d392"
+replace cereals_03_1 = 1000 if key == "uuid:742d4881-da1e-4e85-9270-0c5bd07d1b00"
+replace cereals_03_1 = 100 if key == "uuid:9e068357-e209-4055-a615-2ceeefc71a06"
+replace cereals_03_3 = 800 if key == "uuid:b508a3ab-9afd-4b4d-ae57-9b3b9c7214de"
+replace cereals_03_3 = 250 if key == "uuid:27733143-0061-401d-840a-10ef22c379b5"
+
+replace cereals_04_1 = 18200 if key == "uuid:d84a37d5-09e5-45ee-94fc-da2954f60d2b"
+replace cereals_04_1 = 10790 if key == "uuid:bc16c47a-d6eb-4e45-97a7-b5275bfd1f91"
+replace cereals_04_1 = 22100 if key == "uuid:843e9a2d-5908-409a-a7ce-e315a6048975"
+replace cereals_04_1 = 19550 if key == "uuid:aab4e4e3-d006-4431-b647-f138d25f3b07"
+replace cereals_04_1 = 4000 if key == "uuid:f64dd1f9-662f-4e01-b1af-d99bd9d2725f"
+replace cereals_04_1 = 1000 if key == "uuid:614b075d-1253-46f3-ba62-eae586e7fd4b"
+replace cereals_04_1 = 8600 if key == "uuid:d4febba0-ef62-4a2d-b215-9f2edf88d392"
+replace cereals_04_1 = 2200 if key == "uuid:b39da8c4-f8e6-48bb-b75b-9a498d140b43"
+replace cereals_04_1 = 2000 if key == "uuid:742d4881-da1e-4e85-9270-0c5bd07d1b00"
+replace cereals_04_1 = 1200 if key == "uuid:ba2ff202-cbd1-4993-b0e8-098121069f93"
+replace cereals_04_1 = 34000 if key == "uuid:4ea2408a-89a2-4bd4-8bac-9a8ebbffadd7"
+replace cereals_04_1 = 20500 if key == "uuid:a6c6ad01-0cb0-4c9f-823c-dc6dc4a14256"
+replace cereals_04_1 = 1350 if key == "uuid:b0a54e9c-c1e3-4274-8dd3-f3e452663310"
+
+replace farines_02_2 = -9 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3"
+
+replace farines_03_2 = -9 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3"
+
+replace farines_04_1 = 35900 if key == "uuid:6213c19b-f969-425e-8066-f6eee952d92b"
+replace farines_04_1 = 4800 if key == "uuid:9dd87d99-ba8b-4d5e-9075-4ef5adbed212"
+replace farines_04_1 = 55930 if key == "uuid:b23d6c34-7e39-4cb2-a08f-4e4731c59360"
+replace farines_04_1 = 5000 if key == "uuid:081d8522-c607-4fa4-8a13-568ab0f5464b"
+replace farines_04_1 = 1185 if key == "uuid:6a21258a-e5af-4762-ad75-fd2a7001d74f"
+replace farines_04_1 = 970 if key == "uuid:4b9d032f-e2ac-4e4f-b7f2-bad5b9917eaf"
+replace farines_04_2 = -9 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3"
+replace farines_04_4 = 3192 if key == "uuid:370d88ef-b3d9-4646-8cfc-1135fc57197a"
+
+replace farines_05_2 = -9 if key == "uuid:c0442e67-dd33-43e3-abe6-5ca3872ac0b3"
+replace farines_05_2 = -9 if key == "uuid:86eb5846-fbde-44a1-b04c-7dab574f678b"
+
+replace hh_14_b_1 = 100 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e"
+replace hh_14_b_12 = 100 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e"
+replace hh_14_b_8 = 100 if key == "uuid:79e1a0b4-c1c2-4b85-89f7-854a3b3fbc1e"
+
+
+// replace hh_21_total_4 = 50 if key == "uuid:480e7175-e4f0-467b-ae3d-d2d3c957d314"
+replace hh_21_4_1 = 12 if key == "uuid:480e7175-e4f0-467b-ae3d-d2d3c957d314"
+replace hh_21_4_2 = 20 if key == "uuid:480e7175-e4f0-467b-ae3d-d2d3c957d314"
+
+replace hh_26_2 = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_26_5 = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+
+replace hh_27_2 = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_27_5 = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+
+* no longer in the household
+replace hh_39_2 = -6 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_39_5 = -6 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+
+* no longer in the household
+replace hh_40_2 = -6 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_40_5 = -6 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+
+replace hh_41_4 = 7 if key == "uuid:801e11ec-467f-4cc9-9eb6-0dec8dbec2a5"
+replace hh_41_5 = 5 if key == "uuid:ce5549e0-79b0-4bde-9e8b-37fab5eedf2f"
+replace hh_41_8 = 7 if key == "uuid:d5c7ff2b-5a98-48e6-ab1c-afdf20b145df"
+
+replace hh_47_a_2 = 8000 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_47_a_5 = 8000 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+replace hh_47_b_2 = 15000 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_47_b_5 = 15000 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+replace hh_47_c_2 = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_47_c_5 = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+replace hh_47_d_2 = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_47_d_5 = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+replace hh_47_e_2 = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_47_e_5 = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+replace hh_47_f_2 = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_47_f_5 = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+replace hh_47_g_2 = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_47_g_5 = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+replace hh_47_oth_2 = "" if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_47_oth_5 = . if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+
+replace hh_48_2 = 0 if key == "uuid:e70a0dfe-c497-413b-9432-7fb876a24783"
+replace hh_48_5 = 0 if key == "uuid:032096e6-8a3f-45f6-aa8f-3281668a0dc4"
+
+replace age_3 = 95 if key == "uuid:5ac7ee7b-7dfa-4cf2-8d51-31ad6a4e0d9d"
+
+replace hh_education_level_1 = 4 if key == "uuid:83d16bd0-281f-4b48-9619-8e53f666105d"
+
+replace legumes_01_3 = 0.4 if key == "uuid:a9c38dbd-844b-4ae2-9ef9-c817fdf5317e"
+replace legumes_01_3 = 0.4 if key == "uuid:6fc34a13-7455-46b5-9d1a-5bafa2e11b9e"
+
+replace legumes_02_3 = -9 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d"
+replace legumes_02_3 = -9 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258"
+replace legumes_02_3 = -9 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b"
+replace legumes_02_3 = -9 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec"
+replace legumes_02_3 = -9 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096"
+replace legumes_02_3 = -9 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7"
+replace legumes_02_3 = -9 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2"
+
+replace legumes_03_3 = 225 if key == "uuid:7e459848-09f8-4b84-a8c8-08c5e708cf5d"
+replace legumes_03_3 = -9 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec"
+replace legumes_03_3 = 50 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d"
+replace legumes_03_3 = 100 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258"
+replace legumes_03_3 = 200 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b"
+replace legumes_03_3 = 90 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096"
+replace legumes_03_3 = 200 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7"
+replace legumes_03_3 = 100 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2"
+
+replace legumes_04_1 = 3600 if key == "uuid:64030e2d-2504-47b4-874f-d8b9206b9b4b"
+replace legumes_04_1 = 1450 if key == "uuid:9bed3f13-6182-4946-973e-c84ebdb7e64d"
+replace legumes_04_3 = 11250 if key == "uuid:667efd5f-8ca5-4590-9186-f6d5a55eb42e"
+replace legumes_04_3 = 11250 if key == "uuid:7e459848-09f8-4b84-a8c8-08c5e708cf5d"
+replace legumes_04_3 = 12500 if key == "uuid:07374a46-8b35-4535-8e7f-aee405e62880"
+replace legumes_04_3 = 12400 if key == "uuid:e25110ba-6df8-467a-b38e-577b9986dd00"
+replace legumes_04_3 = 17200 if key == "uuid:e1500728-8f0d-4082-aa0b-7151e4c98c24"
+replace legumes_04_3 = 17100 if key == "uuid:dfd04b1f-4f0e-4bf0-a42c-51e756a93966"
+replace legumes_04_3 = 11100 if key == "uuid:924e4381-5ab0-4f49-9c41-ddb4d0b33b3d"
+replace legumes_04_3 = 18135 if key == "uuid:3d4f6649-d0b1-46a5-afa1-70ff40b86096"
+replace legumes_04_3 = 5500 if key == "uuid:216ebb08-a2a9-4d09-8979-04f88d70617b"
+replace legumes_04_3 = 11200 if key == "uuid:6133e860-70a5-4ea2-87a9-b87d1869de3d"
+replace legumes_04_3 = 17000 if key == "uuid:aa66233f-4955-47fc-beb9-242d22e341b7"
+replace legumes_04_3 = 12000 if key == "uuid:b9348d87-285c-4b74-bfcc-4ec54fbcaef2"
+replace legumes_04_3 = 12484 if key == "uuid:b7f22d65-4b4f-445b-9826-891455b4c258"
+replace legumes_04_3 = 52000 if key == "uuid:f8570de1-84f3-4c5e-b2e3-c17116a88dec"
+replace legumes_04_3 = 8000 if key == "uuid:f7c1d3b1-0f51-495c-9ed5-7fd642518c73"
+replace legumes_04_3 = 13000 if key == "uuid:869babf6-be9d-49ad-a3e6-b949d3719a28"
+replace legumes_04_3 = 8000 if key == "uuid:3e4fa814-7e80-4e40-b3a6-f6e938bcc106"
+replace legumes_04_3 = 11400 if key == "uuid:91d4c4b4-ac34-42e9-9e3d-c3491b708ca0"
+replace legumes_04_3 = 8000 if key == "uuid:2fba3e48-9d7b-4b32-ab2d-990fc6d2d413"
+replace legumes_04_3 = 10200 if key == "uuid:b1d8b6b0-f899-427b-b0a2-96a43f2a092b"
+replace legumes_04_3 = 10200 if key == "uuid:c1858219-77cd-4076-8cf8-4059b7d80d2d"
+replace legumes_04_3 = 16800 if key == "uuid:9a2701e9-2f77-43c6-948a-00c892e2739f"
+replace legumes_04_6 = 8750 if key == "uuid:d64a294e-43b9-44cd-aab0-d14bc88d71de"
+
+replace legumineuses_01_5 = 0.3 if key == "uuid:cfd81b39-f5e3-40d4-aab0-4b7c3d2da1bd"
+
+replace legumineuses_04_1 = 1000 if key == "uuid:09622dd4-4613-46e3-939b-c3a43a585bb5"
+replace legumineuses_04_1 = 7500 if key == "uuid:3b860b05-1279-4807-9ebb-cccdf410537f"
+replace legumineuses_04_1 = 1800 if key == "uuid:e9086ca8-03e3-49fb-b7ca-01c40f858435"
+
+replace o_culture_02 = 12800 if key == "uuid:b89a7ed1-e6ea-4835-8e6d-2e374b8d1cdb"
+replace o_culture_04 = 2900 if key == "uuid:57dd6094-f7b5-43e7-9c80-108266eac06b"
+
+
+
+* Save the corrected dataset
+export delimited using "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_5Mar2025.csv", replace
+
+save "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_5Mar2025.dta", replace

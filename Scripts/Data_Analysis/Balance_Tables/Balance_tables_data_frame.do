@@ -15,7 +15,7 @@
 	* Complete_Baseline_Standard_Of_Living.dta
 	* Complete_Baseline_Public_Goods_Game.dta
 	* Complete_Baseline_Enumerator_Observations.dta
-	* Complete_Baseline_Beleifs.dta
+	* Complete_Baseline_Beliefs.dta
 	* Complete_Baseline_Community.dta
 	* Treated_variables_df.dta
 	* PCA_asset_index_var.dta
@@ -224,7 +224,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 	label variable species_6 "Animaux de trait"
 	label variable species_7 "Porcs"
 	label variable species_8 "Volaille"
-	* Beleifs section 
+	* Beliefs section 
 	label variable beliefs_01 "Quelle est la probabilite que vous contractiez la bilharziose au cours des 12 prochains mois"
 	label variable beliefs_02 "Quelle est la probabilite qu'un membre de votre menage contracte la bilharziose au cours des 12 prochains mois"
 	label variable beliefs_03 "Quelle est la probabilite qu'un enfant choisi au hasard dans votre village, age de 5 a 14 ans, contracte la bilharziose au cours des 12 prochains mois"
@@ -312,9 +312,12 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 * REPLACE MISSINGS 
 *<><<><><>><><<><><>>
 
-** replace 2s for hh_03 health_5_2 health_5_5 health_5_6 as missings 
+** replace 2s for variables that have option "I don't know" 
+	*1 Yes
+	*0 No
+	*2 Don't know / Don't answer
 
-foreach var in hh_03_ health_5_2_ health_5_5_ health_5_6_ ///
+foreach var in hh_03_ hh_26_ hh_27_ hh_37_ health_5_2_ health_5_5_ health_5_6_ ///
     agri_6_34_comp_1 agri_6_34_comp_2 agri_6_34_comp_3 agri_6_34_comp_4 agri_6_34_comp_5 ///
     agri_6_34_comp_6 agri_6_34_comp_7 agri_6_34_comp_8 agri_6_34_comp_9 agri_6_34_comp_10 agri_6_34_comp_11 {
     replace `var' = .a if `var' == 2
@@ -417,6 +420,17 @@ foreach x in 0 1 2 3 4 99 {
 
 * Creating binary variables for hh_29
 			gen hh_29_bin = (hh_29 > 6) ///greater than primary level
+			
+* Creating binary variables for hh_31
+
+	*1. Graduated, studies completed
+	*2. Moving to the next class
+	*3. Failure, repetition
+	*5. Dropping out during the year
+	
+			gen hh_31_bin = 0
+			replace hh_31_bin = 1 if hh_31_ == 1 | hh_31_ == 2
+
 
 /*
 foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
@@ -727,7 +741,7 @@ save `balance_table_ata'
 		collapse (mean) ///
 			hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
 			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_bin /// 	
-			hh_26_ hh_27_ hh_31_ hh_37_ hh_38_ ///  //edu vars 
+			hh_26_ hh_27_  hh_31_bin hh_37_ hh_38_  ///  //edu vars 
 			health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
 			agri_income_01 agri_income_05 ///
 			montant_02 montant_05 face_04 face_13 game_A_total game_B_total ///
@@ -741,7 +755,7 @@ save `balance_table_ata'
 
 		order hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
 			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_bin /// 	
-			hh_26_ hh_27_ hh_31_ hh_37_ hh_38_ ///  //edu vars 
+			hh_26_ hh_27_ hh_31_bin hh_37_ hh_38_ ///  //edu vars 
 			health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
 			agri_income_01 agri_income_05 ///
 			montant_02 montant_05 face_04 face_13 game_A_total game_B_total ///
@@ -760,7 +774,7 @@ save `balance_table_ata'
 			label variable hh_age_h "Household head age"
 			label variable hh_gender_h "Household head gender"
 			label variable hh_education_skills_5_h "Indicator that household head is literate (1=Yes, 0=No)"
-			label variable hh_education_level_bin_h "Indicator for selected household head education level"
+			label variable hh_education_level_bin_h "Indicator for household head with secondary education or higher"
 			label variable hh_numero "Size of household"
 			
 			label variable hh_03_ "Worked in domestic agricultural activities?"
@@ -795,13 +809,15 @@ save `balance_table_ata'
 			label variable hh_15_4 "Raw material for the biodigester"
 			label variable hh_15_5 "Nothing"
 			label variable hh_15_99 "Other (to be specified)"
+			
 			label variable hh_16_ "Hours spent producing fertilizer, purchasing it, or applying it on the field"
 			label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
-			label variable hh_27_ "Attended non-formal school or training? (1=Yes, 2=No)"
+			label variable hh_27_ "Attended non-formal school or training? (1=Yes, 0=No, asked to children)"
 			label variable hh_29_bin "Highest level and grade completed in school"
 			label variable hh_31_ "School performance during the 2023/2024 year"
+			label variable hh_31_bin "Indicator if student completed studies or moved to next class (1=Yes, 0=No, asked to children)"
 			label variable hh_38_ "Days attended school in the past 7 days"
-			label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 2=No)"
+			label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 0=No, asked to children)"
 		
 			label variable health_5_2_ "Has [Name] been ill last 12 months"
 			label variable health_5_3_bin "Indicator for bilharzia or diarrhea in the past 12 months"
@@ -876,7 +892,7 @@ save `balance_table_ata'
 preserve 
 
 		 keep hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
-		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_27_ hh_29_bin hh_31_ hh_37_ hh_38_  ///
+		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_27_ hh_29_bin hh_31_bin hh_37_ hh_38_  ///
 		 living_01_bin game_A_total game_B_total   ///
 		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
 		 agri_income_01 agri_income_05 ///
@@ -885,7 +901,7 @@ preserve
 		 num_water_access_points q_51 target_village
 		 
 		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
-		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_27_ hh_29_bin hh_31_ hh_37_ hh_38_  ///
+		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_27_ hh_29_bin hh_31_bin hh_37_ hh_38_  ///
 		 living_01_bin game_A_total game_B_total   ///
 		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
 		 agri_income_01 agri_income_05 ///

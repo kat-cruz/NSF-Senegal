@@ -70,7 +70,7 @@ balance_df
 
 
 ```{r}
-
+balance_df
 
 # Adding a single categorical variable for household training categories
 balance_df <- balance_df %>%
@@ -82,11 +82,12 @@ balance_df <- balance_df %>%
     treatment_group = case_when(
       group %in% c("0A", "0B") ~ "Control",
       group %in% c("1A", "1B") ~ "Treatment1", # Public health trained
+      group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # All Local Control
       group %in% c("2A", "2B") ~ "Treatment2", # Private benefits trained
       group %in% c("3A", "3B") ~ "Treatment3"  # Public and private trained
     )
   ) %>%
-  select(-group)
+  select(-group, -trained_hh) 
 
 long_data <- balance_df %>%
   pivot_longer(
@@ -175,71 +176,100 @@ summary_table <- summary_table %>%
     variable == "hhid" ~ "Household ID",
     variable == "trained_hh" ~ "Trained household",
     variable == "hh_age_h" ~ "Household head age",
-    variable == "hh_education_level_bin_h" ~ "Indicator for selected household head education level",
+    variable == "hh_education_level_bin_h" ~ "Indicator for household head with secondary education or higher (1=Yes, 0=No)",
     variable == "hh_education_skills_5_h" ~ "Indicator that household head is literate (1=Yes, 0=No)",
-    variable == "hh_gender_h" ~ "Household head gender",
+    variable == "hh_gender_h" ~ "Household head gender (1=Male, 0=Female)",
     variable == "hh_numero" ~ "Size of household",
     
-    variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities (1=Yes, 0=No) ",
+    variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities (1=Yes, 0=No) †",
     variable == "hh_10_" ~ "Hours per week spent within 1 meter of surface water source",
-    variable == "hh_12_6_" ~ "Harvest aquatic vegetation",
+    variable == "hh_12_6_" ~ "Indicator for those who harvested aquatic vegetation, among those who spent time near a water source (1=Yes, 0=No)",
     variable == "hh_16_" ~ "Hours spent producing, purchasing, or applying fertilizer",
-    variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source",
+    variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
     
-    variable == "hh_26_" ~ "Currently enrolled in formal school? (1=Yes, 2=No, asked to children)",
-    variable == "hh_27_" ~ "Attended non-formal school or training? (1=Yes, 2=No, asked to children)",
-    variable == "hh_29_bin" ~ "Indicator if achieved any level higher than primary 6th grade (Asked to children)",
-    variable == "hh_31_" ~ "School performance during the 2023/2024 year (Asked to children)",
-    variable == "hh_37_" ~ "Missed >1 consecutive week of school due to illness? (1=Yes, 2=No, asked to children)",
-    variable == "hh_38_" ~ "Days attended school in the past 7 days (Asked to children)",
+    variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked to children) †",
+    variable == "hh_27_" ~ "Indicator if attended non-formal school or training? (1=Yes, 0=No, asked to children) †",
+    variable == "hh_29_bin" ~ "Indicator if achieved any level higher than primary grade (1=Yes, 0=No, asked to children)",
+    variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class (1=Yes, 0=No, asked to children)",
+    variable == "hh_37_" ~ "Indicator if missed >1 consecutive week of school due to illness? (1=Yes, 0=No, asked to children) †",
+    variable == "hh_38_" ~ "Number of attended school days in the past week (Asked to children)",
     
-    variable == "living_01_bin" ~ "Selected tap water as main drinking source",
-    variable == "game_A_total" ~ "Total paid for Game A",
-    variable == "game_B_total" ~ "Total paid for Game B",
+    variable == "living_01_bin" ~ "Indicator for selected tap water as main drinking source (1=Yes, 0=No)",
+    variable == "game_A_total" ~ "Total paid for Game A (CFA)",
+    variable == "game_B_total" ~ "Total paid for Game B (CFA)",
     
     variable == "TLU" ~ "Tropical livestock units",
     variable == "agri_6_15" ~ "Number of cultivated plots",
-    variable == "agri_6_32_bin" ~ "Used any organic fertilizer",
-    variable == "agri_6_36_bin" ~ "Used any inorganic/chemical fertilizer",
+    variable == "agri_6_32_bin" ~ "Indicator if used any organic fertilizer (1=Yes, 0=No)",
+    variable == "agri_6_36_bin" ~ "Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)",
     variable == "total_land_ha" ~ "Total land owned (hectares)",
-    variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No)",
+    variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No) †",
     
-    variable == "agri_income_01" ~ "Engaged in paid agricultural work in last 12 months?",
+    variable == "agri_income_01" ~ "Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †",
     variable == "agri_income_05" ~ "Amount received for agricultural work",
     
-    variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree)",
-    variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia",
-    variable == "beliefs_03_bin" ~ "Probability of a child contracting bilharzia",
-    variable == "beliefs_04_bin" ~ "Agree: Village land should belong to community",
-    variable == "beliefs_05_bin" ~ "Agree: Village water sources should belong to community",
-    variable == "beliefs_06_bin" ~ "Agree: Right to products from own land",
-    variable == "beliefs_07_bin" ~ "Agree: Right to products from community land worked on",
-    variable == "beliefs_08_bin" ~ "Agree: Right to products from community water sources fished in",
-    variable == "beliefs_09_bin" ~ "Agree: Right to products from community water sources harvested from",
+    variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree) +",
+    variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia (1=Yes, 0=No) +",
+    variable == "beliefs_03_bin" ~ "Probability of a child contracting bilharzia (1=Yes, 0=No) +",
+    variable == "beliefs_04_bin" ~ "Agree: Village land should belong to community (1=Yes, 0=No) +",
+    variable == "beliefs_05_bin" ~ "Agree: Village water sources should belong to community (1=Yes, 0=No) +",
+    variable == "beliefs_06_bin" ~ "Agree: Right to products from own land (1=Yes, 0=No) +",
+    variable == "beliefs_07_bin" ~ "Agree: Right to products from community land worked on (1=Yes, 0=No) +",
+    variable == "beliefs_08_bin" ~ "Agree: Right to products from community water sources fished in (1=Yes, 0=No) +",
+    variable == "beliefs_09_bin" ~ "Agree: Right to products from community water sources harvested from (1=Yes, 0=No) +",
     
-    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months ((1=Yes, 0=No, among those reporting illness)",
-    variable == "health_5_6_" ~ "Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No)",
+    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness)",
+    variable == "health_5_6_" ~ "Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †",
     
     variable == "num_water_access_points" ~ "Number of village water access points",
-    variable == "q_51" ~ "Distance to nearest healthcare center (km)",
-    variable == "target_village" ~ "Indicator for auction village",
+    variable == "q_51" ~ "Distance to nearest healthcare center (km) [village level]",
+    variable == "target_village" ~ "Indicator if auction village (1=Yes, 0=No)",
     
     TRUE ~ variable  # Default case
   ))
 
 
 summary_table <- summary_table %>% select(Question, everything()) %>%
-  select(-"stat_type") 
+  select(-"stat_type")  %>%
+  rename(Variable = variable,
+         `Private Treatment` = Treatment1,
+         `Public Treatment` = Treatment2, 
+         `Private and Public Treatment` = Treatment3)
+summary_table
 #%>%   filter(variable != "target_village")
 
-summary_table <- summary_table %>%
-  mutate_all(~ ifelse(is.na(.), "", .))
+# Set working directory
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
 
-summary_table
+# Create table with footnotes using kableExtra
+summary_table %>%
+  kable(format = "html", escape = FALSE, caption = "Summary Table") %>%
+  footnote(
+    general = "Standard deviations in parentheses.",
+    symbol = c(
+      "† Indicates that the 2's from the 'I Don't know' option have been replaced with missing.",
+      "+ Indicates that these binaries were created from Likert scale variables based on response distribution."
+    )
+  ) %>%
+  save_kable("SS_balance_tableV2.html")
 
- setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
- knitr::kable(summary_table, format = "html") %>% save_kable("SS_balance_tableV2.html")
+```
+###Output table
 
+```{r}
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+
+# Create table with footnotes using kableExtra
+summary_table %>%
+  kable(format = "html", escape = FALSE, caption = "Summary Table") %>%
+  footnote(
+    general = "Standard deviations in parentheses.",
+    symbol = c(
+      "† Indicates that the 2's from the 'I Don't know' option have been replaced with missing.",
+      "+ Indicates that these binaries were created from Likert scale variables based on response distribution."
+    )
+  ) %>%
+  save_kable("SS_balance_tableV2.html")
 ```
 
 
@@ -289,19 +319,17 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
     # Convert t-stat and p-value to numeric and round to two decimal places
     regression_results <- regression_results %>%
       mutate(across(c(stat, p), ~ round(.x, 2))) 
-    #%>%  # Round t-stat and p-values
-      #mutate(across(everything(), as.character))  # Convert all columns to character
-    regression_results
+
     # Pivot the table to have variables as rows and comparisons as columns
     final_table <- regression_results %>%
       pivot_wider(names_from = comparison, values_from = c(stat, p))
-    final_table
+
     # Rearrange to stack t-stats and p-values in rows
     final_table <- final_table %>%
       pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
       separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
       pivot_wider(names_from = comparison, values_from = value)
-    final_table
+
     # Add formatting to ensure two decimal places for all numeric values (t-stats and p-values)
     final_table <- final_table %>%
       mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Format with 2 decimals
@@ -312,165 +340,129 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
     # Clean up column names (variable and type) for p-values
 
 print(final_table)
+
+
 ```
 
 ####Add survey questions and values 
 
 ```{r}
 
-index2 <- which(summary_table$variable == "hh_12_1_")
-summary_table <- add_row(summary_table, variable = "hh_12", .before = index2)
-
-# Add "hh_13_1_" above "hh_12"
-index3 <- which(summary_table$variable == "hh_13_01")
-summary_table <- add_row(summary_table, variable = "hh_13", .before = index3)
-
-index5 <- which(summary_table$variable == "species_1")
-final_summary_tabletable <- add_row(summary_table, variable = "species", .before = index5)
+final_table <- final_table %>%
+  mutate(
+    variable = if_else(type == "(p)", "", variable),  # Clear variable when type == "(p)"
+    type = if_else(type == "(p)", "", type) # Clear type when type == "(p)"
+  ) %>%
+  select(-type)  # Remove the 'type' column after modification
 
 
-
-summary_table <- summary_table %>%
-  mutate(Question = case_when(    
+final_table <- final_table %>%
+  mutate(Question = case_when(
+    variable == "hhid_village" ~ "Village ID",
+    variable == "hhid" ~ "Household ID",
+    variable == "trained_hh" ~ "Trained household",
     variable == "hh_age_h" ~ "Household head age",
-    variable == "hh_gender_h" ~ "Household head gender",
-    variable == "hh_education_skills_bin_h" ~ "Indicator for household head education skills:",
-    variable == "hh_education_skills_bin_h" & stat_type == "SD" ~ "\u00A0\u00A0\u00A0Writing, Numbers, Quran in Arabic, Wolof/Pulaar, French reading",
-    variable == "hh_education_level_bin_h" ~ "Indicator for selected household head education level:",
-    variable == "hh_education_level_bin_h" & stat_type == "SD" ~ "\u00A0\u00A0\u00A0Secondary, Higher, Technical/vocational",
-    variable ==  "hh_numero" ~ "Size of household",
-    variable == "hh_03_" ~ "Worked in domestic agricultural activities?",
-    variable == "(hh_03_)" ~ "\u00A0\u00A0\u00A0Yes/No",
-    variable == "hh_10_" ~ "Hours per week spend within 1 meter of surface water source",
-    variable == "hh_11_" ~ "Source(s) of surface water?",
-    variable == "hh_11_1" ~ "\u00A0\u00A0\u00A0Lake",
-    variable == "hh_11_2" ~ "\u00A0\u00A0\u00A0Pond",
-    variable == "hh_11_3" ~ "\u00A0\u00A0\u00A0River",
-    variable == "hh_11_4" ~ "\u00A0\u00A0\u00A0Irrigation channel",
-    variable == "hh_11_99" ~ "\u00A0\u00A0\u00A0Other, give details",
-    variable == "hh_12" ~ "In the past 12 months, why did [NAME] spend time near (< 1 m) or in the water source(s)?",
-    variable == "hh_12_1_" ~ "\u00A0\u00A0\u00A0Fetch water for the household",
-    variable == "hh_12_2_" ~ "\u00A0\u00A0\u00A0Give water to livestock",
-    variable == "hh_12_3_" ~ "\u00A0\u00A0\u00A0Fetch water for agriculture",
-    variable == "hh_12_4_" ~ "\u00A0\u00A0\u00A0Wash clothes",
-    variable == "hh_12_5_" ~ "\u00A0\u00A0\u00A0Do the dishes",
-    variable == "hh_12_6_" ~ "\u00A0\u00A0\u00A0Harvest aquatic vegetation",
-    variable == "hh_12_7_" ~ "\u00A0\u00A0\u00A0Swim/bathe",
-    variable == "hh_12_8_" ~ "\u00A0\u00A0\u00A0Play",
-    variable == "hh_13" ~ "On average how many hours per week did [NAME] spend at water source?",
-    variable == "hh_13_01" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for the household",
-    variable == "hh_13_02" ~ "\u00A0\u00A0\u00A0Hours spent giving water to livestock",
-    variable == "hh_13_03" ~ "\u00A0\u00A0\u00A0Hours spent fetching water for agriculture",
-    variable == "hh_13_04" ~ "\u00A0\u00A0\u00A0Hours spent washing clothes",
-    variable == "hh_13_05" ~ "\u00A0\u00A0\u00A0Hours spent washing the dishes",
-    variable == "hh_13_06" ~ "\u00A0\u00A0\u00A0Hours spent harvesting aquatic vegetation",
-    variable == "hh_13_07" ~ "\u00A0\u00A0\u00A0Hours spent simming/bathing",
-    variable == "hh_13_08" ~ "Hours spent playing in the water ",
-    variable == "hh_14_" ~ "Of those who answered 'Harvest aquatic vegetation', how much aquatic vegetation did [NAME] collect?",
-    variable == "hh_15_" ~ "How did he use aquatic vegetation?",
-    variable == "hh_15_1" ~ "\u00A0\u00A0\u00A0Sell",
-    variable == "hh_15_2" ~ "\u00A0\u00A0\u00A0Fertilizer",
-    variable == "hh_15_3" ~ "\u00A0\u00A0\u00A0Livestock feed",
-    variable == "hh_15_4" ~ "\u00A0\u00A0\u00A0Raw material for thebiodigester",
-    variable == "hh_15_5" ~ "\u00A0\u00A0\u00A0Nothing",
-    variable == "hh_15_99" ~ "\u00A0\u00A0\u00A0Other",
-    variable == "hh_16_" ~ "Hours spend producing fertilizer, purchasing it, or applying it on the field",
-    variable == "health_5_2_" ~ "Has [Name} been ill last 12 months ",
-    variable == "(health_5_2_)" ~ "\u00A0\u00A0\u00A0Yes/No",
-    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months",
-    variable == "health_5_3_1_" ~ "\u00A0\u00A0\u00A0Malaria",
-    variable == "health_5_5_" ~ "Received medication for the treatment of schistosomiasis?",
-    variable == "(health_5_5_)" ~ "\u00A0\u00A0\u00A0Yes/No",
-    variable == "health_5_6_" ~ "Person ever been diagnosed with schistosomiasis?",
-    variable == "(health_5_6_)" ~ "\u00A0\u00A0\u00A0Yes/No",
-     variable == "health_5_12_" ~ "What is the distance in km to this service or healthcare professional?",
-    variable == "agri_6_15" ~ "How many plots within the fields cultivated by the household?",
-    variable == "agri_income_01" ~ "Did you (or any member of your household) engage in paid agricultural work in the last 12 months?",
-    variable == "(agri_income_01)" ~ "Yes/No",   
-    variable == "agri_income_05" ~ "Answered 'yes' to agri_income_01: Amount received in kind/cash for this work",
-    variable == "species" ~ "What species do the owners have?",
-    variable == "species_1" ~ "\u00A0\u00A0\u00A0Cattle",
-    variable == "species_2" ~ "\u00A0\u00A0\u00A0Sheep",
-    variable == "species_3" ~ "\u00A0\u00A0\u00A0Goat",
-    variable == "species_4" ~ "\u00A0\u00A0\u00A0Horse (equine)",
-    variable == "species_5" ~ "\u00A0\u00A0\u00A0Donkey",
-    variable == "species_6" ~ "\u00A0\u00A0\u00A0Draft animals",
-    variable == "species_7" ~ "\u00A0\u00A0\u00A0Pigs",
-    variable == "species_8" ~ "\u00A0\u00A0\u00A0Poultry",
-    variable == "species_9" ~ "\u00A0\u00A0\u00A0Other",
-    variable == "living_01_bin" ~ "Indicator for selected main source of drinking water:",
-    variable == "(living_01_bin)" ~ "\u00A0\u00A0\u00A0Interior tap, Public tap, Neighbor’s tap",
-    variable == "living_04_bin" ~ "Indicator for selected main type of toilet: Flush with sewer, Flush with septic tank",
-    variable == "living_05_bin" ~ "Indicator for electricity as main cooking fuel",
-    variable == "montant_02" ~ "Amount paid by the respondent for game A: ________ FCFA",
-    variable == "montant_05" ~ "Amount paid by the respondent for game B: ________ FCFA",
-    variable == "face_04" ~ "Amount paid by the respondent for game B: ________ FCFA",
-    variable == "face_13" ~ "Amount paid by the respondent for game A: ________ FCFA",
-    variable == "enum_03_bin" ~ "(Enumerator observation) Indicator if concrete/cement is main material for the house roof",
-    variable == "enum_03_bin" ~ "(Enumerator observation) Indicator if concrete/cement is main material for the house roof",
-    variable == "	species_count" ~ "Number of livestock",
-    variable == "enum_05_bin" ~ "(Enumerator observation) Indicator if concrete/cement is main material for the house floor",
-
-  
-    TRUE ~ ""  # Default value if none of the conditions are met
+    variable == "hh_education_level_bin_h" ~ "Indicator for household head with secondary education or higher (1=Yes, 0=No)",
+    variable == "hh_education_skills_5_h" ~ "Indicator that household head is literate (1=Yes, 0=No)",
+    variable == "hh_gender_h" ~ "Household head gender (1=Male, 0=Female)",
+    variable == "hh_numero" ~ "Size of household",
+    
+    variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities (1=Yes, 0=No) †",
+    variable == "hh_10_" ~ "Hours per week spent within 1 meter of surface water source",
+    variable == "hh_12_6_" ~ "Indicator for those who harvested aquatic vegetation, among those who spent time near a water source (1=Yes, 0=No)",
+    variable == "hh_16_" ~ "Hours spent producing, purchasing, or applying fertilizer",
+    variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
+    
+    variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked to children) †",
+    variable == "hh_27_" ~ "Indicator if attended non-formal school or training? (1=Yes, 0=No, asked to children) †",
+    variable == "hh_29_bin" ~ "Indicator if achieved any level higher than primary grade (1=Yes, 0=No, asked to children)",
+    variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class (1=Yes, 0=No, asked to children)",
+    variable == "hh_37_" ~ "Indicator if missed >1 consecutive week of school due to illness? (1=Yes, 0=No, asked to children) †",
+    variable == "hh_38_" ~ "Number of attended school days in the past week (Asked to children)",
+    
+    variable == "living_01_bin" ~ "Indicator for selected tap water as main drinking source (1=Yes, 0=No)",
+    variable == "game_A_total" ~ "Total paid for Game A (CFA)",
+    variable == "game_B_total" ~ "Total paid for Game B (CFA)",
+    
+    variable == "TLU" ~ "Tropical livestock units",
+    variable == "agri_6_15" ~ "Number of cultivated plots",
+    variable == "agri_6_32_bin" ~ "Indicator if used any organic fertilizer (1=Yes, 0=No)",
+    variable == "agri_6_36_bin" ~ "Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)",
+    variable == "total_land_ha" ~ "Total land owned (hectares)",
+    variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No) †",
+    
+    variable == "agri_income_01" ~ "Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †",
+    variable == "agri_income_05" ~ "Amount received for agricultural work",
+    
+    variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree) +",
+    variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia (1=Yes, 0=No) +",
+    variable == "beliefs_03_bin" ~ "Probability of a child contracting bilharzia (1=Yes, 0=No) +",
+    variable == "beliefs_04_bin" ~ "Agree: Village land should belong to community (1=Yes, 0=No) +",
+    variable == "beliefs_05_bin" ~ "Agree: Village water sources should belong to community (1=Yes, 0=No) +",
+    variable == "beliefs_06_bin" ~ "Agree: Right to products from own land (1=Yes, 0=No) +",
+    variable == "beliefs_07_bin" ~ "Agree: Right to products from community land worked on (1=Yes, 0=No) +",
+    variable == "beliefs_08_bin" ~ "Agree: Right to products from community water sources fished in (1=Yes, 0=No) +",
+    variable == "beliefs_09_bin" ~ "Agree: Right to products from community water sources harvested from (1=Yes, 0=No) +",
+    
+    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness)",
+    variable == "health_5_6_" ~ "Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †",
+    
+    variable == "num_water_access_points" ~ "Number of village water access points",
+    variable == "q_51" ~ "Distance to nearest healthcare center (km) [village level]",
+    variable == "target_village" ~ "Indicator if auction village (1=Yes, 0=No)",
+    
+    TRUE ~ variable  # Default case
   ))
 
-summary_table <- summary_table %>% select(Question, everything())
+final_table <- final_table %>% select(Question, everything()) %>%
+  rename(Variable = variable,
+         `Control vs Private Treatment` = `Control vs Treatment1`,
+          `Control vs Public Treatment` = `Control vs Treatment2`,
+          `Control vs Public & Private Treatment` = `Control vs Treatment3`,
+          `Private Treatment vs Public Treatment` = `Treatment1 vs Treatment2`,
+          `Private Treatment vs Public & Private Treatment` = `Treatment1 vs Treatment3`,
+          `Public Treatment vs Public & Private Treatment` = `Treatment2 vs Treatment3`)
 
-summary_table <- summary_table %>%
-  mutate(
-    variable = ifelse(stat_type == "SD" & !is.na(stat_type), "", variable),  # Clear variable when stat_type == "(p)" and not NA
-    stat_type = ifelse(stat_type == "SD" & !is.na(stat_type), "", stat_type)  # Clear stat_type when stat_type == "(p)" and not NA
-  ) %>%
-  select(-"stat_type")  # Remove the 'stat_type' column after modification
-
-
-
-summary_table <- summary_table %>%
-  mutate_all(~ ifelse(is.na(.), "", .))
-
-summary_table
-
-# setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
-# knitr::kable(summary_table, format = "html") %>% save_kable("SS_balance_table.html")
-
-summary_table
 ```
 
-##clean up table
+###Output table
 ```{r}
 
 
-final_table <- final_table %>% select(Question, everything())
-
-
-final_table <- final_table %>%
-  mutate(
-    variable = ifelse(type == "(p)" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and not NA
-    type = ifelse(type == "(p)" & !is.na(type), "", type)  # Clear type when type == "(p)" and not NA
-  ) %>%
-  select(-"type")  # Remove the 'type' column after modification
-
-
-final_table <- final_table %>%
-  mutate_all(~ ifelse(is.na(.), "", .))
-
-
-
-final_table
-#output for now
 setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
-knitr::kable(final_table, format = "html") %>% save_kable("balance_tablev2.html")
 
+final_table %>%
+  kable(format = "html", escape = FALSE, caption = "Balance Table") %>%
+  footnote(
+    general = "P-values in parentheses. Standard errors are clustered at the village level.",
+    symbol = c(
+      "† Indicates that the 2's from the 'I Don't know' option have been replaced with missing.",
+      "+ Indicates that these binaries were created from Likert scale variables based on response distribution."
+    )
+  ) %>%
+  save_kable("balance_tablev3.html")
 
-
+# setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# knitr::kable(final_table, format = "html") %>% save_kable("balance_tablev3.html")
 
 ```
 
+###Function for F-tests on Each Variable
 
 
+```{r}
 
+# Assuming your data is in the `df` dataframe
+# Subset to include only the treatment arms and Local Control (excluding Pure Control)
+df_subset <- df %>% filter(treatment_group %in% c("Local Control", "Treatment1", "Treatment2", "Treatment3"))
 
+# Perform the ANOVA to compare the means of the treatment groups
+anova_result <- aov(value ~ treatment_group, data = df_subset)
+
+# Summary of the ANOVA to get the F-statistic and p-value
+summary(anova_result)
+
+```
 
 
 

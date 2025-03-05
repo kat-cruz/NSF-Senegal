@@ -468,7 +468,36 @@ summary_table
 ```
 
 
-
+####from new markdown
+```{r}
+# summary_table <- summary_table %>%
+#   mutate_all(~ ifelse(is.na(.), "", .))
+## Add foot notes
+# Add footnotes
+# footnote <- "
+# † Indicates that the 2's from the 'I Don't know' option for the variable value have been replaced with missing.
+# + Indicates that these binaries were created from variables of Likert scale, and were selected based on the distribution of the responses.
+# "
+# 
+# # Display table with footnotes
+# summary_table %>%
+#   gt() %>%
+#   tab_footnote(
+#     footnote = "† Indicates that the 2's from the 'I Don't know' option for the variable value have been replaced with missing.",
+#     locations = cells_column_labels(columns = vars(Variable))
+#   ) %>%
+#   tab_footnote(
+#     footnote = "+ Indicates that these binaries were created from variables of Likert scale, and were selected based on the distribution of the responses.",
+#     locations = cells_column_labels(columns = vars(Variable))
+#   )
+# 
+# 
+# summary_table
+# 
+#  setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+#  knitr::kable(summary_table, format = "html") %>% save_kable("SS_balance_tableV2.html")
+#  
+```
 
 
 

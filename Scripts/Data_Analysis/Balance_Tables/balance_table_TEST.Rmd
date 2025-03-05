@@ -96,6 +96,229 @@ print(results_table)
 
 ```
 
+```{r}
+library(dplyr)
+library(gt)
+
+# Generate synthetic data
+set.seed(42)
+
+# Create some fake data
+summary_table <- data.frame(
+  variable = c("trained_hh", "hh_age_h", "hh_gender_h"),
+  Control = c(runif(1, 0, 1), 55, 0.5),
+  Private_Treatment = c(runif(1, 0, 1), 53, 0.6),
+  Public_Treatment = c(runif(1, 0, 1), 54, 0.7),
+  Private_and_Public_Treatment = c(runif(1, 0, 1), 53, 0.8)
+)
+
+# Add standard deviation for each treatment
+summary_table <- summary_table %>%
+  mutate(
+    Control_SD = c(0.1, 1.2, 0.2),
+    Private_Treatment_SD = c(0.2, 1.1, 0.3),
+    Public_Treatment_SD = c(0.3, 1.3, 0.4),
+    Private_and_Public_Treatment_SD = c(0.4, 1.4, 0.5)
+  )
+
+# Reformat data to match your table layout
+summary_table_long <- summary_table %>%
+  pivot_longer(cols = starts_with("Control"), names_to = "Treatment", values_to = "Value") %>%
+  pivot_longer(cols = ends_with("_SD"), names_to = "Treatment_SD", values_to = "SD")
+
+# Format the table with SDs in parentheses
+summary_table_long <- summary_table_long %>%
+  mutate(Value = paste(Value, "(", SD, ")", sep = "")) %>%
+  select(-SD)  # Drop SD column
+
+# Rename columns as needed
+summary_table_long <- summary_table_long %>%
+  rename(Variable = variable)
+
+# Add footnotes
+footnote <- "
+† Indicates that the 2's from the 'I Don't know' option for the variable value have been replaced with missing.
++ Indicates that these binaries were created from variables of Likert scale, and were selected based on the distribution of the responses.
+"
+
+# Display table with footnotes
+summary_table_long %>%
+  gt() %>%
+  tab_footnote(
+    footnote = "† Indicates that the 2's from the 'I Don't know' option for the variable value have been replaced with missing.",
+    locations = cells_column_labels(columns = vars(Variable))
+  ) %>%
+  tab_footnote(
+    footnote = "+ Indicates that these binaries were created from variables of Likert scale, and were selected based on the distribution of the responses.",
+    locations = cells_column_labels(columns = vars(Variable))
+  )
+
+```
+
+```{r}
+install.packages("shiny")
+library(shiny)
+
+# Create a shiny.tag
+my_tag <- tags$div(
+  tags$h1("Hello World"),
+  tags$p("This is a paragraph.")
+)
+
+# Print the shiny.tag object to the console
+print(my_tag)
+```
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  # Output the shiny.tag dynamically
+  uiOutput("my_tag_output")
+)
+
+server <- function(input, output) {
+  output$my_tag_output <- renderUI({
+    # Create and return the shiny.tag
+    tags$div(
+      tags$h1("Hello World"),
+      tags$p("This is a paragraph.")
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+```{r}
+#install.packages("DT")
+library(shiny)
+library(DT)
+
+# Sample summary_table (replace with your actual summary_table)
+summary_table <- data.frame(
+  Variable = c("trained_hh", "hh_age_h"),
+  Control = c("0.00 (0.00)", "55.32 (13.13)"),
+  Private_Treatment = c("0.50 (0.50)", "53.76 (12.69)"),
+  Public_Treatment = c("0.52 (0.50)", "54.30 (12.90)"),
+  Private_and_Public_Treatment = c("0.53 (0.50)", "53.53 (13.67)")
+)
+
+# Define UI
+ui <- fluidPage(
+  titlePanel("Summary Table Output"),
+  DTOutput("table_output") # Placeholder for table
+)
+
+# Define Server
+server <- function(input, output) {
+  output$table_output <- renderDT({
+    datatable(summary_table, options = list(pageLength = 5), rownames = FALSE)
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)
+
+```
+
+```{r}
+# Set a seed for reproducibility
+set.seed(42)
+
+# Define groups and sizes
+groups <- c("Control", "Treatment1", "Treatment2", "Treatment3", "Local Control")
+group_sizes <- rep(100, 5)  # 100 samples per group
+
+# Create a dataframe with hh_id, treatment groups, and some covariates
+df <- data.frame(
+  hhid_village = rep(paste0("010A", 1:5), each = 100),
+  hhid = rep(paste0("010A02"), 500),
+  group = rep(groups, each = 100),
+  variable = rep(c("hh_15_2", "hh_26_", "hh_27_"), length.out = 500),
+  value = rnorm(500, mean = 0, sd = 1)  # Normally distributed values for example
+)
+
+# Add some variation based on treatment groups for outcome variables
+df$value[df$group == "Treatment1"] <- df$value[df$group == "Treatment1"] + 1
+df$value[df$group == "Treatment2"] <- df$value[df$group == "Treatment2"] - 1
+df$value[df$group == "Treatment3"] <- df$value[df$group == "Treatment3"] + 0.5
+
+# Display the first few rows
+head(df)
+
+
+```
+```{r}
+# Function to perform F-test for each variable
+run_f_tests <- function(data, treatment_col, vars_to_test) {
+  results <- list()
+  
+  for (var in vars_to_test) {
+    # Subset the data for the current variable
+    subset <- data[data$variable == var, ]
+    
+    # Run ANOVA for each treatment group
+    anova_result <- aov(value ~ get(treatment_col), data = subset)
+    
+    # Get the F-statistic and p-value
+    f_stat <- summary(anova_result)[[1]]$`F value`[1]
+    p_value <- summary(anova_result)[[1]]$`Pr(>F)`[1]
+    
+    # Store results
+    results <- append(results, list(data.frame(variable = var, 
+                                               f_statistic = round(f_stat, 2), 
+                                               p_value = round(p_value, 4))))
+  }
+  
+  # Combine and return the results as a data frame
+  return(bind_rows(results))
+}
+
+# Example usage with the synthetic data
+f_test_results <- run_f_tests(df, treatment_col = "group", vars_to_test = unique(df$variable))
+print(f_test_results)
+
+```
+#Step 2: Function for F-tests on Each Variable
+```{r}
+# Function to compute Joint F-statistics for each treatment arm
+run_joint_f_test <- function(data, treatment_col, vars_to_test) {
+  results <- list()
+  
+  # Loop over each treatment arm
+  treatments <- unique(data[[treatment_col]])
+  treatments <- treatments[treatments != "Control"]  # Exclude 'Control'
+  
+  for (arm in treatments) {
+    # Subset the data for the current treatment group and variables
+    subset <- data[data[[treatment_col]] %in% c("Control", arm), ]
+    
+    # Create the regression formula
+    formula <- as.formula(paste("value ~", paste(vars_to_test, collapse = " + "), "+", treatment_col))
+    
+    # Run the regression model
+    model <- lm(formula, data = subset)
+    
+    # Compute F-statistic for the joint test
+    f_stat <- summary(model)$fstatistic[1]
+    p_value <- pf(f_stat, df1 = summary(model)$fstatistic[2], df2 = summary(model)$fstatistic[3], lower.tail = FALSE)
+    
+    # Store results for each treatment comparison
+    results <- append(results, list(data.frame(treatment = arm, 
+                                               f_statistic = round(f_stat, 2), 
+                                               p_value = round(p_value, 4))))
+  }
+  
+  # Combine and return the results as a data frame
+  return(bind_rows(results))
+}
+
+# Example usage with the synthetic data
+joint_f_test_results <- run_joint_f_test(df, treatment_col = "group", vars_to_test = unique(df$variable))
+print(joint_f_test_results)
+
+```
 
 
 

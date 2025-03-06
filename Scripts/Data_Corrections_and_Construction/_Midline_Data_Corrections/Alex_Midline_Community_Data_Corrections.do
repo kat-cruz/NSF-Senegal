@@ -160,6 +160,13 @@ replace unit_convert_7 = 10 if phone_resp == 774159313
 replace unit_convert_8 = 50 if phone_resp == 775664893
 replace unit_convert_9 = 50 if phone_resp == 775664893
 
+* Corrections 6May2025
+replace q_43 = 180 if phone_resp == "779829326"   // confirmed value
+replace unit_convert_9 = 50 if phone_resp == "775631152"
+
+
+
+
 
 * Save the corrected dataset
 export excel using "$corrected\CORRECTED_Community_Survey_24Feb2025.xlsx", firstrow(variables) replace

@@ -10583,6 +10583,7 @@ preserve
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_23_o < 0 | agri_income_23_o > 1000000000
+	replace ind_var = 0 if agri_income_23_o = -9 & key = "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089"
 
 	*** keep and add variables to export ***
 	keep if ind_var == 1 

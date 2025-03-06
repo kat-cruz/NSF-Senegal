@@ -70,7 +70,7 @@ balance_df
 
 
 ```{r}
-balance_df
+
 
 # Adding a single categorical variable for household training categories
 balance_df <- balance_df %>%
@@ -86,8 +86,7 @@ balance_df <- balance_df %>%
       group %in% c("2A", "2B") ~ "Treatment2", # Private benefits trained
       group %in% c("3A", "3B") ~ "Treatment3"  # Public and private trained
     )
-  ) %>%
-  select(-group, -trained_hh) 
+  ) %>% select(-group, -trained_hh)
 
 long_data <- balance_df %>%
   pivot_longer(
@@ -279,6 +278,12 @@ summary_table %>%
 
 ```{r}
 
+#<><<><><>><><<><><>>
+#CREATE REGRESSION FUNCTION
+#<><<><><>><><<><><>>
+      # This is a double nested loop 
+      # The first part runs the function on the arms
+      # The second part runs the function on the variables
 
 run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
   results <- list()
@@ -309,40 +314,256 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
   bind_rows(results)
 }
 
-###issue with rounding - need to first change into long format with everythingas doubles then stack pvalues, THEN change to characters to add parenthesis 
+    vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+    regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test_reg)
+regression_results
+#<><<><><>><><<><><>>
+#CREATE F-STAT FUNCTION FOR EACH VAR
+#<><<><><>><><<><><>>
+
+# Function to perform F-test for each variable
+run_f_tests <- function(data, treatment_col, vars_to_test) {
+  results <- list()
+  
+  for (var in vars_to_test) {
+    # Construct formula dynamically (e.g., hh_15_2 ~ group)
+    formula <- as.formula(paste(var, "~", treatment_col))
+        # Run ANOVA for each variable
+    anova_result <- aov(formula, data = data)
+        # Get the F-statistic and p-value
+    f_stat <- summary(anova_result)[[1]]$`F value`[1]
+    p_value <- summary(anova_result)[[1]]$`Pr(>F)`[1]
     
-    names(balance_df)
-    vars_to_test <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-    
-    regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test)
-    
-    # Convert t-stat and p-value to numeric and round to two decimal places
-    regression_results <- regression_results %>%
-      mutate(across(c(stat, p), ~ round(.x, 2))) 
+    # Store results
+    results <- append(results, list(data.frame(variable = var, 
+                                               f_statistic = round(f_stat, 2), 
+                                               p_value = round(p_value, 4))))
+  }
+  # Combine and return the results as a data frame
+  return(bind_rows(results))
+}
+    vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+    # Example usage
+    f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
+    print(f_test_results)
 
-    # Pivot the table to have variables as rows and comparisons as columns
-    final_table <- regression_results %>%
-      pivot_wider(names_from = comparison, values_from = c(stat, p))
 
-    # Rearrange to stack t-stats and p-values in rows
-    final_table <- final_table %>%
-      pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
-      separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
-      pivot_wider(names_from = comparison, values_from = value)
 
-    # Add formatting to ensure two decimal places for all numeric values (t-stats and p-values)
-    final_table <- final_table %>%
-      mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Format with 2 decimals
-      mutate(across(everything(), as.character)) %>%  # Ensure all columns are characters
-      mutate(across(everything(), ~ ifelse(grepl("p", type),
-                                           paste0("(", trimws(.x), ")"),  # Trim any extra spaces around the value
-                                           .x)))  # Add parentheses for p.value rows
-    # Clean up column names (variable and type) for p-values
+#<><<><><>><><<><><>>
+#CREATE F-STAT FUNCTION FOR TREATMENT ARM
+#<><<><><>><><<><><>>
 
-print(final_table)
+# Function to compute Joint F-statistics for each treatment arm (Wide Format)
+run_pairwise_f_test <- function(data, treatment_col, vars_to_test) {
+  results <- list()
+  
+  # Get all treatment arms (excluding 'Control')
+  treatments <- unique(data[[treatment_col]])
+  treatments <- treatments[treatments != "Control"]
+  
+  # Loop over all pairwise combinations of treatments
+  for (i in 1:(length(treatments) - 1)) {
+    for (j in (i + 1):length(treatments)) {
+      # Subset the data for the current pair of treatments
+      subset <- data[data[[treatment_col]] %in% c(treatments[i], treatments[j]), ]
+      
+      # Create regression formula (e.g., hh_15_2 + hh_26_ + hh_27_ ~ group)
+      formula <- as.formula(paste(paste(vars_to_test, collapse = " + "), "~", treatment_col))
+      
+      # Run the regression model
+      model <- lm(formula, data = subset)
+      
+      # Compute F-statistic for the joint test
+      f_stat <- summary(model)$fstatistic[1]
+      p_value <- pf(f_stat, df1 = summary(model)$fstatistic[2], df2 = summary(model)$fstatistic[3], lower.tail = FALSE)
+      
+      # Store results for this pairwise comparison
+      results <- append(results, list(data.frame(treatment_comparison = paste(treatments[i], "vs", treatments[j]),
+                                                 f_statistic = round(f_stat, 2), 
+                                                 p_value = round(p_value, 4))))
+    }
+  }
+  
+  # Combine and return the results as a data frame
+  return(bind_rows(results))
+}
+
+ vars_to_test_fjoint <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+    joint_f_test_results <- run_pairwise_f_test(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fjoint)
+
+
+   
+
+# Print results
+print(joint_f_test_results)
+print(f_test_results)
+regression_results
+
 
 
 ```
+
+
+
+##Create completed table
+
+
+```{r}
+
+
+# Pivot the table to have variables as rows and comparisons as columns
+final_table <- regression_results %>%
+  pivot_wider(names_from = comparison, values_from = c(stat, p))
+
+# Rearrange to stack t-stats and p-values in rows
+final_table <- final_table %>%
+  pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
+  separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
+  pivot_wider(names_from = comparison, values_from = value)
+
+# Merge F-statistics data into final_table
+final_table <- final_table %>%
+  left_join(f_test_results, by = "variable")
+
+# Replace the value underneath f_stat with p_value
+final_table <- final_table %>%
+  mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+  mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Ensure 2 decimal places
+  mutate(across(everything(), as.character)) %>%  # Convert all to character
+  mutate(across(everything(), ~ ifelse(grepl("p", type), paste0("(", trimws(.x), ")"), .x)))  # Format p-values with parentheses
+
+# Print the final formatted table
+print(final_table)
+
+##Issue here - figure out how to append bottom row
+
+f_stats_row <- data.frame(
+  variable = "F statistics of Joint F-test:", 
+  treatment1_vs_treatment2 = joint_f_test_results$f_statistic_Treatment1_vs_Treatment2[1], 
+  treatment1_vs_local_control = joint_f_test_results$f_statistic_Treatment1_vs_Local_Control[1], 
+  treatment1_vs_treatment3 = joint_f_test_results$f_statistic_Treatment1_vs_Treatment3[1],
+  treatment2_vs_local_control = joint_f_test_results$f_statistic_Treatment2_vs_Local_Control[1],
+  treatment2_vs_treatment3 = joint_f_test_results$f_statistic_Treatment2_vs_Treatment3[1]
+)
+
+p_values_row <- data.frame(
+  variable = "P-value", 
+  treatment1_vs_treatment2 = paste0("(", round(joint_f_test_results$p_value_Treatment1_vs_Treatment2[1], 4), ")"), 
+  treatment1_vs_local_control = paste0("(", round(joint_f_test_results$p_value_Treatment1_vs_Local_Control[1], 4), ")"), 
+  treatment1_vs_treatment3 = paste0("(", round(joint_f_test_results$p_value_Treatment1_vs_Treatment3[1], 4), ")"),
+  treatment2_vs_local_control = paste0("(", round(joint_f_test_results$p_value_Treatment2_vs_Local_Control[1], 4), ")"),
+  treatment2_vs_treatment3 = paste0("(", round(joint_f_test_results$p_value_Treatment2_vs_Treatment3[1], 4), ")")
+)
+
+# Combine pairwise results and append the F-stat and P-value rows
+final_table <- bind_rows(pairwise_f_test_results, f_stats_row, p_values_row)
+
+# Print the final table
+print(final_table)
+
+
+
+
+
+
+
+
+
+    # Convert t-stat and p-value to numeric and round to two decimal places
+#     merged_results <- merged_results %>%
+#       mutate(across(c(stat, p), ~ round(.x, 2))) 
+# 
+#     # Pivot the table to have variables as rows and comparisons as columns
+#     final_table <- merged_results %>%
+#       pivot_wider(names_from = comparison, values_from = c(stat, p))
+# final_table
+#     # Rearrange to stack t-stats and p-values in rows
+#     final_table <- final_table %>%
+#       pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
+#       separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
+#       pivot_wider(names_from = comparison, values_from = value)
+# 
+#     # Add formatting to ensure two decimal places for all numeric values (t-stats and p-values)
+#     final_table <- final_table %>%
+#       mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Format with 2 decimals
+#       mutate(across(everything(), as.character)) %>%  # Ensure all columns are characters
+#       mutate(across(everything(), ~ ifelse(grepl("p", type),
+#                                            paste0("(", trimws(.x), ")"),  # Trim any extra spaces around the value
+#                                            .x)))  # Add parentheses for p.value rows
+#     # Clean up column names (variable and type) for p-values
+# 
+# print(final_table)
+# 
+# 
+# 
+# 
+#     # Convert t-stat and p-value to numeric and round to two decimal places
+#     regression_results <- regression_results %>%
+#       mutate(across(c(stat, p), ~ round(.x, 2)))
+# 
+#     # Pivot the table to have variables as rows and comparisons as columns
+#     final_table <- regression_results %>%
+#       pivot_wider(names_from = comparison, values_from = c(stat, p))
+# final_table
+#     # Rearrange to stack t-stats and p-values in rows
+#     final_table <- final_table %>%
+#       pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
+#       separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
+#       pivot_wider(names_from = comparison, values_from = value)
+# 
+#     # Add formatting to ensure two decimal places for all numeric values (t-stats and p-values)
+#     final_table <- final_table %>%
+#       mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Format with 2 decimals
+#       mutate(across(everything(), as.character)) %>%  # Ensure all columns are characters
+#       mutate(across(everything(), ~ ifelse(grepl("p", type),
+#                                            paste0("(", trimws(.x), ")"),  # Trim any extra spaces around the value
+#                                            .x)))  # Add parentheses for p.value rows
+#     # Clean up column names (variable and type) for p-values
+# 
+# print(final_table)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ####Add survey questions and values 
 
@@ -423,6 +644,7 @@ final_table <- final_table %>% select(Question, everything()) %>%
           `Private Treatment vs Public & Private Treatment` = `Treatment1 vs Treatment3`,
           `Public Treatment vs Public & Private Treatment` = `Treatment2 vs Treatment3`)
 
+final_table
 ```
 
 ###Output table
@@ -446,25 +668,6 @@ final_table %>%
 # knitr::kable(final_table, format = "html") %>% save_kable("balance_tablev3.html")
 
 ```
-
-###Function for F-tests on Each Variable
-
-
-```{r}
-
-# Assuming your data is in the `df` dataframe
-# Subset to include only the treatment arms and Local Control (excluding Pure Control)
-df_subset <- df %>% filter(treatment_group %in% c("Local Control", "Treatment1", "Treatment2", "Treatment3"))
-
-# Perform the ANOVA to compare the means of the treatment groups
-anova_result <- aov(value ~ treatment_group, data = df_subset)
-
-# Summary of the ANOVA to get the F-statistic and p-value
-summary(anova_result)
-
-```
-
-
 
 
 

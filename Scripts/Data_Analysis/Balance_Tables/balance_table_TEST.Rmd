@@ -223,43 +223,66 @@ shinyApp(ui, server)
 ```
 
 ```{r}
-# Set a seed for reproducibility
+# Load required libraries
+library(dplyr)
+library(tidyr)
+
+# Set seed for reproducibility
 set.seed(42)
 
-# Define groups and sizes
+# Define groups
 groups <- c("Control", "Treatment1", "Treatment2", "Treatment3", "Local Control")
-group_sizes <- rep(100, 5)  # 100 samples per group
+group_sizes <- rep(100, 5)  # 100 households per group
 
-# Create a dataframe with hh_id, treatment groups, and some covariates
-df <- data.frame(
-  hhid_village = rep(paste0("010A", 1:5), each = 100),
-  hhid = rep(paste0("010A02"), 500),
-  group = rep(groups, each = 100),
-  variable = rep(c("hh_15_2", "hh_26_", "hh_27_"), length.out = 500),
-  value = rnorm(500, mean = 0, sd = 1)  # Normally distributed values for example
+# Define possible variables
+variables <- c("hh_15_2", "hh_26_", "hh_27_", "hh_30_", "hh_35_")
+
+# Generate household IDs
+hhid_villages <- paste0("010A", rep(1:5, each = 100))
+hhids <- paste0("010A02", 1:500)
+
+# Create base dataframe with household IDs and groups
+df_wide <- data.frame(
+  hhid_village = rep(hhid_villages, times = 1),
+  hhid = rep(hhids, times = 1),
+  group = rep(groups, each = 100)  # Assigning treatment groups
 )
 
-# Add some variation based on treatment groups for outcome variables
-df$value[df$group == "Treatment1"] <- df$value[df$group == "Treatment1"] + 1
-df$value[df$group == "Treatment2"] <- df$value[df$group == "Treatment2"] - 1
-df$value[df$group == "Treatment3"] <- df$value[df$group == "Treatment3"] + 0.5
+# Add variables as separate columns (WIDE format)
+for (var in variables) {
+  df_wide[[var]] <- rnorm(500, mean = 0, sd = 1)  # Normally distributed values
+}
 
-# Display the first few rows
-head(df)
+# Apply treatment effects
+df_wide[df_wide$group == "Treatment1", variables] <- df_wide[df_wide$group == "Treatment1", variables] + 1
+df_wide[df_wide$group == "Treatment2", variables] <- df_wide[df_wide$group == "Treatment2", variables] - 1
+df_wide[df_wide$group == "Treatment3", variables] <- df_wide[df_wide$group == "Treatment3", variables] + 0.5
+
+# Save the data if needed
+write.csv(df_wide, "synthetic_wide_data.csv", row.names = FALSE)
+
+# View first few rows
+head(df_wide)
 
 
 ```
+
+## Step 2: Function for F-tests on Each Variable
+r
+Copy
+Edit
+
 ```{r}
 # Function to perform F-test for each variable
 run_f_tests <- function(data, treatment_col, vars_to_test) {
   results <- list()
   
   for (var in vars_to_test) {
-    # Subset the data for the current variable
-    subset <- data[data$variable == var, ]
+    # Construct formula dynamically (e.g., hh_15_2 ~ group)
+    formula <- as.formula(paste(var, "~", treatment_col))
     
-    # Run ANOVA for each treatment group
-    anova_result <- aov(value ~ get(treatment_col), data = subset)
+    # Run ANOVA for each variable
+    anova_result <- aov(formula, data = data)
     
     # Get the F-statistic and p-value
     f_stat <- summary(anova_result)[[1]]$`F value`[1]
@@ -275,50 +298,265 @@ run_f_tests <- function(data, treatment_col, vars_to_test) {
   return(bind_rows(results))
 }
 
-# Example usage with the synthetic data
-f_test_results <- run_f_tests(df, treatment_col = "group", vars_to_test = unique(df$variable))
+# Example usage
+f_test_results <- run_f_tests(df_wide, treatment_col = "group", vars_to_test = c("hh_15_2", "hh_26_", "hh_27_", "hh_30_", "hh_35_"))
 print(f_test_results)
 
 ```
-#Step 2: Function for F-tests on Each Variable
+
+## Step 3: Function for Joint F-statistics
+
 ```{r}
-# Function to compute Joint F-statistics for each treatment arm
-run_joint_f_test <- function(data, treatment_col, vars_to_test) {
+run_pairwise_f_test <- function(data, treatment_col, vars_to_test) {
   results <- list()
   
-  # Loop over each treatment arm
+  # Get all treatment arms (excluding 'Control')
   treatments <- unique(data[[treatment_col]])
-  treatments <- treatments[treatments != "Control"]  # Exclude 'Control'
+  treatments <- treatments[treatments != "Control"]
   
-  for (arm in treatments) {
-    # Subset the data for the current treatment group and variables
-    subset <- data[data[[treatment_col]] %in% c("Control", arm), ]
-    
-    # Create the regression formula
-    formula <- as.formula(paste("value ~", paste(vars_to_test, collapse = " + "), "+", treatment_col))
-    
-    # Run the regression model
-    model <- lm(formula, data = subset)
-    
-    # Compute F-statistic for the joint test
-    f_stat <- summary(model)$fstatistic[1]
-    p_value <- pf(f_stat, df1 = summary(model)$fstatistic[2], df2 = summary(model)$fstatistic[3], lower.tail = FALSE)
-    
-    # Store results for each treatment comparison
-    results <- append(results, list(data.frame(treatment = arm, 
-                                               f_statistic = round(f_stat, 2), 
-                                               p_value = round(p_value, 4))))
+  # Loop over all pairwise combinations of treatments
+  for (i in 1:(length(treatments) - 1)) {
+    for (j in (i + 1):length(treatments)) {
+      # Subset the data for the current pair of treatments
+      subset <- data[data[[treatment_col]] %in% c(treatments[i], treatments[j]), ]
+      
+      # Create regression formula (e.g., hh_15_2 + hh_26_ + hh_27_ ~ group)
+      formula <- as.formula(paste(paste(vars_to_test, collapse = " + "), "~", treatment_col))
+      
+      # Run the regression model
+      model <- lm(formula, data = subset)
+      
+      # Compute F-statistic for the joint test
+      f_stat <- summary(model)$fstatistic[1]
+      p_value <- pf(f_stat, df1 = summary(model)$fstatistic[2], df2 = summary(model)$fstatistic[3], lower.tail = FALSE)
+      
+      # Store results for this pairwise comparison
+      results <- append(results, list(data.frame(treatment_comparison = paste(treatments[i], "vs", treatments[j]),
+                                                 f_statistic = round(f_stat, 2), 
+                                                 p_value = round(p_value, 4))))
+    }
   }
   
   # Combine and return the results as a data frame
   return(bind_rows(results))
 }
 
-# Example usage with the synthetic data
-joint_f_test_results <- run_joint_f_test(df, treatment_col = "group", vars_to_test = unique(df$variable))
-print(joint_f_test_results)
+# Example usage
+pairwise_f_test_results <- run_pairwise_f_test(df_wide, treatment_col = "group", vars_to_test = c("hh_15_2", "hh_26_", "hh_27_", "hh_30_", "hh_35_"))
+print(pairwise_f_test_results)
+
 
 ```
+
+
+```{r}
+
+# Function to compute Joint F-statistics for each treatment arm (Pairwise)
+run_pairwise_f_test <- function(data, treatment_col, vars_to_test) {
+  results <- list()
+  
+  # Get all treatment arms (excluding 'Control')
+  treatments <- unique(data[[treatment_col]])
+  treatments <- treatments[treatments != "Control"]
+  
+  # Loop over all pairwise combinations of treatments
+  for (i in 1:(length(treatments) - 1)) {
+    for (j in (i + 1):length(treatments)) {
+      # Subset the data for the current pair of treatments
+      subset <- data[data[[treatment_col]] %in% c(treatments[i], treatments[j]), ]
+      
+      # Create regression formula (e.g., hh_15_2 + hh_26_ + hh_27_ ~ group)
+      formula <- as.formula(paste(paste(vars_to_test, collapse = " + "), "~", treatment_col))
+      
+      # Run the regression model
+      model <- lm(formula, data = subset)
+      
+      # Compute F-statistic for the joint test
+      f_stat <- summary(model)$fstatistic[1]
+      p_value <- pf(f_stat, df1 = summary(model)$fstatistic[2], df2 = summary(model)$fstatistic[3], lower.tail = FALSE)
+      
+      # Store results for this pairwise comparison
+      results <- append(results, list(data.frame(treatment_comparison = paste(treatments[i], "vs", treatments[j]),
+                                                 f_statistic = round(f_stat, 2), 
+                                                 p_value = round(p_value, 4))))
+    }
+  }
+  
+  # Combine and return the results as a data frame
+  return(bind_rows(results))
+}
+
+# Example usage
+pairwise_f_test_results <- run_pairwise_f_test(df_wide, treatment_col = "group", vars_to_test = c("hh_15_2", "hh_26_", "hh_27_", "hh_30_", "hh_35_"))
+
+# Transform pairwise F-test results into the desired format
+pairwise_f_test_results <- pairwise_f_test_results %>%
+  pivot_wider(names_from = treatment_comparison, values_from = c(f_statistic, p_value)) %>%
+  rename_with(~gsub(" ", "_", .), everything()) # Clean up column names
+
+# Add rows for F-statistics and P-values
+f_stats_row <- data.frame(
+  variable = "F statistics of Joint F-test:", 
+  treatment1_vs_treatment2 = pairwise_f_test_results$f_statistic_Treatment1_vs_Treatment2[1], 
+  treatment1_vs_local_control = pairwise_f_test_results$f_statistic_Treatment1_vs_Local_Control[1], 
+  treatment1_vs_treatment3 = pairwise_f_test_results$f_statistic_Treatment1_vs_Treatment3[1],
+  treatment2_vs_local_control = pairwise_f_test_results$f_statistic_Treatment2_vs_Local_Control[1],
+  treatment2_vs_treatment3 = pairwise_f_test_results$f_statistic_Treatment2_vs_Treatment3[1]
+)
+
+p_values_row <- data.frame(
+  variable = "P-value", 
+  treatment1_vs_treatment2 = paste0("(", round(pairwise_f_test_results$p_value_Treatment1_vs_Treatment2[1], 4), ")"), 
+  treatment1_vs_local_control = paste0("(", round(pairwise_f_test_results$p_value_Treatment1_vs_Local_Control[1], 4), ")"), 
+  treatment1_vs_treatment3 = paste0("(", round(pairwise_f_test_results$p_value_Treatment1_vs_Treatment3[1], 4), ")"),
+  treatment2_vs_local_control = paste0("(", round(pairwise_f_test_results$p_value_Treatment2_vs_Local_Control[1], 4), ")"),
+  treatment2_vs_treatment3 = paste0("(", round(pairwise_f_test_results$p_value_Treatment2_vs_Treatment3[1], 4), ")")
+)
+
+##Issue here - need to find better way to merge
+
+# Combine pairwise results and append the F-stat and P-value rows
+final_table <- bind_rows(pairwise_f_test_results, f_stats_row, p_values_row)
+
+# Print the final table
+print(final_table)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(tidyr)
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Define variables and treatment comparisons
+variables <- c("agri_6_15", "agri_7_20", "agri_8_25")
+comparisons <- c("Control vs Treatment1", "Control vs Treatment2", "Control vs Local Control")
+
+# Create synthetic dataset
+df <- expand.grid(variable = variables, comparison = comparisons) %>%
+  mutate(
+    f_statistic = round(runif(n(), 3, 6), 2),  # Random F-statistics between 3 and 6
+    p_value = round(runif(n(), 0, 0.05), 4),   # Random p-values between 0 and 0.05
+    stat = round(rnorm(n(), mean = -2, sd = 1), 2), # Random stat values
+    p = round(runif(n(), 0, 0.1), 4)  # Random p-values for the stat test
+  )
+
+# Print the first few rows
+head(df)
+```
+
+
+```{r}
+# Reshape data to wide format with "stat" and "p" as rows
+df_wide <- df %>%
+  pivot_wider(
+    names_from = comparison,
+    values_from = c(stat, p),
+    names_glue = "{comparison}_{.value}"
+  ) %>%
+  rename_with(~gsub(" ", "_", .), everything()) # Remove spaces in column names
+
+# Move f_statistic and p_value to separate columns
+df_final <- df_wide %>%
+  select(variable, f_statistic, p_value, everything())
+
+# Print final transformed data
+print(df_final)
+
+```
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(tidyr)
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Define variables and treatment comparisons
+variables <- c("agri_6_15", "agri_7_20", "agri_8_25")
+comparisons <- c("Control vs Treatment1", "Control vs Treatment2", "Control vs Local Control")
+
+# Generate synthetic dataset
+regression_results <- expand.grid(variable = variables, comparison = comparisons) %>%
+  mutate(
+    stat = round(rnorm(n(), mean = -2, sd = 1), 2), # Random stat values
+    p = round(runif(n(), 0, 0.1), 4)  # Random p-values
+  )
+
+# Create synthetic F-statistics dataset
+f_test_results <- data.frame(
+  variable = variables,
+  f_stat = round(runif(length(variables), 3, 6), 2),  # Random F-statistics
+  p_value = round(runif(length(variables), 0, 0.05), 4)  # Random p-values
+)
+
+# Convert t-stat and p-value to numeric and round
+regression_results <- regression_results %>%
+  mutate(across(c(stat, p), ~ round(.x, 2)))
+
+# Pivot the table to have variables as rows and comparisons as columns
+final_table <- regression_results %>%
+  pivot_wider(names_from = comparison, values_from = c(stat, p))
+
+# Rearrange to stack t-stats and p-values in rows
+final_table <- final_table %>%
+  pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
+  separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
+  pivot_wider(names_from = comparison, values_from = value)
+
+# Merge F-statistics data into final_table
+final_table <- final_table %>%
+  left_join(f_test_results, by = "variable")
+
+# Replace the value underneath f_stat with p_value
+final_table <- final_table %>%
+  mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+  mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Ensure 2 decimal places
+  mutate(across(everything(), as.character)) %>%  # Convert all to character
+  mutate(across(everything(), ~ ifelse(grepl("p", type), paste0("(", trimws(.x), ")"), .x)))  # Format p-values with parentheses
+
+# Print the final formatted table
+print(final_table)
+
+```
+# Print the final transformed data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

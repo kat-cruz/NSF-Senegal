@@ -6784,6 +6784,15 @@ replace ind_var = 0 if key == "uuid:63027ea6-4db1-4d75-9e50-07102ad7e66d" & `hea
 replace ind_var = 0 if key == "uuid:dadd5583-da49-40ff-8eab-3f60938c143f" & `health_5_12' == 300
 replace ind_var = 0 if key == "uuid:dadd5583-da49-40ff-8eab-3f60938c143f" & `health_5_12' == 300
 replace ind_var = 0 if key == "uuid:a0748e74-08de-480e-a3ff-9a5f8555215b" & `health_5_12' == -9
+replace ind_var = 0 if key == "uuid:dc3b1411-5680-4df5-a72d-001ff41a8864" & `heatlh_5_12' == -9
+replace ind_var = 0 if key == "uuid:128199d5-45c7-4c42-b56f-cbfadf72b88c" & `health_5_12' == -9
+replace ind_var = 0 if key == "uuid:f953cc65-f449-4a67-bab4-853b16aabad1" & `heatlh_5_12' == 286
+replace ind_var = 0 if key == "uuid:f59e8972-1bf4-4346-be57-fa08d8dae70a" & `health_5_12' == -9
+replace ind_var = 0 if key == "uuid:128199d5-45c7-4c42-b56f-cbfadf72b88c" & `health_5_12' == -9
+replace ind_var = 0 if key == "uuid:dc3b1411-5680-4df5-a72d-001ff41a8864" & `health_5_12' == -9
+replace ind_var = 0 if key == "uuid:3277d981-1a8d-4f93-abdc-a725b428e0ab" & `health_5_12' == 475
+replace ind_var = 0 if key == "uuid:dc3b1411-5680-4df5-a72d-001ff41a8864" & `health_5_12' == -9
+
 	keep if ind_var == 1 
 	
 	generate issue = "Unreaonsable value"

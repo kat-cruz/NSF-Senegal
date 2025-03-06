@@ -6784,9 +6784,9 @@ replace ind_var = 0 if key == "uuid:63027ea6-4db1-4d75-9e50-07102ad7e66d" & `hea
 replace ind_var = 0 if key == "uuid:dadd5583-da49-40ff-8eab-3f60938c143f" & `health_5_12' == 300
 replace ind_var = 0 if key == "uuid:dadd5583-da49-40ff-8eab-3f60938c143f" & `health_5_12' == 300
 replace ind_var = 0 if key == "uuid:a0748e74-08de-480e-a3ff-9a5f8555215b" & `health_5_12' == -9
-replace ind_var = 0 if key == "uuid:dc3b1411-5680-4df5-a72d-001ff41a8864" & `heatlh_5_12' == -9
+replace ind_var = 0 if key == "uuid:dc3b1411-5680-4df5-a72d-001ff41a8864" & `health_5_12' == -9
 replace ind_var = 0 if key == "uuid:128199d5-45c7-4c42-b56f-cbfadf72b88c" & `health_5_12' == -9
-replace ind_var = 0 if key == "uuid:f953cc65-f449-4a67-bab4-853b16aabad1" & `heatlh_5_12' == 286
+replace ind_var = 0 if key == "uuid:f953cc65-f449-4a67-bab4-853b16aabad1" & `health_5_12' == 286
 replace ind_var = 0 if key == "uuid:f59e8972-1bf4-4346-be57-fa08d8dae70a" & `health_5_12' == -9
 replace ind_var = 0 if key == "uuid:128199d5-45c7-4c42-b56f-cbfadf72b88c" & `health_5_12' == -9
 replace ind_var = 0 if key == "uuid:dc3b1411-5680-4df5-a72d-001ff41a8864" & `health_5_12' == -9
@@ -10592,7 +10592,16 @@ preserve
 	*** generate indicator variable ***
 	gen ind_var = 0 
 	replace ind_var = 1 if agri_income_23_o < 0 | agri_income_23_o > 1000000000
-	replace ind_var = 0 if agri_income_23_o = -9 & key = "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089"
+	replace ind_var = 0 if agri_income_23_o == -9 & key == "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089"
+	replace ind_var = 0 if key == "uuid:ed4a3ab3-eb94-46fa-8ca7-d4305cf8e36e" & agri_income_23_o == -9 
+replace ind_var = 0 if key == "uuid:8c6736ef-01bd-4997-b8e7-02419b77bbb4" & agri_income_23_o == -9
+replace ind_var = 0 if key == "uuid:2086c8e7-cfb1-472b-ad6d-f21b87b90881" & agri_income_23_o == -9
+replace ind_var = 0 if key == "uuid:8be12456-9c4d-4e61-917b-2f94584d4796" & agri_income_23_o == -9
+replace ind_var = 0 if key == "uuid:d3de785c-2ad1-45a0-a8c0-5e41e53483da" & agri_income_23_o == -9
+replace ind_var = 0 if key == "uuid:dbcf5c48-d38a-4900-934d-1589c334478b" & agri_income_23_o == -9
+replace ind_var = 0 if key == "uuid:88a033cc-ae5d-4bd6-860b-3f14ff81a0f0" & agri_income_23_o == -9
+replace ind_var = 0 if key == "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089" & agri_income_23_o == -9
+replace ind_var = 0 if agri_income_23_o == -9 & key == "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089"
 
 	*** keep and add variables to export ***
 	keep if ind_var == 1 
@@ -11545,6 +11554,7 @@ drop if key == "uuid:d3de785c-2ad1-45a0-a8c0-5e41e53483da" & agri_income_23_o ==
 drop if key == "uuid:dbcf5c48-d38a-4900-934d-1589c334478b" & agri_income_23_o == -9
 drop if key == "uuid:88a033cc-ae5d-4bd6-860b-3f14ff81a0f0" & agri_income_23_o == -9
 drop if key == "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089" & agri_income_23_o == -9
+drop if agri_income_23_o == -9 & key == "uuid:56d685d1-e1a6-432f-9343-3a9c41d3e089"
 	
 	generate issue = "Issue found: unreasonable value"
 	generate issue_variable_name = "agri_income_23_o"

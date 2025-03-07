@@ -1,6 +1,7 @@
 *==============================================================================
 * Community Survey Data Corrections - Midline
-* Created by: Alex Mills
+* Created by: Molly Doruska
+* Adapted by: Alexander Mills
 * Updates recorded in GitHub
 *==============================================================================
 *

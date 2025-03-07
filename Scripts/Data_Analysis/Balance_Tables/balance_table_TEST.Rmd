@@ -425,6 +425,48 @@ print(final_table)
 ```
 
 
+```{r}
+
+
+# Load necessary library
+library(dplyr)
+
+# Create larger dataframe (4 rows, 6 columns)
+df_large <- data.frame(
+  A = c(1, 2, 3, 4),
+  B = c(5, 6, 7, 8),
+  C = c(9, 10, 11, 12),
+  D = c(13, 14, 15, 16),
+  E = c(17, 18, 19, 20),
+  F = c(21, 22, 23, 24)
+)
+
+# Create smaller dataframe (1 row, 4 columns)
+df_small <- data.frame(
+  A = 25,
+  B = 26,
+  C = 27,
+  D = 28
+)
+
+# Print the original dataframes to check them
+print("Large Dataframe:")
+print(df_large)
+
+print("Small Dataframe:")
+print(df_small)
+
+
+# Add the row from df_small to df_large, aligning with the first 4 columns
+df_large_updated <- df_large %>%
+  bind_rows(df_small %>% mutate(E = NA, F = NA))  # Adding missing columns (E and F)
+
+# Print the updated dataframe
+print("Updated Large Dataframe:")
+print(df_large_updated)
+
+
+```
 
 
 

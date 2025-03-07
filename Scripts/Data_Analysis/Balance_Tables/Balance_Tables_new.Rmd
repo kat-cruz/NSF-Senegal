@@ -16,7 +16,6 @@ This script outputs:
   
 
 #INITIATE SCRIPT
-##START HERE - load packages
 
 ```{r}
 
@@ -337,7 +336,7 @@ run_f_tests <- function(data, treatment_col, vars_to_test) {
     # Store results
     results <- append(results, list(data.frame(variable = var, 
                                                f_statistic = round(f_stat, 2), 
-                                               p_value = round(p_value, 4))))
+                                               p_value = round(p_value, 2))))
   }
   # Combine and return the results as a data frame
   return(bind_rows(results))
@@ -428,140 +427,59 @@ final_table <- final_table %>%
 # Replace the value underneath f_stat with p_value
 final_table <- final_table %>%
   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
-  mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Ensure 2 decimal places
-  mutate(across(everything(), as.character)) %>%  # Convert all to character
   mutate(across(everything(), ~ ifelse(grepl("p", type), paste0("(", trimws(.x), ")"), .x)))  # Format p-values with parentheses
 
-# Print the final formatted table
-print(final_table)
 
-##Issue here - figure out how to append bottom row
+# Ensure joint_f_test_results column names are clean
+joint_f_test_results <- joint_f_test_results %>%
+  pivot_wider(names_from = treatment_comparison, values_from = c(f_statistic, p_value)) %>%
+  rename_with(~ gsub(" ", "_", .), everything())  # Clean up column names
+joint_f_test_results
 
+
+# Generate f_stats_row from joint_f_test_results
 f_stats_row <- data.frame(
-  variable = "F statistics of Joint F-test:", 
-  treatment1_vs_treatment2 = joint_f_test_results$f_statistic_Treatment1_vs_Treatment2[1], 
-  treatment1_vs_local_control = joint_f_test_results$f_statistic_Treatment1_vs_Local_Control[1], 
-  treatment1_vs_treatment3 = joint_f_test_results$f_statistic_Treatment1_vs_Treatment3[1],
-  treatment2_vs_local_control = joint_f_test_results$f_statistic_Treatment2_vs_Local_Control[1],
-  treatment2_vs_treatment3 = joint_f_test_results$f_statistic_Treatment2_vs_Treatment3[1]
-)
+  variable = "F statistics of Joint F-test:"
+) %>%
+  bind_cols(joint_f_test_results %>%
+              select(starts_with("f_statistic")) %>%
+              rename_with(~ gsub("f_statistic_", "", .)) %>%    # Remove the 'f_statistic_' prefix
+              rename_with(~ gsub("_", " ", .))) %>%             # Remove the underscores
+  mutate(across(everything(), as.character))  # Convert all to character
 
+# Print f_stats_row to check
+print(f_stats_row)
+
+# Generate p_values_row from joint_f_test_results
 p_values_row <- data.frame(
-  variable = "P-value", 
-  treatment1_vs_treatment2 = paste0("(", round(joint_f_test_results$p_value_Treatment1_vs_Treatment2[1], 4), ")"), 
-  treatment1_vs_local_control = paste0("(", round(joint_f_test_results$p_value_Treatment1_vs_Local_Control[1], 4), ")"), 
-  treatment1_vs_treatment3 = paste0("(", round(joint_f_test_results$p_value_Treatment1_vs_Treatment3[1], 4), ")"),
-  treatment2_vs_local_control = paste0("(", round(joint_f_test_results$p_value_Treatment2_vs_Local_Control[1], 4), ")"),
-  treatment2_vs_treatment3 = paste0("(", round(joint_f_test_results$p_value_Treatment2_vs_Treatment3[1], 4), ")")
-)
+  variable = "P-value of Joint F-test:"
+) %>%
+  bind_cols(joint_f_test_results %>%
+              select(starts_with("p_value")) %>%
+              rename_with(~ gsub("p_value_", "", .)) %>%  # Remove the 'p_value_' prefix
+              rename_with(~ gsub("_", " ", .)) %>%       # Remove the underscores
+              mutate(across(everything(), ~ paste0("(", ., ")")))) %>%  # Format p-values with parentheses
+  mutate(across(everything(), as.character))  # Convert all to character
 
-# Combine pairwise results and append the F-stat and P-value rows
-final_table <- bind_rows(pairwise_f_test_results, f_stats_row, p_values_row)
+# Print p_values_row to check
+print(p_values_row)
 
-# Print the final table
+
+final_table <- final_table %>%
+  bind_rows(f_stats_row, p_values_row %>% mutate(
+    `Control vs Treatment3` = NA,  # Add missing column with NA
+    type = NA,                     # Add missing 'type' column with NA
+    `Control vs Treatment1` = NA,  # Add missing 'Control vs Treatment1' column with NA
+    `Control vs Treatment2` = NA,  # Add missing 'Control vs Treatment2' column with NA
+    `Control vs Local Control` = NA,  # Add missing 'Control vs Local Control' column with NA
+    f_statistic = NA,
+    p_value = NA
+  ))
+
+# Print the updated final_table
 print(final_table)
-
-
-
-
-
-
-
-
-
-    # Convert t-stat and p-value to numeric and round to two decimal places
-#     merged_results <- merged_results %>%
-#       mutate(across(c(stat, p), ~ round(.x, 2))) 
-# 
-#     # Pivot the table to have variables as rows and comparisons as columns
-#     final_table <- merged_results %>%
-#       pivot_wider(names_from = comparison, values_from = c(stat, p))
-# final_table
-#     # Rearrange to stack t-stats and p-values in rows
-#     final_table <- final_table %>%
-#       pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
-#       separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
-#       pivot_wider(names_from = comparison, values_from = value)
-# 
-#     # Add formatting to ensure two decimal places for all numeric values (t-stats and p-values)
-#     final_table <- final_table %>%
-#       mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Format with 2 decimals
-#       mutate(across(everything(), as.character)) %>%  # Ensure all columns are characters
-#       mutate(across(everything(), ~ ifelse(grepl("p", type),
-#                                            paste0("(", trimws(.x), ")"),  # Trim any extra spaces around the value
-#                                            .x)))  # Add parentheses for p.value rows
-#     # Clean up column names (variable and type) for p-values
-# 
-# print(final_table)
-# 
-# 
-# 
-# 
-#     # Convert t-stat and p-value to numeric and round to two decimal places
-#     regression_results <- regression_results %>%
-#       mutate(across(c(stat, p), ~ round(.x, 2)))
-# 
-#     # Pivot the table to have variables as rows and comparisons as columns
-#     final_table <- regression_results %>%
-#       pivot_wider(names_from = comparison, values_from = c(stat, p))
-# final_table
-#     # Rearrange to stack t-stats and p-values in rows
-#     final_table <- final_table %>%
-#       pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
-#       separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
-#       pivot_wider(names_from = comparison, values_from = value)
-# 
-#     # Add formatting to ensure two decimal places for all numeric values (t-stats and p-values)
-#     final_table <- final_table %>%
-#       mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%  # Format with 2 decimals
-#       mutate(across(everything(), as.character)) %>%  # Ensure all columns are characters
-#       mutate(across(everything(), ~ ifelse(grepl("p", type),
-#                                            paste0("(", trimws(.x), ")"),  # Trim any extra spaces around the value
-#                                            .x)))  # Add parentheses for p.value rows
-#     # Clean up column names (variable and type) for p-values
-# 
-# print(final_table)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -571,10 +489,12 @@ print(final_table)
 
 final_table <- final_table %>%
   mutate(
-    variable = if_else(type == "(p)", "", variable),  # Clear variable when type == "(p)"
-    type = if_else(type == "(p)", "", type) # Clear type when type == "(p)"
+    variable = if_else(type == "(p)" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
+    type = if_else(type == "(p)" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
   ) %>%
-  select(-type)  # Remove the 'type' column after modification
+  select(-type, -p_value)  # Remove the 'type' column after modification
+
+# Print the modified final_table
 
 
 final_table <- final_table %>%
@@ -631,6 +551,7 @@ final_table <- final_table %>%
     variable == "num_water_access_points" ~ "Number of village water access points",
     variable == "q_51" ~ "Distance to nearest healthcare center (km) [village level]",
     variable == "target_village" ~ "Indicator if auction village (1=Yes, 0=No)",
+
     
     TRUE ~ variable  # Default case
   ))
@@ -642,9 +563,39 @@ final_table <- final_table %>% select(Question, everything()) %>%
           `Control vs Public & Private Treatment` = `Control vs Treatment3`,
           `Private Treatment vs Public Treatment` = `Treatment1 vs Treatment2`,
           `Private Treatment vs Public & Private Treatment` = `Treatment1 vs Treatment3`,
-          `Public Treatment vs Public & Private Treatment` = `Treatment2 vs Treatment3`)
+          `Public Treatment vs Public & Private Treatment` = `Treatment2 vs Treatment3`,
+          `Local Control vs Public & Private Treatment` = `Local Control vs Treatment3`,
+          `Local Control vs Private Treatment` = `Treatment2 vs Local Control`,
+          `Local Control vs Public Treatment` = `Treatment1 vs Local Control`,
+          `F-test` = f_statistic)
+
+
+
+        # Define the desired column order
+        desired_column_order <- c(
+          "Control vs Private Treatment",
+          "Control vs Public Treatment",
+          "Control vs Local Control",
+          "Control vs Public & Private Treatment",
+          "Local Control vs Public Treatment",
+          "Local Control vs Private Treatment",
+          "Local Control vs Public & Private Treatment",
+          "Private Treatment vs Public Treatment",
+          "Private Treatment vs Public & Private Treatment",
+          "Public Treatment vs Public & Private Treatment",
+          "F-test"
+        )
+
+# Reorder the columns in final_table
+final_table <- final_table %>%
+  select(Question, Variable, all_of(desired_column_order))  # Ensure 'variable' stays the first column
+
+# Print the modified final_table
+print(final_table)
 
 final_table
+
+
 ```
 
 ###Output table

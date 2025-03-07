@@ -15,7 +15,7 @@
 * Survey dataset: "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_[INSERT DATE HERE].csv"
 *
 * Outputs:
-* Corrected community survey data: "$corrected\CORRECTED_Community_Survey_6May2025.xlsx"
+* Corrected community survey data: "$corrected\CORRECTED_Community_Survey_[INSERT DATE HERE].xlsx"
 *
 * Instructions for running the script:
 * 1. Ensure Stata is running in a compatible environment.

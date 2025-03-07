@@ -1,7 +1,31 @@
-*** Created by: Alex Mills ***
-*** Updates recorded in GitHub ***
 *==============================================================================
-* use excel formula
+* Community Survey Data Corrections - Midline
+* Created by: Alex Mills
+* Updates recorded in GitHub
+*==============================================================================
+*
+* Description:
+* This script processes community survey data from the DISES Midline study.
+* It merges external correction files with existing issues data and applies
+* corrections to the main survey dataset based on phone_resp values.
+*
+* Inputs:
+* - Community Issues file: "$issues\Community_Issues_[INSERT DATE HERE].xlsx"
+* - Corrections file: "$corrections\[MOST RECENT CORRECTIONS FILE FROM THE EXTERNAL CORRECTIONS FOLDER] "
+* - Survey dataset: "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_[INSERT DATE HERE].csv"
+*
+* Outputs:
+* - Corrected community survey data: "$corrected\CORRECTED_Community_Survey_6May2025.xlsx"
+*
+* Instructions for running the script:
+* 1. Ensure Stata is running in a compatible environment.
+* 2. Verify that the file paths are correctly set in the "SET FILE PATHS" section.
+* 3. Run the script sequentially to process corrections and apply them to the dataset.
+* 4. The final corrected dataset will be saved in the specified output directory.
+*
+*==============================================================================
+* The corrections are drawn from the external corrections folder
+* use excel formula in the corrections sheet from the external corrections to easily pull all corrections
 * = "replace " & [@[issue_variable_name]]&" = "&[@correction]&" if phone_resp == "&CHAR(34)&[@[phone_resp]]&CHAR(34)
 
 
@@ -64,7 +88,7 @@ tempfile correctionskey_temp
 save `correctionskey_temp'
 
 * Save the corrections dataset including the key
-export excel using "$issues\CORRECTIONS_COMMUNITY_16Feb2025.xlsx", firstrow(variables) replace
+export excel using "$issues\CORRECTIONS_COMMUNITY_6May2025.xlsx", firstrow(variables) replace
 */
 
 **************************************************

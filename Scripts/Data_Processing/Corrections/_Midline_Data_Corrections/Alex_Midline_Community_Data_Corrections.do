@@ -1,7 +1,31 @@
-*** Created by: Alex Mills ***
-*** Updates recorded in GitHub ***
 *==============================================================================
-* use excel formula
+* Community Survey Data Corrections - Midline
+* Created by: Molly Doruska
+* Adapted by: Alexander Mills
+* Updates recorded in GitHub
+*==============================================================================
+*
+* Description:
+* This script processes community survey data from the DISES Midline study.
+* It applies corrections to the main survey dataset based on phone_resp values.
+*
+* Inputs:
+* Community Issues file: "$issues\Community_Issues_[INSERT DATE HERE].xlsx"
+* Corrections file: "$corrections\[MOST RECENT CORRECTIONS FILE FROM THE EXTERNAL CORRECTIONS FOLDER] "
+* Survey dataset: "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_[INSERT DATE HERE].csv"
+*
+* Outputs:
+* Corrected community survey data: "$corrected\CORRECTED_Community_Survey_[INSERT DATE HERE].xlsx"
+*
+* Instructions for running the script:
+* 1. Ensure Stata is running in a compatible environment.
+* 2. Verify that the file paths are correctly set in the "SET FILE PATHS" section.
+* 3. Run the script sequentially to process corrections and apply them to the dataset.
+* 4. The final corrected dataset will be saved in the specified output directory.
+*
+*==============================================================================
+* The corrections are drawn from the external corrections folder
+* use excel formula in the corrections sheet from the external corrections to easily pull all corrections
 * = "replace " & [@[issue_variable_name]]&" = "&[@correction]&" if phone_resp == "&CHAR(34)&[@[phone_resp]]&CHAR(34)
 
 
@@ -30,46 +54,11 @@ global issues "$master\Output\Data_Quality_Checks\Midline\Midline_Community_Issu
 global corrections "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
 global corrected "$master\Output\Data_Corrections\Midline"
 
-**************************************************
-* IMPORT AND PROCESS CORRECTIONS FILE
-**************************************************
-/*
-import excel "$corrections\Corrections communautaire (2).xlsx", clear firstrow
-
-* Save as a temporary file for later use
-tempfile corrections_temp
-
-* Drop duplicate cases
-duplicates drop phone_resp issue_variable_name print_issue correct, force
-
-save `corrections_temp'
-
-**************************************************
-* IMPORT ISSUES FILE AND MERGE WITH CORRECTIONS
-**************************************************
-
-import excel "$issues\Community_Issues_16Feb2025.xlsx", clear firstrow
-
-* Drop duplicates
-duplicates drop phone_resp issue_variable_name print_issue, force
-
-* Merge corrections with issues using a one-to-one match based on `phone_resp`
-merge 1:1 phone_resp issue_variable_name print_issue using `corrections_temp'
-
-* Keep only successfully merged observations (_merge == 3)
-keep if _merge == 3
-drop _merge
-
-tempfile correctionskey_temp
-save `correctionskey_temp'
-
-* Save the corrections dataset including the key
-export excel using "$issues\CORRECTIONS_COMMUNITY_16Feb2025.xlsx", firstrow(variables) replace
-*/
 
 **************************************************
 * APPLY CORRECTIONS TO SURVEY DATASET
 **************************************************
+* Use an excel formula in the external corrections file to get these
 
 import delimited "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_24Feb2025.csv", clear varnames(1) bindquote(strict)
 
@@ -161,12 +150,8 @@ replace unit_convert_8 = 50 if phone_resp == 775664893
 replace unit_convert_9 = 50 if phone_resp == 775664893
 
 * Corrections 6May2025
-replace q_43 = 180 if phone_resp == "779829326"   // confirmed value
-replace unit_convert_9 = 50 if phone_resp == "775631152"
-
-
-
-
+replace q_43 = 180 if phone_resp == 779829326  // confirmed value
+replace unit_convert_9 = 50 if phone_resp == 775631152
 
 * Save the corrected dataset
-export excel using "$corrected\CORRECTED_Community_Survey_24Feb2025.xlsx", firstrow(variables) replace
+export excel using "$corrected\CORRECTED_Community_Survey_6May2025.xlsx", firstrow(variables) replace

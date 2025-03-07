@@ -1,7 +1,35 @@
-*** DISES Household Survey replacmeent corrections ***
+********************************************************************************
+*** DISES Midline Data Corrections - Household Survey ***
+********************************************************************************
 *** File originally created By: Alex Mills ***
-*** Updates recorded in GitHub ***
-* excel formula
+*** Updates recorded in GitHub
+
+********************************************************************************
+*** README - OVERVIEW ***
+********************************************************************************
+
+** Purpose **
+* This script performs data corrections for the DISES Midline Household Survey dataset using the corrections given in the external corrections files.
+* Easiest to use an excel formula then check each correction to make sure qualitative answers correspond to the correct numeric answer from the raw survey CTO file
+
+** Key Functions **
+* Import corrected household survey data (`.dta` file).
+* Apply corrections to the household survey data
+* Serves as a storage for all corrections made and those values that have been confirmed which need to be overlooked in the next round of checks
+
+** Inputs **
+* Survey Data: The corrected midline dataset (`CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_[DATE].dta`)
+* File Paths: Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+
+** Outputs **
+* **Household Roster Issue Reports:** Identifies missing values for key household-level variables and exports `.dta` reports for corrections.
+
+** Instructions to Run **
+* 1. look at the summary statistics to ensure that the loops are the correct number of responses (for household questions this is the max amount of respondents a household has had. for the agriculture questions these are coming from if answer choices have been exhausted)
+* 3. Update the file paths in the `"SET FILE PATHS"` section for the correct user.
+* 2. Check the corrections date in the dataset import section.
+* 3. Run the script sequentially
+************************************************************************************
 
 clear all
 set mem 100m

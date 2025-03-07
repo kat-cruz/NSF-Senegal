@@ -36,7 +36,7 @@
 	* Step 7) Save as .csv so we can create the tables in R in the Balance_tables.rmd
 
 *<><<><><>><><<><><>>
-* BEGIN INITIATION	
+* INITIATE SCRIPT
 *<><<><><>><><<><><>>
 	
 clear all
@@ -419,7 +419,10 @@ foreach x in 0 1 2 3 4 99 {
 ** dropping variable
 
 * Creating binary variables for hh_29
-			gen hh_29_bin = (hh_29 > 6) ///greater than primary level
+			gen hh_29_bin = 1 if hh_29 > 6 ///greater than primary level
+			
+			*update to include = to 1 // equal to indicate = to one 
+			* hh_31_bin
 			
 * Creating binary variables for hh_31
 
@@ -428,8 +431,9 @@ foreach x in 0 1 2 3 4 99 {
 	*3. Failure, repetition
 	*5. Dropping out during the year
 	
-			gen hh_31_bin = 0
-			replace hh_31_bin = 1 if hh_31_ == 1 | hh_31_ == 2
+		gen hh_31_bin = 0
+		replace hh_31_bin = 1 if hh_31_ == 1 | hh_31_ == 2
+		replace hh_31_bin = . if missing(hh_31_)  // Set to missing if hh_31_ is empty to account for ONLY the child population 
 
 
 /*
@@ -625,6 +629,8 @@ save `balance_table_ata'
 					
 	 *Create variable that captures total hectares
 	 
+	 *KRM - change to total land cultivated
+	 
 		egen total_land_ha = rowtotal(agri_6_21_1 - agri_6_21_11)
 
 
@@ -640,6 +646,8 @@ save `balance_table_ata'
 		forvalues i = 1/11 {
 			replace agri_6_36_bin = 1 if agri_6_36_`i' == 1
 		}
+		
+		*KRM look into this, either use proportion to compute 
 		
 * Create agri_6_34_comp binary variable that aggregates to if any of the parcels had organic fertilizer  	
 	

@@ -7,16 +7,15 @@
 *
 * Description:
 * This script processes community survey data from the DISES Midline study.
-* It merges external correction files with existing issues data and applies
-* corrections to the main survey dataset based on phone_resp values.
+* It applies corrections to the main survey dataset based on phone_resp values.
 *
 * Inputs:
-* - Community Issues file: "$issues\Community_Issues_[INSERT DATE HERE].xlsx"
-* - Corrections file: "$corrections\[MOST RECENT CORRECTIONS FILE FROM THE EXTERNAL CORRECTIONS FOLDER] "
-* - Survey dataset: "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_[INSERT DATE HERE].csv"
+* Community Issues file: "$issues\Community_Issues_[INSERT DATE HERE].xlsx"
+* Corrections file: "$corrections\[MOST RECENT CORRECTIONS FILE FROM THE EXTERNAL CORRECTIONS FOLDER] "
+* Survey dataset: "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_[INSERT DATE HERE].csv"
 *
 * Outputs:
-* - Corrected community survey data: "$corrected\CORRECTED_Community_Survey_6May2025.xlsx"
+* Corrected community survey data: "$corrected\CORRECTED_Community_Survey_6May2025.xlsx"
 *
 * Instructions for running the script:
 * 1. Ensure Stata is running in a compatible environment.
@@ -55,46 +54,11 @@ global issues "$master\Output\Data_Quality_Checks\Midline\Midline_Community_Issu
 global corrections "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
 global corrected "$master\Output\Data_Corrections\Midline"
 
-**************************************************
-* IMPORT AND PROCESS CORRECTIONS FILE
-**************************************************
-/*
-import excel "$corrections\Corrections communautaire (2).xlsx", clear firstrow
-
-* Save as a temporary file for later use
-tempfile corrections_temp
-
-* Drop duplicate cases
-duplicates drop phone_resp issue_variable_name print_issue correct, force
-
-save `corrections_temp'
-
-**************************************************
-* IMPORT ISSUES FILE AND MERGE WITH CORRECTIONS
-**************************************************
-
-import excel "$issues\Community_Issues_16Feb2025.xlsx", clear firstrow
-
-* Drop duplicates
-duplicates drop phone_resp issue_variable_name print_issue, force
-
-* Merge corrections with issues using a one-to-one match based on `phone_resp`
-merge 1:1 phone_resp issue_variable_name print_issue using `corrections_temp'
-
-* Keep only successfully merged observations (_merge == 3)
-keep if _merge == 3
-drop _merge
-
-tempfile correctionskey_temp
-save `correctionskey_temp'
-
-* Save the corrections dataset including the key
-export excel using "$issues\CORRECTIONS_COMMUNITY_6May2025.xlsx", firstrow(variables) replace
-*/
 
 **************************************************
 * APPLY CORRECTIONS TO SURVEY DATASET
 **************************************************
+* Use an excel formula in the external corrections file to get these
 
 import delimited "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_24Feb2025.csv", clear varnames(1) bindquote(strict)
 

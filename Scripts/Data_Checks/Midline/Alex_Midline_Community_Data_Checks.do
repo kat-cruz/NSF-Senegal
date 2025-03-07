@@ -672,6 +672,8 @@ restore
 	replace ind_issue = 0 if phone_resp == 778711457 & q_43 == 240
 	replace ind_issue = 0 if phone_resp == 774984439 & q_43 == 240
 	replace ind_issue = 0 if phone_resp == 771712651 & q_43 == 420
+	replace ind_issue = 0 if phone_resp == 779829326 & q_43 == 180
+	replace ind_issue = 0 if phone resp == 779829326 & q_43 == 180
 	
 	
 	keep if ind_issue == 1 
@@ -1859,6 +1861,7 @@ restore
 	replace ind_var = 1 if unit_convert_9 == 9 
 	replace ind_var = 1 if unit_convert_9 == 99
 	replace ind_var = 1 if unit_convert_9 == 999
+	replace ind_var = 0 if unit_convert_9 == 180
 	
 	* Keep and add variables to export 
 	keep if ind_var == 1 

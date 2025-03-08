@@ -3,7 +3,8 @@
 * Created by: Molly Doruska
 * Adapted by: Alexander Mills
 * Updates recorded in GitHub: [Alex_Midline_Community_Data_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Community_Data_Corrections.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script processes community survey data from the DISES Midline study.

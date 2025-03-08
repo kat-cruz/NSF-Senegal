@@ -1,39 +1,35 @@
-********************************************************************************
-*** DISES Midline Data Checks (Incorporating Corrections) - Household Survey ***
-********************************************************************************
-*** File originally created By: Molly Doruska 
-*** >>> Adapted by Kateri Mouawad & Alex Mills <<<
-*** Updates recorded in GitHub
-
-********************************************************************************
-*** README - OVERVIEW ***
-********************************************************************************
-
-** Purpose **
-* This script performs data quality checks for the DISES Midline Household Survey dataset. It verifies completeness, consistency, and correctness of household survey records, largely skip patterns and reponses fall within bounds.
-
-** Key Functions **
-* Import corrected household survey data (`.dta` file).
-* Rename key variables for clarity.
-* Apply labels to variables for documentation and analysis.
-* Generate summary statistics on survey completion by village.
-* Identify and flag missing or incorrect data.
-* Export issue reports for necessary corrections.
-
-** Inputs **
-* **Survey Data:** The corrected midline dataset (`CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_[DATE].dta`)
-* **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
-
-** Outputs **
-* **Household Roster Issue Reports:** Identifies missing values for key household-level variables and exports `.dta` reports for corrections.
-
-** Instructions to Run **
-* 1. look at the summary statistics to ensure that the loops are the correct number of responses (for household questions this is the max amount of respondents a household has had. for the agriculture questions these are coming from if answer choices have been exhausted)
-* 3. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
-* 2. **Check the survey date** in the dataset import section.
-* 3. Run the script sequentially.
-* 4. Review and address the **issue reports** generated for missing or incorrect values.
-
+*==============================================================================
+* DISES Midline Data Checks (Incorporating Corrections) - Household Survey
+* File originally created By: Molly Doruska
+* >>> Adapted by Kateri Mouawad & Alex Mills <<<
+* Updates recorded in GitHub: [Alex_Midline_Household_Checks_Incorporating_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Household_Checks_Incorporating_Corrections.do)
+*==============================================================================
+*
+* Description:
+* This script performs data quality checks for the DISES Midline Household Survey dataset. It verifies completeness, consistency, and correctness of household survey records, largely focusing on skip patterns and other data integrity issues.
+*
+* Key Functions:
+* - Import corrected household survey data (`.dta` file).
+* - Rename key variables for clarity.
+* - Apply labels to variables for documentation and analysis.
+* - Generate summary statistics on survey completion by village.
+* - Identify and flag missing or incorrect data.
+* - Export issue reports for necessary corrections.
+*
+* Inputs:
+* - **Survey Data:** The corrected midline dataset (`CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_[DATE].dta`)
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Household Roster Issue Reports:** Identifies missing values for key household-level variables and exports `.dta` reports for corrections.
+*
+* Instructions for Running the Script:
+* 1. Look at the summary statistics to ensure that the loops are the correct number of responses.
+* 2. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
+* 3. Check the survey date in the dataset import section.
+* 4. Run the script sequentially.
+* 5. Review and address the issue reports generated for missing or incorrect values.
+*
 *==============================================================================
 
 clear all

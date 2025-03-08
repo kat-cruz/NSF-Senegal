@@ -2,7 +2,8 @@
 * DISES Midline Data Checks - Missing HH49
 * File originally created By: Alex Mills
 * Updates recorded in GitHub: [Midline_Missing_hh49.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_Missing_hh49.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script processes and updates the Midline Household Survey data for the NSF Senegal project. It identifies and processes households missing the hh_49 (consent) variable.

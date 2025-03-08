@@ -2,7 +2,8 @@
 * DISES Midline Data Checks - Household Survey
 * File originally created By: Kateri Mouawad
 * Updates recorded in GitHub: [Alex_Midline_Household_Append.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Alex_Midline_Household_Append.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script performs data quality checks for the DISES Midline Household Survey dataset. It involves appending issue files from various modules, combining them, and exporting the combined data for further corrections.

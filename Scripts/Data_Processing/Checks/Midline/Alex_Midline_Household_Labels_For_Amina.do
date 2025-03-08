@@ -2,7 +2,8 @@
 * DISES Midline Data Checks - Household Survey Labels
 * File originally created By: Alex Mills
 * Updates recorded in GitHub: [Alex_Midline_Household_Labels_For_Amina.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Alex_Midline_Household_Labels_For_Amina.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script processes and updates the Midline Household Survey labels for the NSF Senegal project. It sets file paths, defines replacement variables, replaces placeholders in the dataset, and saves the updated file.

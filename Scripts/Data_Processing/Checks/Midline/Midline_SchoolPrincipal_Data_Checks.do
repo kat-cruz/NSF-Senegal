@@ -2,7 +2,8 @@
 * DISES Midline Data Checks - School Principal Survey
 * File originally created By: Alex Mills
 * Updates recorded in GitHub: [Midline_SchoolPrincipal_Data_Checks.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_SchoolPrincipal_Data_Checks.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script processes and checks the data from the Midline School Principal Survey for the NSF Senegal project. It includes data import, variable labeling, value checks, and exporting flagged issues for further review.

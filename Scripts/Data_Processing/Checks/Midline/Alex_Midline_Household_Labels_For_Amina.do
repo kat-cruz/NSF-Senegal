@@ -1,3 +1,34 @@
+*==============================================================================
+* DISES Midline Data Checks - Household Survey Labels
+* File originally created By: Alex Mills
+* Updates recorded in GitHub: [Alex_Midline_Household_Labels_For_Amina.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Alex_Midline_Household_Labels_For_Amina.do)
+*==============================================================================
+*
+* Description:
+* This script processes and updates the Midline Household Survey labels for the NSF Senegal project. It sets file paths, defines replacement variables, replaces placeholders in the dataset, and saves the updated file.
+*
+* Key Functions:
+* - Import household survey labels (`.dta` file).
+* - Set up file paths for different users.
+* - Define replacement variables for various categories.
+* - Replace placeholders in the `value` column with corresponding variables.
+* - Save the updated dataset.
+*
+* Inputs:
+* - **Survey Data:** The household data labels (`Midline_Survey_Questions.dta`)
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Updated Household labels:** The updated dataset (`Updated_Midline_Survey_Questions.dta`)
+*
+* Instructions to Run:
+* 1. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
+* 2. Run the script sequentially in Stata.
+* 3. Verify that the placeholders in the `value` column are correctly replaced with the corresponding variables.
+* 4. Check the updated dataset saved in the specified directory.
+*
+*==============================================================================
+
 clear all
 set mem 100m
 set maxvar 30000

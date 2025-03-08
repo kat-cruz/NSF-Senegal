@@ -1,3 +1,35 @@
+*==============================================================================
+* DISES Midline Data Checks - Missing HH49
+* File originally created By: Alex Mills
+* Updates recorded in GitHub: [Midline_Missing_hh49.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_Missing_hh49.do)
+*==============================================================================
+*
+* Description:
+* This script processes and updates the Midline Household Survey data for the NSF Senegal project. It identifies and processes households missing the hh_49 (consent) variable.
+*
+* Key Functions:
+* - Import household survey and school attendance data.
+* - Set up file paths for different users.
+* - Identify households with missing hh_49 variable.
+* - Export processed data to Excel for further analysis.
+*
+* Inputs:
+* - **Household Survey Data:** The household dataset (`DISES_Enquête ménage midline VF_WIDE_[INSERT DATE HERE].csv`)
+* - **School Attendance Data:** The school attendance dataset (`DISES_Principal_Survey_MIDLINE_VF_WIDE_[INSERT_DATE_HERE.csv`)
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Processed Household Data:** The dataset with missing hh_49 variable (`DISES_Enquête_ménage_midline_VF_WIDE__Missing_hh49.dta`)
+* - **Excel Reports:** Attendance checks missing hh_49 (`attendance_checks_missing_hh49_10Feb2025.xlsx`)
+*
+* Instructions to Run:
+* 1. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
+* 2. Run the script sequentially in Stata.
+* 3. Verify that the households with missing hh_49 variable are correctly identified.
+* 4. Check the processed dataset and Excel files saved in the specified directories.
+*
+*==============================================================================
+
 *** Created by: Alex Mills ***
 *** Updates recorded in GitHub ***
 *==============================================================================

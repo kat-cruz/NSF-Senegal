@@ -3,7 +3,8 @@
 * File originally created By: Molly Doruska
 * Adapted by: Kateri Mouawad & Alex Mills
 * Updates recorded in GitHub: [Midline_Replacement_Survey_Data_Checks.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_Replacement_Survey_Data_Checks.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script processes and checks the data from the Midline Household Replacement Survey for the NSF Senegal project. It includes data import, variable renaming, labeling, and value checks.

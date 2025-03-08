@@ -18,8 +18,8 @@
 * Corrected community survey data: "$corrected\CORRECTED_Community_Survey_[INSERT DATE HERE].xlsx"
 *
 * Instructions for running the script:
-* 1. Ensure Stata is running in a compatible environment.
-* 2. Verify that the file paths are correctly set in the "SET FILE PATHS" section.
+* 1. Verify that the file paths are correctly set in the "SET FILE PATHS" section.
+* 2. make sure the day for the corrections is right 
 * 3. Run the script sequentially to process corrections and apply them to the dataset.
 * 4. The final corrected dataset will be saved in the specified output directory.
 *

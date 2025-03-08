@@ -1,36 +1,32 @@
-********************************************************************************
-*** DISES Midline Replacement Data Corrections - Household Survey ***
-********************************************************************************
-*** File originally created By: Alex Mills ***
-*** Updates recorded in GitHub
-
-********************************************************************************
-*** README - OVERVIEW ***
-********************************************************************************
-
-** Purpose **
+*==============================================================================
+* DISES Midline Replacement Data Corrections - Household Survey
+* File originally created By: Alex Mills
+* Updates recorded in GitHub: [Alex_Midline_Replacement_Data_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Replacement_Data_Corrections.do)
+*==============================================================================
+*
+* Description:
 * This script performs data corrections for the DISES Midline Replacement Household Survey dataset using the corrections given in the external corrections files.
-* Easiest to use an excel formula then check each correction to make sure qualitative answers correspond to the correct numeric answer from the raw survey CTO file
-
-** Key Functions **
-* Import corrected household survey data (`.dta` file).
-* Apply corrections to the household survey data
-* Serves as a storage for all corrections made and those values that have been confirmed which need to be overlooked in the next round of checks
-
-** Inputs **
-* Survey Data: The corrected midline dataset (`CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_[DATE].dta`)
-* File Paths: Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
-
-** Outputs **
-* Corrected Household Replacement Data
-
-** Instructions to Run **
-* 3. Update the file paths in the `"SET FILE PATHS"` section for the correct user.
+* Easiest to use an excel formula then check each correction to make sure qualitative answers correspond to the correct numeric answer from the raw survey CTO file.
+*
+* Key Functions:
+* - Import corrected household survey data (`.dta` file).
+* - Apply corrections to the household survey data.
+* - Serves as a storage for all corrections made and those values that have been confirmed which need to be overlooked in the next round of checks.
+*
+* Inputs:
+* - Survey Data: The corrected midline dataset (`CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_[DATE].dta`)
+* - File Paths: Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - Corrected Household Replacement Data.
+*
+* Instructions to Run:
+* 1. Update the file paths in the `"SET FILE PATHS"` section for the correct user.
 * 2. Check the corrections date in the dataset import section.
-* 3. Ensure all the corrections from the external corrections file have been added
-* 4. Run the script sequentially
-
-************************************************************************************
+* 3. Ensure all the corrections from the external corrections file have been added.
+* 4. Run the script sequentially.
+*
+*==============================================================================
 
 clear all
 set mem 100m

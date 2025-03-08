@@ -2,7 +2,8 @@
 * DISES Midline Weekly Updates - Household Survey
 * File originally created By: Alexander Mills
 * Updates recorded in GitHub: [Midline_Weekly_Updates_forChris.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_Weekly_Updates_forChris.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script processes and updates the Midline Household Survey data for the NSF Senegal project. It sets file paths, calculates various metrics, and saves results to Excel.

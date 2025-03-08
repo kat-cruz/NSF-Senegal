@@ -1,9 +1,33 @@
-*** DISES Midline Data Checks - Household Survey***
-*** File originally created By: Molly Doruska 
-     ***>>> Adapted by Kateri Mouawad & Alex Mills <<<***
-*** Updates recorded in GitHub ***
-
-
+*==============================================================================
+* DISES Midline Data Checks - Household Survey
+* File originally created By: Molly Doruska
+* >>> Adapted by Kateri Mouawad & Alex Mills <<<
+* Updates recorded in GitHub: [Alex_Midline_Household_Data_Checks.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Alex_Midline_Household_Data_Checks.do)
+*==============================================================================
+*
+* Description:
+* This script performs data quality checks for the DISES Midline Household Survey dataset. It verifies completeness, consistency, and correctness of household survey records.
+*
+* Key Functions:
+* - Import household survey data (`.dta` file).
+* - Rename key variables for clarity.
+* - Apply labels to variables for documentation and analysis.
+* - Identify and flag missing or incorrect data.
+* - Export issue reports for necessary corrections.
+*
+* Inputs:
+* - **Survey Data:** The household dataset (`DISES_Enquête_ménage_midline_VF_WIDE_[DATE].csv`)
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Household Data Issue Reports:** Identifies missing values for key household-level variables and exports `.dta` reports for corrections.
+*
+* Instructions to Run:
+* 1. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
+* 2. **Check the survey date** in the dataset import section.
+* 3. Run the script sequentially.
+* 4. Review and address the **issue reports** generated for missing or incorrect values.
+*
 *==============================================================================
 
 clear all

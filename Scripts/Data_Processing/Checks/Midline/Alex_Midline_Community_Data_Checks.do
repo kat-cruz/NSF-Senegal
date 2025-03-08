@@ -3,7 +3,8 @@
 * File originally created By: Molly Doruska
 * >>> Adapted by Kateri Mouawad & Alexander Mills <<<
 * Updates recorded in GitHub: [Alex_Midline_Community_Data_Checks.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Alex_Midline_Community_Data_Checks.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script performs data quality checks for the DISES Midline Community Survey dataset. It verifies completeness, consistency, and correctness of community survey records.

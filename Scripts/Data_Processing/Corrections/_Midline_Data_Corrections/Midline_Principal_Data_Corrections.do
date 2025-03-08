@@ -1,6 +1,36 @@
-*** Created by: Alex Mills ***
-*** Updates recorded in GitHub ***
 *==============================================================================
+* DISES Midline Data Corrections - School Principal Survey
+* File originally created By: Alex Mills
+* Updates recorded in GitHub: [Midline_Principal_Data_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Midline_Principal_Data_Corrections.do)
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+*
+* Description:
+* This script processes and corrects the data from the Midline School Principal Survey for the NSF Senegal project. It includes data import, variable labeling, value checks, and exporting flagged issues for further review.
+*
+* Key Functions:
+* - Import school principal survey data.
+* - Set up file paths for different users.
+* - Label variables and define value labels.
+* - Perform value checks for missing or invalid data.
+* - Export flagged issues to Stata and Excel files.
+*
+* Inputs:
+* - **School Principal Survey Data:** The school principal dataset (`CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_6Mar2025.xlsx`)
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Flagged Issues:** Data files with flagged issues for review (`Issue_SchoolPrincipal_*.dta`)
+* - **Excel Reports:** Reports with flagged issues for review (`Issue_SchoolPrincipal_*.xlsx`)
+*
+* Instructions to Run:
+* 1. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
+* 2. Run the script sequentially in Stata.
+* 3. Verify that the flagged issues are correctly identified.
+* 4. Check the flagged data and Excel reports saved in the specified directories.
+*
+*==============================================================================
+
 clear all
 set mem 100m
 set maxvar 30000

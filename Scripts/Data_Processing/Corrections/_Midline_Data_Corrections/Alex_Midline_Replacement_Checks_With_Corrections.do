@@ -3,7 +3,8 @@
 * File originally created By: Molly Doruska
 * >>> Adapted by Kateri Mouawad & Alex Mills <<<
 * Updates recorded in GitHub: [Alex_Midline_Replacement_Checks_With_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Replacement_Checks_With_Corrections.do)
-*==============================================================================
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script performs data quality checks for the DISES Midline Household Replacement Survey dataset. It verifies completeness, consistency, and correctness of household survey records, largely focusing on skip patterns and other data integrity issues.

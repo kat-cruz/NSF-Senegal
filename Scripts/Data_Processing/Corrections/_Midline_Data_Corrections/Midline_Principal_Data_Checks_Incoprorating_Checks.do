@@ -61,7 +61,7 @@ global corrected "$master\Output\Data_Corrections\Midline"
 *** Import school principal survey data ***
 **************************************************
 
-import excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_6Mar2025.xlsx", firstrow
+import excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_10Mar2025.xlsx", firstrow
 
 
 *** label variables ***
@@ -781,7 +781,7 @@ foreach grade in 1 2 3 4 5 6 {
 		replace ind_issue = 0 if (key == "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5") & (passing_2024_total_`grade'_`class' == -999 | passing_2024_total_`grade'_`class' == -9)
 replace ind_issue = 0 if (key == "uuid:9d8e7068-1bdc-4c3d-8575-29eb68d1794b") & (passing_2024_total_`grade'_`class' == -999 | passing_2024_total_`grade'_`class' == -9)
 replace ind_issue = 0 if (key == "uuid:9c94b876-40a4-43e5-8be6-1510e5fdf3ba") & (passing_2024_total_`grade'_`class' == -999 | passing_2024_total_`grade'_`class' == -9)
-		replace ind_issue = 0 if passing_2024_female_`grade'_`class' == -9
+		replace ind_issue = 0 if passing_2024_total_`grade'_`class' == -9
 // villages the principal was new/ does not have access to last years registry
         keep if ind_issue == 1
 		keep hhid_village sup_name respondent_name respondent_phone_primary passing_2024_total_`grade'_`class' key
@@ -816,6 +816,7 @@ foreach grade in 1 2 3 4 5 6 {
 replace ind_issue = 0 if key == "uuid:9d8e7068-1bdc-4c3d-8575-29eb68d1794b" & (passing_2024_female_`grade'_`class' == -999 | passing_2024_female_`grade'_`class' == -9)
 replace ind_issue = 0 if key == "uuid:9c94b876-40a4-43e5-8be6-1510e5fdf3ba" & (passing_2024_female_`grade'_`class' == -999 | passing_2024_female_`grade'_`class' == -9)
 replace ind_issue = 0 if passing_2024_female_`grade'_`class' == -9
+		replace ind_issue = 0 if passing_2024_female_`grade'_`class' == -9
  // one village the principal was new and does not have access to last years registry
 		keep if ind_issue == 1
 
@@ -1053,10 +1054,10 @@ restore
 	}
 
 
-	save "$schoolprincipal\Schoolprincipal_Issues_6Mar2025.dta", replace // keep record of all the issues for each cleaning to filter
+	save "$schoolprincipal\Schoolprincipal_Issues_10Mar2025.dta", replace // keep record of all the issues for each cleaning to filter
 
 sort sup_name
 
 * Export to Excel
-export excel using "$schoolprincipal\SchoolPrincipal_Issues_6Mar2025.xlsx", firstrow(variables) replace  
+export excel using "$schoolprincipal\SchoolPrincipal_Issues_10Mar2025.xlsx", firstrow(variables) replace  
 

@@ -1,21 +1,34 @@
-*** DISES Midline Data Checks - Household Survey***
-*** File originally created By: Kateri Mouawad  ***
-*** Updates recorded in GitHub ***
+*==============================================================================
+* DISES Midline Data Checks - Household Survey
+* File originally created By: Kateri Mouawad
+* Updates recorded in GitHub: [Alex_Midline_Household_Append.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Alex_Midline_Household_Append.do)
 
-*>>>>>>>>>>**--*--*--*--*--*--*--*--** READ ME **--*--*--*--*--*--*--*--**<<<<<<<<<<<*
-
-		** REDO ALL OF THIS LOL
-
-			*1)	Go to the following file path:
-					*Data Management\Output\Data_Quality_Checks\Midline
-			*2)	Check for through each of the subfolders to verify which issues have been outputed 
-			*3)	Update this script with any new .dta's by appending them, module by module 
-			*4) After you apppend all of the issues by module, complete one final append by appending the module issues 
-			*5) Export this spread sheet to the Issues folder located here:
-				*\Data Management\External_Corrections\Issues for Justin and Amina\Midline\Issues
-			
-
-*--*--*--*--*--*--*--*--**--*--*--*--*--*--*--*--**--*--*--*--*--*--*--*--**--*--*--*--*--*--*--*--*
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+*
+* Description:
+* This script performs data quality checks for the DISES Midline Household Survey dataset. It involves appending issue files from various modules, combining them, and exporting the combined data for further corrections.
+*
+* Key Functions:
+* - Verify which issue files have been outputted.
+* - Append issue files module by module.
+* - Perform a final append by combining the module issue files.
+* - Export the combined issue data to the Issues folder.
+*
+* Inputs:
+* - **Issue Files:** Various `.dta` files containing issue data for different modules.
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Combined Issue Data:** Appended issue data from various modules, exported to the Issues folder.
+*
+* Instructions to Run:
+* 1. Go to the following file path: `Data Management\Output\Data_Quality_Checks\Midline`.
+* 2. Check through each of the subfolders to verify which issues have been outputted.
+* 3. Update this script with any new `.dta` files by appending them, module by module.
+* 4. After appending all the issues by module, perform one final append by combining the module issues.
+* 5. Export the combined issue data to the Issues folder located at `\Data Management\External_Corrections\Issues for Justin and Amina\Midline\Issues`.
+*
+*==============================================================================
 
 clear all
 set mem 100m

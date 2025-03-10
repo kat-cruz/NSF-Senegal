@@ -1,7 +1,37 @@
-*** File originally created By: Molly Doruska ***
-      *** Adapted by Kateri Mouawad & Alexander Mills***
-	*** Updates recorded in GitHub ***
 *==============================================================================
+* DISES Midline Data Checks (Incorporating Corrections) - Community Survey
+* File originally created By: Molly Doruska
+* >>> Adapted by Kateri Mouawad & Alexander Mills <<<
+* Updates recorded in GitHub: [Alex_Midline_Community_Data_Checks.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Alex_Midline_Community_Data_Checks.do)
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+*
+* Description:
+* This script performs data quality checks for the DISES Midline Community Survey dataset. It verifies completeness, consistency, and correctness of community survey records.
+*
+* Key Functions:
+* - Import corrected community survey data (`.dta` file).
+* - Rename key variables for clarity.
+* - Apply labels to variables for documentation and analysis.
+* - Generate summary statistics on survey completion by village.
+* - Identify and flag missing or incorrect data.
+* - Export issue reports for necessary corrections.
+*
+* Inputs:
+* - **Survey Data:** The corrected midline dataset (`CORRECTED_Community_Survey_[DATE].xlsx`)
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Community Data Issue Reports:** Identifies missing values for key community-level variables and exports `.dta` reports for corrections.
+*
+* Instructions to Run:
+* 1. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
+* 2. **Check the survey date** in the dataset import section.
+* 3. Run the script sequentially.
+* 4. Review and address the **issue reports** generated for missing or incorrect values.
+*
+*==============================================================================
+
 clear all
 set mem 100m
 set maxvar 30000

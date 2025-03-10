@@ -1,6 +1,37 @@
-*** Created by Alexander Mills***
-	*** Updates recorded in GitHub ***
 *==============================================================================
+* DISES Midline Weekly Updates - Household Survey
+* File originally created By: Alexander Mills
+* Updates recorded in GitHub: [Midline_Weekly_Updates_forChris.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_Weekly_Updates_forChris.do)
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+*
+* Description:
+* This script processes and updates the Midline Household Survey data for the NSF Senegal project. It sets file paths, calculates various metrics, and saves results to Excel.
+*
+* Key Functions:
+* - Import household survey data (`.dta` file).
+* - Set up file paths for different users.
+* - Calculate revisit and attrition rates.
+* - Identify households with different respondents.
+* - Flag special values (e.g., "I Don't Know") in the dataset.
+* - Calculate household-level training status.
+*
+* Inputs:
+* - **Survey Data:** The household dataset (`DISES_Enquête_ménage_midline_VF_WIDE_19Feb2025.csv`)
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Updated Household Data:** The updated dataset (`Updated_Midline_Survey_Questions.dta`)
+* - **Excel Report:** Daily updates report (`DISES_DailyChecks_19Feb.xlsx`)
+*
+* Instructions to Run:
+* 1. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
+* 2. Run the script sequentially in Stata.
+* 3. Verify that the metrics and outputs are correct.
+* 4. Check the updated dataset and Excel files saved in the specified directories.
+*
+*==============================================================================
+
 clear all
 set more off
 set maxvar 30000

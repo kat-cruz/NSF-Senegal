@@ -1,6 +1,38 @@
-*** DISES Attrition & Replacement Analysis ***
-*** File originally created By: Alex Mills ***
-*** Updates recorded in GitHub ***
+*==============================================================================
+* DISES Attrition & Replacement Analysis
+* File originally created By: Alex Mills
+* Updates recorded in GitHub: [Midline_Villages_Replacements_Checks.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_Villages_Replacements_Checks.do)
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+*
+* Description:
+* This script performs an analysis of attrition and replacements for the Midline Household Survey data in the NSF Senegal project. It identifies households that have attritted and those that need replacements.
+*
+* Key Functions:
+* - Import baseline and midline survey data.
+* - Identify attritted households.
+* - Import and process replacement survey data.
+* - Combine retained and replacement households.
+* - Count households per village and identify those below the target count.
+* - Export results for field teams.
+*
+* Inputs:
+* - **Baseline Data:** The baseline dataset (`DISES_Baseline_Complete_PII.dta`)
+* - **Midline Data:** The midline dataset (`DISES_Enquête_ménage_midline_VF_WIDE_24Feb2025.csv`)
+* - **Replacement Data:** The replacement dataset (`DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_24Feb2025.csv`)
+* - **File Paths:** Ensure that user-specific file paths in the `SET FILE PATHS` section are correctly configured.
+*
+* Outputs:
+* - **Processed Household Data:** Datasets for retained and attritted households, as well as replacements.
+* - **Excel Reports:** Lists of villages needing replacements and household IDs.
+*
+* Instructions to Run:
+* 1. Update the **file paths** in the `"SET FILE PATHS"` section for the correct user.
+* 2. Run the script sequentially in Stata.
+* 3. Verify that households needing replacements are correctly identified.
+* 4. Check the processed datasets and Excel files saved in the specified directories.
+*
+*==============================================================================
 
 clear all
 set mem 100m

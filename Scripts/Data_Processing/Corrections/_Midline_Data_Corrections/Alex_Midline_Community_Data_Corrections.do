@@ -2,8 +2,9 @@
 * Community Survey Data Corrections - Midline
 * Created by: Molly Doruska
 * Adapted by: Alexander Mills
-* Updates recorded in GitHub
-*==============================================================================
+* Updates recorded in GitHub: [Alex_Midline_Community_Data_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Community_Data_Corrections.do)
+
+*>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
 * Description:
 * This script processes community survey data from the DISES Midline study.
@@ -11,7 +12,7 @@
 *
 * Inputs:
 * Community Issues file: "$issues\Community_Issues_[INSERT DATE HERE].xlsx"
-* Corrections file: "$corrections\[MOST RECENT CORRECTIONS FILE FROM THE EXTERNAL CORRECTIONS FOLDER] "
+* Corrections file: "$corrections\[MOST RECENT CORRECTIONS FILE FROM THE EXTERNAL CORRECTIONS FOLDER]"
 * Survey dataset: "$data\Questionnaire Communautaire - NSF DISES MIDLINE VF_WIDE_[INSERT DATE HERE].csv"
 *
 * Outputs:
@@ -24,6 +25,7 @@
 * 4. The final corrected dataset will be saved in the specified output directory.
 *
 *==============================================================================
+```
 * The corrections are drawn from the external corrections folder
 * use excel formula in the corrections sheet from the external corrections to easily pull all corrections
 * = "replace " & [@[issue_variable_name]]&" = "&[@correction]&" if phone_resp == "&CHAR(34)&[@[phone_resp]]&CHAR(34)

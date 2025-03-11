@@ -1,7 +1,7 @@
 *==============================================================================
 * Unit Conversion Table - Midline
 * Created by: Alexander Mills
-* Updates recorded in GitHub: [Midline_Unit_Conversion_table.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Community_Data_Corrections.do)
+* Updates recorded in GitHub: [Midline_Unit_Conversion_table.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Analsysis/Codebook/Unit_Conversion_Table.do)
 
 *>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
 *
@@ -9,16 +9,15 @@
 * This script creates the unit conversion table
 *
 * Inputs:
-* 
-*
+* **Community Survey Data**: `CORRECTED_Community_Survey_6May2025.xlsx`
+* **Unit Conversion Values by Village**: `unit_conversion_values.xlsx`
 * Outputs:
-* 
+* **Summary Statistics**: `unit_conversion_table.rtf`
 *
 * Instructions for running the script:
 * 1. Ensure Stata is running in a compatible environment.
 * 2. Verify that the file paths are correctly set in the "SET FILE PATHS" section.
-* 3. Run the script sequentially to 
-* 4. 
+* 3. Run the script sequentially
 *
 *==============================================================================*
 clear all

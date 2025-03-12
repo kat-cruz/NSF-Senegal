@@ -42,55 +42,57 @@ global data "$master\Data_Management\Output\Data_Analysis\Parasitological_Analys
 use "$data\base_child_infection_dataframe.dta", clear
 
 
-*<><<><><>><><<><><>>
+*<><<><><>><><<><><>>	
 * BEGIN DATA CLEANING/PROCESSING
 *<><<><><>><><<><><>>	
 
 
 ** drop unneeded vars 
 
-drop epls_ucad_id epls_or_ucad data_source sex_hp age_hp
+	drop epls_ucad_id epls_or_ucad data_source sex_hp age_hp
 
-** keep only scored data 
+	** keep only scored data 
 
-keep if match_score != .
+	keep if match_score != .
 
 
 
-* Creating binary variables for hh_29
-foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
-    gen hh_29_`x' = hh_29_ == `x'
-    replace hh_29_`x' = 0 if missing(hh_29_)
-}
+	* Creating binary variables for hh_29
+	foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
+		gen hh_29_`x' = hh_29_ == `x'
+		replace hh_29_`x' = 0 if missing(hh_29_)
+	}
 
-* Creating binary variables for living_01
-foreach x in 1 2 3 4 5 6 7 8 9 10 99 {
-    gen living_01_`x' = living_01 == `x'
-    replace living_01_`x' = 0 if missing(living_01)
-}
+	* Creating binary variables for living_01
+	foreach x in 1 2 3 4 5 6 7 8 9 10 99 {
+		gen living_01_`x' = living_01 == `x'
+		replace living_01_`x' = 0 if missing(living_01)
+	}
 
-* Creating binary variables for living_03
+	* Creating binary variables for living_03
 
-foreach x in 1 2 3 99 {
-    gen living_03_`x' = living_03 == `x'
-    replace living_03_`x' = 0 if missing(living_03)
-}
+	foreach x in 1 2 3 99 {
+		gen living_03_`x' = living_03 == `x'
+		replace living_03_`x' = 0 if missing(living_03)
+	}
 
-* Creating binary variables for living_04
-foreach x in 1 2 3 4 5 6 7 99 {
-    gen living_04_`x' = living_04 == `x'
-    replace living_04_`x' = 0 if missing(living_04)
-}
+	* Creating binary variables for living_04
+	foreach x in 1 2 3 4 5 6 7 99 {
+		gen living_04_`x' = living_04 == `x'
+		replace living_04_`x' = 0 if missing(living_04)
+	}
 
 
 ** replace 2s for hh_03 health_5_2 health_5_5 health_5_6 health_5_7 as missings 
 
-foreach var in health_5_5_ health_5_6_ health_5_8_ health_5_9_ health_5_10_ {
-    replace `var' = .a if `var' == 2
-}
+	foreach var in health_5_5_ health_5_6_ health_5_8_ health_5_9_ health_5_10_ {
+		replace `var' = .a if `var' == 2
+	}
 
 
-*********************************************** Calculate egg counts ***********************************************
+*<><<><><>><><<><><>> 
+* Calculate egg counts
+*<><<><><>><><<><><>>	
 
 	gen sh_egg_count = cond(fu_p1 > 0, fu_p1, fu_p2)
 
@@ -103,7 +105,9 @@ foreach var in health_5_5_ health_5_6_ health_5_8_ health_5_9_ health_5_10_ {
 	gen total_egg = sm_egg_count + sh_egg_count
 
 
-*********************************************** Scale water contact variable ****************************************************************
+*<><<><><>><><<><><>>	
+* Scale water contact variable 
+*<><<><><>><><<><><>>	
 
 	* Create new variables to preserve original data
 	gen BegeningTimesampling_clean = BegeningTimesampling
@@ -162,7 +166,7 @@ foreach var in health_5_5_ health_5_6_ health_5_8_ health_5_9_ health_5_10_ {
 	drop BegeningTimesampling_time Endsamplingtime_time
 
 
-***************************************************************************************************************
+*<><<><><>><><<><><>>	
 
 
 

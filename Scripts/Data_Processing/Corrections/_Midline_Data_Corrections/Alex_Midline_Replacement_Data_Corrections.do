@@ -97,7 +97,7 @@ replace legumineuses_05_1 = 300 if key == "uuid:83605234-d756-46d1-b633-9a3da11e
 replace agri_income_23_1 = -9 if key == "uuid:64a3cbc6-e8b8-4e8f-b508-bdb4d8a0abc9"
 
 * Village ID was wrong for one of the replacements missing 103B was put as 062B
-replace hhid_village = "103B" if hhid_village == "062B"
+replace hhid_village = "102B" if hhid_village == "062B"
 
 * Save the corrected dataset
 export delimited using "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_12Mar2025.csv", replace

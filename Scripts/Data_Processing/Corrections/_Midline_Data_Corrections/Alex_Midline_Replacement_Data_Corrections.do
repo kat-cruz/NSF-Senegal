@@ -96,16 +96,13 @@ replace hh_phone = 786146562 if key == "uuid:3f36eea9-5b56-463d-ab14-5ed51726f20
 replace legumineuses_05_1 = 300 if key == "uuid:83605234-d756-46d1-b633-9a3da11ef813"
 replace agri_income_23_1 = -9 if key == "uuid:64a3cbc6-e8b8-4e8f-b508-bdb4d8a0abc9"
 
-// replace hh_13_1_total = 62 if key == "uuid:64a3cbc6-e8b8-4e8f-b508-bdb4d8a0abc9"
-
-// replace hh_13_8_total = 3 if key == "uuid:64a3cbc6-e8b8-4e8f-b508-bdb4d8a0abc9"
-
-// replace hh_13_3_total = 18 if key == "uuid:10b77926-7c29-4fec-8e2c-a8153d83dfe7"
+* Village ID was wrong for one of the replacements missing 103B was put as 062B
+replace hhid_village = "103B" if hhid_village == "062B"
 
 * Save the corrected dataset
-export delimited using "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_5Mar2025.csv", replace
+export delimited using "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_12Mar2025.csv", replace
 
-save "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_5Mar2025.dta", replace
+save "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_12Mar2025.dta", replace
 
 
 

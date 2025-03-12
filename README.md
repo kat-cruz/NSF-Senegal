@@ -1,4 +1,4 @@
-# NSF Senegal: DISES Project  
+# NSF Senegal: DISES Project  (WIP - not accurate atm)
 ## This is where we store and manage our scripts to clean, analyze, and process data. No data is **ever** stored in these folders.
 
 ## Software used:  

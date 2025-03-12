@@ -416,24 +416,39 @@ foreach x in 0 1 2 3 4 99 {
 				replace hh_15_`x' = 0 if missing(hh_15_)
 			}
 
-** dropping variable
 
-* Creating binary variables for hh_29
-			gen hh_29_bin = 1 if hh_29 > 6 ///greater than primary level
-			
-			*update to include = to 1 // equal to indicate = to one 
-			* hh_31_bin
-			
-* Creating binary variables for hh_31
+* Creating binary variables for hh_29 conditional on grade level:
 
-	*1. Graduated, studies completed
-	*2. Moving to the next class
-	*3. Failure, repetition
-	*5. Dropping out during the year
-	
-		gen hh_31_bin = 0
-		replace hh_31_bin = 1 if hh_31_ == 1 | hh_31_ == 2
-		replace hh_31_bin = . if missing(hh_31_)  // Set to missing if hh_31_ is empty to account for ONLY the child population 
+		* 1.Primary – 1st year
+		* 2.Primary – 2nd year
+		* 3.Primary – 3rd year
+		* 4.Primary – 4th year
+		* 5.Primary – 5th year
+		* 6.Primary – 6th year
+		* 7. Secondary 1 (Middle) - 7th year
+		* 8. Secondary 1 (Middle) - 8th year
+		* 9. Secondary 1 (Middle) - 9th year
+		* 10. Secondary 1 (Middle) - 10th year
+		* 11. Secondary 2 (Higher) - 11th year
+		* 12. Secondary 2 (Higher) - 12th year
+		* 13. Secondary 2 (Higher) - 13th year
+		* 14. More than upper secondary (e.g. university)
+		* 99. Other (to be specified)
+
+
+		
+		gen hh_29_01 = 1 if hh_29_ <= 6  // Primary level
+			replace hh_29_01 = 0 if hh_29_ > 6 & hh_29_ != . 
+
+		gen hh_29_02 = 1 if hh_29_ >= 7 & hh_29_ <= 10  // Secondary middle level
+			replace hh_29_02 = 0 if (hh_29_ < 7 | hh_29_ > 10) & hh_29_ != . 
+
+		gen hh_29_03 = 1 if hh_29_ >= 11 & hh_29_ <= 13  // Secondary higher level
+			replace hh_29_03 = 0 if (hh_29_ < 11 | hh_29_ > 13) & hh_29_ != . 
+
+		gen hh_29_04 = 1 if hh_29_ == 14  // Upper secondary
+			replace hh_29_04 = 0 if hh_29_ != 14 & hh_29_ != . 
+
 
 
 /*
@@ -442,6 +457,23 @@ foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
     replace hh_29_`x' = 0 if missing(hh_29_)
 }
 */
+			
+			
+* DROPPED VAR - not including in the PAP balance table
+* Creating binary variables for hh_31
+
+	*1. Graduated, studies completed
+	*2. Moving to the next class
+	*3. Failure, repetition
+	*5. Dropping out during the year
+	
+
+		gen hh_31_bin = 0
+		replace hh_31_bin = 1 if hh_31_ == 1 | hh_31_ == 2
+		replace hh_31_bin = . if missing(hh_31_)  // Set to missing if hh_31_ is empty to account for ONLY the child population 
+
+
+
 
 /*
 * Creating binary variables for living_01
@@ -637,7 +669,7 @@ save `balance_table_ata'
 * Create binary variable for nonzero agri_6_32 values
 		gen agri_6_32_bin = 0
 		forvalues i = 1/11 {
-			replace agri_6_32_bin = 1 if agri_6_32_`i' != 0
+			replace agri_6_32_bin = 1 if agri_6_32_`i' != 0 & agri_6_32_`i' != .
 		}
 		
 
@@ -748,7 +780,7 @@ save `balance_table_ata'
   
 		collapse (mean) ///
 			hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
-			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_bin /// 	
+			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_* /// 	
 			hh_26_ hh_27_  hh_31_bin hh_37_ hh_38_  ///  //edu vars 
 			health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
 			agri_income_01 agri_income_05 ///
@@ -762,7 +794,7 @@ save `balance_table_ata'
 
 
 		order hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
-			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_bin /// 	
+			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_* /// 	
 			hh_26_ hh_27_ hh_31_bin hh_37_ hh_38_ ///  //edu vars 
 			health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
 			agri_income_01 agri_income_05 ///
@@ -821,7 +853,11 @@ save `balance_table_ata'
 			label variable hh_16_ "Hours spent producing fertilizer, purchasing it, or applying it on the field"
 			label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
 			label variable hh_27_ "Attended non-formal school or training? (1=Yes, 0=No, asked to children)"
-			label variable hh_29_bin "Highest level and grade completed in school"
+			label variable hh_29_01 "Indicator for primary level education (1=Yes, 0=No, asked about children)"
+			label variable hh_29_02 "Indicator for secondary middle level education (1=Yes, 0=No, asked about children)"
+			label variable hh_29_03 "Indicator for secondary higher level education (1=Yes, 0=No, asked about children)"
+			label variable hh_29_04 "Indicator for upper secondary education (1=Yes, 0=No, asked about children)"
+
 			label variable hh_31_ "School performance during the 2023/2024 year"
 			label variable hh_31_bin "Indicator if student completed studies or moved to next class (1=Yes, 0=No, asked to children)"
 			label variable hh_38_ "Days attended school in the past 7 days"
@@ -897,10 +933,15 @@ save `balance_table_ata'
 * Keep JUST PAP variables 
 *<><<><><>><><<><><>>
 
+*vars removed:
+	* hh_27
+	* hh_31_bin
 preserve 
 
+
+
 		 keep hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
-		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_27_ hh_29_bin hh_31_bin hh_37_ hh_38_  ///
+		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
 		 living_01_bin game_A_total game_B_total   ///
 		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
 		 agri_income_01 agri_income_05 ///
@@ -909,7 +950,7 @@ preserve
 		 num_water_access_points q_51 target_village
 		 
 		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
-		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_27_ hh_29_bin hh_31_bin hh_37_ hh_38_  ///
+		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_  hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
 		 living_01_bin game_A_total game_B_total   ///
 		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
 		 agri_income_01 agri_income_05 ///
@@ -922,4 +963,4 @@ preserve
 restore 
 
 
-
+use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 

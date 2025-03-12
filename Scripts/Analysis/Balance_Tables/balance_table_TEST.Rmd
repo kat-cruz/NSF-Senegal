@@ -584,6 +584,76 @@ print(final_table)
 ```
 # Print the final transformed data
 
+```{r}
+# Load required library
+library(tidyverse)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Simulate 300 households, with 5 rows per household (for 5 variables)
+n_households <- 100
+hhid_village <- rep(paste0(rep(c("010A", "020B", "030C"), each = n_households), rep(1:n_households, times = 3)), each = 5)
+hhid <- rep(paste0("hh_", 1:n_households), each = 15)  # 100 households, 3 groups, 5 variables per group
+group <- rep(c("Control", "Treatment1", "Treatment2"), each = 5*n_households)
+variable <- rep(c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", "hh_numero"), times = 3*n_households)
+
+# Simulate random values for the variables
+value <- runif(length(hhid_village))
+
+# Create the dataframe
+fake_data <- tibble(
+  hhid_village = hhid_village,
+  hhid = hhid,
+  group = group,
+  variable = variable,
+  value = value
+)
+
+# View a snippet of the data
+head(fake_data)
+
+# Load necessary package for multinomial logistic regression
+library(nnet)
+
+# Prepare data: create outcome variables (1 for treatment arm, 0 otherwise)
+fake_data$y_treatment1 <- ifelse(fake_data$group == "Treatment1", 1, 0)
+fake_data$y_treatment2 <- ifelse(fake_data$group == "Treatment2", 1, 0)
+fake_data$y_control <- ifelse(fake_data$group == "Control", 1, 0)
+
+# Run multinomial logistic regression (with control as baseline)
+model <- multinom(cbind(y_treatment1, y_treatment2, y_control) ~ value + variable, data = fake_data)
+
+# View model summary
+summary(model)
+
+
+
+# Perform likelihood ratio tests for the joint null hypothesis
+lr_test <- lrtest(model)
+summary(lr_test)
+
+
+# Extract coefficients and p-values
+model_summary <- summary(model)$coefficients
+model_p_values <- summary(model)$z
+
+# Combine results into a tidy table
+regression_results <- tibble(
+  variable = rownames(model_summary),
+  coef_treatment1 = model_summary[,1],
+  coef_treatment2 = model_summary[,2],
+  coef_control = model_summary[,3],
+  p_treatment1 = model_p_values[,1],
+  p_treatment2 = model_p_values[,2],
+  p_control = model_p_values[,3]
+)
+
+# View regression results
+regression_results
+
+
+```
 
 
 

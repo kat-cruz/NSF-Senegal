@@ -19,6 +19,8 @@ This script outputs:
 
 ```{r}
 
+#install.packages("writexl")
+library(writexl)
 library(dplyr)
 library(readr)
 library(tidyr)
@@ -85,20 +87,28 @@ summary_df <- balance_df %>%
     )
   ) %>% select(-group)
 
+long_data_sum <- summary_df %>%
+  pivot_longer(
+    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+    names_to = "variable",    # Create a column named "variable" for former column names
+    values_to = "value"       # Store values in a column named "value"
+  )
+
+  long_data_sum <- long_data_sum %>%
+    rename(group = treatment_group)
 
 # Adding a single categorical variable for household training categories - this is for running regressions to avoid multicollinearity with trained_hh
 balance_df <- balance_df %>%
   mutate(
     # Extract the two middle characters (e.g., 2A) from hhid
     group = str_sub(hhid, 3, 4),
-    
-    # Assign treatment group based on the extracted group value
+        # Assign treatment group, ensuring "Local Control" is prioritized
     treatment_group = case_when(
       group %in% c("0A", "0B") ~ "Control",
-      group %in% c("1A", "1B") ~ "Treatment1", # Public health trained
-      group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # All Local Control
-      group %in% c("2A", "2B") ~ "Treatment2", # Private benefits trained
-      group %in% c("3A", "3B") ~ "Treatment3"  # Public and private trained
+      group %in% c("1A", "1B") ~ "Treatment1",
+      group %in% c("2A", "2B") ~ "Treatment2",
+       group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # Moved to the top
+      group %in% c("3A", "3B") ~ "Treatment3"
     )
   ) %>% select(-group, -trained_hh)
 
@@ -112,9 +122,9 @@ long_data <- balance_df %>%
 
   long_data <- long_data %>%
     rename(group = treatment_group)
-  long_data
+  view(long_data)
 
-view(long_data)
+long_data
 
 ```
 
@@ -145,7 +155,7 @@ compute_summary_stats <- function(df) {
     arrange(match(variable, unique(df$variable))) 
 }
 
-summary_table <- compute_summary_stats(long_data)
+summary_table <- compute_summary_stats(long_data_sum)
 
 # View output
 print(summary_table)
@@ -193,7 +203,7 @@ summary_table <- summary_table %>%
     variable == "hh_education_level_bin_h" ~ "Indicator for household head with secondary education or higher (1=Yes, 0=No)",
     variable == "hh_education_skills_5_h" ~ "Indicator that household head is literate (1=Yes, 0=No)",
     variable == "hh_gender_h" ~ "Household head gender (1=Male, 0=Female)",
-    variable == "hh_numero" ~ "Size of household",
+    variable == "hh_numero" ~ "Household size",
     
     variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities (1=Yes, 0=No) †",
     variable == "hh_10_" ~ "Hours per week spent within 1 meter of surface water source",
@@ -203,10 +213,13 @@ summary_table <- summary_table %>%
     
     variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †",
     variable == "hh_27_" ~ "Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) †",
-    variable == "hh_29_bin" ~ "Indicator if achieved any level higher than primary grade (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_01" ~ "Indicator for primary level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_02" ~ "Indicator for secondary middle level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_03" ~ "Indicator for secondary higher level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_04" ~ "Indicator for upper secondary education (1=Yes, 0=No, asked about children)",
     variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class (1=Yes, 0=No, asked about children)",
     variable == "hh_37_" ~ "Indicator if missed >1 consecutive week of school due to illness? (1=Yes, 0=No, asked about children) †",
-    variable == "hh_38_" ~ "Number of attended school days in the past week (Asked to children)",
+    variable == "hh_38_" ~ "Number of attended school days in the past week (asked about children)",
     
     variable == "living_01_bin" ~ "Indicator for selected tap water as main drinking source (1=Yes, 0=No)",
     variable == "game_A_total" ~ "Total paid for Game A (CFA)",
@@ -220,7 +233,7 @@ summary_table <- summary_table %>%
     variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No) †",
     
     variable == "agri_income_01" ~ "Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †",
-    variable == "agri_income_05" ~ "Amount received for agricultural work",
+    variable == "agri_income_05" ~ "Amount received for agricultural work (FCFA)",
     
     variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree) +",
     variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia (1=Yes, 0=No) +",
@@ -255,25 +268,68 @@ summary_table
 
 ```
 ###Output table
+#####Sum stats - HTML output
 
 ```{r}
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
 
-# Create table with footnotes using kableExtra
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+#Create table with footnotes using kableExtra
 summary_table %>%
-  kable(format = "html", escape = FALSE, caption = "Summary Table") %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics") %>%
   footnote(
-    general = "Standard deviations in parentheses.",
-    symbol = c(
-      "Indicates that these binaries were created from Likert scale variables based on response distribution.",
-      "Indicates that the 2's from the 'I Don't know' option have been replaced with missing."
-    )
+general = "Table presents mean values, with standard deviations in parentheses.",
+symbol = c(
+  "Binary variables were created from Likert scale responses based on their distribution.",
+  "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("SS_balance_tableV2.html")
+  save_kable("_baseline_summary_statsV2.html")
+
+
+# setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex_Output/Balance_Table")
+# 
+# summary_table %>%
+#   kable(format = "latex", booktabs = TRUE, escape = FALSE, caption = "Baseline Summary Statistics") %>%
+#   footnote(
+#     general = "Table presents mean values, with standard deviations in parentheses.",
+#     symbol = c(
+#       "Binary variables were created from Likert scale responses based on their distribution.",
+#       "'I Don't Know' responses (coded as 2) have been recoded as missing values."
+#     ),
+#     symbol_manual = c("+", "†")  # Custom symbols instead of default numbering
+#   ) %>%
+#   save_kable("SS_balance_tableV3.tex")
+
+#Create table with footnotes for excel spreadsheet
+
+```
+#####Sum stats - Excel output
+
+```{r}
+# Excel spreadsheet
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# Manually add footnotes as a single row
+footnotes <- data.frame(
+  Variable = "Footnotes:",
+  Mean = "Table presents mean values, with standard deviations in parentheses.",
+  SD = "+ Binary variables were created from Likert scale responses based on their distribution.",
+  Other = "† 'I Don't Know' responses (coded as 2) have been recoded as missing values."
+)
+
+# Ensure all columns are character type to avoid coercion issues
+summary_table <- summary_table %>%
+  mutate(across(everything(), as.character))
+
+# Bind footnotes to the summary table
+summary_table_with_footnotes <- bind_rows(summary_table, footnotes)
+
+# Save to Excel
+write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV2.xlsx")
+
 ```
 
 
-##Compute t-stats and cluster SEs at the village level
+##Compute regression coefficients and cluster SEs at the village level
 
 
 
@@ -289,8 +345,7 @@ summary_table %>%
 # Runs regressions for each comparison.
 # Clusters standard errors at the village level.
 # Stores and returns regression results in a data frame
-
-
+ 
 
 
 run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
@@ -303,8 +358,8 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
       subset$treat <- ifelse(subset[[treatment_col]] == arm, 1, 0)
       model <- lm(value ~ treat, data = subset)
       clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
-      results <- append(results, list(data.frame(variable = var, comparison = paste('Control vs', arm), 
-                                                 stat = round(clustered_se[2, 1], 2), 
+      results <- append(results, list(data.frame(variable = var, comparison = paste('Control vs', arm),
+                                                 stat = round(clustered_se[2, 1], 2),
                                                  p = round(clustered_se[2, 4], 2))))
     }
     for (i in 1:(length(treatments) - 1)) {
@@ -313,18 +368,24 @@ run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
         subset$treat <- ifelse(subset[[treatment_col]] == treatments[j], 1, 0)
         model <- lm(value ~ treat, data = subset)
         clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
-        results <- append(results, list(data.frame(variable = var, comparison = paste(treatments[i], 'vs', treatments[j]), 
-                                                 stat = round(clustered_se[2, 1], 2), 
+        results <- append(results, list(data.frame(variable = var, comparison = paste(treatments[i], 'vs', treatments[j]),
+                                                 stat = round(clustered_se[2, 1], 2),
                                                  p = round(clustered_se[2, 4], 2))))
-      }
-    }
-  }
-  bind_rows(results)
-}
+                }
+              }
+            }
+            bind_rows(results)
+          }
 
+
+
+
+names(balance_df)
     vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
     regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test_reg)
-      regression_results_test <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test_reg)
+      #regression_results_test <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test_reg)
+      
+      
 regression_results
 
 
@@ -436,14 +497,25 @@ final_table <- final_table %>%
 # Merge F-statistics data into final_table
 final_table <- final_table %>%
   left_join(f_test_results, by = "variable")
-
+final_table
 # Replace the value underneath f_stat with p_value
+# final_table <- final_table %>%
+#   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+#   mutate(across(everything(), ~ ifelse(grepl("p", type), paste0("(", trimws(.x), ")"), .x)))  # Format p-values with parentheses
+
 final_table <- final_table %>%
   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
-  mutate(across(everything(), ~ ifelse(grepl("p", type), paste0("(", trimws(.x), ")"), .x)))  # Format p-values with parentheses
+  mutate(across(everything(), ~ ifelse(grepl("p", type), 
+                                      paste0("(", trimws(.x), 
+                                             ifelse(as.numeric(.x) <= 0.01, "**", 
+                                                    ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
+                                      .x))) %>%
+  mutate(
+    # Replace character "NaN" values with "NA" for all columns except variable and type
+    across(-c(variable, type), ~ ifelse(. == "(NaNNA)", "(NA)", .))  # Check for character "NaN"
+  )
 
 
-# # Ensure joint_f_test_results column names are clean
 # joint_f_test_results <- joint_f_test_results %>%
 #   pivot_wider(names_from = treatment_comparison, values_from = c(f_statistic, p_value)) %>%
 #   rename_with(~ gsub(" ", "_", .), everything())  # Clean up column names
@@ -502,8 +574,8 @@ print(final_table)
 
 final_table <- final_table %>%
   mutate(
-    variable = if_else(type == "(p)" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
-    type = if_else(type == "(p)" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
+    variable = if_else(type == "(pNA)" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
+    type = if_else(type == "(pNA)" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
   ) %>%
   select(-type, -p_value)  # Remove the 'type' column after modification
 
@@ -519,7 +591,7 @@ final_table <- final_table %>%
     variable == "hh_education_level_bin_h" ~ "Indicator for household head with secondary education or higher (1=Yes, 0=No)",
     variable == "hh_education_skills_5_h" ~ "Indicator that household head is literate (1=Yes, 0=No)",
     variable == "hh_gender_h" ~ "Household head gender (1=Male, 0=Female)",
-    variable == "hh_numero" ~ "Size of household",
+    variable == "hh_numero" ~ "Household size",
     
     variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities (1=Yes, 0=No) †",
     variable == "hh_10_" ~ "Hours per week spent within 1 meter of surface water source",
@@ -527,12 +599,15 @@ final_table <- final_table %>%
     variable == "hh_16_" ~ "Hours spent producing, purchasing, or applying fertilizer",
     variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
     
-    variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked to children) †",
-    variable == "hh_27_" ~ "Indicator if attended non-formal school or training? (1=Yes, 0=No, asked to children) †",
-    variable == "hh_29_bin" ~ "Indicator if achieved any level higher than primary grade (1=Yes, 0=No, asked to children)",
-    variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class (1=Yes, 0=No, asked to children)",
-    variable == "hh_37_" ~ "Indicator if missed >1 consecutive week of school due to illness? (1=Yes, 0=No, asked to children) †",
-    variable == "hh_38_" ~ "Number of attended school days in the past week (Asked to children)",
+    variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †",
+    variable == "hh_27_" ~ "Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) †",
+    variable == "hh_29_01" ~ "Indicator for primary level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_02" ~ "Indicator for secondary middle level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_03" ~ "Indicator for secondary higher level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_04" ~ "Indicator for upper secondary education (1=Yes, 0=No, asked about children)",
+    variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class (1=Yes, 0=No, asked about children)",
+    variable == "hh_37_" ~ "Indicator if missed >1 consecutive week of school due to illness? (1=Yes, 0=No, asked about children) †",
+    variable == "hh_38_" ~ "Number of attended school days in the past week (asked about children)",
     
     variable == "living_01_bin" ~ "Indicator for selected tap water as main drinking source (1=Yes, 0=No)",
     variable == "game_A_total" ~ "Total paid for Game A (CFA)",
@@ -542,11 +617,11 @@ final_table <- final_table %>%
     variable == "agri_6_15" ~ "Number of cultivated plots",
     variable == "agri_6_32_bin" ~ "Indicator if used any organic fertilizer (1=Yes, 0=No)",
     variable == "agri_6_36_bin" ~ "Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)",
-    variable == "total_land_ha" ~ "Total land owned (hectares)",
+    variable == "total_land_ha" ~ "Total land cultivated (hectares)",
     variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No) †",
     
     variable == "agri_income_01" ~ "Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †",
-    variable == "agri_income_05" ~ "Amount received for agricultural work",
+    variable == "agri_income_05" ~ "Amount received for agricultural work (FCFA)",
     
     variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree) +",
     variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia (1=Yes, 0=No) +",
@@ -564,10 +639,11 @@ final_table <- final_table %>%
     variable == "num_water_access_points" ~ "Number of village water access points",
     variable == "q_51" ~ "Distance to nearest healthcare center (km) [village level]",
     variable == "target_village" ~ "Indicator if auction village (1=Yes, 0=No)",
-
     
     TRUE ~ variable  # Default case
   ))
+
+    
 
 final_table
 
@@ -580,7 +656,7 @@ final_table <- final_table %>%
           `Private Treatment vs Public Treatment` = `Treatment1 vs Treatment2`,
           `Private Treatment vs Public & Private Treatment` = `Treatment1 vs Treatment3`,
           `Public Treatment vs Public & Private Treatment` = `Treatment2 vs Treatment3`,
-          `Local Control vs Public & Private Treatment` = `Local Control vs Treatment3`,
+          `Local Control vs Public & Private Treatment` = `Treatment3 vs Local Control`,
           `Local Control vs Private Treatment` = `Treatment2 vs Local Control`,
           `Local Control vs Public Treatment` = `Treatment1 vs Local Control`,
           `F-test` = f_statistic)
@@ -614,22 +690,27 @@ final_table
 
 ```
 
-###Output table
+###Output tables
+
+#####Make two tables, one with local control/without
+
+##########Main table - HTML output
+
 ```{r}
 
 
 setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
 
 final_table %>%
-  kable(format = "html", escape = FALSE, caption = "Balance Table") %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
   footnote(
-    general = "P-values in parentheses. Standard errors are clustered at the village level.",
-   symbol = c(
-      "Indicates that these binaries were created from Likert scale variables based on response distribution.",
-      "Indicates that the 2's from the 'I Don't know' option have been replaced with missing."
-    )
+ general = "Reported statistics are regression coefficients, with p-values shown in parentheses. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+    symbol = c(
+      "Binary variables were derived from Likert scale responses based on their distribution.",
+      "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev4.html")
+  save_kable("balance_tablev7.html")
 
 # setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
 # knitr::kable(final_table, format = "html") %>% save_kable("balance_tablev3.html")
@@ -637,6 +718,80 @@ final_table %>%
 ```
 
 
+##########Main table - Excel output
+
+```{r}
+# Excel spreadsheet
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# Manually add footnotes as a single row
+footnotes <- data.frame(
+  Variable = "Footnotes:",
+  General = "Reported statistics are regression coefficients, with p-values shown in parentheses. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+  Bin_var = "+ Binary variables were created from Likert scale responses based on their distribution.",
+  Other = "† 'I Don't Know' responses (coded as 2) have been recoded as missing values."
+)
+
+# Ensure all columns are character type to avoid coercion issues
+final_table <- final_table %>%
+  mutate(across(everything(), as.character))
+
+# Bind footnotes to the summary table
+final_table_with_footnotes <- bind_rows(final_table, footnotes)
+
+# Save to final_table_with_footnotes
+write_xlsx(final_table_with_footnotes, "balance_table.xlsx")
+
+```
+
+
+##########Subset table - HTML output
+
+```{r}
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+
+
+final_table_subset <- final_table  %>%
+  select(-starts_with("Local Control"), -`Control vs Local Control`
+         )
+
+final_table_subset %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
+  footnote(
+ general = "Reported statistics are regression coefficients, with p-values shown in parentheses. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+    symbol = c(
+      "Binary variables were derived from Likert scale responses based on their distribution.",
+      "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+  ) %>%
+  save_kable("_balance_table_subset.html")
+
+
+#write_xlsx(final_table_subset, "balance_table_subset.xlsx")
+
+
+```
+
+##########Subset table - Excel output
+
+```{r}
+# Excel spreadsheet
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# Manually add footnotes as a single row
+
+# Ensure all columns are character type to avoid coercion issues
+final_table_subset <- final_table_subset %>%
+  mutate(across(everything(), as.character))
+
+# Bind footnotes to the summary table
+table_subset_with_footnotes <- bind_rows(final_table_subset, footnotes)
+
+# Save to final_table_with_footnotes
+write_xlsx(table_subset_with_footnotes, "balance_table_Subset.xlsx")
+```
+
+
+```{r}
 
 
 
@@ -646,7 +801,7 @@ final_table %>%
 
 
 
-
+```
 
 
 

@@ -61,7 +61,7 @@ global corrected "$master\Output\Data_Corrections\Midline"
 *** Import school principal survey data ***
 **************************************************
 
-import excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_10Mar2025.xlsx", firstrow
+import excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_12Mar2025.xlsx", firstrow
 
 
 *** label variables ***
@@ -1054,10 +1054,10 @@ restore
 	}
 
 
-	save "$schoolprincipal\Schoolprincipal_Issues_10Mar2025.dta", replace // keep record of all the issues for each cleaning to filter
+	save "$schoolprincipal\Schoolprincipal_Issues_12Mar2025.dta", replace // keep record of all the issues for each cleaning to filter
 
 sort sup_name
 
 * Export to Excel
-export excel using "$schoolprincipal\SchoolPrincipal_Issues_10Mar2025.xlsx", firstrow(variables) replace  
+export excel using "$schoolprincipal\SchoolPrincipal_Issues_12Mar2025.xlsx", firstrow(variables) replace  
 

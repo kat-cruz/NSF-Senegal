@@ -449,11 +449,41 @@ run_f_tests <- function(data, treatment_col, vars_to_test) {
   return(bind_rows(results))
 }
     vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-    # Example usage
+
     f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
     print(f_test_results)
 
 
+
+
+compute_fdr_qvalues <- function(regression_results) {
+  
+  # Apply Benjamini-Hochberg correction to regression p-values
+  regression_results <- regression_results %>%
+      mutate(q_value = round(p.adjust(p, method = "BH"), 2))  # Adjust and round q-values # Adjusting only regression p-values
+  
+  return(regression_results)  # Return the updated regression table with q-values
+}
+
+# Run the function on regression results
+regression_results_qvals <- compute_fdr_qvalues(regression_results)
+
+# Print results
+print(regression_results_qvals)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 #<><<><><>><><<><><>>
 #CREATE F-STAT FUNCTION FOR TREATMENT ARM
@@ -619,35 +649,84 @@ cat("The joint test results have been saved to the balance tables file in the ou
 
 
 # Pivot the table to have variables as rows and comparisons as columns
-final_table <- regression_results %>%
-  pivot_wider(names_from = comparison, values_from = c(stat, p))
-
+final_table <- regression_results_qvals %>%
+  rename(q = q_value)    %>%
+  pivot_wider(names_from = comparison, values_from = c(stat, p, q))
 # Rearrange to stack t-stats and p-values in rows
 final_table <- final_table %>%
   pivot_longer(cols = -variable, names_to = 'comparison', values_to = 'value') %>%
   separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
   pivot_wider(names_from = comparison, values_from = value)
-
+final_table
 # Merge F-statistics data into final_table
 final_table <- final_table %>%
   left_join(f_test_results, by = "variable")
 final_table
+
+# final_table <- final_table %>%
+#   # Ensure f-stat values remain unchanged except for p-values
+#   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+#   
+#   # Format p-values with parentheses and add significance stars
+#   mutate(across(everything(), ~ ifelse(
+#     grepl("p", type), 
+#     paste0("(", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
+#     .x))) %>%
+#   
+#   # Add brackets around q-values
+#   mutate(across(everything(), ~ ifelse(
+#     grepl("q", stat),  # If the stat column indicates q-values
+#     paste0("[", trimws(.x), "]"),  
+#     .x))) %>%
+#   
+#   # Replace character "NaNNA" values with "(NA)" for all columns except variable and type
+#   mutate(across(-c(variable, type), ~ ifelse(. == "(NaNNA)", "(NA)", .)))  
+
+
+final_table <- final_table %>%
+  # Ensure f-stat values remain unchanged except for p-values
+  mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+  
+  # Format p-values with parentheses and add significance stars
+  mutate(across(everything(), ~ as.character(ifelse(
+    grepl("p", type), 
+    paste0("(", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
+    .x)))) %>%
+  
+  # Add brackets around q-values
+  mutate(across(everything(), ~ as.character(ifelse(
+    grepl("q", stat),  # If the stat column indicates q-values
+    paste0("[", trimws(.x), "]"),  
+    .x)))) %>%
+  
+  # Replace character "NaNNA" values with "(NA)" for all columns except variable and type
+  mutate(across(-c(variable, type), ~ as.character(ifelse(. == "(NaNNA)", "(NA)", .)))))  
+
+
+
+
 # Replace the value underneath f_stat with p_value
 # final_table <- final_table %>%
 #   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
 #   mutate(across(everything(), ~ ifelse(grepl("p", type), paste0("(", trimws(.x), ")"), .x)))  # Format p-values with parentheses
 
-final_table <- final_table %>%
-  mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
-  mutate(across(everything(), ~ ifelse(grepl("p", type), 
-                                      paste0("(", trimws(.x), 
-                                             ifelse(as.numeric(.x) <= 0.01, "**", 
-                                                    ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
-                                      .x))) %>%
-  mutate(
-    # Replace character "NaN" values with "NA" for all columns except variable and type
-    across(-c(variable, type), ~ ifelse(. == "(NaNNA)", "(NA)", .))  # Check for character "NaN"
-  )
+# final_table <- final_table %>%
+#   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+#   mutate(across(everything(), ~ ifelse(grepl("p", type),
+#                                       paste0("(", trimws(.x),
+#                                              ifelse(as.numeric(.x) <= 0.01, "**",
+#                                                     ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"),
+#                                       .x))) %>%
+#  
+#  mutate(across(everything(), ~ as.character(ifelse(
+#     grepl("q", stat),  # If the stat column indicates q-values
+#     paste0("[", trimws(.x), "]"),  
+#     .x)))) %>%
+#   
+#    mutate(
+#     # Replace character "NaN" values with "NA" for all columns except variable and type
+#     across(-c(variable, type), ~ ifelse(. == "(NaNNA)", "(NA)", .))  # Check for character "NaN"
+#   )
 
 
 # joint_f_test_results <- joint_f_test_results %>%

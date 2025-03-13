@@ -20,18 +20,21 @@ This script outputs:
 ```{r}
 
 #install.packages("writexl")
-library(writexl)
+library(writexl) #to output to excel doc
 library(dplyr)
-library(readr)
+library(readr) #to read in dta's
 library(tidyr)
 library(haven)
 library(data.table)
 library(tidyverse)
 library(estimatr)
-library(broom)
-library(kableExtra)
-library(sandwich)
-library(lmtest)
+library(broom) 
+library(kableExtra) #to output to HTML tables
+library(sandwich) #to wrangle data
+library(lmtest)  # For likelihood ratio test
+library(stats)   #for FDR q-stats
+library(nnet)  #to use multilogit regression 
+
 
 ```
 
@@ -75,6 +78,36 @@ balance_df
 
 
 # Adding a single categorical variable for household training categories - this is for computing summary stats since I'm keeping the trained_hh variable
+joint_df <- balance_df %>%
+  mutate(
+    group = str_sub(hhid, 3, 4),
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1",
+      group %in% c("2A", "2B") ~ "Treatment2",
+      group %in% c("3A", "3B") ~ "Treatment3",
+         )
+  ) %>% select(-group)
+
+
+joint_long_data <- joint_df %>%
+  pivot_longer(
+    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+    names_to = "variable",    # Create a column named "variable" for former column names
+    values_to = "value"       # Store values in a column named "value"
+  )
+
+  joint_long_data <- joint_long_data %>%
+    rename(group = treatment_group)
+  view(joint_long_data)
+
+
+
+
+
+
+
+
 summary_df <- balance_df %>%
   mutate(
     group = str_sub(hhid, 3, 4),
@@ -476,6 +509,107 @@ regression_results
 
 ```
 
+
+##Compute joint f-test
+
+```{r}
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+#library(nnet)
+
+model <- multinom(group ~ value, data = joint_long_data)
+
+summary(model)
+
+#View(joint_long_data)
+# Create the coefficient names for linearHypothesis
+#coefs <- c("valueTreatment1.", "valueTreatment2.", "valueTreatment3.")
+
+# Set up the vector of treatment levels
+treatments <- c("Treatment1.", "Treatment2.", "Treatment3.")
+
+# Set up the vector of variables (just "value" here)
+variables <- c("value")
+
+# Create the coefficient names using outer to combine treatment levels and variables
+coefs <- as.vector(outer(treatments, variables, paste0))
+
+# Print the resulting coefficient names
+print(coefs)
+
+
+# Install and load car package for linearHypothesis
+library(car)
+
+# Run the Wald test to check the joint significance of 'value' across the treatments
+joint_test <- linearHypothesis(model, coefs)
+
+# Print the results of the joint test
+print(joint_test)
+
+#join_f_vars <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+
+
+summary(model)
+# For Treatment1
+
+
+
+joint_test_df <- data.frame(joint_test)
+joint_test_df
+# Create a kable table with kableExtra
+joint_test_html <- joint_test_df %>%
+  kable(format = "html", escape = FALSE, caption = "Joint Hypothesis Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+# Save the output to an HTML file
+file_name <- "joint_test_output.html"
+save_kable(joint_test_html, file = file_name)
+
+# Inform the user where the file has been saved
+cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
+
+
+# # Prepare data: create outcome variables (1 for treatment arm, 0 otherwise)
+# long_data$y_treatment1 <- ifelse(long_data$group == "Treatment1", 1, 0)
+# long_data$y_treatment2 <- ifelse(long_data$group == "Treatment2", 1, 0)
+# long_data$y_treatment3 <- ifelse(long_data$group == "Treatment3", 1, 0)
+# long_data$y_lc_control <- ifelse(long_data$group == "Local Control", 1, 0)
+# long_data$y_control <- ifelse(long_data$group == "Control", 1, 0)
+# view(long_data)
+# # Run multinomial logistic regression (with control as baseline)
+# model_f_test <- multinom(cbind(y_treatment1, y_treatment2, y_treatment3, y_lc_control, y_control) ~ value + variable, data = long_data)
+# 
+# # View model_f_test summary
+# summary(model_f_test)
+# model_summary <- summary(model_f_test)
+# # Perform likelihood ratio tests for the joint null hypothesis
+# lr_test <- lrtest(model_f_test)
+# lr_test
+# summary(lr_test)
+# model_summary
+# # Extract coefficients and p-values
+# #model_summary <- summary(model_f_test)$coefficients
+# model_p_values <- model_summary$coefficients[, 4]  # p-values are typically in the 4th column of the coefficients matrix
+# 
+# q_values <- p.adjust(model_p_values, method = "fdr")
+# 
+# # Combine results into a tidy table
+# f_test_results <- tibble(
+#   variable = rownames(model_summary$coefficients),
+#   coef_treatment1 = model_summary$coefficients[, 1],  # Coefficients for Treatment1
+#   coef_treatment2 = model_summary$coefficients[, 2],  # Coefficients for Treatment2
+#   coef_treatment3 = model_summary$coefficients[, 3],  # Coefficients for Treatment3
+#   coef_control = model_summary$coefficients[, 4],     # Coefficients for Control
+#   p_values = model_p_values,
+#   q_values = q_values
+# )
+# 
+# # View regression results
+# f_test_results
+
+
+
+```
 
 
 ##Create completed table

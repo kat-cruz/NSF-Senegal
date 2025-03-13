@@ -25,7 +25,6 @@
 * 4. The final corrected dataset will be saved in the specified output directory.
 *
 *==============================================================================
-```
 * The corrections are drawn from the external corrections folder
 * use excel formula in the corrections sheet from the external corrections to easily pull all corrections
 * = "replace " & [@[issue_variable_name]]&" = "&[@correction]&" if phone_resp == "&CHAR(34)&[@[phone_resp]]&CHAR(34)
@@ -155,5 +154,8 @@ replace unit_convert_9 = 50 if phone_resp == 775664893
 replace q_43 = 180 if phone_resp == 779829326  // confirmed value
 replace unit_convert_9 = 50 if phone_resp == 775631152
 
+* Correction 13May2025
+replace unit_convert_6 = 25 if phone_resp == 777211261
+
 * Save the corrected dataset
-export excel using "$corrected\CORRECTED_Community_Survey_6May2025.xlsx", firstrow(variables) replace
+export excel using "$corrected\CORRECTED_Community_Survey_13May2025.xlsx", firstrow(variables) replace

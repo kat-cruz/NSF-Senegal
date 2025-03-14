@@ -169,24 +169,46 @@ long_data
 ```{r}
 
 
-
 compute_summary_stats <- function(df) {
   df %>%
     group_by(group, variable) %>%
     summarise(
+      N = sum(!is.na(value)),  # Count of non-missing values
       mean_value = round(mean(value, na.rm = TRUE), 2),
       sd_value = round(sd(value, na.rm = TRUE), 2),
       .groups = "drop"  # Prevents group structure from persisting
     ) %>%
-    pivot_longer(cols = c(mean_value, sd_value), names_to = "stat_type", values_to = "stat_value") %>%
-    mutate(stat_type = ifelse(stat_type == "mean_value", "Mean", "SD")) %>%
+    pivot_longer(cols = c(N, mean_value, sd_value), names_to = "stat_type", values_to = "stat_value") %>%
+    mutate(stat_type = case_when(
+      stat_type == "mean_value" ~ "Mean",
+      stat_type == "sd_value" ~ "SD",
+      stat_type == "N" ~ "N"
+    )) %>%
     pivot_wider(names_from = group, values_from = stat_value) %>%
     arrange(variable, stat_type) %>%
-    # This ensures the 'variable' and 'stat_type' columns come first
-    select(variable, stat_type, everything()) %>%
-    # Explicitly ensure 'variable' is ordered as it appears in the original data
-    arrange(match(variable, unique(df$variable))) 
+    select(variable, stat_type, everything()) %>%  # Ensure variable and stat_type come first
+    arrange(match(variable, unique(df$variable)))  # Keep original variable order
 }
+
+
+
+# compute_summary_stats <- function(df) {
+#   df %>%
+#     group_by(group, variable) %>%
+#     summarise(
+#       mean_value = round(mean(value, na.rm = TRUE), 2),
+#       sd_value = round(sd(value, na.rm = TRUE), 2),
+#       .groups = "drop"  # Prevents group structure from persisting
+#     ) %>%
+#     pivot_longer(cols = c(mean_value, sd_value), names_to = "stat_type", values_to = "stat_value") %>%
+#     mutate(stat_type = ifelse(stat_type == "mean_value", "Mean", "SD")) %>%
+#     pivot_wider(names_from = group, values_from = stat_value) %>%
+#     arrange(variable, stat_type) %>%
+#     # This ensures the 'variable' and 'stat_type' columns come first
+#     select(variable, stat_type, everything()) %>%
+#     # Explicitly ensure 'variable' is ordered as it appears in the original data
+#     arrange(match(variable, unique(df$variable))) 
+# }
 
 summary_table <- compute_summary_stats(long_data_sum)
 
@@ -212,17 +234,53 @@ print(summary_table)
 # index5 <- which(summary_table$variable == "species_1")
 #   final_summary_tabletable <- add_row(summary_table, variable = "species", .before = index5)
 
+# summary_table <- summary_table %>%
+#   mutate(
+#     variable = ifelse(stat_type == "SD" & !is.na(stat_type), "", variable),  # Clear variable for SD rows
+#     stat_type = ifelse(stat_type == "SD" & !is.na(stat_type), "", stat_type)  # Clear stat_type for SD rows
+#   ) %>%
+#   mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%
+#   mutate(across(everything(), as.character)) %>%  # Ensure all columns are character type
+#   mutate(across(
+#     Control:Treatment3,  # Apply only to numeric columns
+#     ~ ifelse(stat_type == "", paste0("(", trimws(.), ")"), .)  # Add parentheses for SD values
+#   ))
+
 summary_table <- summary_table %>%
+  # Create a separate column for N and store N values in 'N_values'
+  mutate(
+    N_values = ifelse(stat_type == "N", trimws(as.character(Control)), NA)  # Store N values in 'N_values' column
+  ) %>%
+  
+  # Clear 'variable' and 'stat_type' for SD rows to format properly
   mutate(
     variable = ifelse(stat_type == "SD" & !is.na(stat_type), "", variable),  # Clear variable for SD rows
     stat_type = ifelse(stat_type == "SD" & !is.na(stat_type), "", stat_type)  # Clear stat_type for SD rows
-  ) %>%
+  ) 
+
+summary_table %>%
+  
+  # Remove rows with stat_type == "N" but preserve the 'N_values' column
+  filter(stat_type != "N") %>%
+  
+  # Apply two decimal places for numeric columns (Control, Treatment1, etc.)
   mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%
-  mutate(across(everything(), as.character)) %>%  # Ensure all columns are character type
+  
+  # Convert everything to character type (for proper formatting)
+  mutate(across(everything(), as.character)) %>%
+  
+  # Add parentheses for SD values (only if stat_type is SD)
   mutate(across(
     Control:Treatment3,  # Apply only to numeric columns
     ~ ifelse(stat_type == "", paste0("(", trimws(.), ")"), .)  # Add parentheses for SD values
-  ))
+  )) %>%
+  
+  # Add 'N_values' column to each of the treatments columns
+  mutate(across(Control:Treatment3, ~ ifelse(is.na(N_values), ., N_values), .names = "updated_{.col}")) %>%
+  
+  # Select necessary columns: variable, N_values, and treatment columns
+  select(variable, N_values, everything())
+
 
 
 summary_table
@@ -599,7 +657,30 @@ save_kable(joint_test_html, file = file_name)
 cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
 
 
-# # Prepare data: create outcome variables (1 for treatment arm, 0 otherwise)
+
+# Remove rows with NA values in predictors to ensure both models use the same dataset
+long_data_filtered <- long_data %>%
+  filter(!is.na(value) & !is.na(variable))
+
+long_data_filtered
+
+# Convert group to factor and ensure "Control" is the reference category
+long_data_filtered$group <- factor(long_data_filtered$group, levels = c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3"))
+
+# Fit the full model (including predictors)
+full_model <- multinom(group ~ value + variable, data = long_data_filtered)
+full_model
+# Fit the null model (only intercept)
+null_model <- multinom(group ~ 1, data = long_data_filtered)
+null_model
+# Perform the likelihood ratio test (LRT)
+lrt_result <- lrtest(full_model, null_model)
+
+# Print LRT result
+print(lrt_result)
+
+
+# # # Prepare data: create outcome variables (1 for treatment arm, 0 otherwise)
 # long_data$y_treatment1 <- ifelse(long_data$group == "Treatment1", 1, 0)
 # long_data$y_treatment2 <- ifelse(long_data$group == "Treatment2", 1, 0)
 # long_data$y_treatment3 <- ifelse(long_data$group == "Treatment3", 1, 0)
@@ -632,11 +713,27 @@ cat("The joint test results have been saved to the balance tables file in the ou
 #   coef_control = model_summary$coefficients[, 4],     # Coefficients for Control
 #   p_values = model_p_values,
 #   q_values = q_values
-# )
+# )  %>%
+#   select(-q_values)
 # 
-# # View regression results
-# f_test_results
+# 
+lrt_result_df <- data.frame(lrt_result)
+lrt_result_df
 
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# Create a kable table with kableExtra
+f_test_results_html <- lrt_result_df %>%
+  mutate(across(where(is.numeric), as.character)) %>%  # Ensure numbers remain as they are
+  kable(format = "html", escape = FALSE, caption = "Likelihood Ratio Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+
+# Save the output to an HTML file
+file_name <- "LRT_results_df.html"
+save_kable(f_test_results_html, file = file_name)
+
+# Inform the user where the file has been saved
+cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
 
 
 ```
@@ -685,26 +782,34 @@ final_table
 
 final_table <- final_table %>%
   # Ensure f-stat values remain unchanged except for p-values
-  mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+  mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) 
+  final_table
   
+  
+final_table <- final_table %>%
   # Format p-values with parentheses and add significance stars
   mutate(across(everything(), ~ as.character(ifelse(
     grepl("p", type), 
     paste0("(", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
-    .x)))) %>%
-  
-  # Add brackets around q-values
+    .x)))) 
+
+ final_table 
+ 
+final_table <- final_table %>%
+  # Add brackets around numeric q-values in each cell
   mutate(across(everything(), ~ as.character(ifelse(
-    grepl("q", stat),  # If the stat column indicates q-values
-    paste0("[", trimws(.x), "]"),  
-    .x)))) %>%
-  
-  # Replace character "NaNNA" values with "(NA)" for all columns except variable and type
-  mutate(across(-c(variable, type), ~ as.character(ifelse(. == "(NaNNA)", "(NA)", .)))))  
+    grepl("q", type), 
+    paste0("[", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), "]"), 
+    .x)))) 
+
+
+
+```
 
 
 
 
+```{R}
 # Replace the value underneath f_stat with p_value
 # final_table <- final_table %>%
 #   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
@@ -788,12 +893,21 @@ print(final_table)
 final_table <- final_table %>%
   mutate(
     variable = if_else(type == "(pNA)" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
-    type = if_else(type == "(pNA)" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
+    type = if_else(type == "(pNA)" & !is.na(type), "", as.character(type)),  # Clear type when type == "(p)", leave other values unchanged
+    f_statistic = if_else(type == "[qNA]" & !is.na(type), "", f_statistic),
+    variable = if_else(type == "[qNA]" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
+    type = if_else(type == "[qNA]" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
   ) %>%
-  select(-type, -p_value)  # Remove the 'type' column after modification
+  select(-p_value)  # Remove the 'type' column after modification
+final_table
+
+
+final_table <- final_table %>%
+  mutate(across(everything(), 
+                ~ ifelse(. %in% c("[NaNNA]", "(NaNNA)"), NA, .)))
 
 # Print the modified final_table
-
+final_table
 
 final_table <- final_table %>%
   mutate(Question = case_when(
@@ -917,13 +1031,13 @@ setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balan
 final_table %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
   footnote(
- general = "Reported statistics are regression coefficients, with p-values shown in parentheses. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+ general = "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
     symbol = c(
       "Binary variables were derived from Likert scale responses based on their distribution.",
       "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev7.html")
+  save_kable("balance_tablev8.html")
 
 # setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
 # knitr::kable(final_table, format = "html") %>% save_kable("balance_tablev3.html")
@@ -939,7 +1053,7 @@ setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balan
 # Manually add footnotes as a single row
 footnotes <- data.frame(
   Variable = "Footnotes:",
-  General = "Reported statistics are regression coefficients, with p-values shown in parentheses. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+  General = "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
   Bin_var = "+ Binary variables were created from Likert scale responses based on their distribution.",
   Other = "† 'I Don't Know' responses (coded as 2) have been recoded as missing values."
 )
@@ -952,7 +1066,7 @@ final_table <- final_table %>%
 final_table_with_footnotes <- bind_rows(final_table, footnotes)
 
 # Save to final_table_with_footnotes
-write_xlsx(final_table_with_footnotes, "balance_table.xlsx")
+write_xlsx(final_table_with_footnotes, "balance_tablev2.xlsx")
 
 ```
 
@@ -971,7 +1085,7 @@ final_table_subset <- final_table  %>%
 final_table_subset %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
   footnote(
- general = "Reported statistics are regression coefficients, with p-values shown in parentheses. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+ general = "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
     symbol = c(
       "Binary variables were derived from Likert scale responses based on their distribution.",
       "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."),

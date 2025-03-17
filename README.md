@@ -37,7 +37,8 @@ This folder contains scripts for data analysis, summarization, and manipulation 
      *  This markdown creates scatter plots and summary stats for initial review 
   *  `Parisitology_Summary_Stats.do`
   *  `Human_Parasitological_Dataframe_toupdate.do`
-      *  This .Do file creates the Parasitological data frame used to run analysis. 
+      *  This .Do file creates the Parasitological data frame used to run analysis.
+ 
 ### `Data_Processing`
 TThis folder contains scripts for data validation, processing, and preperation to ensure the datasets are clean and ready for anlysis. The following subfolders are included:
 * `Checks`

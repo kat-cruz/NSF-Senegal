@@ -29,8 +29,8 @@ global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midli
 global corrected "$master\Data_Management\Output\Data_Corrections\Midline"
 global clean "$master\Data_Management\_CRDES_CleanData\Midline\Identified"
 
-**************************** Import baseline data ****************************
-
+************************ Household Data **************************************
+*** Import baseline data 
 use "$baselineids\DISES_Baseline_Complete_PII.dta", clear
 
 keep hhid hhid_village  // Keep only HHID and Village ID
@@ -39,7 +39,7 @@ gen baseline = 1  // Mark as a baseline household
 
 save "$baselineids\DISES_Baseline_HHID_List.dta", replace
 
-**************************** Import midline data & Mark Attrition ****************************
+*** Import midline data & Mark Attrition
 
 use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", clear  
 // keep hh_global_id hhid_village consent  // Keep relevant variables
@@ -52,7 +52,7 @@ tostring hh_head_name_complet, force replace
 
 save "$clean\DISES_Midline_Retained.dta", replace
 
-**************************** Merge midline with baseline to find attrition ****************************
+*** Merge midline with baseline to find attrition
 
 use "$baselineids\DISES_Baseline_HHID_List.dta", clear
 
@@ -61,12 +61,12 @@ gen attritted = 1  // Assume all baseline households are attritted initially
 
 merge 1:1 hhid using "$clean\DISES_Midline_Retained.dta"
 
-replace attritted = 0 if _merge == 3  // If HH appears in both baseline & midline → Not attritted
-replace attritted = 1 if _merge == 1  // If HH in baseline but missing in midline → Attritted
+replace attritted = 0 if _merge == 3  // If HH appears in both baseline & midline then Not attritted
+replace attritted = 1 if _merge == 1  // If HH in baseline but missing in midline then Attritted
 
 save "$clean\DISES_Midline_Attrition.dta", replace
 
-**************************** HHID's for Replacements ****************************
+*** HHID's for Replacements
 import delimited "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_12Mar2025.csv", clear varnames(1) bindquote(strict)     
 
 // keep hhid_village hhid  // Keep relevant replacement variables
@@ -83,7 +83,7 @@ rename hhid_replacement hhid
 drop rep_number
 save "$clean\DISES_Midline_Replacements.dta", replace
 
-**************************** HHID's for Merged Households ****************************
+*** HHID's for Merged Households
 use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", clear  
 // keep hh_global_id hhid_village consent  // Keep relevant variables
 rename hh_global_id hhid  
@@ -91,8 +91,6 @@ drop if consent == 0
 drop if consent == 2
 
 gen hhid_merged = hhid  // Create a new variable to store updated HHIDs
-
-
 
 replace hhid_merged = hhid_village + "70" if inlist(hhid, "133A19", "133A03")
 replace hhid_merged = hhid_village + "71" if inlist(hhid, "133A20", "133A02")
@@ -106,7 +104,6 @@ rename hhid_merged hhid
 
 save "$clean\DISES_Midline_Merged.dta", replace
 
-
 /*
 Merges
 HHID 133A19 avec 133A03
@@ -119,8 +116,7 @@ HHID 133A15 avec 133A01
 Indicated that they merged but they are both included seperately in the data
 
 */
-**************************** Combine Retained and Replacement HHs ****************************
-
+*** Combine Retained and Replacement HHs
 use "$clean\DISES_Midline_Retained.dta", clear
 append using "$clean\DISES_Midline_Replacements.dta", force  
 append using "$clean\DISES_Midline_Merged.dta", force  
@@ -129,5 +125,12 @@ save "$clean\DISES_Midline_Complete_PII.dta", replace
 
 save "$clean\DISES_Midline_Complete_PII.dta", replace
 
+************************** Community Survey ************************************
+import excel "$corrected\CORRECTED_Community_Survey_13May2025.xlsx", firstrow clear
 
+save "$clean\Complete_Midline_Community", replace
 
+************************** School Principal Survey *****************************
+import excel "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_12Mar2025.xlsx", firstrow clear
+
+save "$clean\Complete_Midline_SchoolPrincipal", replace

@@ -43,7 +43,6 @@ This folder contains scripts for data analysis, summarization, and manipulation 
 TThis folder contains scripts for data validation, processing, and preperation to ensure the datasets are clean and ready for anlysis. The following subfolders are included:
 * `Checks`
   * `Baseline`
-    *
   * `Midline`
    * Scripts verify data quality and consistency as survey responses were collected in real-time. These check for missing values, logical inconsistencies, skip patters, and outliers in the incoming survey data.
 * `Cleaning/Ecology`

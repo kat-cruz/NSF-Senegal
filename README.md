@@ -44,7 +44,7 @@ TThis folder contains scripts for data validation, processing, and preperation t
 * `Checks`
   * `Baseline`
   * `Midline`
-   * Scripts verify data quality and consistency as survey responses were collected in real-time. These check for missing values, logical inconsistencies, skip patters, and outliers in the incoming survey data.
+    * Scripts verify data quality and consistency as survey responses were collected in real-time. These check for missing values, logical inconsistencies, skip patters, and outliers in the incoming survey data.
 * `Cleaning/Ecology`
 * `Construction`
 * `Corrections`

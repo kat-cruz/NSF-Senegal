@@ -38,3 +38,14 @@ This folder contains scripts for data analysis, summarization, and manipulation 
   *  `Parisitology_Summary_Stats.do`
   *  `Human_Parasitological_Dataframe_toupdate.do`
       *  This .Do file creates the Parasitological data frame used to run analysis. 
+### `Data_Processing`
+TThis folder contains scripts for data validation, processing, and preperation to ensure the datasets are clean and ready for anlysis. The following subfolders are included:
+* `Checks`
+  * `Baseline`
+    *
+  * `Midline`
+    * Scripts verify data quality and consistency as survey responses were collected in real-time. These check for missing values, logical inconsistencies, skip patters, and outliers in the incoming survey data.
+* `Cleaning/Ecology`
+* `Construction`
+* `Corrections`
+  * Contains scripts that implement corrections based on identified errors in the data. These corrections correspond to issues flagged in the `Checks` scripts and adjustments procotred by the team in Senegal.

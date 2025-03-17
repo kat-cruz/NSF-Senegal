@@ -37,7 +37,7 @@ keep hhid hhid_village  // Keep only HHID and Village ID
 duplicates drop hhid, force  // Keep one entry per household
 gen baseline = 1  // Mark as a baseline household
 
-save "$baselineids\DISES_Baseline_HHID_List.dta", replace
+save "$baselineids\DISES_Complete_Baseline_HHID_List.dta", replace
 
 *** Import midline data & Mark Attrition
 
@@ -50,21 +50,21 @@ drop if missing(hhid)
 replace attritted = 1 if (consent == 0 | consent == 2)  // Mark attritted if no consent
 tostring hh_head_name_complet, force replace
 
-save "$clean\DISES_Midline_Retained.dta", replace
+save "$clean\DISES_Complete_Midline_Retained.dta", replace
 
 *** Merge midline with baseline to find attrition
 
-use "$baselineids\DISES_Baseline_HHID_List.dta", clear
+use "$baselineids\DISES_Complete_Baseline_HHID_List.dta", clear
 
 gen attritted = 1  // Assume all baseline households are attritted initially
 
 
-merge 1:1 hhid using "$clean\DISES_Midline_Retained.dta"
+merge 1:1 hhid using "$clean\DISES_Complete_Midline_Retained.dta"
 
 replace attritted = 0 if _merge == 3  // If HH appears in both baseline & midline then Not attritted
 replace attritted = 1 if _merge == 1  // If HH in baseline but missing in midline then Attritted
 
-save "$clean\DISES_Midline_Attrition.dta", replace
+save "$clean\DISES_Complete_Midline_Attrition.dta", replace
 
 *** HHID's for Replacements
 import delimited "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_12Mar2025.csv", clear varnames(1) bindquote(strict)     
@@ -81,7 +81,7 @@ bysort hhid_village (hhid): gen rep_number = _n  // Assigns 1, 2, 3,... per vill
 gen hhid_replacement = hhid + string(rep_number + 29, "%02.0f")  // Adds 30, 31, 32,...
 rename hhid_replacement hhid
 drop rep_number
-save "$clean\DISES_Midline_Replacements.dta", replace
+save "$clean\DISES_Complete_Midline_Replacements.dta", replace
 
 *** HHID's for Merged Households
 use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", clear  
@@ -102,7 +102,7 @@ keep if inlist(hhid, "133A19", "133A03", "133A20", "133A02", "133A05", "133A11")
 drop hhid  
 rename hhid_merged hhid  
 
-save "$clean\DISES_Midline_Merged.dta", replace
+save "$clean\DISES_Complete_Midline_Merged.dta", replace
 
 /*
 Merges
@@ -117,9 +117,9 @@ Indicated that they merged but they are both included seperately in the data
 
 */
 *** Combine Retained and Replacement HHs
-use "$clean\DISES_Midline_Retained.dta", clear
-append using "$clean\DISES_Midline_Replacements.dta", force  
-append using "$clean\DISES_Midline_Merged.dta", force  
+use "$clean\DISES_Complete_Midline_Retained.dta", clear
+append using "$clean\DISES_Complete_Midline_Replacements.dta", force  
+append using "$clean\DISES_Complete_Midline_Merged.dta", force  
 save "$clean\DISES_Midline_Complete_PII.dta", replace
 
 
@@ -128,9 +128,10 @@ save "$clean\DISES_Midline_Complete_PII.dta", replace
 ************************** Community Survey ************************************
 import excel "$corrected\CORRECTED_Community_Survey_13May2025.xlsx", firstrow clear
 
-save "$clean\Complete_Midline_Community", replace
+save "$clean\DISES_Complete_Midline_Community", replace
 
 ************************** School Principal Survey *****************************
 import excel "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_12Mar2025.xlsx", firstrow clear
 
-save "$clean\Complete_Midline_SchoolPrincipal", replace
+save "$clean\DISES_Complete_Midline_SchoolPrincipal", replace
+

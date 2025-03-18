@@ -33,7 +33,7 @@ global clean "$master\Data_Management\_CRDES_CleanData\Midline\Identified"
 *** Import baseline data 
 use "$baselineids\DISES_Baseline_Complete_PII.dta", clear
 
-keep hhid hhid_village  // Keep only HHID and Village ID
+keep hhid hh_head_name_complet  // Keep only HHID and Village ID
 duplicates drop hhid, force  // Keep one entry per household
 gen baseline = 1  // Mark as a baseline household
 
@@ -44,11 +44,16 @@ save "$baselineids\DISES_Complete_Baseline_HHID_List.dta", replace
 use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", clear  
 // keep hh_global_id hhid_village consent  // Keep relevant variables
 rename hh_global_id hhid
+drop hh_head_name_complet
 gen attritted = 0  // Default is not attritted
 duplicates drop hhid, force  // Keep one entry per household
 drop if missing(hhid)
 replace attritted = 1 if (consent == 0 | consent == 2)  // Mark attritted if no consent
-tostring hh_head_name_complet, force replace
+
+merge 1:1 hhid using "$baselineids\DISES_Complete_Baseline_HHID_List.dta"
+keep if _merge == 3  // Keep only households present in both datasets
+
+drop _merge  // Clean up merge variable
 
 save "$clean\DISES_Complete_Midline_Retained.dta", replace
 
@@ -86,9 +91,17 @@ save "$clean\DISES_Complete_Midline_Replacements.dta", replace
 *** HHID's for Merged Households
 use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", clear  
 // keep hh_global_id hhid_village consent  // Keep relevant variables
-rename hh_global_id hhid  
+rename hh_global_id hhid
+drop hh_head_name_complet
 drop if consent == 0
 drop if consent == 2
+duplicates drop hhid, force  // Keep one entry per household
+drop if missing(hhid)
+
+merge 1:1 hhid using "$baselineids\DISES_Complete_Baseline_HHID_List.dta"
+keep if _merge == 3  // Keep only households present in both datasets
+
+drop _merge  // Clean up merge variable
 
 gen hhid_merged = hhid  // Create a new variable to store updated HHIDs
 

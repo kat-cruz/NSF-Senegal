@@ -71,11 +71,11 @@ replace attritted = 1 if _merge == 1  // If HH in baseline but missing in midlin
 
 save "$clean\DISES_Complete_Midline_Attrition.dta", replace
 
-*** HHID's for Replacements
+*** HHID's for Replacements ***
 import delimited "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_12Mar2025.csv", clear varnames(1) bindquote(strict)     
 
-// keep hhid_village hhid  // Keep relevant replacement variables
-gen replaced = 1  // Mark as a replacement household
+// Mark as a replacement household
+gen replaced = 1  
 
 tostring no_consent, force replace
 
@@ -86,7 +86,47 @@ bysort hhid_village (hhid): gen rep_number = _n  // Assigns 1, 2, 3,... per vill
 gen hhid_replacement = hhid + string(rep_number + 29, "%02.0f")  // Adds 30, 31, 32,...
 rename hhid_replacement hhid
 drop rep_number
+
+*** Save initial replacement dataset ***
 save "$clean\DISES_Complete_Midline_Replacements.dta", replace
+
+*** Process individual IDs in replacements ***
+use "$clean\DISES_Complete_Midline_Replacements.dta", clear
+
+*** Reshape data to long format ***
+reshape long hh_full_name_calc_ hh_gender_ hh_age_, ///
+    i(hhid_village sup enqu hh_head_name_complet hh_name_complet_resp hh_age_resp hh_gender_resp hh_phone) ///
+    j(individual)
+
+*** Drop empty individual records ***
+drop if missing(hh_full_name_calc_) & missing(hh_gender_) & missing(hh_age_)
+
+*** Ensure `individual` is a two-digit string ***
+gen indiv_index = string(individual, "%02.0f")
+
+*** Construct `individ` ID ***
+gen individ = hhid + indiv_index
+
+keep hhid individual individ hh_full_name_calc_ hh_gender_ hh_age_
+
+*** Save individual-level dataset ***
+save "$clean\DISES_Complete_Midline_Replacement_Individual_IDs.dta", replace
+
+*** Reshape back to wide format with new naming convention ***
+reshape wide individ hh_full_name_calc_ hh_gender_ hh_age_, i(hhid) j(individual)
+
+*** Rename variables to `pull_hh_individ_1`, `pull_hh_individ_2`, etc. ***
+rename individ* pull_hh_individ_*
+rename hh_full_name_calc_* hh_full_name_calc_*
+rename hh_gender_* hh_gender_*
+rename hh_age_* hh_age_*
+
+*** Merge updated individual data back with replacement household dataset ***
+merge 1:1 hhid using "$clean\DISES_Complete_Midline_Replacements.dta"
+drop _merge
+
+*** Save final replacement household dataset with individuals included ***
+save "$clean\DISES_Complete_Midline_Replacements_Final.dta", replace
 
 *** HHID's for Merged Households
 use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", clear  

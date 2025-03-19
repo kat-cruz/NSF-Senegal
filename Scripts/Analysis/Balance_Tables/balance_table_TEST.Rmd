@@ -1940,12 +1940,279 @@ select(-"comparison", -"Control")
 
 
 
+#Test on making balance table
+
+```{r}
+# Load required packages
+# Load required packages
+library(dplyr)
+library(fixest)  # For regression with clustered SEs
+library(knitr)   # For table formatting
+library(tidyverse)
+library(sandwich)
+library(lmtest)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define parameters
+num_villages <- 30
+num_households <- 300  # Total households
+treatment_arms <- c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3")
+
+# Generate household and village IDs
+df <- data.frame(
+  target_village = sample(1:num_villages, num_households, replace = TRUE),  # Village-level clustering
+  treatment_group = sample(treatment_arms, num_households, replace = TRUE)  # Random treatment assignment
+)
+
+# Generate baseline covariates
+df <- df %>%
+  mutate(
+    beliefs_01_bin = rbinom(num_households, 1, 0.5),
+    beliefs_02_bin = rbinom(num_households, 1, 0.5),
+    beliefs_03_bin = rbinom(num_households, 1, 0.5),
+    beliefs_04_bin = rbinom(num_households, 1, 0.5),
+    beliefs_05_bin = rbinom(num_households, 1, 0.5),
+    beliefs_06_bin = rbinom(num_households, 1, 0.5),
+    beliefs_07_bin = rbinom(num_households, 1, 0.5),
+    beliefs_08_bin = rbinom(num_households, 1, 0.5),
+    beliefs_09_bin = rbinom(num_households, 1, 0.5),
+    health_5_3_bin = runif(num_households, 0, 1),  # Continuous between 0 and 1
+    health_5_6_ = runif(num_households, 0, 1),     # Continuous between 0 and 1
+    num_water_access_points = sample(1:5, num_households, replace = TRUE),  # Discrete variable
+    q_51 = rnorm(num_households, mean = 5, sd = 1)  # Normally distributed continuous variable
+  )
+df
+# Convert 'treatment_group' into a factor with 'Control' as the reference group
+df <- df %>%
+  mutate(treatment_group = factor(treatment_group, levels = c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3")))
+df
+
+
+# ==========================
+# 📌 Step 2: Balance Table via Regression with Clustered SEs
+# ==========================
+
+# List of baseline covariates to test
+baseline_vars <- c("beliefs_01_bin", "beliefs_02_bin", "beliefs_03_bin", "beliefs_04_bin", 
+                   "beliefs_05_bin", "beliefs_06_bin", "beliefs_07_bin", "beliefs_08_bin", 
+                   "beliefs_09_bin", "health_5_3_bin", "health_5_6_", "num_water_access_points", 
+                   "q_51")
+# Load necessary package
+
+# Function to run regression for each variable against the treatment group
+run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+  results <- list()
+  
+  # Loop over all variables to run regression
+  for (var in vars_to_test) {
+    treatments <- unique(data[[treatment_col]])
+    treatments <- setdiff(treatments, 'Control')  # Remove control group for comparisons
+    
+    # Compare each treatment arm to the control
+    for (arm in treatments) {
+      # Subset data for control vs. arm comparison
+      subset <- data %>% filter(.data[[treatment_col]] %in% c('Control', arm) & variable == var)
+      subset$treat <- ifelse(subset[[treatment_col]] == arm, 1, 0)  # Create treatment indicator (1 for arm, 0 for control)
+      
+      # Run the regression (lm model)
+      model <- lm(value ~ treat, data = subset)
+      
+      # Cluster standard errors by village
+      clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+      
+      # Store results (for control vs. arm comparison)
+      results <- append(results, list(data.frame(
+        variable = var,
+        comparison = paste('Control vs', arm),
+        stat = round(clustered_se[2, 1], 2),  # Coefficient (estimate)
+        p = round(clustered_se[2, 4], 3)      # p-value
+      )))
+    }
+  }
+  
+  # Combine all results into one data frame
+  final_results <- bind_rows(results)
+  return(final_results)
+}
+
+# Example: Run the regression for all variables in the dataset
+# Replace `long_data` with your actual data frame
+vars_to_test_reg <- setdiff(names(long_data), c("hhid", "hhid_village", "treatment_group", "variable"))
+regression_results <- run_regressions(long_data, 'treatment_group', 'hhid_village', vars_to_test_reg)
+
+# Print the combined results
+print(regression_results)
+
+```
+
+##this one
+
+```{r}
+
+# Load necessary packages
+library(sandwich)
+library(lmtest)
+library(dplyr)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define parameters
+num_villages <- 30
+num_households <- 300  # Total households
+treatment_arms <- c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3")
+
+# Generate household and village IDs
+df <- data.frame(
+  target_village = sample(1:num_villages, num_households, replace = TRUE),  # Village-level clustering
+  treatment_group = sample(treatment_arms, num_households, replace = TRUE)  # Random treatment assignment
+)
+
+# Generate baseline covariates
+df <- df %>%
+  mutate(
+    beliefs_01_bin = rbinom(num_households, 1, 0.5),
+    beliefs_02_bin = rbinom(num_households, 1, 0.5),
+    beliefs_03_bin = rbinom(num_households, 1, 0.5),
+    beliefs_04_bin = rbinom(num_households, 1, 0.5),
+    beliefs_05_bin = rbinom(num_households, 1, 0.5),
+    beliefs_06_bin = rbinom(num_households, 1, 0.5),
+    beliefs_07_bin = rbinom(num_households, 1, 0.5),
+    beliefs_08_bin = rbinom(num_households, 1, 0.5),
+    beliefs_09_bin = rbinom(num_households, 1, 0.5),
+    health_5_3_bin = runif(num_households, 0, 1),  # Continuous between 0 and 1
+    health_5_6_ = runif(num_households, 0, 1),     # Continuous between 0 and 1
+    num_water_access_points = sample(1:5, num_households, replace = TRUE),  # Discrete variable
+    q_51 = rnorm(num_households, mean = 5, sd = 1)  # Normally distributed continuous variable
+  )
+
+# Convert 'treatment_group' into a factor with 'Control' as the reference group
+df <- df %>%
+  mutate(treatment_group = factor(treatment_group, levels = c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3")))
+
+# List of baseline covariates to test
+baseline_vars <- c("beliefs_01_bin", "beliefs_02_bin", "beliefs_03_bin", "beliefs_04_bin", 
+                   "beliefs_05_bin", "beliefs_06_bin", "beliefs_07_bin", "beliefs_08_bin", 
+                   "beliefs_09_bin", "health_5_3_bin", "health_5_6_", "num_water_access_points", 
+                   "q_51")
+
+# Function to run regressions for each variable against the treatment group
+run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+  results <- list()
+  
+  # Loop over all baseline variables to run regression
+  for (var in vars_to_test) {
+    treatments <- unique(data[[treatment_col]])
+    treatments <- setdiff(treatments, 'Control')  # Remove control group for comparisons
+    
+    # Compare each treatment arm to the control
+    for (arm in treatments) {
+      # Subset data for control vs. arm comparison
+      subset <- data %>% filter(.data[[treatment_col]] %in% c('Control', arm))
+      subset$treat <- ifelse(subset[[treatment_col]] == arm, 1, 0)  # Create treatment indicator (1 for arm, 0 for control)
+      
+      # Run the regression (lm model)
+      model <- lm(as.formula(paste(var, "~ treat")), data = subset)  # Use formula interface
+      
+      # Cluster standard errors by village
+      clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+      
+      # Store results (for control vs. arm comparison)
+      results <- append(results, list(data.frame(
+        variable = var,
+        comparison = paste('Control vs', arm),
+        stat = round(clustered_se[2, 1], 2),  # Coefficient (estimate)
+        p = round(clustered_se[2, 4], 3)      # p-value
+      )))
+    }
+  }
+  
+  # Combine all results into one data frame
+  final_results <- bind_rows(results)
+  return(final_results)
+}
+
+# Run regressions for the baseline variables
+regression_results <- run_regressions(df, 'treatment_group', 'target_village', baseline_vars)
+
+# Print the combined results
+print(regression_results)
+
+
+
+```
+
+###now test the joint f stat
+
+
+```{r}
+
+# Load necessary packages
+library(nnet)      # for multinom()
+library(car)       # for linearHypothesis
+library(dplyr)     # for data manipulation
+
+# Example model fitting with multinom (multinomial regression)
+model <- multinom(treatment_group ~ beliefs_01_bin + beliefs_02_bin + beliefs_03_bin + 
+                  beliefs_04_bin + beliefs_05_bin + beliefs_06_bin + beliefs_07_bin + 
+                  beliefs_08_bin + beliefs_09_bin + health_5_3_bin + health_5_6_ + 
+                  num_water_access_points + q_51, data = df)
+
+# View summary of the model
+summary(model)
+
+# Set up the vector of treatment levels
+treatments <- c("Treatment1.", "Treatment2.", "Treatment3.")
+
+variables <- c("value")
+
+coefs <- as.vector(outer(treatments, variables, paste0))
+
+# Perform the Wald test to check the joint significance of 'beliefs_01_bin' and baseline variables across the treatments
+joint_test <- linearHypothesis(model, coefs)
+
+# Print the results of the joint test
+print(joint_test)
+
+# If you want the joint test result as a data frame for easier inspection:
+joint_test_df <- as.data.frame(joint_test)
+print(joint_test_df)
 
 
 
 
 
 
+
+
+
+
+
+```
+
+
+
+
+
+```{r}
+res = feols(Sepal.Length ~ Sepal.Width + Petal.Length, iris)
+# You can specify clustered standard-errors in summary:
+summary(res, cluster = ~Species)
+```
+
+```{r}
+ctl <- c(4.17,5.58,5.18,6.11,4.50,4.61,5.17,4.53,5.33,5.14)
+trt <- c(4.81,4.17,4.41,3.59,5.87,3.83,6.03,4.89,4.32,4.69)
+group <- gl(2, 10, 20, labels = c("Ctl","Trt"))
+weight <- c(ctl, trt)
+lm.D9 <- lm(weight ~ group)
+lm.D90 <- lm(weight ~ group - 1) # omitting intercept
+
+anova(lm.D9)
+summary(lm.D90)
+```
 
 
 

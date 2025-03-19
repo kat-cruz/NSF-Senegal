@@ -1,5 +1,5 @@
 *==============================================================================
-* DISES Attrition & Replacement Analysis
+* HHID for Replacement and Merged Households
 * File originally created By: Alex Mills
 * Updates recorded in GitHub: [Midline_Villages_Replacements_Checks.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_Villages_Replacements_Checks.do)
 

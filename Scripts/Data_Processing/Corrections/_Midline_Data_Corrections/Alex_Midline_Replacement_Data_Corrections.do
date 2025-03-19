@@ -98,6 +98,12 @@ replace agri_income_23_1 = -9 if key == "uuid:64a3cbc6-e8b8-4e8f-b508-bdb4d8a0ab
 
 * Village ID was wrong for one of the replacements missing 103B was put as 062B
 replace hhid_village = "102B" if hhid_village == "062B"
+replace village_select_o ="102B,SAINT LOUIS,PODOR,FANAYE WALO"
+replace region = "SAINT LOUIS"
+replace departement = "PODOR"
+replace commune = "FANAYE"
+replace village = "FANAYE WALO"
+replace hh_arrondissement = "THILE BOUBACAR"
 
 * Save the corrected dataset
 export delimited using "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_12Mar2025.csv", replace

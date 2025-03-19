@@ -55,6 +55,11 @@ keep if _merge == 3  // Keep only households present in both datasets
 
 drop _merge  // Clean up merge variable
 
+forvalues i = 1/57 {
+    rename age_`i' hh_age_`i'
+	
+}
+
 save "$clean\DISES_Complete_Midline_Retained.dta", replace
 
 *** Merge midline with baseline to find attrition
@@ -91,7 +96,6 @@ drop rep_number
 save "$clean\DISES_Complete_Midline_Replacements.dta", replace
 
 *** Process individual IDs in replacements ***
-use "$clean\DISES_Complete_Midline_Replacements.dta", clear
 
 *** Reshape data to long format ***
 reshape long hh_full_name_calc_ hh_gender_ hh_age_, ///
@@ -125,6 +129,19 @@ rename hh_age_* hh_age_*
 merge 1:1 hhid using "$clean\DISES_Complete_Midline_Replacements.dta"
 drop _merge
 
+rename hh_numero hh_size_actual
+
+forvalues i = 1/14 {
+    gen nom_complet_`i' = hh_full_name_calc_`i'
+}
+
+gen hh_size_load = hh_size_actual
+
+forvalues i = 1/14 {
+    gen full_name_age_`i' = hh_full_name_calc_`i' + " (age: " + string(hh_age_`i') + ")"
+}
+
+
 *** Save final replacement household dataset with individuals included ***
 save "$clean\DISES_Complete_Midline_Replacements.dta", replace
 
@@ -154,6 +171,10 @@ keep if inlist(hhid, "133A19", "133A03", "133A20", "133A02", "133A05", "133A11")
 
 drop hhid  
 rename hhid_merged hhid  
+forvalues i = 1/57 {
+    rename age_`i' hh_age_`i'
+}
+
 
 save "$clean\DISES_Complete_Midline_Merged.dta", replace
 

@@ -1,8 +1,5 @@
 ****** Identified Data Construction ***************************
 
-****** NEED TO RERUN THIS ONCE CORRECTIONS FOR HH_49 CONSENT ARE DONE ******
-****** NEED TO RERUN THIS ONCE CLARIFIED ON MERGED HOUSEHOLDS **************
-
 clear all
 set mem 100m
 set maxvar 30000

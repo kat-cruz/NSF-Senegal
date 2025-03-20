@@ -71,7 +71,7 @@ save "$baselineids\DISES_Baseline_HHID_List.dta", replace
 
 **************************** Import midline data & Mark Attrition ****************************
 
-use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", clear  
+use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_20Mar2025.dta", clear  
 keep hh_global_id hhid_village consent  // Keep relevant variables
 rename hh_global_id hhid
 gen attritted = 0  // Default is not attritted
@@ -112,7 +112,7 @@ drop rep_number
 save "$issues\DISES_Replacements.dta", replace
 
 **************************** HHID's for Merged Households ****************************
-use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", clear  
+use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_20Mar2025.dta", clear  
 keep hh_global_id hhid_village consent  // Keep relevant variables
 rename hh_global_id hhid  
 drop if consent == 0

@@ -38,11 +38,12 @@ save "$data_deidentified\Complete_Midline_Geographies", replace
 use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** drop identifiying and empty variables *** 
-drop hh_phone hh_head_name_complet hh_name_complet_resp hh_region hh_department hh_commune hh_district hh_arrondissement hh_village 
+*** keep only household roster data *** 
+keep start_hh_composition _household_roster_count hh* end_hh_composition
 
-forvalues i = 1/55 {
-    drop firstname_mem`i' name`i' hh_surname_`i' pull_hh_full_name_calc`i' 
-}
+drop hh_phone hh_head_name_complet hh_name_complet_resp hh_region hh_department hh_commune hh_district hh_arrondissement hh_village hh_gpslatitude hh_gpslongitude hh_gpsaltitude hh_gpsaccuracy
+
+drop hh_name_* hh_first_name_* hh_surname_* hh_full_name_calc_* hh_name_complet_resp_new hh_head_name_complet_label hh_name_complet_resp_id hh_scoohlname_*
 
 *** put household id first in dataset *** 
 order hhid, first 
@@ -63,7 +64,7 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Knowledge", replace 
 
 *** import complete health data *** 
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** keep only health data *** 
 keep hhid start_health_status _health_roster_count healthindex* healthage* healthgenre* health_5* end_health_status 
@@ -75,7 +76,7 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Health", replace 
 
 *** import complete agriculture data *** 
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** keep only agriculture and assets data *** 
 keep hhid start_actif list_actifs* _actifs_roster_count actifs* _actif_number* actifs_o actifs_o_int list_agri_equip* _agri_roster_count agriindex* agriname* _agri_number* list_agri_equip_o list_agri_equip_o_t list_agri_equip_int agri_6* _parcelle_roster_count parcelleindex* end_actif 
@@ -87,7 +88,7 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Agriculture", replace
 
 *** import complete production data *** 
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** keep only production data *** 
 keep hhid start_crops _cereals_roster_count cerealsposition* cerealsname* cereals_consumption* cereals_* _farine_tubercules_roster_count farine* legumes* legumineuses* aquatique* autre_culture_yesno autre_culture o_culture* end_crops 
@@ -99,7 +100,7 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Production", replace 
 
 *** import complete lean season data *** 
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** keep only ean season data *** 
 keep hhid start_food food* end_food
@@ -111,7 +112,7 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Lean_Season", replace 
 
 *** import copmlete income data
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** keep only income data *** 
 keep hhid start_income agri_income* species* _species_roster_count animals_sales* _animals_sales_roster_count sale_animales* credit_roster_count credit_askindex* restant_pret* agri_loan* loan_roster_count loanindex* product_divers* _production_roster_count productindex* productname* expenses_goods* _agriculture_goods_roster_count goodsindex* goodsname* end_income 
@@ -123,7 +124,7 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Income", replace 
 
 *** import copmlete income data
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** keep only standard of living data *** 
 keep hhid start_living living* end_living 
@@ -135,7 +136,7 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Standard_Of_Living", replace 
 
 *** import complete beliefs data
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** keep only knoweldge data *** 
 keep hhid start_beliefs beliefs* end_beliefs 
@@ -147,8 +148,10 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Beliefs", replace 
 
 *** import complete public goods data
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
+*** no game at midline
+/*
 *** keep only public goods game data *** 
 keep hhid start_game game_intro game_01 game_02 consent_game_1 montant_02 game_03 montant_05 montant_07 montant_08 face_01 face_02 face_04 face_06 face_07 face_09 face_10 face_11 face_13 end_game  
 
@@ -157,9 +160,10 @@ order hhid, first
 
 *** save public goods game data ***
 save "$data_deidentified\Complete_Midline_Public_Goods_Game", replace 
+*/
 
 *** import copmlete enumerator data
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Midline_Complete_PII", clear 
 
 *** keep only knoweldge data *** 
 keep hhid start_enumerator enum_* end_enumerator
@@ -171,12 +175,12 @@ order hhid, first
 save "$data_deidentified\Complete_Midline_Enumerator_Observations", replace 
 
 *** import copmlete community data
-use "$data_identified\DISES_Midline_Household_Corrected_PII", clear 
+use "$data_identified\DISES_Complete_Midline_Community", clear 
 
 *** drop identifying data *** 
 drop full_name phone_resp full_name phone_resp pull_hh_full_name_calc__* pull_hh_head_name_complet_* pull_hh_name_complet_resp_* pull_hh_phone_* new_household_*
 
-drop deviceid devicephonenum username device_info caseid record_text gps* description_village instanceid formdef_version key village 
+drop deviceid devicephonenum username device_info caseid record_text gps* description_village instanceid formdef_version key village pull* fu_*
 
 *** save community data *** 
 save "$data_deidentified\Complete_Midline_Community", replace 

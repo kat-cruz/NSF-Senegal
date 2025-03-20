@@ -424,134 +424,111 @@ write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV2.xlsx")
 
 ##Compute regression coefficients and cluster SEs at the village level
 
+#######test data
 
 ```{r}
-ctl <- c(4.17,5.58,5.18,6.11,4.50,4.61,5.17,4.53,5.33,5.14)
-trt <- c(4.81,4.17,4.41,3.59,5.87,3.83,6.03,4.89,4.32,4.69)
-group <- gl(2, 10, 20, labels = c("Ctl","Trt"))
-weight <- c(ctl, trt)
-lm.D9 <- lm(weight ~ group)
-lm.D9
+#====================================================
+# Test here
+#====================================================
 
-anova(lm.D9)
-summary(lm.D90)
+
+# library(dplyr)
+# library(lmtest)
+# library(sandwich)
+# 
+# view(balance_df)
+# # Subset relevant columns from wide data
+# subset <- balance_df %>%
+#   select(agri_income_05, treatment_group, hhid_village) 
+# #%>%  filter(!is.na(agri_income_05))
+# subset
+# # Run regression with Control as baseline
+# model <- lm(agri_income_05 ~ treatment_group, data = subset)
+# model
+# # Clustered standard errors at the village level
+# clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset$hhid_village))
+# clustered_se
+# 
+# summary(model)
+# # Extract control mean (intercept) and SE
+# #control_mean <- round(summary(model)$coefficients[1, 1], 2)  # Intercept
+# control_mean <- round(clustered_se[1, 1], 2)  # Intercept
+# control_se <- round(clustered_se[1, 2], 2)  # SE of the intercept
+# control_mean
+# control_se
+# # Extract coefficients and p-values for treatment arms
+# results <- data.frame(
+#   comparison = c("Control vs Treatment1", "Control vs Treatment2", "Control vs Treatment3", "Control vs Local Control"),
+#   stat = round(clustered_se[2:5, 1], 2),  # Regression coefficients
+#   p_value = round(clustered_se[2:5, 4], 3),  # p-values
+#   control_mean = control_mean,  # Intercept (mean for control group)
+#   control_se = control_se  # Standard error of control mean
+# )
+# 
+# # View results
+# print(results)
+
 ```
 
 
+###Completed function
 
 ```{r}
 
-run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
-  results <- list()
+run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+  results_list <- list()  # Store results for all variables
   
-  # Loop over all baseline variables to run regression
   for (var in vars_to_test) {
-    treatments <- unique(data[[treatment_col]])
-    treatments <- setdiff(treatments, 'Control')  # Remove control group for comparisons
+    # Select relevant columns
+    subset <- data %>% select(all_of(var), all_of(treatment_col), all_of(village_col))
     
-    # Compare each treatment arm to the control
-    for (arm in treatments) {
-      # Subset data for control vs. arm comparison
-      subset <- data %>% filter(.data[[treatment_col]] %in% c('Control', arm))
-      subset$treat <- ifelse(subset[[treatment_col]] == arm, 1, 0)  # Create treatment indicator (1 for arm, 0 for control)
-      
-      # Run the regression (lm model)
-      model <- lm(as.formula(paste(var, "~ treat")), data = subset)  # Use formula interface
-      
-      # Get the model summary
-      model_summary <- summary(model)
-      
-      # Cluster standard errors by village
-      clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
-      
-      # Extract control mean (intercept)
-      control_mean <- round(model_summary$coefficients[1, 1], 2)  # Extract intercept (Control mean)
-      
-      # Extract standard deviation of the control mean (intercept SE)
-     # Extract SE of the intercept (Control Group)
-      control_se <- round(clustered_se[1, 2], 2)  # SE is in the second column of clustered_se
-
-  # Extract intercept standard error
-      
-      # Store results (for control vs. arm comparison)
-      results <- append(results, list(data.frame(
-        variable = var,
-        comparison = paste('Control vs', arm),
-        stat = round(clustered_se[2, 1], 2),  # Coefficient (estimate)
-        p = round(clustered_se[2, 4], 3),     # p-value
-        control_mean = control_mean,          # Control mean (intercept)
-        control_se = control_se               # Standard deviation (SE of intercept)
-      )))
-    }
+    # Run regression with Control as baseline
+    model <- lm(as.formula(paste(var, "~", treatment_col)), data = subset)
+    
+    # Clustered standard errors at the village level
+    clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+    
+    # Extract control mean (intercept) and SE
+    control_mean <- round(clustered_se[1, 1], 2)  # Intercept
+    control_se <- round(clustered_se[1, 2], 2)    # SE of the intercept
+    
+    # Extract coefficients and p-values for treatment arms
+    num_treatments <- nrow(clustered_se) - 1  # Number of treatment arms
+    comparisons <- paste("Control vs", unique(data[[treatment_col]])[-1])  # Skip "Control"
+    
+    results <- data.frame(
+      variable = var,
+      comparison = comparisons,
+      stat = round(clustered_se[2:(num_treatments + 1), 1], 2),  # Coefficients
+      p = round(clustered_se[2:(num_treatments + 1), 4], 3),  # P-values
+      control_mean = control_mean,  # Control group mean
+      control_se = control_se  # Control group SE
+    )
+    
+    # Store results in list
+    results_list[[var]] <- results
   }
   
   # Combine all results into one data frame
-  final_results <- bind_rows(results)
+  final_results <- bind_rows(results_list)
   return(final_results)
 }
-
-
-
-# Function to run regressions for each variable against the treatment group
-# run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
-#   results <- list()
-#   
-#   # Loop over all baseline variables to run regression
-#   for (var in vars_to_test) {
-#     treatments <- unique(data[[treatment_col]])
-#     treatments <- setdiff(treatments, 'Control')  # Remove control group for comparisons
-#     
-#     # Compare each treatment arm to the control
-#     for (arm in treatments) {
-#       # Subset data for control vs. arm comparison
-#       subset <- data %>% filter(.data[[treatment_col]] %in% c('Control', arm))
-#       subset$treat <- ifelse(subset[[treatment_col]] == arm, 1, 0)  # Create treatment indicator (1 for arm, 0 for control)
-#       
-#       # Run the regression (lm model)
-#       model <- lm(as.formula(paste(var, "~ treat")), data = subset)  # Use formula interface
-#       
-#       # Get the model summary
-#       model_summary <- summary(model)
-#       
-#       # Cluster standard errors by village
-#       clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
-#       
-#       # Extract F-statistic from the model summary
-#       f_statistic <- model_summary$fstatistic[1]
-#       
-#       # Store results (for control vs. arm comparison)
-#       results <- append(results, list(data.frame(
-#         variable = var,
-#         comparison = paste('Control vs', arm),
-#         stat = round(clustered_se[2, 1], 2),  # Coefficient (estimate)
-#         p = round(clustered_se[2, 4], 3)     # p-value
-#         #f_stat = round(f_statistic, 2)        # F-statistic
-#       )))
-#     }
-#   }
-#   
-#   # Combine all results into one data frame
-#   final_results <- bind_rows(results)
-#   return(final_results)
-# }
 
 
 # Run regressions for the baseline variables
  vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
  vars_to_test_reg
-    regression_results <- run_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
+    regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
 
 # Print the combined results
 print(regression_results)
 
-names(balance_df)
 
 
 
 ```
 
-
-
+#####pairwaise-comparisons (no longer needed)
 
 ```{r}
 
@@ -608,7 +585,11 @@ names(balance_df)
 #       
 # regression_results
 
+```
 
+######Compute F-test across arms for each var
+
+```{r}
 
 #<><<><><>><><<><><>>
 #CREATE F-STAT FUNCTION FOR EACH VAR
@@ -658,19 +639,7 @@ regression_results_qvals <- compute_fdr_qvalues(regression_results)
 # Print results
 print(regression_results_qvals)
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 
 #<><<><><>><><<><><>>
 #CREATE F-STAT FUNCTION FOR TREATMENT ARM
@@ -726,290 +695,6 @@ regression_results_qvals
 
 ```
 
-
-```{r}
-
-# Try a model with a simpler set of predictors
-simplified_vars <- c("hh_age_h", "hh_education_level_bin_h", "hh_gender_h")  # Example subset of variables
-
-# Create a formula for the regression with fewer variables
-simplified_formula <- as.formula(paste("treatment_group ~", paste(simplified_vars, collapse = " + ")))
-
-# Fit the multinomial regression model with the simplified set of predictors
-model_simplified <- multinom(simplified_formula, data = joint_df)
-
-# View summary of the simplified model
-summary(model_simplified)
-
-# Create coefficient names for the Wald test
-# coefs_simplified <- c(paste0(simplified_vars, treatments))
-# Set up the vector of treatment levels (excluding 'Control' as it's the baseline)
-treatments <- c("Treatment1.", "Treatment2.", "Treatment3.")
-
-# Create coefficient names dynamically for the Wald test
-# We're using the variables to generate the coefficient names that represent each treatment arm
-coefs <- unlist(lapply(simplified_vars, function(var) {
-  paste0(treatments, var)  # Creating coefficient names for each variable by each treatment
-}))
-
-# Perform the Wald test
-joint_test_simplified <- linearHypothesis(model_simplified, coefs)
-
-# Print the results of the joint test
-print(joint_test_simplified)
-
-# Convert results to a data frame
-joint_test_df_simplified <- as.data.frame(joint_test_simplified)
-print(joint_test_df_simplified)
-
-
-
-
-
-
-
-
-```
-
-
-
-
-```{r}
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
-#library(nnet)
-# Generate the model formula dynamically using all columns except 'treatment_group'
-# Exclude 'treatment_group' and any other variable you don't want (e.g., 'hhid', 'target_village')
-# joint_df$treatment_group <- factor(joint_df$treatment_group, levels = c("Control", "Treatment1", "Treatment2", "Treatment3"))
-# joint_df$treatment_group <- relevel(joint_df$treatment_group, ref = "Control")
-
-
-
-vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
-# Create a formula for the regression (exclude the intercept with '- 1')
-formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + "), "- 1"))
-formula
-# Fit the multinomial regression model
- model <- multinom(formula, data = joint_df)
-model
-# # Extract coefficients from the multinom model
-# model_matrix <- summary(model)$coefficients
-# 
-# # Convert to a dataframe
-# model_df <- as.data.frame(model_matrix)
-# 
-# # Add coefficient names as a column
-# model_df <- tibble::rownames_to_column(model_df, var = "Variable")
-# 
-# # Print the first few rows
-# head(model_df)
-# 
-# 
-# model_df  %>%
-#  select(-starts_with("treatment_group"))
-# model_df
-
-#view(joint_df)
-
-  print(coefs <- as.vector(outer(c("Treatment1.", "Treatment2.", "Treatment3."), 
-                            c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", 
-                     "hh_numero", "hh_03_", "hh_10_", "hh_12_6_", "hh_16_", "hh_15_2", "hh_26_", "hh_29_01", 
-                     "hh_29_02", "hh_29_03", "hh_29_04", "hh_37_", "hh_38_", "living_01_bin", "game_A_total", 
-                     "game_B_total", "TLU", "agri_6_15", "agri_6_32_bin", "agri_6_36_bin", "total_land_ha", 
-                     "agri_6_34_comp_any", "agri_income_01", "agri_income_05", "beliefs_01_bin", "beliefs_02_bin", 
-                     "beliefs_03_bin", "beliefs_04_bin", "beliefs_05_bin", "beliefs_06_bin", "beliefs_07_bin", 
-                     "beliefs_08_bin", "beliefs_09_bin", "health_5_3_bin", "health_5_6_", "num_water_access_points", 
-                     "q_51"),
-                            paste0)))
-
-# Perform the Wald test to check the joint significance of the variables (excluding intercept)
-joint_test <- linearHypothesis(model, coefs)
-
-# Print the results of the joint test
-print(joint_test)
-
-
-#==================================================================================
-
-# If you want the joint test result as a data frame for easier inspection:
-joint_test_df <- as.data.frame(joint_test)
-print(joint_test_df)
-
-joint_test_df <- data.frame(joint_test)
-joint_test_df
-# Create a kable table with kableExtra
-joint_test_html <- joint_test_df %>%
-  kable(format = "html", escape = FALSE, caption = "Joint Hypothesis Test Results") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-
-# Save the output to an HTML file
-file_name <- "joint_test_output.html"
-save_kable(joint_test_html, file = file_name)
-
-# Inform the user where the file has been saved
-cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
-
-```
-
-```{r}
-if (require(nnet)){
-  print(m <- multinom(partic ~ hincome + children, data=Womenlf))
-  print(coefs <- as.vector(outer(c("not.work.", "parttime."), 
-                            c("hincome", "childrenpresent"),
-                            paste0)))
-  linearHypothesis(m, coefs) # ominbus Wald test
-}
-
-Womenlf
-```
-
-##Compute joint f-test
-
-```{r}
-
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
-#library(nnet)
-#include each variable name here
-model <- multinom(value ~ group + variable, data = joint_df)
-model
-summary(model)
-
-#View(joint_long_data)
-# Create the coefficient names for linearHypothesis
-#coefs <- c("valueTreatment1.", "valueTreatment2.", "valueTreatment3.")
-
-# Set up the vector of treatment levels
-treatments <- c("Treatment1.", "Treatment2.", "Treatment3.")
-
-# Set up the vector of variables (just "value" here)
-variables <- c("value")
-
-# Create the coefficient names using outer to combine treatment levels and variables
-coefs <- as.vector(outer(treatments, variables, paste0))
-coefs
-model
-# Print the resulting coefficient names
-print(coefs)
-
-coefs
-# Install and load car package for linearHypothesis
-library(car)
-
-# Run the Wald test to check the joint significance of 'value' across the treatments
-joint_test <- linearHypothesis(model, coefs)
-
-# Print the results of the joint test
-print(joint_test)
-
-#join_f_vars <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-
-
-summary(model)
-# For Treatment1
-
-
-
-joint_test_df <- data.frame(joint_test)
-joint_test_df
-# Create a kable table with kableExtra
-joint_test_html <- joint_test_df %>%
-  kable(format = "html", escape = FALSE, caption = "Joint Hypothesis Test Results") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-
-# Save the output to an HTML file
-file_name <- "joint_test_output.html"
-save_kable(joint_test_html, file = file_name)
-
-# Inform the user where the file has been saved
-cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
-
-
-
-# # # Prepare data: create outcome variables (1 for treatment arm, 0 otherwise)
-# long_data$y_treatment1 <- ifelse(long_data$group == "Treatment1", 1, 0)
-# long_data$y_treatment2 <- ifelse(long_data$group == "Treatment2", 1, 0)
-# long_data$y_treatment3 <- ifelse(long_data$group == "Treatment3", 1, 0)
-# long_data$y_lc_control <- ifelse(long_data$group == "Local Control", 1, 0)
-# long_data$y_control <- ifelse(long_data$group == "Control", 1, 0)
-# view(long_data)
-# # Run multinomial logistic regression (with control as baseline)
-# model_f_test <- multinom(cbind(y_treatment1, y_treatment2, y_treatment3, y_lc_control, y_control) ~ value + variable, data = long_data)
-# 
-# # View model_f_test summary
-# summary(model_f_test)
-# model_summary <- summary(model_f_test)
-# # Perform likelihood ratio tests for the joint null hypothesis
-# lr_test <- lrtest(model_f_test)
-# lr_test
-# summary(lr_test)
-# model_summary
-# # Extract coefficients and p-values
-# #model_summary <- summary(model_f_test)$coefficients
-# model_p_values <- model_summary$coefficients[, 4]  # p-values are typically in the 4th column of the coefficients matrix
-# 
-# q_values <- p.adjust(model_p_values, method = "fdr")
-# 
-# # Combine results into a tidy table
-# f_test_results <- tibble(
-#   variable = rownames(model_summary$coefficients),
-#   coef_treatment1 = model_summary$coefficients[, 1],  # Coefficients for Treatment1
-#   coef_treatment2 = model_summary$coefficients[, 2],  # Coefficients for Treatment2
-#   coef_treatment3 = model_summary$coefficients[, 3],  # Coefficients for Treatment3
-#   coef_control = model_summary$coefficients[, 4],     # Coefficients for Control
-#   p_values = model_p_values,
-#   q_values = q_values
-# )  %>%
-#   select(-q_values)
-# 
-# 
-
-
-
-
-```
-```{r}
-
-# Remove rows with NA values in predictors to ensure both models use the same dataset
-long_data_filtered <- long_data %>%
-  filter(!is.na(value) & !is.na(variable))
-
-long_data_filtered
-
-# Convert group to factor and ensure "Control" is the reference category
-long_data_filtered$group <- factor(long_data_filtered$group, levels = c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3"))
-
-# Fit the full model (including predictors)
-full_model <- multinom(group ~ value + variable, data = long_data_filtered)
-full_model
-# Fit the null model (only intercept)
-null_model <- multinom(group ~ 1, data = long_data_filtered)
-null_model
-# Perform the likelihood ratio test (LRT)
-lrt_result <- lrtest(full_model, null_model)
-
-# Print LRT result
-print(lrt_result)
-
-
-
-
-lrt_result_df <- data.frame(lrt_result)
-lrt_result_df
-
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
-# Create a kable table with kableExtra
-f_test_results_html <- lrt_result_df %>%
-  mutate(across(where(is.numeric), as.character)) %>%  # Ensure numbers remain as they are
-  kable(format = "html", escape = FALSE, caption = "Likelihood Ratio Test Results") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-
-
-# Save the output to an HTML file
-file_name <- "LRT_results_df.html"
-save_kable(f_test_results_html, file = file_name)
-
-# Inform the user where the file has been saved
-cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
-```
 
 
 ##Create completed table
@@ -1352,7 +1037,7 @@ final_table
 ```{r}
 
 
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
 
 final_table %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
@@ -1363,7 +1048,7 @@ final_table %>%
       "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev9.html")
+  save_kable("balance_tablev10.html")
 
 # setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
 # knitr::kable(final_table, format = "html") %>% save_kable("balance_tablev3.html")
@@ -1442,6 +1127,413 @@ table_subset_with_footnotes <- bind_rows(final_table_subset, footnotes)
 # Save to final_table_with_footnotes
 write_xlsx(table_subset_with_footnotes, "balance_table_Subset.xlsx")
 ```
+
+##Compute joint f-test - test work
+
+
+#####latest
+
+
+```{r}
+
+vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
+
+formula1 <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))  # Ensure no '- 1' in the formula
+formula1
+# Fit the multinomial regression model
+model <- multinom(formula1, data = joint_df)
+model
+# Extract the entire coefficient matrix (for all outcome categories and predictors)
+coef_terms <- as.vector(coef(model))
+
+# Extract the entire variance-covariance matrix
+vcov_terms <- vcov(model)
+
+# Run the Wald test for all coefficients
+wald_result <- wald.test(b = coef_terms, Sigma = vcov_terms, Terms = 1:length(coef_terms))  # Test all coefficients
+vif(model)
+# Print the result
+print(wald_result)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+# Define variables and model
+vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
+
+# Fit the multinomial regression model
+model <- multinom(formula, data = joint_df)
+
+# Extract coefficients for terms 4 and 5
+coef_terms <- as.vector(coef(model)[, c(4, 5)])
+
+# Extract the relevant submatrix from vcov(model)
+vcov_terms <- vcov(model)[c(4, 5), c(4, 5)]
+vcov_terms
+vcov(model)
+# Run the Wald test
+wald_result <- wald.test(b = as.vector(coef(model)), Sigma = vcov(model), Terms = c(4, 5))
+wald_result <- wald.test(b = as.vector(coef(model)), Sigma = vcov(model), Terms = c(1, 2))
+#wald_result <- wald.test(b = coef_terms, Sigma = vcov_terms, Terms = c(1, 2))
+
+# Print the result
+print(wald_result)
+```
+
+
+```{r}
+# Load necessary library
+install.packages("aod")
+library(aod)
+
+
+vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
+# Create a formula for the regression (exclude the intercept with '- 1')
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
+formula
+# Fit the multinomial regression model
+model <- multinom(formula, data = joint_df)
+
+print(dim(coef(model)))  # Should match vcov()
+print(dim(vcov(model)))  # Should match coef()
+
+wald_result <- wald.test(b = as.vector(coef(model)), Sigma = vcov(model), Terms = c(4, 5))
+
+#wald_result <- wald.test(b = coef(model), Sigma = vcov(model), Terms = c(4, 5))
+
+print(wald_result)
+
+# Outcome variable (binary)
+y <- rbinom(n, 1, plogis(-1 + 0.5 * x1 + 0.8 * x2 - 0.3 * x3 + 0.6 * x4))
+
+# Combine variables into a dataframe
+data <- data.frame(y, x1, x2, x3, x4)
+
+# Fit logistic regression model
+model <- multinom(y ~ x1 + x2 + x3 + x4, data = data, family = "binomial")
+
+# Perform Wald test to determine if the coefficients of x3 and x4 
+wald_result <- wald.test(b = coef(model), Sigma = vcov(model), Terms = c(4, 5))
+
+# Print the result
+print(wald_result)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+# Try a model with a simpler set of predictors
+simplified_vars <- c("hh_age_h", "hh_education_level_bin_h", "hh_gender_h")  # Example subset of variables
+
+# Create a formula for the regression with fewer variables
+simplified_formula <- as.formula(paste("treatment_group ~", paste(simplified_vars, collapse = " + ")))
+
+# Fit the multinomial regression model with the simplified set of predictors
+model_simplified <- multinom(simplified_formula, data = joint_df)
+
+# View summary of the simplified model
+summary(model_simplified)
+
+# Create coefficient names for the Wald test
+# coefs_simplified <- c(paste0(simplified_vars, treatments))
+# Set up the vector of treatment levels (excluding 'Control' as it's the baseline)
+treatments <- c("Treatment1.", "Treatment2.", "Treatment3.")
+
+# Create coefficient names dynamically for the Wald test
+# We're using the variables to generate the coefficient names that represent each treatment arm
+coefs <- unlist(lapply(simplified_vars, function(var) {
+  paste0(treatments, var)  # Creating coefficient names for each variable by each treatment
+}))
+
+# Perform the Wald test
+joint_test_simplified <- linearHypothesis(model_simplified, coefs)
+
+# Print the results of the joint test
+print(joint_test_simplified)
+
+# Convert results to a data frame
+joint_test_df_simplified <- as.data.frame(joint_test_simplified)
+print(joint_test_df_simplified)
+
+
+
+
+
+
+
+
+```
+
+
+
+```{r}
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+#library(nnet)
+# Generate the model formula dynamically using all columns except 'treatment_group'
+# Exclude 'treatment_group' and any other variable you don't want (e.g., 'hhid', 'target_village')
+# joint_df$treatment_group <- factor(joint_df$treatment_group, levels = c("Control", "Treatment1", "Treatment2", "Treatment3"))
+# joint_df$treatment_group <- relevel(joint_df$treatment_group, ref = "Control")
+
+
+
+vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
+# Create a formula for the regression (exclude the intercept with '- 1')
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + "), "- 1"))
+formula
+# Fit the multinomial regression model
+ model <- multinom(formula, data = joint_df)
+model
+# # Extract coefficients from the multinom model
+# model_matrix <- summary(model)$coefficients
+# 
+# # Convert to a dataframe
+# model_df <- as.data.frame(model_matrix)
+# 
+# # Add coefficient names as a column
+# model_df <- tibble::rownames_to_column(model_df, var = "Variable")
+# 
+# # Print the first few rows
+# head(model_df)
+# 
+# 
+# model_df  %>%
+#  select(-starts_with("treatment_group"))
+# model_df
+
+#view(joint_df)
+
+  print(coefs <- as.vector(outer(c("Treatment1.", "Treatment2.", "Treatment3."), 
+                            c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", 
+                     "hh_numero", "hh_03_", "hh_10_", "hh_12_6_", "hh_16_", "hh_15_2", "hh_26_", "hh_29_01", 
+                     "hh_29_02", "hh_29_03", "hh_29_04", "hh_37_", "hh_38_", "living_01_bin", "game_A_total", 
+                     "game_B_total", "TLU", "agri_6_15", "agri_6_32_bin", "agri_6_36_bin", "total_land_ha", 
+                     "agri_6_34_comp_any", "agri_income_01", "agri_income_05", "beliefs_01_bin", "beliefs_02_bin", 
+                     "beliefs_03_bin", "beliefs_04_bin", "beliefs_05_bin", "beliefs_06_bin", "beliefs_07_bin", 
+                     "beliefs_08_bin", "beliefs_09_bin", "health_5_3_bin", "health_5_6_", "num_water_access_points", 
+                     "q_51"),
+                            paste0)))
+
+# Perform the Wald test to check the joint significance of the variables (excluding intercept)
+joint_test <- linearHypothesis(model, coefs)
+
+# Print the results of the joint test
+print(joint_test)
+
+
+#==================================================================================
+
+# If you want the joint test result as a data frame for easier inspection:
+joint_test_df <- as.data.frame(joint_test)
+print(joint_test_df)
+
+joint_test_df <- data.frame(joint_test)
+joint_test_df
+# Create a kable table with kableExtra
+joint_test_html <- joint_test_df %>%
+  kable(format = "html", escape = FALSE, caption = "Joint Hypothesis Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+# Save the output to an HTML file
+file_name <- "joint_test_output.html"
+save_kable(joint_test_html, file = file_name)
+
+# Inform the user where the file has been saved
+cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
+
+```
+
+```{r}
+if (require(nnet)){
+  print(m <- multinom(partic ~ hincome + children, data=Womenlf))
+  print(coefs <- as.vector(outer(c("not.work.", "parttime."), 
+                            c("hincome", "childrenpresent"),
+                            paste0)))
+  linearHypothesis(m, coefs) # ominbus Wald test
+}
+
+Womenlf
+```
+
+
+```{r}
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+#library(nnet)
+#include each variable name here
+model <- multinom(value ~ group + variable, data = joint_df)
+model
+summary(model)
+
+#View(joint_long_data)
+# Create the coefficient names for linearHypothesis
+#coefs <- c("valueTreatment1.", "valueTreatment2.", "valueTreatment3.")
+
+# Set up the vector of treatment levels
+treatments <- c("Treatment1.", "Treatment2.", "Treatment3.")
+
+# Set up the vector of variables (just "value" here)
+variables <- c("value")
+
+# Create the coefficient names using outer to combine treatment levels and variables
+coefs <- as.vector(outer(treatments, variables, paste0))
+coefs
+model
+# Print the resulting coefficient names
+print(coefs)
+
+coefs
+# Install and load car package for linearHypothesis
+library(car)
+
+# Run the Wald test to check the joint significance of 'value' across the treatments
+joint_test <- linearHypothesis(model, coefs)
+
+# Print the results of the joint test
+print(joint_test)
+
+#join_f_vars <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+
+
+summary(model)
+# For Treatment1
+
+
+
+joint_test_df <- data.frame(joint_test)
+joint_test_df
+# Create a kable table with kableExtra
+joint_test_html <- joint_test_df %>%
+  kable(format = "html", escape = FALSE, caption = "Joint Hypothesis Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+# Save the output to an HTML file
+file_name <- "joint_test_output.html"
+save_kable(joint_test_html, file = file_name)
+
+# Inform the user where the file has been saved
+cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
+
+
+
+# # # Prepare data: create outcome variables (1 for treatment arm, 0 otherwise)
+# long_data$y_treatment1 <- ifelse(long_data$group == "Treatment1", 1, 0)
+# long_data$y_treatment2 <- ifelse(long_data$group == "Treatment2", 1, 0)
+# long_data$y_treatment3 <- ifelse(long_data$group == "Treatment3", 1, 0)
+# long_data$y_lc_control <- ifelse(long_data$group == "Local Control", 1, 0)
+# long_data$y_control <- ifelse(long_data$group == "Control", 1, 0)
+# view(long_data)
+# # Run multinomial logistic regression (with control as baseline)
+# model_f_test <- multinom(cbind(y_treatment1, y_treatment2, y_treatment3, y_lc_control, y_control) ~ value + variable, data = long_data)
+# 
+# # View model_f_test summary
+# summary(model_f_test)
+# model_summary <- summary(model_f_test)
+# # Perform likelihood ratio tests for the joint null hypothesis
+# lr_test <- lrtest(model_f_test)
+# lr_test
+# summary(lr_test)
+# model_summary
+# # Extract coefficients and p-values
+# #model_summary <- summary(model_f_test)$coefficients
+# model_p_values <- model_summary$coefficients[, 4]  # p-values are typically in the 4th column of the coefficients matrix
+# 
+# q_values <- p.adjust(model_p_values, method = "fdr")
+# 
+# # Combine results into a tidy table
+# f_test_results <- tibble(
+#   variable = rownames(model_summary$coefficients),
+#   coef_treatment1 = model_summary$coefficients[, 1],  # Coefficients for Treatment1
+#   coef_treatment2 = model_summary$coefficients[, 2],  # Coefficients for Treatment2
+#   coef_treatment3 = model_summary$coefficients[, 3],  # Coefficients for Treatment3
+#   coef_control = model_summary$coefficients[, 4],     # Coefficients for Control
+#   p_values = model_p_values,
+#   q_values = q_values
+# )  %>%
+#   select(-q_values)
+# 
+# 
+
+
+
+
+```
+```{r}
+
+# Remove rows with NA values in predictors to ensure both models use the same dataset
+long_data_filtered <- long_data %>%
+  filter(!is.na(value) & !is.na(variable))
+
+long_data_filtered
+
+# Convert group to factor and ensure "Control" is the reference category
+long_data_filtered$group <- factor(long_data_filtered$group, levels = c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3"))
+
+# Fit the full model (including predictors)
+full_model <- multinom(group ~ value + variable, data = long_data_filtered)
+full_model
+# Fit the null model (only intercept)
+null_model <- multinom(group ~ 1, data = long_data_filtered)
+null_model
+# Perform the likelihood ratio test (LRT)
+lrt_result <- lrtest(full_model, null_model)
+
+# Print LRT result
+print(lrt_result)
+
+
+
+
+lrt_result_df <- data.frame(lrt_result)
+lrt_result_df
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# Create a kable table with kableExtra
+f_test_results_html <- lrt_result_df %>%
+  mutate(across(where(is.numeric), as.character)) %>%  # Ensure numbers remain as they are
+  kable(format = "html", escape = FALSE, caption = "Likelihood Ratio Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+
+# Save the output to an HTML file
+file_name <- "LRT_results_df.html"
+save_kable(f_test_results_html, file = file_name)
+
+# Inform the user where the file has been saved
+cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 ```{r}

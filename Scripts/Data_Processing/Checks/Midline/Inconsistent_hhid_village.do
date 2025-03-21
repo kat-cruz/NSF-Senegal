@@ -8,6 +8,13 @@ set more off
 * SET FILE PATHS
 **************************************************
 
+**** Master file path  ****
+if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
+if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
+if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
+
 * Set base Box path for each user
 global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
 global replacement "$master\Data_Management\_CRDES_RawData\Midline\Replacement_Survey_Data"
@@ -15,6 +22,7 @@ global baselineids "$master\Data_Management\_CRDES_CleanData\Baseline\Identified
 global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
 global corrected "$master\Data_Management\Output\Data_Corrections\Midline"
 global clean "$master\Data_Management\_CRDES_CleanData\Midline\Identified"
+global hhids "$master\Data_Management\Output\Household_IDs"
 
 ************************ School Data **************************************
 *--------------------*
@@ -26,10 +34,13 @@ use "$clean\DISES_Complete_Midline_SchoolPrincipal.dta", clear
 tempfile school_villages
 save `school_villages'
 keep hhid_village
+
 *-----------------------------*
-* Load Household PII Data     *
+* Load Baseline Household IDs *
 *-----------------------------*
-use "$clean\DISES_Midline_Complete_PII.dta", clear
+use "$hhids\Complete_HouseholdIDs", clear
+
+replace hhid_village = villageid if hhid_village == "" & villageid != ""
 
 duplicates drop hhid_village, force
 keep hhid_village
@@ -56,9 +67,12 @@ tempfile community_villages
 save `community_villages'
 keep hhid_village
 *-----------------------------*
-* Load Household PII Data     *
+* Load Baseline Household IDs *
 *-----------------------------*
-use "$clean\DISES_Midline_Complete_PII.dta", clear
+use "$hhids\Complete_HouseholdIDs", clear
+
+replace hhid_village = villageid if hhid_village == "" & villageid != ""
+
 duplicates drop hhid_village, force
 keep hhid_village
 *--------------------*

@@ -338,11 +338,42 @@ foreach var of varlist _all {
 	*0 No
 	*2 Don't know / Don't answer
 
-foreach var in hh_03_ hh_26_ hh_27_ hh_37_ health_5_2_ health_5_5_ health_5_6_ ///
-    agri_6_34_comp_1 agri_6_34_comp_2 agri_6_34_comp_3 agri_6_34_comp_4 agri_6_34_comp_5 ///
-    agri_6_34_comp_6 agri_6_34_comp_7 agri_6_34_comp_8 agri_6_34_comp_9 agri_6_34_comp_10 agri_6_34_comp_11 {
-    replace `var' = .a if `var' == 2
+	foreach var in hh_03_ hh_26_ hh_27_ hh_37_ health_5_2_ health_5_5_ health_5_6_ ///
+		agri_6_34_comp_1 agri_6_34_comp_2 agri_6_34_comp_3 agri_6_34_comp_4 agri_6_34_comp_5 ///
+		agri_6_34_comp_6 agri_6_34_comp_7 agri_6_34_comp_8 agri_6_34_comp_9 agri_6_34_comp_10 agri_6_34_comp_11 {
+		replace `var' = .a if `var' == 2
+	}
+
+
+** replace -9s with NAs for variables that contain them
+
+
+* Loop through all variables in the dataset
+
+foreach var of varlist _all {
+    * Check if the variable is numeric (ignoring strings)
+    capture confirm numeric variable `var'
+    if !_rc {  // If the variable is numeric
+        * Count if -9 exists in the numeric variable
+        count if `var' == -9
+        if r(N) > 0 {
+            display "`var' contains -9"
+        }
+    }
 }
+
+	** Found to have -9s: 
+	
+		** 	hh_38_ 
+		**	health_5_12_ 
+		**	agri_income_05
+
+
+
+	foreach var in hh_38_ health_5_12_ agri_income_05 {
+		replace `var' = .a if `var' == -9
+	}
+
 
 
 		*replace agri_income_05 = 0 if agri_income_01 == 0
@@ -811,7 +842,9 @@ save `balance_table_ata'
 			living_01_bin living_04_bin living_05_bin ///  //living standards 
 			beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///  //beliefs
 			enum_03_bin enum_04_bin enum_05_bin ///
-			asset_index asset_index_std, by(hhid hhid_village num_water_access_points q_51 target_village)
+			asset_index asset_index_std ///
+			 (first) hhid_village num_water_access_points q_51 target_village, ///
+			by(hhid)
 
 
 		order hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
@@ -837,6 +870,23 @@ foreach var of varlist _all {
 }
 
  ** There's a lot - handle later for regressions 
+ 
+ 
+ foreach var of varlist _all {
+    * Check if the variable is numeric (ignoring strings)
+    capture confirm numeric variable `var'
+    if !_rc {  // If the variable is numeric
+        * Count if -9 exists in the numeric variable
+        count if `var' == -9
+        if r(N) > 0 {
+            display "`var' contains -9"
+        }
+    }
+}
+
+
+ ** Handle -9s after collapsing 
+
 
 				
   *^*^* Label final variables
@@ -968,6 +1018,7 @@ foreach var of varlist _all {
 *vars removed:
 	* hh_27
 	* hh_31_bin
+	
 preserve 
 
 
@@ -990,11 +1041,12 @@ preserve
 		 health_5_3_bin health_5_6_ ///
 		 num_water_access_points q_51 target_village
 		 
-		 *save "${dataOutput}\baseline_balance_tables_data_PAP.dta", replace
+		 save "${dataOutput}\baseline_balance_tables_data_PAP.dta", replace
 
 restore 
 
 
+/*
 use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 
 
@@ -1029,6 +1081,7 @@ mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills
 
 
 
+*/
 
 
 

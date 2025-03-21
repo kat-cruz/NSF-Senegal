@@ -4,19 +4,29 @@ author: "Kateri Mouawad (adapted by Alexander Mills)"
 date: "2025-03-20"
 output: html_document
 ---
+
+
+#Read me
+
+This file outputs the summary statistics used to make the codebook for baseline and midline data. This works in two parts:
+
+1) There's a function that handles variables with indicies, and one that handles variables without indicies, and these funtions generate summary stats for each of the different types of variables. 
+
+
+
+
+
+
+
+
+
+
+
+
+
 #START HERE - load packages
 
 ```{r}
-
-#remotes::install_github("kwb-r/kwb.utils")
-
-#options(repos = c(
-#  kwbr = 'https://kwb-r.r-universe.dev',
-#  CRAN = 'https://cloud.r-project.org'))
-  
-# Download and install kwb.utils in R
-#install.packages('kwb.utils')
-
 
 
 
@@ -113,13 +123,6 @@ enumerator_df <- read_dta(file_path_enumerator)
 file_path_community <- file.path(proj$p1, "Complete_Midline_Community.dta")
 community_df <- read_dta(file_path_community)
 
-
-
-#print(head(midline_data, 10))
-
-#midline_data <- midline_data %>%
- # mutate(hh_age_resp = if_else(hhid == "023B09", 50, hh_age_resp))
-
 ```
 
 
@@ -129,78 +132,117 @@ community_df <- read_dta(file_path_community)
 ###Numerical Summary
 ```{r}
 
-#This function is used to summarize numerical variables 
-
+#====================================================================
+#This function is used to summarize numerical variables with indices 
+#====================================================================
 
 numerical_summary_func <- function(midline_data, prefix) {
-  midline_data %>%
-    select(starts_with(prefix)) %>%
-    pivot_longer(cols = starts_with(prefix), names_to = "id", values_to = "value", names_prefix = paste0(prefix, "_")) %>%
-    summarise(N = round(sum(!is.na(value)), 2),
-              min = round(min(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
-              mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
-              max = sprintf("%.2f", max(ifelse(value == -9, NA, value), na.rm = TRUE),2),
-              sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
-              prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)) %>%
-    mutate(variable = prefix)
+      midline_data %>%
+        select(starts_with(prefix)) %>%
+        pivot_longer(cols = starts_with(prefix), names_to = "id", values_to = "value", names_prefix = paste0(prefix, "_")) %>%
+        summarise(N = round(sum(!is.na(value)), 2),
+                  min = round(min(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+                  mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+                  max = sprintf("%.2f", max(ifelse(value == -9, NA, value), na.rm = TRUE),2),
+                  sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+                  prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)) %>%
+        mutate(variable = prefix)
+    }
+
+    numerical_summary <- function(midline_data, prefixes) {
+      summaries <- lapply(prefixes, function(prefix) {
+        numerical_summary_func(midline_data, prefix)
+      })
+      numerical_sum_set <- bind_rows(summaries)
+      return(numerical_sum_set)
 }
 
-numerical_summary <- function(midline_data, prefixes) {
-  summaries <- lapply(prefixes, function(prefix) {
-    numerical_summary_func(midline_data, prefix)
-  })
-  numerical_sum_set <- bind_rows(summaries)
-  return(numerical_sum_set)
-}
+#======================================================================
+#This function is used to summarize numerical variables WITHOUT indices 
+#======================================================================
 
-
-```
-
-#### Numerical Summary long form 
-
-
-
-```{r}
-
-# Function to calculate summary statistics for a single numeric vector
 numerical_summary_func_l <- function(value) {
   
-  # Calculate summary statistics for numeric variables
-  numerical_stats_l <- data.frame(
-    N = round(sum(!is.na(value)), 2),
-    min = round(min(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
-    mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
-    #max = round(max(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
-    max = sprintf("%.2f", max(ifelse(value == -9, NA, value), na.rm = TRUE),2),
-    sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
-    prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)
-  )
-  
-  return(numerical_stats_l)
-}
+      # Calculate summary statistics for numeric variables
+      numerical_stats_l <- data.frame(
+        N = round(sum(!is.na(value)), 2),
+        min = round(min(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+        mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+        #max = round(max(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+        max = sprintf("%.2f", max(ifelse(value == -9, NA, value), na.rm = TRUE),2),
+        sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+        prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)
+      )
+      
+      return(numerical_stats_l)
+    }
 
 # Function to summarize multiple sets of numeric variables by prefix
 numerical_summary_l <- function(midline_data, prefixes) {
   # Loop over each prefix
-  summaries_numerical_l <- lapply(prefixes, function(prefix) {
-    # Select the column that matches the prefix
-    numerical_data_l <- midline_data %>%
-      select(starts_with(prefix))
-    
-    # Pull the column values and pass to numerical_summary_func_l
-    value <- numerical_data_l[[1]]
-    numerical_summary_stats <- numerical_summary_func_l(value)
-    
-    # Add the prefix (variable name) to the summary
-    numerical_summary_stats$variable <- prefix
-    
-    return(numerical_summary_stats)
-  })
-  
-  # Combine the summaries into a single data frame
-  numerical_sum_set_l <- bind_rows(summaries_numerical_l)
-  return(numerical_sum_set_l)
+      summaries_numerical_l <- lapply(prefixes, function(prefix) {
+        # Select the column that matches the prefix
+        numerical_data_l <- midline_data %>%
+          select(starts_with(prefix))
+        
+        # Pull the column values and pass to numerical_summary_func_l
+        value <- numerical_data_l[[1]]
+        numerical_summary_stats <- numerical_summary_func_l(value)
+        
+        # Add the prefix (variable name) to the summary
+        numerical_summary_stats$variable <- prefix
+        
+        return(numerical_summary_stats)
+      })
+      
+      # Combine the summaries into a single data frame
+      numerical_sum_set_l <- bind_rows(summaries_numerical_l)
+      return(numerical_sum_set_l)
 }
+
+
+#====================================================================
+#This function is used to summarize variables with indices
+# that take a value of 0, 1, and 2. We handle the 2s my summarizing their proportions
+#====================================================================
+
+almost_binary_func <- function(midline_data, prefix) {
+  almost_binary_data <- midline_data %>%
+    select(starts_with(prefix)) %>%
+    pivot_longer(cols = starts_with(prefix), 
+                 names_to = "id", 
+                 values_to = "value", 
+                 names_prefix = paste0(prefix, "_"))
+  
+  # Calculate N (including 0s, 1s, and 2s), mean, and sd for 0s and 1s
+  binary_stats <- almost_binary_data %>%
+    filter(value %in% c(0, 1, 2)) %>%
+    summarise(N = round(sum(!is.na(value)), 2),  # N includes 0s, 1s, and 2s
+              mean = round(mean(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s for mean
+              sd = round(sd(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s for SD
+              prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2))
+  
+  # Calculate proportion of 2s
+  proportion_dont_know <- almost_binary_data %>%
+    summarise(proportion_dont_know = round(mean(value == 2, na.rm = TRUE), 2)) %>%
+    mutate(variable = prefix)
+
+  # Combine results
+  combined_stats <- cbind(binary_stats, proportion_dont_know)
+  combined_stats$variable <- prefix  # Add prefix as a variable
+  
+  return(combined_stats)
+}
+
+# Function to summarize multiple sets of variables
+almost_binary_summary <- function(midline_data, prefixes) {
+  summaries <- lapply(prefixes, function(prefix) {
+    almost_binary_func(midline_data, prefix)
+  })
+  almost_binary_sum_set <- bind_rows(summaries)
+  return(almost_binary_sum_set)
+}
+
 
 
 ```
@@ -562,6 +604,8 @@ categ_summary_l <- function(data_l, prefixes_l) {
 
 ## Household Roster
 ####Categorical 
+
+
 ##### hh_ethnicity
 
 

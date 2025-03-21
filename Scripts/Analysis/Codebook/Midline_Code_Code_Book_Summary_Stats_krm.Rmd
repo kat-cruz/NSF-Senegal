@@ -1,0 +1,2589 @@
+---
+title: "Midline Code Book Script"
+author: "Kateri Mouawad"
+date: "2025-03-21"
+output: html_document
+---
+
+
+
+#Read me
+
+This file outputs the summary statistics used to make the code book for baseline and midline data. This works in two parts:
+
+1) There's a function that handles variables with indices, and one that handles variables without indices, and these funtions generate summary stats for each of the different types of variables. 
+
+
+#START HERE - load packages
+
+```{r}
+
+# List of required packages
+  packages <- c("officer", "r2rtf", "dplyr", "ggplot2", "kwb.utils", 
+              "haven", "data.table", "rtf", "tidyverse", "estimatr", "broom")
+
+# Install missing packages
+  install_missing <- packages[!(packages %in% installed.packages()[,"Package"])]
+        if(length(install_missing)) install.packages(install_missing)
+
+# Load libraries
+  lapply(packages, library, character.only = TRUE)
+
+```
+
+
+
+##File and Data paths
+
+```{r}
+
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/admmi/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data_Management/_CRDES_CleanData/Midline/Deidentified"
+  ))
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data_Management/_CRDES_CleanData/Midline/Deidentified"
+  ))
+}
+
+
+file_path_hh <- file.path(proj$p1, "Complete_Midline_Household_Roster.dta")
+household_df <- read_dta(file_path_hh)
+
+file_path_know <- file.path(proj$p1, "Complete_Midline_Knowledge.dta")
+knowledge_df <- read_dta(file_path_know)
+
+file_path_health <- file.path(proj$p1, "Complete_Midline_Health.dta")
+health_df <- read_dta(file_path_health)
+
+file_path_agri <- file.path(proj$p1, "Complete_Midline_Agriculture.dta")
+agriculture_df <- read_dta(file_path_agri)
+
+file_path_prod <- file.path(proj$p1, "Complete_Midline_Production.dta")
+production_df <- read_dta(file_path_prod)
+
+file_path_cop <- file.path(proj$p1, "Complete_Midline_Lean_Season.dta")
+coping_df <- read_dta(file_path_cop)
+
+file_path_income <- file.path(proj$p1, "Complete_Midline_Income.dta")
+income_df <- read_dta(file_path_income)
+
+file_path_standard <- file.path(proj$p1, "Complete_Midline_Standard_Of_Living.dta")
+standard_df <- read_dta(file_path_standard)
+
+file_path_beliefs <- file.path(proj$p1, "Complete_Midline_Beliefs.dta")
+beliefs_df <- read_dta(file_path_beliefs)
+
+# Donation Game not at midline
+#file_path_game <- file.path(proj$p1, "Complete_Midline_Public_Goods_Game.dta")
+# donation_df <- read_dta(file_path_game)
+
+file_path_enumerator <- file.path(proj$p1, "Complete_Midline_Enumerator_Observations.dta")
+enumerator_df <- read_dta(file_path_enumerator)
+
+file_path_community <- file.path(proj$p1, "Complete_Midline_Community.dta")
+community_df <- read_dta(file_path_community)
+
+```
+
+
+
+##Define functions
+
+```{r}
+
+#====================================================================
+#This function is used to summarize categorical variables with indices 
+#====================================================================
+
+categ_func <- function(value) {
+    # N = Total number of non-empty, non-NA observations (including -9s but excluding true NAs/empty cells)
+    N <- sum(!is.na(value) & value != "")
+    
+    # Remove NAs and invalid values (-9 in this example)
+    valid_value <- value[!is.na(value) & value != -9]
+    
+    # Calculate frequency and proportion for valid responses
+    freq_table <- table(valid_value)
+    proportions <- round(freq_table / length(valid_value), 2)
+    
+    # Calculate the proportion of -9s and NAs
+    prop_na <- round(sum(value == -9, na.rm = TRUE) / N, 2)
+    #prop_na <- round(sum(value == -9 | is.na(value) | value == ".", na.rm = TRUE) / N, 2)
+
+  
+  # Create a data frame with the summary
+  categorical_data <- data.frame(
+    Value = names(freq_table),
+    N = N,  # Total number of observations
+    Frequency = as.vector(freq_table),  # Frequency of valid responses
+    Proportion = as.vector(proportions),  # Proportion of valid responses
+    prop_na = prop_na  # Proportion of -9s/NAs
+  )
+  
+  return(categorical_data)
+}
+
+categ_summary <- function(data, prefixes) {
+  summaries <- lapply(prefixes, function(prefix) {
+    variable_data <- data %>%
+      select(starts_with(prefix)) %>%
+      pivot_longer(cols = everything(), names_to = "variable", values_to = "value")
+    
+    # Pass the 'value' column to categ_func
+    summary_categ <- categ_func(variable_data$value)
+    summary_categ$Variable <- prefix  # Assign the prefix as the variable name
+    return(summary_categ)
+  })
+  
+  categ_sum_set <- bind_rows(summaries)
+  return(categ_sum_set)
+}
+
+
+# Function to calculate summary statistics for a single categorical vector
+categ_func_l <- function(value_l) {
+    # N = Total number of non-empty, non-NA observations (including -9s but excluding true NAs/empty cells)
+    N <- sum(!is.na(value_l) & value_l != "")
+    
+    # Remove NAs and invalid values (-9 in this example)
+    valid_value_l <- value_l[!is.na(value_l) & value_l != -9]
+    
+    # Calculate frequency and proportion for valid responses
+    freq_table_l <- table(valid_value_l)
+    proportions_l <- round(freq_table_l / length(valid_value_l), 2)
+    
+    # Calculate the proportion of -9s and NAs
+    prop_na_l <- round(sum(value_l == -9, na.rm = TRUE) / N, 2)
+    
+    # Create a data frame with the summary
+    categorical_data_l <- data.frame(
+      Value = names(freq_table_l),
+      N = N,  # Total number of observations
+      Frequency = as.vector(freq_table_l),  # Frequency of valid responses
+      Proportion = as.vector(proportions_l),  # Proportion of valid responses
+      prop_na = prop_na_l  # Proportion of -9s/NAs
+    )
+  
+  return(categorical_data_l)
+}
+
+# Function to summarize multiple categorical variables by prefix
+categ_summary_l <- function(data_l, prefixes_l) {
+    summaries_l <- lapply(prefixes_l, function(prefix_l) {
+      variable_data_l <- data_l %>%
+        select(starts_with(prefix_l))
+      
+      # Pull the 'value' column and pass to categ_func_l
+      value_l <- variable_data_l[[1]]
+      summary_categ_l <- categ_func_l(value_l)
+      summary_categ_l$Variable_l <- prefix_l  # Assign the prefix as the variable name
+      return(summary_categ_l)
+    })
+    
+    categ_sum_set_l <- bind_rows(summaries_l)
+    return(categ_sum_set_l)
+}
+
+
+
+#====================================================================
+#This function is used to summarize numerical variables with indices 
+#====================================================================
+
+numerical_summary_func <- function(midline_data, prefix) {
+  midline_data %>%
+    select(starts_with(prefix)) %>%
+    pivot_longer(cols = starts_with(prefix), names_to = "id", values_to = "value", names_prefix = paste0(prefix, "_")) %>%
+    summarise(N = round(sum(!is.na(value)), 2),
+              min = round(min(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+              mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+              max = sprintf("%.2f", max(ifelse(value == -9, NA, value), na.rm = TRUE),2),
+              sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+              prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)) %>%
+    mutate(variable = prefix)
+}
+
+numerical_summary <- function(midline_data, prefixes) {
+  summaries <- lapply(prefixes, function(prefix) {
+    numerical_summary_func(midline_data, prefix)
+  })
+  numerical_sum_set <- bind_rows(summaries)
+  return(numerical_sum_set)
+}
+
+#======================================================================
+#This function is used to summarize numerical variables WITHOUT indices 
+#======================================================================
+
+numerical_summary_func_l <- function(value) {
+  
+  # Calculate summary statistics for numeric variables
+  numerical_stats_l <- data.frame(
+    N = round(sum(!is.na(value)), 2),
+    min = round(min(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    #max = round(max(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    max = sprintf("%.2f", max(ifelse(value == -9, NA, value), na.rm = TRUE),2),
+    sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)
+  )
+  
+  return(numerical_stats_l)
+}
+
+# Function to summarize multiple sets of numeric variables by prefix
+numerical_summary_l <- function(midline_data, prefixes) {
+  # Loop over each prefix
+  summaries_numerical_l <- lapply(prefixes, function(prefix) {
+    # Select the column that matches the prefix
+    numerical_data_l <- midline_data %>%
+      select(starts_with(prefix))
+    
+    # Pull the column values and pass to numerical_summary_func_l
+    value <- numerical_data_l[[1]]
+    numerical_summary_stats <- numerical_summary_func_l(value)
+    
+    # Add the prefix (variable name) to the summary
+    numerical_summary_stats$variable <- prefix
+    
+    return(numerical_summary_stats)
+  })
+  
+  # Combine the summaries into a single data frame
+  numerical_sum_set_l <- bind_rows(summaries_numerical_l)
+  return(numerical_sum_set_l)
+}
+
+
+#====================================================================
+#This function is used to summarize variables with indices
+# that take a value of 0, 1, and 2. We handle the 2s my summarizing their proportions
+#====================================================================
+
+almost_binary_func <- function(midline_data, prefix) {
+  almost_binary_data <- midline_data %>%
+    select(starts_with(prefix)) %>%
+    pivot_longer(cols = starts_with(prefix), 
+                 names_to = "id", 
+                 values_to = "value", 
+                 names_prefix = paste0(prefix, "_"))
+  
+  # Calculate N (including 0s, 1s, and 2s), mean, and sd for 0s and 1s
+  binary_stats <- almost_binary_data %>%
+    filter(value %in% c(0, 1, 2)) %>%
+    summarise(N = round(sum(!is.na(value)), 2),  # N includes 0s, 1s, and 2s
+              mean = round(mean(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s for mean
+              sd = round(sd(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s for SD
+              prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2))
+  
+  # Calculate proportion of 2s
+  proportion_dont_know <- almost_binary_data %>%
+    summarise(proportion_dont_know = round(mean(value == 2, na.rm = TRUE), 2)) %>%
+    mutate(variable = prefix)
+  
+  # Combine results
+  combined_stats <- cbind(binary_stats, proportion_dont_know)
+  combined_stats$variable <- prefix  # Add prefix as a variable
+  
+  return(combined_stats)
+}
+
+# Function to summarize multiple sets of variables
+almost_binary_summary <- function(midline_data, prefixes) {
+  summaries <- lapply(prefixes, function(prefix) {
+    almost_binary_func(midline_data, prefix)
+  })
+  almost_binary_sum_set <- bind_rows(summaries)
+  return(almost_binary_sum_set)
+}
+
+#====================================================================
+#This function is used to summarize variables WITHOUT indices
+# that take a value of 0, 1, and 2. We handle the 2s my summarizing their proportions
+#====================================================================
+
+
+# Function to calculate summary statistics for a single vector (variable)
+almost_binary_func_l <- function(value) {
+  
+  # Ensure we're working with values 0, 1, and 2 only
+  value <- value[value %in% c(0, 1, 2, -9)] 
+  
+  # Calculate summary statistics for 0s and 1s (exclude -9 and 2 for mean and SD)
+  almost_binary_stats_l <- data.frame(
+    N = round(sum(!is.na(value)), 2),  # N includes 0s, 1s, and 2s
+    mean = round(mean(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s and -9 for mean
+    sd = round(sd(ifelse(value == -9 | value == 2, NA, value), na.rm = TRUE), 2),  # Exclude 2s and -9 for SD
+    prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)  # Proportion of NAs (-9)
+  )
+  
+  # Calculate proportion of 2s
+  proportion_dont_know_l <- data.frame(
+    proportion_dont_know_l = round(mean(value == 2, na.rm = TRUE), 2)  # Proportion of "Don't know" (2)
+  )
+  
+  # Combine results
+  almost_binary_combined_stats_l <- cbind(almost_binary_stats_l, proportion_dont_know_l)
+  
+  return(almost_binary_combined_stats_l)
+}
+
+# Function to summarize multiple sets of variables by prefix
+almost_binary_summary_l <- function(midline_data, prefixes) {
+  # Loop over each prefix
+  summaries_almost_binary_l <- lapply(prefixes, function(prefix) {
+    # Select the column that matches the prefix
+    almost_binary_data_l <- midline_data %>%
+      select(starts_with(prefix))
+    
+    # Ensure only one column is selected for each prefix
+    #Pull the column values and pass to almost_binary_func_l
+    value <- almost_binary_data_l[[1]]
+    almost_binary_summary_stats_l <- almost_binary_func_l(value)
+    
+    # Add the prefix (variable name) to the summary
+    almost_binary_summary_stats_l$variable <- prefix
+    
+    return(almost_binary_summary_stats_l)
+  })
+  
+  # Combine all summaries into a single data frame
+  almost_binary_sum_set_l <- bind_rows(summaries_almost_binary_l)
+  return(almost_binary_sum_set_l)
+}
+
+
+#====================================================================
+#This function is used to summarize BINARY variables WITH indices
+#====================================================================
+
+
+binary_func <- function(midline_data, prefix) {
+  # Pivot longer to create the 'value' column
+  binary_data <- midline_data %>%
+    select(starts_with(prefix)) %>%
+    pivot_longer(cols = everything(), 
+                 names_to = "id", 
+                 values_to = "value") 
+  
+  # Check if 'value' column exists
+  #print(head(binary_data))  # Print the first few rows to verify
+  
+  # Adjust 2 -> 0 and 1 -> 1
+  binary_data <- binary_data %>%
+    mutate(value = ifelse(value == 2, 0, 
+                          ifelse(value == 1, 1, value)))  
+  
+  # Calculate mean, sd, and N for 0s and 1s
+  binary_stats <- binary_data %>%
+    summarise(N = round(sum(!is.na(value)), 2),
+              #summarise(N = round(sum(!is.na(ifelse(value == -9, NA, value))), 2),
+              mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+              sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+              prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2))  
+  
+  binary_stats$variable <- prefix  # Add prefix as a variable
+  
+  return(binary_stats)
+}
+
+# Function to summarize multiple sets of variables
+binary_summary <- function(midline_data, prefixes) {
+  summaries_binary <- lapply(prefixes, function(prefix) {
+    binary_func(midline_data, prefix)
+  })
+  binary_sum_set <- bind_rows(summaries_binary)
+  return(binary_sum_set)
+}
+
+
+#====================================================================
+#This function is used to summarize BINARY variables WITHOUT indices
+#====================================================================
+
+# Function to calculate summary statistics for a single vector (variable)
+binary_func_l <- function(value) {
+
+  # Calculate summary statistics for 0s and 1s
+  binary_stats_l <- data.frame(
+    N = round(sum(!is.na(value)), 2),
+    mean = round(mean(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    sd = round(sd(ifelse(value == -9, NA, value), na.rm = TRUE), 2),
+    prop_na = round(sum(value == -9, na.rm = TRUE) / sum(!is.na(value)), 2)
+  )
+  
+  return(binary_stats_l)
+}
+
+binary_summary_l <- function(midline_data, prefixes) {
+  # Loop over each prefix
+  summaries_binary_l <- lapply(prefixes, function(prefix) {
+    # Select the column that matches the prefix
+    selected_data <- midline_data %>%
+      select(starts_with(prefix))
+    
+    # Pull the column values and pass to binary_func_l
+    value <- selected_data[[1]]
+    summary_stats <- binary_func_l(value)
+    
+    # Add the prefix (variable name) to the summary
+    summary_stats$variable <- prefix
+    
+    return(summary_stats)
+  })
+  
+  binary_sum_set_l <- bind_rows(summaries_binary_l)
+  return(binary_sum_set_l)
+}
+
+```
+
+####function note:
+
+
+For CATEGORICAL:
+      * WITH indices: categ_summary
+      * WITHOUT: categ_summary_l
+      
+
+For NUMERICAL variables:
+      * WITH indices: numerical_summary
+      * WITHOUT: numerical_summary_l
+      
+
+For variables with a 0,1, 2 response:
+      * WITH indices: almost_binary_summary
+      * WITHOUT: almost_binary_summary_l
+      
+
+For BINARY variables:
+      * WITH indices: binary_summary
+      * WITHOUT: binary_summary_l
+      
+
+#BEGIN SUMMARY STATS
+## Household Roster
+
+####hh_ethnicity
+
+```{r}
+# ===================================================================
+# SUMMARIZING CATEGORICAL VARIABLES
+# ===================================================================
+
+# -------------------- ETHNICITY --------------------
+
+# Select all columns except those starting with "hh_ethnicity_o_"
+hh_ethn_c <- household_df %>%
+  select(-matches("^hh_ethnicity_o_"))
+
+prefixes_ethnicity <- c("hh_ethnicity")
+
+# Print summary
+print(categ_summary(hh_ethn_c, prefixes_ethnicity))
+
+##to make it easier to copy & paste: 
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+# Handle "other" ethnicity variables
+      # hh_ethn_c2 <- household_df %>%
+      #   select(matches("^hh_ethnicity_o_")) %>%
+      #   mutate(across(starts_with("hh_ethnicity_o_"), as.character))
+      # 
+      # prefixes_ethnicity_o <- c("hh_ethnicity_o_")
+      # 
+      # # Print summary
+      # print(categ_summary(hh_ethn_c2, prefixes_ethnicity_o))
+
+```
+
+
+####hh_relation_with
+
+```{r}
+# -------------------- RELATIONSHIP WITH HOUSEHOLD HEAD --------------------
+
+hh_rel_c <- household_df %>%
+  select(-matches("^hh_relation_with_o_"))
+
+prefixes_hh_rel <- c("hh_relation_with")
+
+print(categ_summary(hh_rel_c, prefixes_hh_rel))
+
+df <- categ_summary(hh_rel_c, prefixes_hh_rel)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+#KRM - commenting out, I used this a s a check 
+# Handle "other" relationship variables
+      # hh_rel_c2 <- household_df %>%
+      #   select(matches("^hh_relation_with_o_")) %>%
+      #   mutate(across(starts_with("hh_relation_with_o_"), as.character))
+      # 
+      # prefixes_hh_rel_o <- c("hh_relation_with_o_")
+      # 
+      # print(categ_summary(hh_rel_c2, prefixes_hh_rel_o))
+
+```
+
+
+### hh_relation_imam
+
+```{r}
+
+# --------------------  CATEGORICAL VARIABLE --------------------
+
+prefixes_hh_rel_imam <- c("hh_relation_imam")
+print(categ_summary(household_df, prefixes_hh_rel_imam))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+```
+
+
+
+####hh_education_level_
+
+```{r}
+# -------------------- EDUCATION LEVEL --------------------
+
+hh_edu_lvl_c <- household_df %>%
+  select(-matches("^hh_education_level_o"))
+
+prefixes_edu_lvl <- c("hh_education_level_")
+
+print(categ_summary(hh_edu_lvl_c, prefixes_edu_lvl))
+
+df <- categ_summary(hh_edu_lvl_c, prefixes_edu_lvl)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+```
+
+
+###hh_main_activity_
+
+```{r}
+
+# -------------------- MAIN ACTIVITY --------------------
+
+hh_activ_c <- household_df %>%
+  select(-matches("^hh_main_activity_o"))
+
+prefixes_main_act <- c("hh_main_activity_")
+
+print(categ_summary(hh_activ_c, prefixes_main_act))
+
+df <- categ_summary(hh_activ_c, prefixes_main_act)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+# Handle "other" main activity variables
+hh_activ_c2 <- household_df %>%
+  select(matches("^hh_main_activity_o")) %>%
+  mutate(across(starts_with("hh_main_activity_o"), as.character))
+
+prefixes_main_act_o <- c("hh_main_activity_o")
+
+print(categ_summary(hh_activ_c2, prefixes_main_act_o))
+
+
+df <- categ_summary(hh_activ_c2, prefixes_main_act_o)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+```
+
+
+
+### hh_gender_resp
+### hh_gender_
+
+```{r}
+
+# ===================================================================
+# SUMMARIZING BINARY VARIABLES
+# ===================================================================
+
+prefixes_hh_bin <- c("hh_gender_resp", "hh_gender_")
+print(binary_summary(household_df, prefixes_hh_bin))
+
+```
+
+
+###hh_age
+### hh_01
+### hh_02
+### hh_04
+### hh_05
+### hh_06
+### hh_07
+### hh_08
+### hh_09
+### hh_10
+### hh_13
+### hh_14
+### hh_16
+### hh_17
+### hh_18
+### hh_21
+### hh_21_o
+### hh_22
+### hh_24
+### hh_25
+### hh_34
+### hh_38
+### hh_age_resp
+### hh_education_year_achieve
+
+```{r}
+
+
+# ===================================================================
+# SUMMARIZING NUMERICAL VARIABLES
+# ===================================================================
+
+prefixes_n1 <- c("hh_age", "hh_01", "hh_02", "hh_04", "hh_05", "hh_06",
+                 "hh_07", "hh_08", "hh_09", "hh_10", "hh_13", "hh_14",
+                 "hh_16", "hh_17", "hh_18", "hh_21", "hh_21_o", "hh_22",
+                 "hh_24", "hh_25", "hh_34", "hh_38", "hh_age_resp", 
+                 "hh_education_year_achieve")
+
+print(numerical_summary(household_df, prefixes_n1))
+
+View(numerical_summary(household_df, prefixes_n1))
+```
+
+### hh_28_, hh_31_, hh_33_, hh_35
+
+```{r}
+
+
+# -------------------- hh_28_, hh_31_, hh_33_, hh_35 --------------------
+
+prefixes_hh_28 <- c("hh_28_")
+print(categ_summary(household_df, prefixes_hh_28))
+
+prefixes_hh_31 <- c("hh_31_")
+print(categ_summary(household_df, prefixes_hh_31))
+
+prefixes_hh_33 <- c("hh_33_")
+print(categ_summary(household_df, prefixes_hh_33))
+
+hh_35_d <- c("hh_35")
+print(categ_summary(household_df, hh_35_d))
+
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+
+
+
+
+```{r}
+
+# ===================================================================
+#  SUMMARIZING ALMOST BINARY VARIABLES
+# ===================================================================
+
+prefixes_hh_abin1 <- c("hh_mother_live", "hh_presence_winter", "hh_presence_dry",
+                        "hh_active_agri", "hh_03", "hh_20_a", "hh_26", "hh_27",
+                        "hh_30", "hh_32", "hh_36", "hh_37")
+
+print(almost_binary_summary(household_df, prefixes_hh_abin1))
+
+```
+
+#### Individual variable checks (leaving for reference)
+
+```{r}
+# ===================================================================
+# DATA CHECKS
+# ===================================================================
+
+# Check hh_32
+# hh_32_check <- household_df %>%
+#   select(hhid, starts_with("hh_32")) %>%
+#   pivot_longer(cols = -hhid, names_to = "id", values_to = "value")
+# 
+# head(hh_32_check)
+# table(hh_32_check$value)
+# 
+# # Check hh_38
+# hh_38_check <- household_df %>%
+#   select(hhid, starts_with("hh_38")) %>%
+#   pivot_longer(cols = -hhid, names_to = "id", values_to = "value")
+# 
+# table(hh_38_check$value)
+
+
+```
+
+#KNOWLEDGE
+### knowledge_01
+
+```{r}
+
+# ===================================================================
+# KNOWLEDGE SUMMARIZATION
+# ===================================================================
+
+# -------------------- KNOWLEDGE 01 --------------------
+prefixes_knowledge_01 <- c("knowledge_01")
+
+# Summarize knowledge_01
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_01))
+
+```
+
+### knowledge_03
+
+```{r}
+# -------------------- KNOWLEDGE 03 --------------------
+prefixes_knowledge_03 <- c("knowledge_03")
+
+# Summarize knowledge_03
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_03))
+```
+
+### knowledge_04
+
+```{r}
+# -------------------- KNOWLEDGE 04 --------------------
+prefixes_knowledge_04 <- c("knowledge_04")
+
+# Summarize knowledge_04
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_04))
+```
+
+### knowledge_05
+```{r}
+
+# -------------------- KNOWLEDGE 05 --------------------
+
+knowledge_05_d <- knowledge_df %>%
+  select(-matches("^knowledge_05_o"))
+
+prefixes_knowledge_05 <- c("knowledge_05")
+
+# Print combined summary
+print(categ_summary(knowledge_05_d, prefixes_knowledge_05))
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+
+### knowledge_06_
+
+```{r}
+
+# -------------------- KNOWLEDGE 06 --------------------
+
+knowledge_06_d <- knowledge_df %>%
+  select(matches("^knowledge_06_"))
+
+prefixes_knowledge_06 <- c(paste("knowledge_06_", 1:6, sep=""))
+
+# Print combined summary
+print(binary_summary(knowledge_06_d, prefixes_knowledge_06))
+
+```
+
+
+
+
+### knowledge_07 
+```{r}
+# -------------------- KNOWLEDGE 07 --------------------
+prefixes_knowledge_07 <- c("knowledge_07")
+
+# Summarize knowledge_07
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_07))
+```
+
+
+### knowledge_09
+ 
+```{r}
+# -------------------- KNOWLEDGE 09 --------------------
+
+knowledge_09_d <- knowledge_df %>%
+  select(-"knowledge_09_o", -"knowledge_09")
+
+prefixes_knowledge_09 <- c(paste("knowledge_09_", 1:6, sep=""), "knowledge_09_99")
+
+# Print combined summary
+print(binary_summary(knowledge_09_d, prefixes_knowledge_09))
+```
+
+### knowledge_10_
+
+```{r}
+# -------------------- KNOWLEDGE 10 --------------------
+
+knowledge_10_d <- knowledge_df %>%
+  select(-"knowledge_10_o", -"knowledge_10")
+
+prefixes_knowledge_10 <- c(paste("knowledge_10_", 1:7, sep=""), "knowledge_10_99")
+
+# Print combined summary
+print(binary_summary(knowledge_10_d, prefixes_knowledge_10))
+
+```
+
+
+
+### knowledge_11
+
+```{r}
+
+# -------------------- KNOWLEDGE 11 --------------------
+prefixes_knowledge_11 <- c("knowledge_11")
+
+# Summarize knowledge_11
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_11))
+```
+
+
+### knowledge_12
+
+```{r}
+
+# -------------------- KNOWLEDGE 12 --------------------
+
+knowledge_12_d <- knowledge_df %>%
+  select(-"knowledge_12_o")
+
+prefixes_knowledge_12 <- c("knowledge_12")
+
+# Print combined summary
+print(categ_summary(knowledge_12_d, prefixes_knowledge_12))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+``` 
+
+
+
+
+### knowledge_13
+```{r}
+# -------------------- KNOWLEDGE 13 --------------------
+prefixes_knowledge_13 <- c("knowledge_13")
+
+# Summarize knowledge_13
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_13))
+
+
+
+```
+
+### knowledge_14
+
+```{r}
+# -------------------- KNOWLEDGE 14 --------------------
+prefixes_knowledge_14 <- c("knowledge_14")
+
+# Summarize knowledge_14
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_14))
+
+```
+
+### knowledge_15
+
+```{r}
+# -------------------- KNOWLEDGE 15 --------------------
+prefixes_knowledge_15 <- c("knowledge_15")
+
+# Summarize knowledge_15
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_15))
+```
+
+### knowledge_16
+
+```{r}
+# -------------------- KNOWLEDGE 16 --------------------
+prefixes_knowledge_16 <- c("knowledge_16")
+
+# Summarize knowledge_16
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_16))
+
+```
+
+### knowledge_18
+
+
+```{r}
+# -------------------- KNOWLEDGE 18 --------------------
+prefixes_knowledge_18 <- c("knowledge_18")
+
+# Summarize knowledge_18
+print(almost_binary_summary(knowledge_df, prefixes_knowledge_18))
+
+### knowledge_05
+```
+
+
+
+### knowledge_19
+
+```{r}
+
+
+# -------------------- KNOWLEDGE 19 --------------------
+
+knowledge_19_d <- knowledge_df %>%
+  select(-"knowledge_19_o")
+
+prefixes_knowledge_19 <- c("knowledge_19")
+
+# Print combined summary
+print(categ_summary(knowledge_19_d, prefixes_knowledge_19))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+ 
+### knowledge_20
+
+```{r}
+# -------------------- KNOWLEDGE 20 --------------------
+
+knowledge_20_d <- knowledge_df %>%
+  select(-"knowledge_20_o")
+
+prefixes_knowledge_20 <- c("knowledge_20")
+
+# Print combined summary
+print(categ_summary(knowledge_20_d, prefixes_knowledge_20))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+ 
+### knowledge_21
+
+```{r}
+# -------------------- KNOWLEDGE 21 --------------------
+
+prefixes_knowledge_21 <- c("knowledge_21")
+
+# Print combined summary
+print(categ_summary(knowledge_df, prefixes_knowledge_21))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+```
+
+### knowledge_22
+
+```{r}
+# -------------------- KNOWLEDGE 22 --------------------
+
+prefixes_knowledge_22 <- c("knowledge_22")
+
+# Print combined summary
+print(categ_summary(knowledge_df, prefixes_knowledge_22))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+### knowledge_23_
+
+```{r}
+# -------------------- KNOWLEDGE 23 --------------------
+
+knowledge_23_d <- knowledge_df %>%
+  select(-"knowledge_23_o", -"knowledge_23")
+
+prefixes_knowledge_23 <- c(paste("knowledge_23_", 1:6, sep=""), "knowledge_23_99")
+
+# Print combined summary
+print(binary_summary(knowledge_23_d, prefixes_knowledge_23))
+
+```
+
+
+
+#HEALTH
+
+### health_5_2_
+
+```{r}
+# ===================================================================
+# ALMOST BINARY VARIABLES: HEALTH
+# ===================================================================
+
+# -------------------- HEALTH 5_2 --------------------
+prefixes_health_5_2 <- c("health_5_2_")
+
+# Summarize health_5_2
+print(almost_binary_summary(health_df, prefixes_health_5_2))
+
+```
+
+
+
+###health_5_3_
+```{r}
+# ===================================================================
+# HEALTH DATA CLEANING AND SUMMARIZATION
+# ===================================================================
+
+# -------------------- HEALTH 5_3 (DOUBLE INDEX) --------------------
+
+health_5_3_d <- health_df %>%
+   select(matches("health_5_3_\\d+_\\d+"))
+
+prefixes_health_5_3 <- c(paste0("health_5_3_", 1:14, "_"), "health_5_3_99_")
+
+# Print summary
+print(binary_summary(health_5_3_d, prefixes_health_5_3))
+
+```
+
+###health_5_4
+
+```{r}
+
+# -------------------- HEALTH 5_4 --------------------
+
+prefixes_health_5_4 <- c("health_5_4")
+
+# Print summary
+print(numerical_summary(health_df, prefixes_health_5_4))
+
+```
+
+
+### health_5_5_
+
+```{r}
+# -------------------- HEALTH 5_5 --------------------
+prefixes_health_5_5 <- c("health_5_5_")
+
+# Summarize health_5_5
+print(almost_binary_summary(health_df, prefixes_health_5_5))
+
+```
+
+### health_5_6_
+
+```{r}
+# -------------------- HEALTH 5_6 --------------------
+prefixes_health_5_6 <- c("health_5_6_")
+
+# Summarize health_5_6
+print(almost_binary_summary(health_df, prefixes_health_5_6))
+
+```
+
+### health_5_7_
+```{r}
+# -------------------- HEALTH 5_7 --------------------
+prefixes_health_5_7 <- c("health_5_7_")
+
+# Summarize health_5_7
+print(almost_binary_summary(health_df, prefixes_health_5_7))
+
+```
+
+### health_5_8_
+```{r}
+# -------------------- HEALTH 5_8 --------------------
+prefixes_health_5_8 <- c("health_5_8_")
+
+# Summarize health_5_8
+print(almost_binary_summary(health_df, prefixes_health_5_8))
+
+```
+
+### health_5_9_
+```{r}
+# -------------------- HEALTH 5_9 --------------------
+prefixes_health_5_9 <- c("health_5_9_")
+
+# Summarize health_5_9
+print(almost_binary_summary(health_df, prefixes_health_5_9))
+```
+
+### health_5_10_
+```{r}
+
+# -------------------- HEALTH 5_10 --------------------
+prefixes_health_5_10 <- c("health_5_10_")
+
+# Summarize health_5_10
+print(almost_binary_summary(health_df, prefixes_health_5_10))
+```
+
+
+###health_5_11_
+
+```{r}
+# -------------------- HEALTH 5_11 (ONE INDEX) --------------------
+
+health_5_11_d <- health_df %>%
+   select(-matches("health_5_11_o_"))
+
+prefixes_health_5_11 <- c("health_5_11_")
+
+# Print summary
+print(categ_summary(health_5_11_d, prefixes_health_5_11))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+
+
+health_5_12_
+
+```{r}
+
+# -------------------- HEALTH 5_12 (Handling Missing Values) --------------------
+
+# Replace -1 with -9 in all columns starting with "health_5_12_"
+health_df <- health_df %>%
+  mutate(across(starts_with("health_5_12_"), ~ ifelse(. == -1, -9, .)))
+
+prefixes_health_5_12 <- c("health_5_12_")
+
+# Print summary
+print(numerical_summary(health_df, prefixes_health_5_12))
+
+```
+
+
+
+### health_5_13
+```{r}
+
+# -------------------- HEALTH 5_13 --------------------
+prefixes_health_5_13 <- c("health_5_13")
+
+# Summarize health_5_13
+print(almost_binary_summary(health_df, prefixes_health_5_13))
+
+```
+
+### health_5_14_a
+```{r}
+# -------------------- HEALTH 5_14_A --------------------
+prefixes_health_5_14_a <- c("health_5_14_a")
+
+# Summarize health_5_14_a
+print(almost_binary_summary(health_df, prefixes_health_5_14_a))
+
+```
+
+### health_5_14_b
+```{r}
+# -------------------- HEALTH 5_14_B --------------------
+prefixes_health_5_14_b <- c("health_5_14_b")
+
+# Summarize health_5_14_b
+print(almost_binary_summary(health_df, prefixes_health_5_14_b))
+```
+
+### health_5_14_c
+```{r}
+# -------------------- HEALTH 5_14_C --------------------
+prefixes_health_5_14_c <- c("health_5_14_c")
+
+# Summarize health_5_14_c
+print(almost_binary_summary(health_df, prefixes_health_5_14_c))
+
+```
+
+
+
+#AGRICULTURE
+
+
+### list_actifs
+```{r}
+# -------------------- list_actifs --------------------
+
+list_actifs_d <- agriculture_df %>%
+   select(matches("list_actifs_\\d+"))
+
+prefixes_list_actifs <- c(paste0("list_actifs_", 1:16))
+
+# Print combined summary
+print(binary_summary_l(list_actifs_d, prefixes_list_actifs))
+
+```
+
+### list_agri_equip
+
+```{r}
+# -------------------- list_agri_equip --------------------
+
+list_agri_equip_d <- agriculture_df %>%
+   select(matches("list_agri_equip_\\d+"))
+
+prefixes_list_agri_equip <- c(paste0("list_agri_equip_", 1:14))
+
+# Print combined summary
+print(binary_summary_l(list_agri_equip_d, prefixes_list_agri_equip))
+
+```
+
+### list_agri_equip_int
+```{r}
+# -------------------- list_agri_equip_int --------------------
+prefixes_list_agri_equip_int <- c("list_agri_equip_int")
+
+# Print combined summary for list_agri_equip_int
+print(numerical_summary_l(agriculture_df, prefixes_list_agri_equip_int))
+```
+
+
+### list_agri_equip_o
+```{r}
+# -------------------- list_agri_equip_o --------------------
+prefixes_list_agri_equip_o <- c("list_agri_equip_o")
+
+# Print combined summary for list_agri_equip_o
+print(almost_binary_summary_l(agriculture_df, prefixes_list_agri_equip_o))
+```
+
+
+### list_actifs_o
+```{r}
+# -------------------- list_actifs_o --------------------
+prefixes_list_actifs_o <- c("list_actifs_o")
+
+# Print combined summary for list_actifs_o
+print(almost_binary_summary_l(agriculture_df, prefixes_list_actifs_o))
+```
+
+
+### actifs_o_int
+```{r}
+# -------------------- actifs_o_int --------------------
+prefixes_actifs_o_int <- c("actifs_o_int")
+
+# Print combined summary for actifs_o_int
+print(numerical_summary_l(agriculture_df, prefixes_actifs_o_int))
+```
+
+
+### _agri_number
+```{r}
+# -------------------- _agri_number --------------------
+prefixes_agri_number <- c("_agri_number")
+
+# Print combined summary for _agri_number
+print(numerical_summary_l(agriculture_df, prefixes_agri_number))
+```
+
+
+### agri_6_5
+```{r}
+# -------------------- agri_6_5 --------------------
+
+prefixes_agri_6_5 <- c("agri_6_5")
+
+# Print combined summary
+print(categ_summary_l(agriculture_df, prefixes_agri_6_5))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+
+### agri_6_6
+```{r}
+# -------------------- agri_6_6 --------------------
+prefixes_agri_6_6 <- c("agri_6_6")
+
+# Print combined summary for agri_6_6
+print(numerical_summary_l(agriculture_df, prefixes_agri_6_6))
+```
+
+
+### agri_6_7
+
+```{r}
+# -------------------- agri_6_7 --------------------
+
+prefixes_agri_6_7 <- c("agri_6_7")
+
+# Print combined summary
+print(categ_summary_l(agriculture_df, prefixes_agri_6_7))
+
+```
+
+
+### agri_6_8
+
+```{r}
+# -------------------- agri_6_8 --------------------
+
+prefixes_agri_6_8 <- c("agri_6_8")
+
+# Print combined summary
+print(categ_summary_l(agriculture_df, prefixes_agri_6_8))
+
+```
+
+### agri_6_9
+
+```{r}
+# -------------------- agri_6_9 --------------------
+
+prefixes_agri_6_9 <- c("agri_6_9")
+
+# Print combined summary
+print(categ_summary_l(agriculture_df, prefixes_agri_6_9))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+```
+
+### agri_6_10
+```{r}
+# -------------------- agri_6_10 --------------------
+
+prefixes_agri_6_10 <- c("agri_6_10")
+
+# Print combined summary
+print(categ_summary_l(agriculture_df, prefixes_agri_6_10))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+### agri_6_11
+```{r}
+# -------------------- agri_6_11 --------------------
+
+prefixes_agri_6_11 <- c("agri_6_11")
+
+# Print combined summary
+print(categ_summary_l(agriculture_df, prefixes_agri_6_11))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+
+### agri_6_12
+
+```{r}
+# -------------------- agri_6_12 --------------------
+
+agri_6_12_d <- agriculture_df %>%
+   select(matches("agri_6_12_\\d+"))
+
+prefixes_agri_6_12 <- c(paste0("agri_6_12_", 1:7), "agri_6_12_99")
+
+# Print combined summary
+print(binary_summary_l(agri_6_12_d, prefixes_agri_6_12))
+
+```
+
+### agri_6_14
+```{r}
+# -------------------- agri_6_14 --------------------
+prefixes_agri_6_14 <- c("agri_6_14")
+
+# Print combined summary for agri_6_14
+print(almost_binary_summary_l(agriculture_df, prefixes_agri_6_14))
+```
+
+
+### agri_6_15
+```{r}
+# -------------------- agri_6_15 --------------------
+prefixes_agri_6_15 <- c("agri_6_15")
+
+# Print combined summary for agri_6_15
+print(numerical_summary_l(agriculture_df, prefixes_agri_6_15))
+```
+
+### agri_6_18
+
+```{r}
+# -------------------- agri_6_18 --------------------
+
+prefixes_agri_6_18 <- c("agri_6_18")
+
+# Print combined summary
+print(categ_summary_l(agriculture_df, prefixes_agri_6_18))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+### agri_6_20
+
+```{r}
+# -------------------- agri_6_20 --------------------
+
+agri_6_20_d <- agriculture_df %>%
+   select(matches("agri_6_20_\\d+"))
+
+prefixes_agri_6_20 <- c("agri_6_20_")
+#"agri_6_20_99" not present
+
+# Print combined summary
+print(categ_summary(agri_6_20_d, prefixes_agri_6_20))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+head(agri_6_20_d)
+
+```
+
+
+
+### agri_6_21
+```{r}
+# -------------------- agri_6_21 --------------------
+prefixes_agri_6_21 <- c("agri_6_21")
+
+# Print combined summary for agri_6_21
+print(numerical_summary_l(agriculture_df, prefixes_agri_6_21))
+```
+
+
+### agri_6_23
+
+```{r}
+# -------------------- agri_6_23 --------------------
+
+agri_6_23_d <- agriculture_df %>%
+   select(matches("agri_6_23_\\d+"))
+
+prefixes_agri_6_23 <- c("agri_6_23_")
+#"agri_6_20_99" not present
+
+# Print combined summary
+print(categ_summary(agri_6_23_d, prefixes_agri_6_23))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+```
+### agri_6_25
+
+```{r}
+# -------------------- agri_6_25 --------------------
+
+agri_6_25_d <- agriculture_df %>%
+   select(matches("agri_6_25_\\d+"))
+
+prefixes_agri_6_25 <- c("agri_6_25_")
+#"agri_6_20_99" not present
+
+# Print combined summary
+print(categ_summary(agri_6_25_d, prefixes_agri_6_25))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+### agri_6_26
+
+```{r}
+# -------------------- agri_6_26 --------------------
+
+agri_6_26_d <- agriculture_df %>%
+   select(matches("agri_6_26_\\d+"))
+
+prefixes_agri_6_26 <- c("agri_6_26_")
+#"agri_6_20_99" not present
+
+# Print combined summary
+print(categ_summary_l(agri_6_26_d, prefixes_agri_6_26))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+```
+
+
+### agri_6_28
+```{r}
+# -------------------- agri_6_28 --------------------
+prefixes_agri_6_28 <- c("agri_6_28")
+
+# Print combined summary for agri_6_28
+print(almost_binary_summary_l(agriculture_df, prefixes_agri_6_28))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+
+
+### agri_6_29
+```{r}
+# -------------------- agri_6_29 --------------------
+
+agri_6_29_d <- agriculture_df %>%
+   select(matches("agri_6_29_\\d+"))
+
+prefixes_agri_6_29 <- c("agri_6_29_")
+#"agri_6_20_99" not present
+
+# Print combined summary
+print(categ_summary_l(agri_6_29_d, prefixes_agri_6_29))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+```
+
+### agri_6_30
+```{r}
+# -------------------- agri_6_30 --------------------
+prefixes_agri_6_30 <- c("agri_6_30")
+
+# Print combined summary for agri_6_30
+print(almost_binary_summary_l(agriculture_df, prefixes_agri_6_30))
+```
+
+
+### agri_6_31
+
+```{r}
+# -------------------- agri_6_31 --------------------
+
+prefixes_agri_6_31 <- c("agri_6_31")
+
+# Print combined summary
+print(categ_summary_l(agriculture_df, prefixes_agri_6_31))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+```
+
+
+### agri_6_32
+```{r}
+
+# -------------------- agri_6_32 --------------------
+
+prefixes_agri_6_32 <- c("agri_6_32_")
+
+# Print combined summary
+print(numerical_summary(agriculture_df, prefixes_agri_6_32))
+```
+
+
+
+### agri_6_33
+```{r}
+# -------------------- agri_6_33 --------------------
+
+agri_6_33_d <- agriculture_df %>%
+   select(matches("agri_6_33_\\d+"))
+
+prefixes_agri_6_33 <- c("agri_6_33_")
+
+# Print combined summary
+print(categ_summary(agri_6_33_d, prefixes_agri_6_33))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+
+head(agri_6_33_d)
+```
+
+### agri_6_34_comp
+```{r}
+# -------------------- agri_6_34_comp --------------------
+prefixes_agri_6_34_comp <- c("agri_6_34_comp")
+
+# Print combined summary for agri_6_34_comp
+print(almost_binary_summary_l(agriculture_df, prefixes_agri_6_34_comp))
+
+```
+
+
+
+#PRODUCTION
+
+
+### Cereals
+
+
+```{r}
+# -------------------- cereals_consumption --------------------
+prefixes_cereals_consum <- c(paste0("cereals_consumption_", 1:6))
+
+# Print combined summary for cereals consumption
+print(almost_binary_summary_l(production_df, prefixes_cereals_consum))
+
+```
+
+```{r}
+# -------------------- cereals --------------------
+
+production_df <- production_df %>%
+  mutate(cereals_03_1 = ifelse(cereals_03_1 == -99, -9, cereals_03_1))
+
+prefixes_cereals <- c(paste0("cereals_", sprintf("%02d", 1:5), "_", 1:1), 
+                      paste0("cereals_", sprintf("%02d", 1:5), "_", 2:2), 
+                      paste0("cereals_", sprintf("%02d", 1:5), "_", 3:3), 
+                      paste0("cereals_", sprintf("%02d", 1:5), "_", 4:4), 
+                      paste0("cereals_", sprintf("%02d", 1:5), "_", 5:5))
+
+# Print combined summary for cereals production
+print(numerical_summary_l(production_df, prefixes_cereals))
+```
+
+
+### Farines
+
+```{r}
+# -------------------- farines --------------------
+
+production_df <- production_df %>%
+  mutate(farines_02_2 = ifelse(farines_02_2 == -90, -9, farines_02_2))
+
+prefixes_farines <- c(paste0("farines_", sprintf("%02d", 1:5), "_", 1:1), 
+                      paste0("farines_", sprintf("%02d", 1:5), "_", 2:2), 
+                      paste0("farines_", sprintf("%02d", 1:5), "_", 3:3), 
+                      paste0("farines_", sprintf("%02d", 1:5), "_", 4:4), 
+                      paste0("farines_", sprintf("%02d", 1:5), "_", 5:5),
+                      paste0("farines_", sprintf("%02d", 1:5), "_", 6:6))
+
+# Print combined summary for farines production
+print(numerical_summary_l(production_df, prefixes_farines))
+
+```
+
+```{r}
+
+# -------------------- farine_tubercules_consumption --------------------
+prefixes_farines_consum <- c(paste0("farine_tubercules_consumption_", 1:6))
+
+# Print combined summary for farines consumption
+print(almost_binary_summary_l(production_df, prefixes_farines_consum))
+
+```
+
+
+
+### Legumes
+
+
+```{r}
+# -------------------- legumes_consumption --------------------
+prefixes_legumes_consum <- c(paste0("legumes_consumption_", 1:6))
+
+# Print combined summary for legumes consumption
+print(almost_binary_summary_l(production_df, prefixes_legumes_consum))
+
+```
+
+
+```{r}
+# -------------------- legumes --------------------
+
+prefixes_legumes <- c(paste0("legumes_", sprintf("%02d", 1:5), "_", 1:1), 
+                      paste0("legumes_", sprintf("%02d", 1:5), "_", 2:2), 
+                      paste0("legumes_", sprintf("%02d", 1:5), "_", 3:3), 
+                      paste0("legumes_", sprintf("%02d", 1:5), "_", 4:4), 
+                      paste0("legumes_", sprintf("%02d", 1:5), "_", 5:5),
+                      paste0("legumes_", sprintf("%02d", 1:5), "_", 6:6))
+
+# Print combined summary for legumes production
+print(numerical_summary_l(production_df, prefixes_legumes))
+
+```
+
+
+
+### Legumineuses
+
+
+
+```{r}
+# -------------------- legumineuses_consumption --------------------
+prefixes_legumes_consum <- c(paste0("legumineuses_consumption_", 1:5))
+
+# Print combined summary for legumineuses consumption
+print(almost_binary_summary_l(production_df, prefixes_legumes_consum))
+
+```
+
+
+
+```{r}
+# -------------------- legumineuses --------------------
+
+prefixes_legumineuses <- c(paste0("legumineuses_", sprintf("%02d", 1:5), "_", 1:1), 
+                           paste0("legumineuses_", sprintf("%02d", 1:5), "_", 2:2), 
+                           paste0("legumineuses_", sprintf("%02d", 1:5), "_", 3:3), 
+                           paste0("legumineuses_", sprintf("%02d", 1:5), "_", 4:4), 
+                           paste0("legumineuses_", sprintf("%02d", 1:5), "_", 5:5))
+
+# Print combined summary for legumineuses production
+print(numerical_summary_l(production_df, prefixes_legumineuses))
+```
+
+### Aquatique
+
+```{r}
+# -------------------- aquatique_consumption --------------------
+prefixes_aquatique_consum <- c("aquatique_consumption_1")
+
+# Print combined summary for aquatique consumption
+print(almost_binary_summary_l(production_df, prefixes_aquatique_consum))
+
+```
+
+```{r}
+# -------------------- aquatique --------------------
+
+prefixes_aquatique <- c(paste0("aquatique_", sprintf("%02d", 1:5), "_", 1:1))
+
+# Print combined summary for aquatique production
+print(numerical_summary_l(production_df, prefixes_aquatique))
+```
+
+
+### Culture
+
+```{r}
+
+# -------------------- autre_culture_yesno --------------------
+prefixes_culture_consum <- c("autre_culture_yesno")
+
+# Print combined summary for culture consumption
+print(almost_binary_summary_l(production_df, prefixes_culture_consum))
+
+```
+
+```{r}
+
+# -------------------- culture --------------------
+
+production_df <- production_df %>%
+  mutate(o_culture_03 = ifelse(o_culture_03 == -99, -9, o_culture_03))
+
+prefixes_culture <- c(paste0("o_culture_", sprintf("%02d", 1:5)))
+
+# Print combined summary for culture production
+print(numerical_summary_l(production_df, prefixes_culture))
+
+```
+
+#INCOME
+
+### agri_income_07
+```{r}
+# -------------------- agri_income_07 --------------------
+
+agri_income_07_df <- income_df %>%
+  select(hhid, starts_with("agri_income_07"), starts_with("speciesname_"), starts_with("speciesindex_")) %>%
+  pivot_longer(
+    cols = c(starts_with("agri_income_07_"), starts_with("speciesindex_")), 
+    names_to = c(".value", "var"),
+    names_pattern = "(agri_income_07|speciesindex)_(\\d+)"
+  )
+
+agri_income_07_df_l <- agri_income_07_df %>%
+  mutate(agri_income_07_01 = ifelse(speciesindex == 1, agri_income_07, NA)) %>%
+  mutate(agri_income_07_02 = ifelse(speciesindex == 2, agri_income_07, NA)) %>%
+  mutate(agri_income_07_03 = ifelse(speciesindex == 3, agri_income_07, NA)) %>%
+  mutate(agri_income_07_04 = ifelse(speciesindex == 4, agri_income_07, NA)) %>%
+  mutate(agri_income_07_05 = ifelse(speciesindex == 5, agri_income_07, NA)) %>%
+  mutate(agri_income_07_06 = ifelse(speciesindex == 6, agri_income_07, NA)) %>%
+  mutate(agri_income_07_07 = ifelse(speciesindex == 7, agri_income_07, NA)) %>%
+  mutate(agri_income_07_08 = ifelse(speciesindex == 8, agri_income_07, NA)) %>%
+  mutate(agri_income_07_09 = ifelse(speciesindex == 9, agri_income_07, NA)) %>%
+  select(starts_with("agri_income_"))
+
+prefixes_agri_income_07 <- paste0("agri_income_07_", sprintf("%02d", 1:9))
+
+print(numerical_summary_l(agri_income_07_df_l, prefixes_agri_income_07))
+```
+
+### agri_income_08
+
+```{r}
+# -------------------- agri_income_08 --------------------
+
+agri_income_08_df <- income_df %>%
+  select(hhid, starts_with("agri_income_08"), starts_with("speciesname_"), starts_with("speciesindex_")) %>%
+  pivot_longer(
+    cols = c(starts_with("agri_income_08_"), starts_with("speciesindex_")), 
+    names_to = c(".value", "var"),
+    names_pattern = "(agri_income_08|speciesindex)_(\\d+)"
+  )
+
+agri_income_08_df_l <- agri_income_08_df %>%
+  mutate(agri_income_08_01 = ifelse(speciesindex == 1, agri_income_08, NA)) %>%
+  mutate(agri_income_08_02 = ifelse(speciesindex == 2, agri_income_08, NA)) %>%
+  mutate(agri_income_08_03 = ifelse(speciesindex == 3, agri_income_08, NA)) %>%
+  mutate(agri_income_08_04 = ifelse(speciesindex == 4, agri_income_08, NA)) %>%
+  mutate(agri_income_08_05 = ifelse(speciesindex == 5, agri_income_08, NA)) %>%
+  mutate(agri_income_08_06 = ifelse(speciesindex == 6, agri_income_08, NA)) %>%
+  mutate(agri_income_08_07 = ifelse(speciesindex == 7, agri_income_08, NA)) %>%
+  mutate(agri_income_08_08 = ifelse(speciesindex == 8, agri_income_08, NA)) %>%
+  mutate(agri_income_08_09 = ifelse(speciesindex == 9, agri_income_08, NA)) %>%
+  select(starts_with("agri_income_"))
+
+prefixes_agri_income_08 <- paste0("agri_income_08_", sprintf("%02d", 1:9))
+
+print(numerical_summary_l(agri_income_08_df_l, prefixes_agri_income_08))
+```
+
+### agri_income_09
+```{r}
+# -------------------- agri_income_09 --------------------
+
+agri_income_09_df <- income_df %>%
+  select(hhid, starts_with("agri_income_09"), starts_with("speciesname_"), starts_with("speciesindex_")) %>%
+  pivot_longer(
+    cols = c(starts_with("agri_income_09_"), starts_with("speciesindex_")), 
+    names_to = c(".value", "var"),
+    names_pattern = "(agri_income_09|speciesindex)_(\\d+)"
+  )
+
+agri_income_09_df_l <- agri_income_09_df %>%
+  mutate(agri_income_09_01 = ifelse(speciesindex == 1, agri_income_09, NA)) %>%
+  mutate(agri_income_09_02 = ifelse(speciesindex == 2, agri_income_09, NA)) %>%
+  mutate(agri_income_09_03 = ifelse(speciesindex == 3, agri_income_09, NA)) %>%
+  mutate(agri_income_09_04 = ifelse(speciesindex == 4, agri_income_09, NA)) %>%
+  mutate(agri_income_09_05 = ifelse(speciesindex == 5, agri_income_09, NA)) %>%
+  mutate(agri_income_09_06 = ifelse(speciesindex == 6, agri_income_09, NA)) %>%
+  mutate(agri_income_09_07 = ifelse(speciesindex == 7, agri_income_09, NA)) %>%
+  mutate(agri_income_09_08 = ifelse(speciesindex == 8, agri_income_09, NA)) %>%
+  mutate(agri_income_09_09 = ifelse(speciesindex == 9, agri_income_09, NA)) %>%
+  select(starts_with("agri_income_"))
+
+prefixes_agri_income_09 <- c("agri_income_09_01", "agri_income_09_02", "agri_income_09_03", 
+                             "agri_income_09_04", "agri_income_09_05", "agri_income_09_06", 
+                             "agri_income_09_07", "agri_income_09_08", "agri_income_09_09")
+
+print(categ_summary_l(agri_income_09_df_l, prefixes_agri_income_09))
+```
+
+### agri_income_10
+
+```{r}
+# -------------------- agri_income_10 --------------------
+
+agri_income_10_df <- income_df %>%
+  select(hhid, starts_with("agri_income_10"), starts_with("speciesname_"), starts_with("speciesindex_")) %>%
+  pivot_longer(
+    cols = c(starts_with("agri_income_10_"), starts_with("speciesindex_")), 
+    names_to = c(".value", "var"),
+    names_pattern = "(agri_income_10|speciesindex)_(\\d+)"
+  )
+
+agri_income_10_df_l <- agri_income_10_df %>%
+  mutate(agri_income_10_01 = ifelse(speciesindex == 1, agri_income_10, NA)) %>%
+  mutate(agri_income_10_02 = ifelse(speciesindex == 2, agri_income_10, NA)) %>%
+  mutate(agri_income_10_03 = ifelse(speciesindex == 3, agri_income_10, NA)) %>%
+  mutate(agri_income_10_04 = ifelse(speciesindex == 4, agri_income_10, NA)) %>%
+  mutate(agri_income_10_05 = ifelse(speciesindex == 5, agri_income_10, NA)) %>%
+  mutate(agri_income_10_06 = ifelse(speciesindex == 6, agri_income_10, NA)) %>%
+  mutate(agri_income_10_07 = ifelse(speciesindex == 7, agri_income_10, NA)) %>%
+  mutate(agri_income_10_08 = ifelse(speciesindex == 8, agri_income_10, NA)) %>%
+  mutate(agri_income_10_09 = ifelse(speciesindex == 9, agri_income_10, NA)) %>%
+  select(starts_with("agri_income_"))
+
+prefixes_agri_income_10 <- paste0("agri_income_10_", sprintf("%02d", 1:9))
+
+print(numerical_summary_l(agri_income_10_df_l, prefixes_agri_income_10))
+```
+
+### agri_income_11
+
+```{r}
+# -------------------- agri_income_11 --------------------
+
+agri_income_11_df <- income_df %>%
+  select(hhid, starts_with("agri_income_11"), starts_with("speciesname_"), starts_with("animals_sales_")) %>%
+  pivot_longer(
+    cols = starts_with("agri_income_11_"), 
+    names_to = "agri_income_11_type",   
+    names_pattern = "agri_income_11_(.*)",  
+    values_to = "value"
+  )
+
+agri_income_11_df_l <- agri_income_11_df %>%
+  mutate(agri_income_11_01 = ifelse(animals_sales_1 == 1, value, NA)) %>%
+  mutate(agri_income_11_02 = ifelse(animals_sales_2 == 1, value, NA)) %>%
+  mutate(agri_income_11_03 = ifelse(animals_sales_3 == 1, value, NA)) %>%
+  mutate(agri_income_11_04 = ifelse(animals_sales_4 == 1, value, NA)) %>%
+  mutate(agri_income_11_05 = ifelse(animals_sales_5 == 1, value, NA)) %>%
+  mutate(agri_income_11_06 = ifelse(animals_sales_6 == 1, value, NA)) %>%
+  mutate(agri_income_11_07 = ifelse(animals_sales_7 == 1, value, NA)) %>%
+  mutate(agri_income_11_08 = ifelse(animals_sales_8 == 1, value, NA)) %>%
+  mutate(agri_income_11_09 = ifelse(animals_sales_9 == 1, value, NA)) %>%
+  select(starts_with("agri_income_"))
+
+prefixes_agri_income_11 <- paste0("agri_income_11_", sprintf("%02d", 1:9))
+
+print(numerical_summary_l(agri_income_11_df_l, prefixes_agri_income_11))
+
+```
+### agri_income_12
+
+```{r}
+# -------------------- agri_income_12 --------------------
+
+agri_income_12_df <- income_df %>%
+  select(hhid, starts_with("agri_income_12"), starts_with("speciesname_"), starts_with("animals_sales_")) %>%
+  pivot_longer(
+    cols = starts_with("agri_income_12_"), 
+    names_to = "agri_income_12_type",   
+    names_pattern = "agri_income_12_(.*)",  
+    values_to = "value"
+  )
+
+agri_income_12_df_l <- agri_income_12_df %>%
+  mutate(agri_income_12_01 = ifelse(animals_sales_1 == 1, value, NA)) %>%
+  mutate(agri_income_12_02 = ifelse(animals_sales_2 == 1, value, NA)) %>%
+  mutate(agri_income_12_03 = ifelse(animals_sales_3 == 1, value, NA)) %>%
+  mutate(agri_income_12_04 = ifelse(animals_sales_4 == 1, value, NA)) %>%
+  mutate(agri_income_12_05 = ifelse(animals_sales_5 == 1, value, NA)) %>%
+  mutate(agri_income_12_06 = ifelse(animals_sales_6 == 1, value, NA)) %>%
+  mutate(agri_income_12_07 = ifelse(animals_sales_7 == 1, value, NA)) %>%
+  mutate(agri_income_12_08 = ifelse(animals_sales_8 == 1, value, NA)) %>%
+  mutate(agri_income_12_09 = ifelse(animals_sales_9 == 1, value, NA)) %>%
+  select(starts_with("agri_income_"))
+
+prefixes_agri_income_12 <- paste0("agri_income_12_", sprintf("%02d", 1:9))
+
+print(numerical_summary_l(agri_income_12_df_l, prefixes_agri_income_12))
+
+
+```
+
+
+
+### agri_income_13
+```{r}
+
+### KRM - Need to update
+
+# -------------------- agri_income_13 --------------------
+
+agri_income_13_df <- income_df %>%
+  select(hhid, matches("^agri_income_13_\\d+_\\d+"), starts_with("speciesname_"), starts_with("animals_sales_")) %>%
+  mutate(across(starts_with("agri_income_13"), 
+                ~ ifelse(. == 1, 
+                         as.numeric(sub(".*_(\\d+)_\\d+$", "\\1", cur_column())), 
+                         ifelse(. == 0, NA, .)))) %>%
+  pivot_longer(
+    cols = starts_with("agri_income_13_"), 
+    names_to = "agri_income_13_type",   
+    names_pattern = "agri_income_13_(.*)",  
+    values_to = "value"
+  )
+
+agri_income_13_df
+
+agri_income_13_df_l <- agri_income_13_df %>%
+  mutate(agri_income_13_01 = ifelse(animals_sales_1 == 1, value, NA)) %>%
+  mutate(agri_income_13_02 = ifelse(animals_sales_2 == 1, value, NA)) %>%
+  mutate(agri_income_13_03 = ifelse(animals_sales_3 == 1, value, NA)) %>%
+  mutate(agri_income_13_04 = ifelse(animals_sales_4 == 1, value, NA)) %>%
+  mutate(agri_income_13_05 = ifelse(animals_sales_5 == 1, value, NA)) %>%
+  mutate(agri_income_13_06 = ifelse(animals_sales_6 == 1, value, NA)) %>%
+  mutate(agri_income_13_07 = ifelse(animals_sales_7 == 1, value, NA)) %>%
+  mutate(agri_income_13_08 = ifelse(animals_sales_8 == 1, value, NA)) %>%
+  mutate(agri_income_13_09 = ifelse(animals_sales_9 == 1, value, NA)) %>%
+  select(starts_with("agri_income_"))
+
+prefixes_agri_income_13 <- paste0("agri_income_13_", sprintf("%02d", 1:9))
+
+print(categ_summary_l(agri_income_13_df_l, prefixes_agri_income_13))
+
+# df <- categ_summary(df, prefix)
+# cat(df$Frequency, sep="\n")
+# cat(df$Proportion, sep="\n")
+
+```
+
+### agri_income_13_o
+
+```{r}
+# -------------------- agri_income_13_o --------------------
+### KRM - Need to update 
+agri_income_13_df_o <- income_df %>%
+  select(hhid, matches("^agri_income_13_o_\\d+"), starts_with("speciesname_"), starts_with("animals_sales_")) %>%
+  mutate(across(starts_with("agri_income_13_o"), 
+                ~ ifelse(. == 1, 
+                         as.numeric(sub(".*_(\\d+)$", "\\1", cur_column())), 
+                         ifelse(. == 0, NA, .)))) %>%
+  pivot_longer(
+    cols = starts_with("agri_income_13_o_"), 
+    names_to = "agri_income_13_o_type",   
+    values_to = "value"
+  )
+
+agri_income_13_df_o
+agri_income_13_df_l_o <- agri_income_13_df_o %>%
+  mutate(final_agri_income_13_o = ifelse(animals_sales_o == 1, value, NA)) 
+
+prefixes_agri_income_13_o <- c("agri_income_13_o")
+
+print(categ_summary_l(agri_income_13_df_l_o, prefixes_agri_income_13_o))
+
+df <- categ_summary(df, prefix)
+cat(df$Frequency, sep="\n")
+cat(df$Proportion, sep="\n")
+
+```
+
+### agri_income_14
+
+```{r}
+# -------------------- agri_income_14 --------------------
+
+agri_income_14_df <- income_df %>%
+  select(hhid, starts_with("agri_income_14"), starts_with("speciesname_"), starts_with("animals_sales_")) %>%
+  pivot_longer(
+    cols = starts_with("agri_income_14_"), 
+    names_to = "agri_income_14_type",   
+    names_pattern = "agri_income_14_(.*)",  
+    values_to = "value"
+  )
+
+agri_income_14_df_l <- agri_income_14_df %>%
+  mutate(agri_income_14_01 = ifelse(animals_sales_1 == 1, value, NA)) %>%
+  mutate(agri_income_14_02 = ifelse(animals_sales_2 == 1, value, NA)) %>%
+  mutate(agri_income_14_03 = ifelse(animals_sales_3 == 1, value, NA)) %>%
+  mutate(agri_income_14_04 = ifelse(animals_sales_4 == 1, value, NA)) %>%
+  mutate(agri_income_14_05 = ifelse(animals_sales_5 == 1, value, NA)) %>%
+  mutate(agri_income_14_06 = ifelse(animals_sales_6 == 1, value, NA)) %>%
+  mutate(agri_income_14_07 = ifelse(animals_sales_7 == 1, value, NA)) %>%
+  mutate(agri_income_14_08 = ifelse(animals_sales_8 == 1, value, NA)) %>%
+  mutate(agri_income_14_09 = ifelse(animals_sales_9 == 1, value, NA)) %>%
+  select(starts_with("agri_income_"))
+
+prefixes_agri_income_14 <- paste0("agri_income_14_", sprintf("%02d", 1:9))
+
+print(numerical_summary_l(agri_income_14_df_l, prefixes_agri_income_14))
+```
+
+
+
+### agri_income_22
+```{r}
+# -------------------- agri_income_22 --------------------
+
+prefixes_agri_income_22 <- c("agri_income_22")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_22))
+```
+
+### agri_income_22_o
+```{r}
+# -------------------- agri_income_22_o --------------------
+
+prefixes_agri_income_22_o <- c("agri_income_22_o")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_22_o))
+```
+
+
+
+### agri_income_23
+```{r}
+# -------------------- agri_income_23 --------------------
+
+prefixes_agri_income_23 <- c("agri_income_23")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_23))
+
+```
+
+
+### agri_income_23_o
+
+```{r}
+# -------------------- agri_income_23_o --------------------
+
+prefixes_agri_income_23_o <- c("agri_income_23_o")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_23_o))
+
+```
+
+
+
+
+### agri_income_24
+
+```{r}
+# -------------------- agri_income_24 --------------------
+
+prefixes_agri_income_24 <- c("agri_income_24")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_24))
+```
+
+
+### agri_income_21_h
+```{r}
+# -------------------- agri_income_21_h --------------------
+
+prefixes_agri_income_21_h <- c("agri_income_21_h")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_21_h))
+```
+
+
+### agri_income_21_h_o
+
+```{r}
+# -------------------- agri_income_21_h_o --------------------
+
+prefixes_agri_income_21_h_o <- c("agri_income_21_h_o")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_21_h_o))
+
+```
+
+
+
+### agri_income_21_f
+
+```{r}
+# -------------------- agri_income_21_f --------------------
+
+prefixes_agri_income_21_f <- c("agri_income_21_f")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_21_f))
+
+```
+
+
+### agri_income_21_f_o
+
+```{r}
+# -------------------- agri_income_21_f_o --------------------
+
+prefixes_agri_income_21_f_o <- c("agri_income_21_f_o")
+
+print(numerical_summary_l(income_df, prefixes_agri_income_21_f_o))
+```
+
+
+
+
+
+
+### agri_income_36
+```{r}
+# -------------------- agri_income_36 --------------------
+
+prefixes_agri_income_36 <- c("agri_income_36")
+
+print(numerical_summary(income_df, prefixes_agri_income_36))
+```
+
+### agri_income_38
+```{r}
+# -------------------- agri_income_38 --------------------
+
+income_df <- income_df %>%
+  mutate(agri_income_38_1 = ifelse(agri_income_38_1 == -99, -9, agri_income_38_1))
+
+prefixes_agri_income_38 <- c("agri_income_38")
+
+print(numerical_summary(income_df, prefixes_agri_income_38))
+```
+
+### agri_income_39
+
+```{r}
+# -------------------- agri_income_39 --------------------
+
+income_df <- income_df %>%
+  mutate(agri_income_39_1 = ifelse(agri_income_39_1 == -99, -9, agri_income_39_1))
+
+prefixes_agri_income_39 <- c("agri_income_39")
+
+print(numerical_summary(income_df, prefixes_agri_income_39))
+```
+
+### agri_income_40
+
+```{r}
+# -------------------- agri_income_40 --------------------
+
+prefixes_agri_income_40 <- c("agri_income_40")
+
+print(almost_binary_summary_l(income_df, prefixes_agri_income_40))
+```
+
+
+
+### agri_income_41
+```{r}
+# -------------------- agri_income_41 --------------------
+
+prefixes_agri_income_41 <- c("agri_income_41")
+
+print(numerical_summary(income_df, prefixes_agri_income_41))
+
+```
+
+
+
+### agri_income_42
+```{r}
+# -------------------- agri_income_42 --------------------
+
+prefixes_agri_income_42 <- c("agri_income_42")
+
+print(numerical_summary(income_df, prefixes_agri_income_42))
+```
+
+### agri_income_43
+```{r}
+# -------------------- agri_income_43 --------------------
+
+prefixes_agri_income_43 <- c("agri_income_43")
+
+print(numerical_summary(income_df, prefixes_agri_income_43))
+
+```
+
+### agri_income_44
+```{r}
+# -------------------- agri_income_44 --------------------
+
+prefixes_agri_income_44 <- c("agri_income_44")
+
+print(numerical_summary(income_df, prefixes_agri_income_44))
+```
+
+### agri_income_45
+
+```{r}
+# -------------------- agri_income_45 --------------------
+
+prefixes_agri_income_45 <- c("agri_income_45")
+
+print(numerical_summary(income_df, prefixes_agri_income_45))
+
+```
+
+
+
+
+### expenses_goods_t
+```{r}
+# -------------------- expenses_goods_t --------------------
+
+prefixes_expenses_goods_t <- c("expenses_goods_t")
+
+print(almost_binary_summary_l(income_df, prefixes_expenses_goods_t))
+```
+
+### species_autre
+
+```{r}
+# -------------------- species_autre --------------------
+
+prefixes_species_autre <- c("species_autre")
+
+print(almost_binary_summary_l(income_df, prefixes_species_autre))
+
+```
+
+
+#COMMUNITY
+
+```{r}
+### q_16 - q_34
+# -------------------- q_16 - q_34 --------------------
+
+prefixes_q_16_34 <- c(paste0("q_", 16:34))
+
+print(binary_summary_l(community_df, prefixes_q_16_34))
+```
+
+### q_35_check
+
+```{r}
+# -------------------- q_35_check --------------------
+
+prefixes_q_35_check <- c("q_35_check")
+
+print(binary_summary_l(community_df, prefixes_q_35_check))
+```
+
+### q_37
+
+```{r}
+# -------------------- q_37 --------------------
+
+prefixes_q_37 <- c("q_37")
+
+print(binary_summary_l(community_df, prefixes_q_37))
+
+```
+### q_39
+
+```{r}
+# -------------------- q_39 --------------------
+
+
+prefixes_q_39 <- c("q_39")
+
+print(binary_summary_l(community_df, prefixes_q_39))
+
+```
+### q_41
+
+```{r}
+# -------------------- q_41 --------------------
+
+prefixes_q_41 <- c("q_41")
+
+print(binary_summary_l(community_df, prefixes_q_41))
+
+```
+### number_hh
+
+```{r}
+# -------------------- number_hh --------------------
+
+prefixes_number_hh <- c("number_hh")
+
+print(numerical_summary_l(community_df, prefixes_number_hh))
+
+```
+### number_total
+
+```{r}
+# -------------------- number_total --------------------
+
+prefixes_number_total <- c("number_total")
+
+print(numerical_summary_l(community_df, prefixes_number_total))
+
+```
+### q_28a - q_33a
+
+```{r}
+# -------------------- q_28a - q_33a --------------------
+
+prefixes_q_28_33a <- c(paste0("q_", 28:33, "a"))
+
+print(numerical_summary_l(community_df, prefixes_q_28_33a))
+
+```
+### q_43 - q_55
+```{r}
+# -------------------- q_43 - q_55 --------------------
+
+prefixes_q_43_55 <- c(paste0("q_", 43:55))
+
+print(numerical_summary_l(community_df, prefixes_q_43_55))
+```
+
+### q_57 - q_58
+
+```{r}
+# -------------------- q_57 - q_58 --------------------
+
+prefixes_q_57_58 <- c(paste0("q_", 57:58))
+
+print(numerical_summary_l(community_df, prefixes_q_57_58))
+
+```
+### q_60 - q_61
+```{r}
+# -------------------- q_60 - q_61 --------------------
+
+prefixes_q_60_61 <- c(paste0("q", 60:61))
+
+print(numerical_summary_l(community_df, prefixes_q_60_61))
+```
+
+### q_63
+```{r}
+# -------------------- q_63 --------------------
+
+prefixes_q_63 <- c("q63")
+
+print(numerical_summary_l(community_df, prefixes_q_63))
+```
+
+### q_63_1 - q_63_10
+```{r}
+# -------------------- q_63_1 - q_63_10 --------------------
+
+prefixes_q_63_1_10 <- c(paste0("q63_", 1:10))
+
+print(numerical_summary_l(community_df, prefixes_q_63_1_10))
+```
+
+### q_64 - q_66
+```{r}
+# -------------------- q_64 - q_66 --------------------
+
+prefixes_q_64_66 <- c(paste0("q", 64:66))
+
+print(numerical_summary_l(community_df, prefixes_q_64_66))
+
+```
+
+
+
+End of markdown. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

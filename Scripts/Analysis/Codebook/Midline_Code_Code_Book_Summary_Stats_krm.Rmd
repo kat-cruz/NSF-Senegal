@@ -11,7 +11,32 @@ output: html_document
 
 This file outputs the summary statistics used to make the code book for baseline and midline data. This works in two parts:
 
-1) There's a function that handles variables with indices, and one that handles variables without indices, and these funtions generate summary stats for each of the different types of variables. 
+1) There's a function that handles variables with indices, and one that handles variables without indices, and these functions generate summary stats for each of the different types of variables.These are distinguished by the _l for long at the end of each function name.
+
+####Function note:
+
+
+For CATEGORICAL:
+      * WITH indices: categ_summary
+      * WITHOUT: categ_summary_l
+      
+
+For NUMERICAL variables:
+      * WITH indices: numerical_summary
+      * WITHOUT: numerical_summary_l
+      
+
+For variables with a 0,1, 2 response:
+      * WITH indices: almost_binary_summary
+      * WITHOUT: almost_binary_summary_l
+      
+
+For BINARY variables:
+      * WITH indices: binary_summary
+      * WITHOUT: binary_summary_l
+
+
+2) Run each code chunk to compute the summary statistics of each variable. I've separated them out for ease of copy and pasting, and to keep a precise record of which variables we have currently. 
 
 
 #START HERE - load packages
@@ -449,28 +474,7 @@ binary_summary_l <- function(midline_data, prefixes) {
 
 ```
 
-####function note:
 
-
-For CATEGORICAL:
-      * WITH indices: categ_summary
-      * WITHOUT: categ_summary_l
-      
-
-For NUMERICAL variables:
-      * WITH indices: numerical_summary
-      * WITHOUT: numerical_summary_l
-      
-
-For variables with a 0,1, 2 response:
-      * WITH indices: almost_binary_summary
-      * WITHOUT: almost_binary_summary_l
-      
-
-For BINARY variables:
-      * WITH indices: binary_summary
-      * WITHOUT: binary_summary_l
-      
 
 #BEGIN SUMMARY STATS
 ## Household Roster

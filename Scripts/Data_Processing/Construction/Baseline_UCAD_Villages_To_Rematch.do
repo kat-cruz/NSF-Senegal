@@ -31,21 +31,74 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 
 *^*^* Define project-specific paths
-global data "$master\Data_Management\_CRDES_CleanData\Midline\Identified"
+global data "$master\Data_Management\_Partner_CleanData\Child_Matches\EPLS_Child_Matches\Archive\Household & Individual IDs"
 *global output "$master\Data_Management\_Partner_CleanData\Parasitological_Analysis_Data\Analysis_Data"
 
-global baseline "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
+*global baseline "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
 
 *<><<><><>><><<><><>>
 * LOAD IN DATA
 *<><<><><>><><<><><>>
 
-use "$data\DISES_Midline_Complete_PII.dta", clear
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+use "$data\All_Villages.dta", clear
+
+preserve 
+
+	keep if villageid == "020B"
+	keep if hh_age_ <= 18
+	count if !missing(hh_age_)
+
+	*export excel using "$output\Village_Dioss_Peulh_032A.xlsx", firstrow(variables) sheet("Dioss Peulh (032A)") replace 
+
+restore 
+
+
+preserve 
+
+	keep if villageid == "020B"
+	keep if hh_age_ <= 18
+	count if !missing(hh_age_)
+
+	*export excel using "$output\Village_Dioss_Peulh_032A.xlsx", firstrow(variables) sheet("Dioss Peulh (032A)") replace 
+
+restore 
+
+
+
+keep if villageid == "020B"
+keep if villageid == "090B" 
+*/
+
+
+
+
+
+
+
+
+
+
+
+*C:\Users\km978\Box\NSF Senegal\Data_Management\_Partner_CleanData\Child_Matches\EPLS_Child_Matches\Archive\Household & Individual IDs\All_Villages.dta
 
 *<><<><><>><><<><><>>
 * INITIAL CLEANING
 *<><<><><>><><<><><>>
 
+/*
 
 	tostring hh_full_name_calc*, replace 
 	tostring hh_relation_with_o*, replace 
@@ -115,5 +168,6 @@ use "$data\DISES_Midline_Complete_PII.dta", clear
 			keep if villageid == "090B" 
 
 
+*/
 
 

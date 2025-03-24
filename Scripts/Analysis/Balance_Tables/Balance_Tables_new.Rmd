@@ -1176,6 +1176,8 @@ missing_summary <- data.frame(Variable = names(missing_counts),
 missing_summary <- missing_summary[order(-missing_summary$MissingPercent), ]
 print(missing_summary)
 
+##add clustering at the village level 
+
 ```
 
 

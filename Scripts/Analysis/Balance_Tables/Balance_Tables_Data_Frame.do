@@ -65,6 +65,7 @@ if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Sene
 
 global data "${master}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
 global trainedData "${master}\Data_Management\Output\Data_Corrections\Treatment"
+global index "${master}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
 
 *^*^* Data folders 
 global dataOutput "${master}\Data_Management\Output\Data_Analysis\Balance_Tables" 
@@ -114,10 +115,10 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 		 hh_relation_with_* hh_gender* hh_age* hh_age_resp hh_gender_resp ///
 		 hh_education_skills* hh_education_level*  ///
 		 hh_numero* hh_03* hh_10* hh_11* hh_12* hh_12index_* hh_13* hh_14* hh_15* hh_16* hh_29* /// 	
-		 hh_26* hh_27* hh_31* hh_37* hh_38* ///  //edu vars 
+		 hh_26* hh_27* hh_31* hh_32* hh_37* hh_38* ///  //edu vars 
 		 health_5_2* health_5_3* health_5_5* health_5_6* health_5_12* ///
 		 agri_6_15* species* agri_income_01 agri_income_05 agri_6_34_comp* ///
-		 agri_6_15* agri_6_21*  agri_6_22* /// // how many parcels & surface area of plot & unit
+		 agri_6_14* agri_6_15* agri_6_21*  agri_6_22* /// // how many parcels & surface area of plot & unit
 		 agri_6_32* agri_6_36* /// // used fertilizer vars
 		 living_01* living_03* living_04* living_05* living_06* ///
 		 beliefs_0* /// // beliefs module
@@ -279,19 +280,29 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 			cap rename `oldname' `newname'
 		}
 	}
-
-
+	
+	
+  *^*^*  Generate indicator for the household respondent 
+  
+  
+	merge 1:1 hhid using "$index\respondent_index.dta"
+	
+	forvalues i = 1/55 {
+    gen resp_index_`i' = (resp_index == `i')
+}
+	
+	drop _merge
+	
 *<><<><><>><><<><><>> 
 * RESHAPE THE DATA 
 *<><<><><>><><<><><>>
 
 		
-	reshape long hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_  ///
-			hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_37_ hh_38_  ///
+	reshape long resp_index_ hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_  ///
+			hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_32_ hh_37_ hh_38_  ///
 			hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
 			health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ ///
 			health_5_2_ health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
-			
 			
 
 
@@ -304,7 +315,7 @@ foreach var of varlist _all {
 }
 
 ** Sanity check - 50 households did not report a head 
-
+*drop has_relation_1 household_has_1 unique_hh
 	gen has_relation_1 = (hh_relation_with_ == 1)  // Indicator: 1 if exists, 0 otherwise
 	egen household_has_1 = max(has_relation_1), by(hhid)  // Flag households with any 1
 
@@ -376,7 +387,32 @@ foreach var of varlist _all {
 
 
 
-		*replace agri_income_05 = 0 if agri_income_01 == 0
+		replace agri_income_05 = 0 if agri_income_01 == 0
+		
+		
+		replace agri_6_15 = 0 if agri_6_14 == 0
+		
+		*if for each hhid, age is not >= 4 & <= 18, replace hh_26_ == 0
+		
+		gen hh_26_ind = 0
+	replace hh_26_ind = 1 if (hh_age_ >= 4 & hh_age_ <= 18) & missing(hh_26_)
+	replace hh_26_ = 0 if missing(hh_26_) & hh_26_ind == 0
+		
+			*Go back to the orgigin of the condition
+		*hh_38 is also conditional on hh_32, and hh_32 is conditional on hh_26
+			foreach var in hh_29_ hh_37_ hh_38_ {
+		replace `var' = 0 if hh_26_ == 0
+	}
+	
+
+	
+			foreach var in hh_12_6_ hh_16_  {
+		replace `var' = 0 if hh_10_ == 0
+	}
+
+
+		
+		
 		* hh_14 relevance: ${hh_10} > 0 and selected(${hh_12}, "6")
 		*replace hh_11_ = 0 if hh_10_ == 0 
 		* hh_12_: ${hh_10} > 0
@@ -810,23 +846,92 @@ save `balance_table_ata'
 
 * drop empty/useless variables 
 
-				drop _merge id species health_5_3_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ ///
-				health_5_3_15_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  ///
-				health_5_3_8_ health_5_3_99_ health_5_3_9_  ///
+			drop _merge id species health_5_3_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ ///
+			health_5_3_15_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  ///
+			health_5_3_8_ health_5_3_99_ health_5_3_9_  ///
 
-** aggregate by HH head 
-				rename hh_age_ hh_age 
-				rename hh_gender_ hh_gender
-				rename hh_education_skills_5_ hh_education_skills_5
-* Loop through the variables and create the corresponding head variables
-			foreach var in hh_age hh_gender hh_education_skills_5 hh_education_level_bin {
-				* Create new variable for each
-				gen `var'_h = . 
+			
+			
+  *^*^* aggregate by HH head 
+
+** Clean the household head variables by replacing missing housheold heads with the housheold respondent as the household head
+
+		* Initialize hh_complete variable
+		drop hh_complete
+		gen hh_complete = 0  
+		
+
+		* Step 1: Set hh_complete = 1 where hh_relation_with_ == 1 (household head)
+		replace hh_complete = 1 if hh_relation_with_ == 1
+		
+
+
+		* Step 2: For households where hh_relation_with_ != 1 and hh_relation_with_ is not missing, set hh_complete = 1 for the first respondent (resp_index_ == 1)
+		bysort hhid: replace hh_complete = 1 if hh_relation_with_ != 1 & !missing(hh_relation_with_) & resp_index_ == 1
+
 				
-				* Replace the new variable with the value from the original variable if hh_relation_with_ == 1
-				replace `var'_h = `var' if hh_relation_with_ == 1
-			}
+drop if missing(hh_gender_) | missing(hh_age_) | missing(hh_education_skills_1_)
 
+
+/*
+		* Set hh_complete to 1 where hh_relation_with_ == 1 (household head)
+		gen hh_relation_with_1 = hh_relation_with_ == 1
+		*replace hh_complete = 1 if hh_relation_with_1
+
+		* For households where hh_relation_with_ != 1, set hh_complete to 1 for the first respondent (resp_index_ == 1)
+		bysort hhid: replace hh_relation_with_ = 1 if resp_index_ == 1 & hh_relation_with_1 != 1
+
+
+
+
+			rename hh_age_ hh_age 
+			rename hh_gender_ hh_gender
+			rename hh_education_skills_5_ hh_education_skills_5
+* Loop through the variables and create the corresponding head variables
+		foreach var in hh_age hh_gender hh_education_skills_5 hh_education_level_bin {
+			* Create new variable for each
+			gen `var'_h = . 
+			
+			* Replace the new variable with the value from the original variable if hh_relation_with_ == 1
+			replace `var'_h = `var' if hh_complete == 1
+		}
+*/
+
+/*
+		
+foreach var in hh_age_h hh_gender_h hh_education_skills_5_h hh_education_level_bin_h {
+    drop if `var' == 0
+}
+*/
+
+
+/*
+** Sanity check - 50 households did not report a head 
+drop has_relation_1 household_has_1 unique_hh
+	gen has_relation_1 = (hh_relation_with_ == 1)  // Indicator: 1 if exists, 0 otherwise
+	egen household_has_1 = max(has_relation_1), by(hhid)  // Flag households with any 1
+
+
+	egen unique_hh = tag(hhid)  // Tag one row per household
+	count if household_has_1 == 0 & unique_hh == 1  // Count unique households without relation == 1
+
+*/
+
+
+
+
+
+
+		gen relation_ind = 0
+		gen relation_ind_h
+		if for each var in varlist hh_age_h hh_gender_h hh_education_skills_5_h hh_education_level_bin_h
+		  if for each unique(hhid), `var' != 1, replace `var' == 1 for resp_index_ == 1
+		  
+		  
+		  
+		 replace `var'
+		
+		 
 
   *^*^* collaspe by mean at the household level & order variables
   
@@ -864,25 +969,25 @@ save `balance_table_ata'
 			
  ** Initial look at data - check missings for each var
 
-foreach var of varlist _all {
-    quietly count if missing(`var')
-    display "`var': " r(N)
-}
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
 
  ** There's a lot - handle later for regressions 
  
  
- foreach var of varlist _all {
-    * Check if the variable is numeric (ignoring strings)
-    capture confirm numeric variable `var'
-    if !_rc {  // If the variable is numeric
-        * Count if -9 exists in the numeric variable
-        count if `var' == -9
-        if r(N) > 0 {
-            display "`var' contains -9"
-        }
-    }
-}
+		 foreach var of varlist _all {
+			* Check if the variable is numeric (ignoring strings)
+			capture confirm numeric variable `var'
+			if !_rc {  // If the variable is numeric
+				* Count if -9 exists in the numeric variable
+				count if `var' == -9
+				if r(N) > 0 {
+					display "`var' contains -9"
+				}
+			}
+		}
 
 
  ** Handle -9s after collapsing 

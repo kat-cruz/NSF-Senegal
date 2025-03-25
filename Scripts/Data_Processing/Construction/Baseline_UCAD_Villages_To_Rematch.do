@@ -32,18 +32,55 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 *^*^* Define project-specific paths
 global data "$master\Data_Management\_Partner_CleanData\Child_Matches\EPLS_Child_Matches\Archive\Household & Individual IDs"
-*global output "$master\Data_Management\_Partner_CleanData\Parasitological_Analysis_Data\Analysis_Data"
+global output "$master\Data_Management\_Partner_CleanData\Child_Matches\UCAD_Child_Matches"
 
-*global baseline "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
 
 *<><<><><>><><<><><>>
 * LOAD IN DATA
 *<><<><><>><><<><><>>
 
 
+use "$data\All_Villages.dta", clear
+
+rename hh_relation_with_ hh_relation_with
+tostring  hh_relation_with, gen(hh_relation)
+
+		replace hh_relation = "Head of household (himself)" if hh_relation_with == 1
+		replace hh_relation = "Spouse of head ofhousehold" if hh_relation_with == 2
+		replace hh_relation = "Son/daughter of the home" if hh_relation_with == 3
+		replace hh_relation = "Spouse of the son/daughterof the head of the family" if hh_relation_with == 4
+		replace hh_relation = "Grandson/granddaughter of the head of the family" if hh_relation_with == 5
+		replace hh_relation = "Father/Mother of the HH" if hh_relation_with == 6
+		replace hh_relation = "Father/Mother of the spouse of the head of the family" if hh_relation_with == 7
+		replace hh_relation = "Brother/sister of the head ofthe family" if hh_relation_with == 8
+		replace hh_relation = "Brother/sister of the HH's spouse" if hh_relation_with == 9
+		replace hh_relation = "Adopted child" if hh_relation_with == 10
+		replace hh_relation = "House help" if hh_relation_with == 11
+		replace hh_relation = "Other person related to the head of the family" if hh_relation_with == 12
+		replace hh_relation = "Other person not related to the head of the family" if hh_relation_with == 13
 
 
+*preserve 
 
+rename hhid_village villageid
+
+	keep if villageid == "090B"
+	*keep if hh_age_ <= 18
+	count if !missing(hh_age_)
+	gen UCAD_age = ""
+	gen UCAD_ID = ""
+	gen MATCH = ""
+	gen Unique = ""
+	gen SCORE = ""
+	gen Notes = ""
+	
+	keep villageid hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation hh_relation_with_o_ hhid individ UCAD_ID MATCH Unique SCORE Notes
+	
+	order villageid hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation hh_relation_with_o_ hhid individ UCAD_ID MATCH Unique SCORE Notes
+
+	export excel using "$output\Village_Ndiayene_Sare_090B.xlsx", firstrow(variables) sheet("Ndiayene Sare (090B)") replace 
+
+*restore 
 
 
 

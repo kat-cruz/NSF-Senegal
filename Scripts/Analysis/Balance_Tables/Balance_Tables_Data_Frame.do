@@ -850,37 +850,35 @@ save `balance_table_ata'
 			health_5_3_15_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  ///
 			health_5_3_8_ health_5_3_99_ health_5_3_9_  ///
 
+			save "$dataOutput\temp_balance.dta"
 			
+			use "$dataOutput\temp_balance.dta", clear
 			
   *^*^* aggregate by HH head 
+  
+			  ** Sanity check - 50 households did not report a head 
+			drop has_relation_1 household_has_1 unique_hh
+				gen has_relation_1 = (hh_relation_with_ == 1)  // Indicator: 1 if exists, 0 otherwise
+				egen household_has_1 = max(has_relation_1), by(hhid)  // Flag households with any 1
+
+
+				egen unique_hh = tag(hhid)  // Tag one row per household
+				count if household_has_1 == 0 & unique_hh == 1  // Count unique households without relation == 1
+
+** Take care of this issue by replacing hh head with the respondent 
 
 ** Clean the household head variables by replacing missing housheold heads with the housheold respondent as the household head
 
 		* Initialize hh_complete variable
-		drop hh_complete
-		gen hh_complete = 0  
-		
 
-		* Step 1: Set hh_complete = 1 where hh_relation_with_ == 1 (household head)
-		replace hh_complete = 1 if hh_relation_with_ == 1
-		
-
-
-		* Step 2: For households where hh_relation_with_ != 1 and hh_relation_with_ is not missing, set hh_complete = 1 for the first respondent (resp_index_ == 1)
-		bysort hhid: replace hh_complete = 1 if hh_relation_with_ != 1 & !missing(hh_relation_with_) & resp_index_ == 1
-
-				
-drop if missing(hh_gender_) | missing(hh_age_) | missing(hh_education_skills_1_)
-
-
-/*
-		* Set hh_complete to 1 where hh_relation_with_ == 1 (household head)
+		gen hh_resp = 0  
 		gen hh_relation_with_1 = hh_relation_with_ == 1
-		*replace hh_complete = 1 if hh_relation_with_1
+		
+		bysort hhid (hh_relation_with_): replace hh_resp = 1 if hh_relation_with_ != 1 & !missing(hh_relation_with_) & resp_index_ == 1 ///
+    & sum(hh_relation_with_ == 1) == 0
+	
 
-		* For households where hh_relation_with_ != 1, set hh_complete to 1 for the first respondent (resp_index_ == 1)
-		bysort hhid: replace hh_relation_with_ = 1 if resp_index_ == 1 & hh_relation_with_1 != 1
-
+gen hh_complete = hh_relation_with_1 + hh_resp
 
 
 
@@ -895,42 +893,9 @@ drop if missing(hh_gender_) | missing(hh_age_) | missing(hh_education_skills_1_)
 			* Replace the new variable with the value from the original variable if hh_relation_with_ == 1
 			replace `var'_h = `var' if hh_complete == 1
 		}
-*/
-
-/*
-		
-foreach var in hh_age_h hh_gender_h hh_education_skills_5_h hh_education_level_bin_h {
-    drop if `var' == 0
-}
-*/
 
 
-/*
-** Sanity check - 50 households did not report a head 
-drop has_relation_1 household_has_1 unique_hh
-	gen has_relation_1 = (hh_relation_with_ == 1)  // Indicator: 1 if exists, 0 otherwise
-	egen household_has_1 = max(has_relation_1), by(hhid)  // Flag households with any 1
-
-
-	egen unique_hh = tag(hhid)  // Tag one row per household
-	count if household_has_1 == 0 & unique_hh == 1  // Count unique households without relation == 1
-
-*/
-
-
-
-
-
-
-		gen relation_ind = 0
-		gen relation_ind_h
-		if for each var in varlist hh_age_h hh_gender_h hh_education_skills_5_h hh_education_level_bin_h
-		  if for each unique(hhid), `var' != 1, replace `var' == 1 for resp_index_ == 1
-		  
-		  
-		  
-		 replace `var'
-		
+	
 		 
 
   *^*^* collaspe by mean at the household level & order variables

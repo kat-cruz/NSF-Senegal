@@ -42,7 +42,7 @@ global standard_living "$master\Data_Management\Output\Data_Quality_Checks\Midli
 global beliefs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Beliefs" 
 global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Enumerator_Observations"
 
-global individual_ids "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
+global individual_ids "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 
 **************************** Import household data ****************************
 import delimited "$data\DISES_Enquête_ménage_midline_VF_WIDE_6Feb.csv", clear varnames(1) bindquote(strict)
@@ -154,3 +154,11 @@ reshape wide fu_mem_id_ pull_hh_full_name_calc__ pull_hh_gender__ pull_hh_age__ 
 
 save "$clean_data\individual_ids_for_missing_in_midline_hh_roster_wide.dta"
 
+*** identify potential duplicate household members in baseline data *** 
+use "$individual_ids\All_Villages_With_Individual_IDs.dta", clear
+
+bysort hhid_village hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_: gen dup = _N
+
+keep if dup > 1 
+
+save "$individual_ids\Potential_Duplicate_HH_Members_Baseline.dta"

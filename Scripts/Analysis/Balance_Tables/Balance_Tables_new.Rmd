@@ -55,12 +55,12 @@ proj_paths <- list(
 if (file.exists(proj_paths$projects)) {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$projects,
-    p1 = "<projects>/Data_Management/Output/Data_Analysis/Balance_Tables"
+    p1 = "<projects>/Data_Management/Output/Analysis/Balance_Tables"
   ))  
 } else {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$alternative_projects,
-    p1 = "<projects>/Data_Management/Output/Data_Analysis/Balance_Tables"
+    p1 = "<projects>/Data_Management/Output/Analysis/Balance_Tables"
   ))
 }
 
@@ -72,7 +72,7 @@ balance_df
 ```
 
 
-####Filter data and transform to long
+####Filter data and transform to long TO UPDATE
 
 
 ```{r}
@@ -171,26 +171,25 @@ joint_long_data
 
 ```{r}
 
-
 compute_summary_stats <- function(df) {
   df %>%
     group_by(group, variable) %>%
     summarise(
-      N = sum(!is.na(value)),  # Count of non-missing values
       mean_value = round(mean(value, na.rm = TRUE), 2),
       sd_value = round(sd(value, na.rm = TRUE), 2),
-      .groups = "drop"  # Prevents group structure from persisting
+      N = sum(!is.na(value)),  # Count of non-missing values
+      .groups = "drop"
     ) %>%
-    pivot_longer(cols = c(N, mean_value, sd_value), names_to = "stat_type", values_to = "stat_value") %>%
+    pivot_longer(cols = c(mean_value, sd_value, N), names_to = "stat_type", values_to = "stat_value") %>%
     mutate(stat_type = case_when(
       stat_type == "mean_value" ~ "Mean",
-      stat_type == "sd_value" ~ "SD",
+      stat_type == "sd_value" ~ "SD",  # SD should come before N
       stat_type == "N" ~ "N"
     )) %>%
-    pivot_wider(names_from = group, values_from = stat_value) %>%
+    mutate(stat_type = factor(stat_type, levels = c("Mean", "SD", "N"))) %>%  # Set order
     arrange(variable, stat_type) %>%
-    select(variable, stat_type, everything()) %>%  # Ensure variable and stat_type come first
-    arrange(match(variable, unique(df$variable)))  # Keep original variable order
+    pivot_wider(names_from = group, values_from = stat_value) %>%
+    select(variable, stat_type, everything())  # Ensure variable and stat_type come first
 }
 
 
@@ -213,10 +212,10 @@ compute_summary_stats <- function(df) {
 #     arrange(match(variable, unique(df$variable))) 
 # }
 
-summary_table <- compute_summary_stats(long_data_sum)
+summary_table1 <- compute_summary_stats(long_data_sum)
 
 # View output
-print(summary_table)
+print(summary_table1)
 
 
 
@@ -249,22 +248,19 @@ print(summary_table)
 #     ~ ifelse(stat_type == "", paste0("(", trimws(.), ")"), .)  # Add parentheses for SD values
 #   ))
 
-summary_table <- summary_table %>%
-  # Create a separate column for N and store N values in 'N_values'
-  mutate(
-    N_values = ifelse(stat_type == "N", trimws(as.character(Control)), NA)  # Store N values in 'N_values' column
-  ) %>%
-  
-  # Clear 'variable' and 'stat_type' for SD rows to format properly
-  mutate(
-    variable = ifelse(stat_type == "SD" & !is.na(stat_type), "", variable),  # Clear variable for SD rows
-    stat_type = ifelse(stat_type == "SD" & !is.na(stat_type), "", stat_type)  # Clear stat_type for SD rows
-  ) 
 
-summary_table %>%
+
+
+```
+
+
+
+```{R}
+
+summary_table2 <- summary_table1 %>%
   
   # Remove rows with stat_type == "N" but preserve the 'N_values' column
-  filter(stat_type != "N") %>%
+  #filter(stat_type != "N") %>%
   
   # Apply two decimal places for numeric columns (Control, Treatment1, etc.)
   mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%
@@ -275,20 +271,36 @@ summary_table %>%
   # Add parentheses for SD values (only if stat_type is SD)
   mutate(across(
     Control:Treatment3,  # Apply only to numeric columns
-    ~ ifelse(stat_type == "", paste0("(", trimws(.), ")"), .)  # Add parentheses for SD values
+    ~ ifelse(stat_type == "SD", paste0("(", trimws(.), ")"), .)  # Add parentheses for SD values
   )) %>%
-  
+
   # Add 'N_values' column to each of the treatments columns
-  mutate(across(Control:Treatment3, ~ ifelse(is.na(N_values), ., N_values), .names = "updated_{.col}")) %>%
-  
+  #mutate(across(Control:Treatment3, ~ ifelse(is.na(N_values), ., N_values), .names = "updated_{.col}")) %>%
+
   # Select necessary columns: variable, N_values, and treatment columns
-  select(variable, N_values, everything())
+  select(variable, everything()) %>%
+
+#summary_table2 <- summary_table1 %>%
+
+mutate(
+  variable = ifelse(stat_type %in% c("SD", "N"), "", variable),
+  stat_type = ifelse(stat_type %in% c("SD", "N"), "", stat_type)
+) %>%
+  select(-stat_type)
+
+
+summary_table2
 
 
 
-summary_table
 
-summary_table <- summary_table %>%
+```
+
+
+```{R}
+
+
+summary_table3 <- summary_table2 %>%
   mutate(Question = case_when(
     variable == "hhid_village" ~ "Village ID",
     variable == "hhid" ~ "Household ID",
@@ -349,14 +361,14 @@ summary_table <- summary_table %>%
     TRUE ~ variable  # Default case
   ))
 
+summary_table3
 
-summary_table <- summary_table %>% select(Question, everything()) %>%
-  select(-"stat_type")  %>%
+summary_table_complete <- summary_table3 %>% select(Question, everything()) %>%
   rename(Variable = variable,
          `Private Treatment` = Treatment1,
          `Public Treatment` = Treatment2, 
          `Private and Public Treatment` = Treatment3)
-summary_table
+summary_table_complete
 #%>%   filter(variable != "target_village")
 
 
@@ -366,18 +378,18 @@ summary_table
 
 ```{r}
 
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
 #Create table with footnotes using kableExtra
-summary_table %>%
+summary_table_complete %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics") %>%
   footnote(
-general = "Table presents mean values, with standard deviations in parentheses.",
+general = "Table presents mean values, with standard deviations in parentheses and the number of observations listed below them.",
 symbol = c(
   "Binary variables were created from Likert scale responses based on their distribution.",
   "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("_baseline_summary_statsV2.html")
+  save_kable("_baseline_summary_statsV3.html")
 
 
 # setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex_Output/Balance_Table")

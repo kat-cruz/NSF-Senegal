@@ -1050,7 +1050,7 @@ final_table
 ```{r}
 
 
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
 
 final_table %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
@@ -1061,7 +1061,7 @@ final_table %>%
       "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev11.html")
+  save_kable("balance_tablev12.html")
 ##balance_tablev11.html = without -9s
 
 
@@ -1152,14 +1152,48 @@ write_xlsx(table_subset_with_footnotes, "balance_table_Subset.xlsx")
 #####keep - checks for missings 
 
 ```{r}
+
+
+# Get total number of rows in the dataset
+total_rows <- nrow(joint_df)
+missing_counts <- colSums(is.na(joint_df))
+missing_counts
+total_rows
+# Compute missing percentages correctly
+missing_percents <- (missing_counts / total_rows) *100
+
+missing_percents
+
+missing_summary <- data.frame(Variable = names(missing_counts), 
+                              MissingCount = missing_counts, 
+                              MissingPercent = missing_percents)
+
+# Sort by highest percentage of missing data
+missing_summary <- missing_summary[order(-missing_summary$MissingPercent), ]
+print(missing_summary)
+
+
+
+view(joint_df)
+
+
+
+
+
+```
+
+
+
+
+```{r}
 # Load necessary packages
 # install.packages("nnet")  # If not already installed
 # library(nnet)
 
 #Check for collinearity
 
-cor_matrix <- cor(joint_df[, vars_to_include], use = "pairwise.complete.obs")
-print(cor_matrix)
+# cor_matrix <- cor(joint_df[, vars_to_include], use = "pairwise.complete.obs")
+# print(cor_matrix)
 #Removed "agri_income_01" due to collinearity
 
 ##Check for missings
@@ -1177,8 +1211,9 @@ sum(!complete.cases(joint_df))
 mean(!complete.cases(joint_df)) * 100
 
 missing_counts <- colSums(is.na(joint_df))
+missing_counts
 missing_percents <- colMeans(is.na(joint_df)) * 100
-
+missing_percents
 # Combine into a summary table
 missing_summary <- data.frame(Variable = names(missing_counts), 
                               MissingCount = missing_counts, 
@@ -1189,7 +1224,7 @@ missing_summary <- missing_summary[order(-missing_summary$MissingPercent), ]
 print(missing_summary)
 
 ##add clustering at the village level 
-
+view(joint_df)
 ```
 
 
@@ -1344,8 +1379,10 @@ print(paste("Imputed value for missing data:", round(impute_value, 2)))
 
 
 # Define the variables to process
-vars_to_impute <- c("agri_income_05", "agri_6_15", "hh_37_", "hh_38_", 
-                    "hh_29_01", "hh_29_02", "hh_29_03", "hh_29_04", "hh_12_6_", "hh_16_", "hh_26_", "hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", "health_5_6_")
+# vars_to_impute <- c("agri_income_05", "agri_6_15", "hh_37_", "hh_38_", 
+#                     "hh_29_01", "hh_29_02", "hh_29_03", "hh_29_04", "hh_12_6_", "hh_16_", "hh_26_", "hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", "health_5_6_")
+
+vars_to_impute <- c("agri_income_05", "agri_6_15", "hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", "health_5_6_")
 
 # Loop over each variable and perform missingness check, skewness, and imputation
 for (var in vars_to_impute) {

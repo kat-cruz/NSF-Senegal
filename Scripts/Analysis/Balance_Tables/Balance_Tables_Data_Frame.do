@@ -63,12 +63,12 @@ if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Sene
 
 *^*^* Define project-specific paths
 
-global data "${master}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
-global trainedData "${master}\Data_Management\Output\Data_Corrections\Treatment"
-global index "${master}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
+global data "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
+global trainedData "${master}\Data_Management\Output\Data_Processing\Checks\Data_Corrections\Treatment"
+global index "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
 
 *^*^* Data folders 
-global dataOutput "${master}\Data_Management\Output\Data_Analysis\Balance_Tables" 
+global dataOutput "${master}\Data_Management\Output\Analysis\Balance_Tables" 
 global latexOutput "$git_path\Latex_Output\Balance_Tables"
 
 
@@ -300,49 +300,25 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 		
 	reshape long resp_index_ hh_gender_ hh_age_ hh_relation_with_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_level_  ///
 			hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ hh_14_ hh_15_ hh_16_ hh_26_ hh_27_ hh_29_ hh_31_ hh_32_ hh_37_ hh_38_  ///
-			hh_number_ hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
-			health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_15_ health_5_3_99_ ///
-			health_5_2_ health_5_3_ health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
+			hh_03_ hh_10_ hh_11_ hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
+			health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_99_ ///
+			health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
 			
+
+*<><<><><>><><<><><>>
+* REPLACE MISSINGS 
+*<><<><><>><><<><><>>
 
 
 ** Initial look at data - check missings for each var
 
 
-foreach var of varlist _all {
-    quietly count if missing(`var')
-    display "`var': " r(N)
-}
-
-** Sanity check - 50 households did not report a head 
-*drop has_relation_1 household_has_1 unique_hh
-	gen has_relation_1 = (hh_relation_with_ == 1)  // Indicator: 1 if exists, 0 otherwise
-	egen household_has_1 = max(has_relation_1), by(hhid)  // Flag households with any 1
-
-
-	egen unique_hh = tag(hhid)  // Tag one row per household
-	count if household_has_1 == 0 & unique_hh == 1  // Count unique households without relation == 1
-
-
-
-  *^*^* filter variable 
-	forvalues j = 1/8 {
-		gen hh_13_0`j' = .
-		forvalues i = 1/7 {
-			replace hh_13_0`j' = hh_13_`i' if hh_12index_`i' == `j'
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
 		}
-	}
-
-   **drop unecessary variables
-	drop hh_13_7_ hh_13_6_ hh_13_5_ hh_13_4_ hh_13_3_ hh_13_2_ hh_13_1_ 
-	drop hh_12index_7_ hh_12index_6_ hh_12index_5_ hh_12index_4_ hh_12index_3_ hh_12index_2_ hh_12index_1_
 
 
-*Collapse at hh level - default to mean, change to something else IEBaltab - balance table output 
-
-*<><<><><>><><<><><>>
-* REPLACE MISSINGS 
-*<><<><><>><><<><><>>
 
 ** replace 2s for variables that have option "I don't know" 
 	*1 Yes
@@ -350,10 +326,12 @@ foreach var of varlist _all {
 	*2 Don't know / Don't answer
 
 	foreach var in hh_03_ hh_26_ hh_27_ hh_37_ health_5_2_ health_5_5_ health_5_6_ ///
+		agri_income_01 ///
 		agri_6_34_comp_1 agri_6_34_comp_2 agri_6_34_comp_3 agri_6_34_comp_4 agri_6_34_comp_5 ///
 		agri_6_34_comp_6 agri_6_34_comp_7 agri_6_34_comp_8 agri_6_34_comp_9 agri_6_34_comp_10 agri_6_34_comp_11 {
 		replace `var' = .a if `var' == 2
 	}
+
 
 
 ** replace -9s with NAs for variables that contain them
@@ -411,6 +389,20 @@ foreach var of varlist _all {
 	}
 
 
+	  *^*^* filter variable 
+	forvalues j = 1/8 {
+		gen hh_13_0`j' = .
+		forvalues i = 1/7 {
+			replace hh_13_0`j' = hh_13_`i' if hh_12index_`i' == `j'
+		}
+	}
+
+   **drop unecessary variables
+	drop hh_13_7_ hh_13_6_ hh_13_5_ hh_13_4_ hh_13_3_ hh_13_2_ hh_13_1_ 
+	drop hh_12index_7_ hh_12index_6_ hh_12index_5_ hh_12index_4_ hh_12index_3_ hh_12index_2_ hh_12index_1_
+	
+	
+	
 		
 		
 		* hh_14 relevance: ${hh_10} > 0 and selected(${hh_12}, "6")
@@ -846,24 +838,22 @@ save `balance_table_ata'
 
 * drop empty/useless variables 
 
-			drop _merge id species health_5_3_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ ///
-			health_5_3_15_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  ///
+			drop _merge id species health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ ///
+			health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  ///
 			health_5_3_8_ health_5_3_99_ health_5_3_9_  ///
 
-			save "$dataOutput\temp_balance.dta"
-			
-			use "$dataOutput\temp_balance.dta", clear
 			
   *^*^* aggregate by HH head 
   
 			  ** Sanity check - 50 households did not report a head 
-			drop has_relation_1 household_has_1 unique_hh
 				gen has_relation_1 = (hh_relation_with_ == 1)  // Indicator: 1 if exists, 0 otherwise
 				egen household_has_1 = max(has_relation_1), by(hhid)  // Flag households with any 1
 
 
 				egen unique_hh = tag(hhid)  // Tag one row per household
 				count if household_has_1 == 0 & unique_hh == 1  // Count unique households without relation == 1
+				
+				drop has_relation_1 household_has_1 unique_hh
 
 ** Take care of this issue by replacing hh head with the respondent 
 
@@ -878,7 +868,7 @@ save `balance_table_ata'
     & sum(hh_relation_with_ == 1) == 0
 	
 
-gen hh_complete = hh_relation_with_1 + hh_resp
+		gen hh_complete = hh_relation_with_1 + hh_resp
 
 
 

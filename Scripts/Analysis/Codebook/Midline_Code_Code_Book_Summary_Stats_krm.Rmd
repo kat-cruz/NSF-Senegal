@@ -72,12 +72,12 @@ proj_paths <- list(
 if (file.exists(proj_paths$projects)) {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$projects,
-    p1 = "<projects>/Data_Management/_CRDES_CleanData/Midline/Deidentified"
+    p1 = "<projects>/Data_Management/Data/_CRDES_CleanData/Midline/Deidentified"
   ))
 } else {
   proj <- kwb.utils::resolve(list(
     projects = proj_paths$alternative_projects,
-    p1 = "<projects>/Data_Management/_CRDES_CleanData/Midline/Deidentified"
+    p1 = "<projects>/Data_Management/Data/_CRDES_CleanData/Midline/Deidentified"
   ))
 }
 

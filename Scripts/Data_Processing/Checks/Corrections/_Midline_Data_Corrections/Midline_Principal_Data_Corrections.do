@@ -57,11 +57,11 @@ if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 global master "$box_path\Data_Management"
 
 * Define specific paths for output and input data
-global data "$master\_CRDES_RawData\Midline\Principal_Survey_Data"
-global schoolprincipal "$master\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues"
+global data "$master\data\_CRDES_RawData\Midline\Principal_Survey_Data"
+global schoolprincipal "$master\Output\Data_Processing\Checks\Midline\Midline_Principal_Issues"
 global issues "$master\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues"
 global corrections "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
-global corrected "$master\Output\Data_Corrections\Midline"
+global corrected "$master\Output\Data_Processing\Checks\Data_Corrections\Midline"
 
 **************************************************
 * IMPORT AND PROCESS CORRECTIONS FILE
@@ -555,6 +555,17 @@ replace passing_2024_total_5_1 = -9 if key == "uuid:2058b073-bd8b-4b73-ab1b-d712
 replace passing_2024_total_6_1 = -9 if key == "uuid:a36c008d-b97e-42f7-809a-a1c7a50d2c76"
 replace passing_2024_total_6_1 = -9 if key == "uuid:2058b073-bd8b-4b73-ab1b-d7128bd15831"
 
+*** Retired HHID' inputting info manually
+* 041B to 123B, it actually has 132B????
+* 123B and 132B both have forms
+
+* 101A to 123B
+* 123B both have forms
+
+
+* 051A to 130A
+* 051A has a form
+
 
 * Save the corrected dataset
-export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_12Mar2025.xlsx", firstrow(variables) replace
+export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_27Mar2025.xlsx", firstrow(variables) replace

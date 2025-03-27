@@ -94,22 +94,16 @@ joint_df <- balance_df %>%
 names(joint_df)
 
 
-joint_long_data <- joint_df %>%
-  pivot_longer(
-    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
-    names_to = "variable",    # Create a column named "variable" for former column names
-    values_to = "value"       # Store values in a column named "value"
-  )
-
-  joint_long_data <- joint_long_data %>%
-    rename(group = treatment_group)
+# joint_long_data <- joint_df %>%
+#   pivot_longer(
+#     cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+#     names_to = "variable",    # Create a column named "variable" for former column names
+#     values_to = "value"       # Store values in a column named "value"
+#   )
+# 
+#   joint_long_data <- joint_long_data %>%
+#     rename(group = treatment_group)
  # view(joint_long_data)
-
-
-
-
-
-
 
 
 summary_df <- balance_df %>%
@@ -124,15 +118,15 @@ summary_df <- balance_df %>%
     )
   ) %>% select(-group)
 
-long_data_sum <- summary_df %>%
-  pivot_longer(
-    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
-    names_to = "variable",    # Create a column named "variable" for former column names
-    values_to = "value"       # Store values in a column named "value"
-  )
-
-  long_data_sum <- long_data_sum %>%
-    rename(group = treatment_group)
+# long_data_sum <- summary_df %>%
+#   pivot_longer(
+#     cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+#     names_to = "variable",    # Create a column named "variable" for former column names
+#     values_to = "value"       # Store values in a column named "value"
+#   )
+# 
+#   long_data_sum <- long_data_sum %>%
+#     rename(group = treatment_group)
 
 # Adding a single categorical variable for household training categories - this is for running regressions to avoid multicollinearity with trained_hh
 balance_df <- balance_df %>%
@@ -147,20 +141,20 @@ balance_df <- balance_df %>%
        group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # Moved to the top
       group %in% c("3A", "3B") ~ "Treatment3"
     )
-  ) %>% select(-group, -trained_hh)
+  ) %>% select(-group)
 balance_df
-
-long_data <- balance_df %>%
-  pivot_longer(
-    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
-    names_to = "variable",    # Create a column named "variable" for former column names
-    values_to = "value"       # Store values in a column named "value"
-  )
-
-  long_data <- long_data %>%
-    rename(group = treatment_group)
-
-joint_long_data
+# 
+# long_data <- balance_df %>%
+#   pivot_longer(
+#     cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+#     names_to = "variable",    # Create a column named "variable" for former column names
+#     values_to = "value"       # Store values in a column named "value"
+#   )
+# 
+#   long_data <- long_data %>%
+#     rename(group = treatment_group)
+# 
+# joint_long_data
 
 ```
 
@@ -1580,6 +1574,85 @@ if ("agri_income_05_missing" %in% colnames(joint_df)) {
 ###keep- regression model
 
 ######latest
+
+
+
+```{r}
+
+library(nnet)       # For multinom()
+library(sandwich)   # For clustered standard errors
+library(lmtest)     # For coeftest()
+
+vars_to_include <- c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", 
+                     "hh_gender_h", "hh_numero", "hh_03_", "hh_10_", "hh_12_6_", "hh_16_", 
+                     "hh_15_2", "hh_26_", "hh_29_01", "hh_29_02", "hh_29_03", "hh_29_04", 
+                     "hh_37_", "hh_38_", "living_01_bin", "game_A_total", "game_B_total", 
+                     "TLU", "agri_6_15", "agri_6_32_bin", "agri_6_36_bin", "total_land_ha", 
+                     "agri_6_34_comp_any", "agri_income_05", "beliefs_01_bin", 
+                     "beliefs_02_bin", "beliefs_03_bin", "beliefs_04_bin", "beliefs_05_bin", 
+                     "beliefs_06_bin", "beliefs_07_bin", "beliefs_08_bin", "beliefs_09_bin", 
+                     "health_5_3_bin", "health_5_6_", "num_water_access_points", "q_51")
+
+# Recreate formula and re-run model
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
+
+# Run multinomial logit regression
+model <- multinom(formula, data = balance_df)
+
+# Display summary
+summary(model)
+
+# Number of observations
+num_obs <- nrow(balance_df)
+
+# Log-likelihood
+log_lik <- logLik(model)
+
+# Degrees of freedom (number of predictors)
+df_model <- length(coef(model))
+
+# LR Chi-Square (Likelihood Ratio Test Statistic)
+null_model <- multinom(treatment_group ~ 1, data = balance_df)  # Fit null model (intercept only)
+lr_chi2 <- 2 * (logLik(model) - logLik(null_model))  # Likelihood Ratio Test statistic
+
+# p-value for LR test
+p_value <- pchisq(as.numeric(lr_chi2), df = df_model, lower.tail = FALSE)
+
+# Pseudo R² (McFadden’s R²)
+pseudo_r2 <- 1 - (logLik(model) / logLik(null_model))
+
+# Clustered standard errors at the village level
+cluster_se <- vcovCL(model, cluster = balance_df$hhid_village, type = "HC0")
+
+# Display results with clustered SE
+coeftest(model, vcov = cluster_se)
+
+
+
+#view(balance_df)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ```{R}

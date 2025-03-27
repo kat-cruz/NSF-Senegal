@@ -556,15 +556,11 @@ replace passing_2024_total_6_1 = -9 if key == "uuid:a36c008d-b97e-42f7-809a-a1c7
 replace passing_2024_total_6_1 = -9 if key == "uuid:2058b073-bd8b-4b73-ab1b-d7128bd15831"
 
 *** Retired HHID' inputting info manually
-* 041B to 123B, it actually has 132B????
-* 123B and 132B both have forms
+* 041B to 132B
 
 * 101A to 123B
-* 123B both have forms
-
 
 * 051A to 130A
-* 051A has a form
 
 
 * Save the corrected dataset

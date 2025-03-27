@@ -50,11 +50,10 @@ if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 global master "$box_path\Data_Management"
 
 * Define specific paths for output and input data
-global data "$master\_CRDES_RawData\Midline\Community_Survey_Data"
+global data "$master\Data\_CRDES_RawData\Midline\Community_Survey_Data"
 global issues "$master\Output\Data_Quality_Checks\Midline\Midline_Community_Issues"
 global corrections "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
-global corrected "$master\Output\Data_Corrections\Midline"
-
+global corrected "$master\Output\Data_Processing\Checks\Data_Corrections\Midline"
 
 **************************************************
 * APPLY CORRECTIONS TO SURVEY DATASET
@@ -157,12 +156,9 @@ replace unit_convert_9 = 50 if phone_resp == 775631152
 * Correction 13May2025
 replace unit_convert_6 = 25 if phone_resp == 777211261
 
-* Corrections to Retired ID'saved  *** going to need to convert all of that info but this could be problematic because of the wealth stratum ranking...
-replace hhid_village = "130A" if hhid_village == "051A"
-replace hhid_village = "122B" if hhid_village == "063B"
-replace hhid_village = "140A" if hhid_village == "111A"
-
-
+** Corrections for 020A duplicate that should be 012B
+** Correction for 051A that should be 130A
 
 * Save the corrected dataset
-export excel using "$corrected\CORRECTED_Community_Survey_21March2025.xlsx", firstrow(variables) replace
+export excel using "$corrected\CORRECTED_Community_Survey_27March2025.xlsx", firstrow(variables) replace
+

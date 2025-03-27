@@ -556,12 +556,26 @@ replace passing_2024_total_6_1 = -9 if key == "uuid:a36c008d-b97e-42f7-809a-a1c7
 replace passing_2024_total_6_1 = -9 if key == "uuid:2058b073-bd8b-4b73-ab1b-d7128bd15831"
 
 *** Retired HHID' inputting info manually
-* 041B to 132B
+*****************************************
+* 132B <- 041B (in the village_select_o but denoted hhid_village 041B and coded that way)
+* 122B <- 063B (all good)
+* 120A <- 101A (in the village_select_o but denoted hhid_village 101A...)
+* 130A <- 051A (neither id's in the community surey?? but 051A has a photo of survey: unsure how to read it)
+* 140A <- 111A (all good)
 
-* 101A to 123B
+* Missing for attendance checks (ID's)
+*****************************************
+* 041B (needs to be changed to 132B then use picture of 132B)
+replace hhid_village == "132B" if hhid_village == "041B" 
+replace pull_hhid_village_1 pull_hhid_1 pull_individ_1 pull_hh_first_name__1 pull_hh_name__1 pull_hh_full_name_calc__1 pull_hh_age_1 pull_hh_gender_1 pull_hh_head_name_complet_1 pull_baselineniveau_1 pull_family_members_1 pull_temp_1 pull_fu_mem_id_1
 
-* 051A to 130A
 
+* 073A (there's a picture)
+replace pull_hhid_village_1 pull_hhid_1 pull_individ_1 pull_hh_first_name__1 pull_hh_name__1 pull_hh_full_name_calc__1 pull_hh_age_1 pull_hh_gender_1 pull_hh_head_name_complet_1 pull_baselineniveau_1 pull_family_members_1 pull_temp_1 pull_fu_mem_id_1
+
+* 101A (needs to be changed to 120A then use picture of 120A)
+replace hhid_village == "120A" if hhid_village == "101A"
+replace pull_hhid_village_1 pull_hhid_1 pull_individ_1 pull_hh_first_name__1 pull_hh_name__1 pull_hh_full_name_calc__1 pull_hh_age_1 pull_hh_gender_1 pull_hh_head_name_complet_1 pull_baselineniveau_1 pull_family_members_1 pull_temp_1 pull_fu_mem_id_1
 
 * Save the corrected dataset
 export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_27Mar2025.xlsx", firstrow(variables) replace

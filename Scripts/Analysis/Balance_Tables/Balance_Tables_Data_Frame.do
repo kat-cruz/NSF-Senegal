@@ -1106,7 +1106,7 @@ preserve
 restore 
 
 
-/*
+
 use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 
 

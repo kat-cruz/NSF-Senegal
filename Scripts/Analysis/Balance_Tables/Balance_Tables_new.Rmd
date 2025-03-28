@@ -20,6 +20,12 @@ This script outputs:
 ```{r}
 
 #install.packages("writexl")
+#install.packages("mclogit")
+#install.packages("clusterSEs")
+#install.packages("fixest")
+library(fixest)
+library(clusterSEs)
+library(mlogit)
 library(writexl) #to output to excel doc
 library(dplyr)
 library(readr) #to read in dta's
@@ -34,7 +40,7 @@ library(sandwich) #to wrangle data
 library(lmtest)  # For likelihood ratio test
 library(stats)   #for FDR q-stats
 library(nnet)  #to use multilogit regression 
-library(car)
+library(car) 
 library(aod)
 
 
@@ -118,15 +124,15 @@ summary_df <- balance_df %>%
     )
   ) %>% select(-group)
 
-# long_data_sum <- summary_df %>%
-#   pivot_longer(
-#     cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
-#     names_to = "variable",    # Create a column named "variable" for former column names
-#     values_to = "value"       # Store values in a column named "value"
-#   )
-# 
-#   long_data_sum <- long_data_sum %>%
-#     rename(group = treatment_group)
+long_data_sum <- summary_df %>%
+  pivot_longer(
+    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+    names_to = "variable",    # Create a column named "variable" for former column names
+    values_to = "value"       # Store values in a column named "value"
+  )
+
+  long_data_sum <- long_data_sum %>%
+    rename(group = treatment_group)
 
 # Adding a single categorical variable for household training categories - this is for running regressions to avoid multicollinearity with trained_hh
 balance_df <- balance_df %>%
@@ -308,7 +314,7 @@ summary_table3 <- summary_table2 %>%
     variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities (1=Yes, 0=No) †",
     variable == "hh_10_" ~ "Hours per week spent within 1 meter of surface water source",
     variable == "hh_12_6_" ~ "Indicator for those who harvested aquatic vegetation, among those who spent time near a water source (1=Yes, 0=No)",
-    variable == "hh_16_" ~ "Hours spent producing, purchasing, or applying fertilizer",
+    variable == "hh_16_" ~ "Hours spent producing, purchasing, or applying fertilizer, among those who spent time near a water source",
     variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
     
     variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †",
@@ -333,7 +339,7 @@ summary_table3 <- summary_table2 %>%
     variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No) †",
     
     variable == "agri_income_01" ~ "Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †",
-    variable == "agri_income_05" ~ "Amount received for agricultural work (FCFA)",
+    variable == "agri_income_05" ~ "Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture",
     
     variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree) +",
     variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia (1=Yes, 0=No) +",
@@ -407,7 +413,7 @@ symbol = c(
 
 ```{r}
 # Excel spreadsheet
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
 # Manually add footnotes as a single row
 footnotes <- data.frame(
   Variable = "Footnotes:",
@@ -417,14 +423,14 @@ footnotes <- data.frame(
 )
 
 # Ensure all columns are character type to avoid coercion issues
-summary_table <- summary_table %>%
+summary_table_complete <- summary_table_complete %>%
   mutate(across(everything(), as.character))
 
 # Bind footnotes to the summary table
-summary_table_with_footnotes <- bind_rows(summary_table, footnotes)
+summary_table_with_footnotes <- bind_rows(summary_table_complete, footnotes)
 
 # Save to Excel
-write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV2.xlsx")
+write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV4.xlsx")
 
 ```
 
@@ -914,7 +920,7 @@ final_table <- final_table %>%
     variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities (1=Yes, 0=No) †",
     variable == "hh_10_" ~ "Hours per week spent within 1 meter of surface water source",
     variable == "hh_12_6_" ~ "Indicator for those who harvested aquatic vegetation, among those who spent time near a water source (1=Yes, 0=No)",
-    variable == "hh_16_" ~ "Hours spent producing, purchasing, or applying fertilizer",
+    variable == "hh_16_" ~ "Hours spent producing, purchasing, or applying fertilizer, among those who spent time near a water source",
     variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
     
     variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †",
@@ -939,7 +945,7 @@ final_table <- final_table %>%
     variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No) †",
     
     variable == "agri_income_01" ~ "Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †",
-    variable == "agri_income_05" ~ "Amount received for agricultural work (FCFA)",
+    variable == "agri_income_05" ~ "Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture",
     
     variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree) +",
     variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia (1=Yes, 0=No) +",
@@ -1575,13 +1581,78 @@ if ("agri_income_05_missing" %in% colnames(joint_df)) {
 
 ######latest
 
+```{r}
+
+library(nnet)        # For multinom()
+library(lmtest)      # For hypothesis testing
+library(sandwich)    # For robust variance estimation
+
+# Example dataset
+set.seed(123)
+balance_df <- data.frame(
+  treatment_group = factor(sample(1:3, 100, replace = TRUE)),  # Multinomial outcome
+  predictor1 = rnorm(100),
+  predictor2 = rnorm(100),
+  hhid_village = sample(1:20, 100, replace = TRUE)  # Clustering variable
+)
+
+# Fit multinomial logistic regression
+formula <- treatment_group ~ predictor1 + predictor2
+model <- multinom(formula, data = balance_df)
+
+# Function to compute clustered standard errors
+cluster_se_fn <- function(model, cluster) {
+  # Extract coefficients
+  coef_matrix <- coef(model)
+  
+  # Get number of observations and parameters
+  num_obs <- nrow(model.frame(model))
+  num_params <- length(coef_matrix)
+  
+  # Compute the meat of the sandwich estimator (score contributions)
+  X <- model.matrix(model)  # Design matrix
+  probs <- predict(model, type = "probs")  # Predicted probabilities
+  Y <- model.response(model.frame(model))  # True response variable
+  
+  # Convert Y to a matrix of 0s and 1s for multinomial classification
+  Y_mat <- model.matrix(~ Y - 1)
+  
+  # Compute score residuals
+  score_mat <- (Y_mat - probs) * X  # Contribution per observation
+  
+  # Aggregate score residuals by cluster
+  cluster_groups <- split(score_mat, cluster)
+  meat <- Reduce("+", lapply(cluster_groups, function(x) crossprod(colMeans(x))))
+  
+  # Compute sandwich variance estimator
+  bread <- solve(crossprod(X, probs * (1 - probs) * X))  # Inverse Fisher Information
+  clustered_vcov <- bread %*% meat %*% bread
+  
+  return(clustered_vcov)
+}
+
+# Compute clustered standard errors
+clustered_se <- cluster_se_fn(model, balance_df$hhid_village)
+
+# Display results with clustered SEs
+coeftest(model, vcov = clustered_se)
+
+
+
+```
+```{r}
+# Install from CRAN
+
+
+
+
+
+
+```
 
 
 ```{r}
 
-library(nnet)       # For multinom()
-library(sandwich)   # For clustered standard errors
-library(lmtest)     # For coeftest()
 
 vars_to_include <- c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", 
                      "hh_gender_h", "hh_numero", "hh_03_", "hh_10_", "hh_12_6_", "hh_16_", 
@@ -1596,41 +1667,49 @@ vars_to_include <- c("hh_age_h", "hh_education_level_bin_h", "hh_education_skill
 # Recreate formula and re-run model
 formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
 
-# Run multinomial logit regression
-model <- multinom(formula, data = balance_df)
 
-# Display summary
-summary(model)
+
+
+# Run multinomial logit regression
+model <- multinom(formula, data = ml_balance_df)
+
+# Clustered standard errors at the village level
+Cluster_model <- cluster.im.mlogit(model, balance_df, ~hhid_village)
+
+# Display summary with clustered SEs
+summary(Cluster_model)
 
 # Number of observations
 num_obs <- nrow(balance_df)
 
 # Log-likelihood
-log_lik <- logLik(model)
+log_lik <- logLik(Cluster_model)  # Extract log-likelihood from clustered model
 
 # Degrees of freedom (number of predictors)
-df_model <- length(coef(model))
+df_model <- length(coef(Cluster_model))
 
 # LR Chi-Square (Likelihood Ratio Test Statistic)
 null_model <- multinom(treatment_group ~ 1, data = balance_df)  # Fit null model (intercept only)
-lr_chi2 <- 2 * (logLik(model) - logLik(null_model))  # Likelihood Ratio Test statistic
+lr_chi2 <- 2 * (logLik(Cluster_model) - logLik(null_model))  # LR test using clustered model
 
 # p-value for LR test
 p_value <- pchisq(as.numeric(lr_chi2), df = df_model, lower.tail = FALSE)
 
 # Pseudo R² (McFadden’s R²)
-pseudo_r2 <- 1 - (logLik(model) / logLik(null_model))
+pseudo_r2 <- 1 - (logLik(Cluster_model) / logLik(null_model))
 
-# Clustered standard errors at the village level
-cluster_se <- vcovCL(model, cluster = balance_df$hhid_village, type = "HC0")
-
-# Display results with clustered SE
-coeftest(model, vcov = cluster_se)
-
-
+# Display results
+list(
+  num_obs = num_obs,
+  log_lik = log_lik,
+  df_model = df_model,
+  lr_chi2 = lr_chi2,
+  p_value = p_value,
+  pseudo_r2 = pseudo_r2
+)
 
 #view(balance_df)
-
+balance_df
 
 ```
 

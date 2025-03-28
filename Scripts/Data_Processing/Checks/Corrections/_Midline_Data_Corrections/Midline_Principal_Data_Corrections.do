@@ -62,7 +62,9 @@ global schoolprincipal "$master\Output\Data_Processing\Checks\Midline\Midline_Pr
 global issues "$master\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues"
 global corrections "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
 global corrected "$master\Output\Data_Processing\Checks\Data_Corrections\Midline"
+global childdatabase "$master\External_Corrections\Issues for Justin and Amina\Midline\Attendance Check Forms\Child Database"
 
+import excel using "$childdatabase\baseline_child_database.xlsx", firstrow clear
 **************************************************
 * IMPORT AND PROCESS CORRECTIONS FILE
 **************************************************
@@ -566,104 +568,974 @@ replace passing_2024_total_6_1 = -9 if key == "uuid:2058b073-bd8b-4b73-ab1b-d712
 * Missing for attendance checks (ID's)
 *****************************************
 * 041B (needs to be changed to 132B then use picture of 132B)
-replace hhid_village == "132B" if hhid_village == "041B" 
-replace pull_hhid_village_1 pull_hhid_1 pull_individ_1 pull_hh_first_name__1 pull_hh_name__1 pull_hh_full_name_calc__1 pull_hh_age_1 pull_hh_gender_1 pull_hh_head_name_complet_1 pull_baselineniveau_1 pull_family_members_1 pull_temp_1 pull_fu_mem_id_1
+replace hhid_village = "132B" if hhid_village == "041B" 
 
-hhid_village	individ	nom_complet	niveau	age	sexe	inscrit	niveau_classe	present	ménage
-132B	132B1508	AMADOU MBODJI	CI	7	garçon	Oui    Non		Oui    Non	MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÃ MBODJI, ALY MBODJI
-132B	132B1805	Alassane Nbodji	CI	10	garçon	Oui    Non		Oui    Non	Abdoulaye Nbodji, Fama Nbodji, MARIAMA Nbodji, Rouguuyatou Nbodji, Alassane Nbodji, Kardiatou Nbodji, Mainouma Nbodji
-132B	132B1906	Bylo NDIAYE	CI	8	fille	Oui    Non		Oui    Non	AMADOU MOUSSA  NDIAYE, AISSAITA MOUSSA  THIAM, ABDOUL  Ba, Alassane  Ndiaye, MOUHAMADOU  NdiAYE, Bylo NDIAYE, Laye Ndiaye, Mody Ndiaye
-132B	132B0508	Fama Nbodji	CI	8	fille	Oui    Non		Oui    Non	Ibrahima mouctar  Nbodji, Tacko NDIAYE, Djienaba  Pam, Alassane  Nbodji, Mouctar  Nbodji, Mamoudou  Nbodji, KADIATA  Nbodji, Fama Nbodji, SOUNA Nbodji, Boudy Nbodji, Djienaba  Nbodji, Tacko  Nbodji
-132B	132B0804	MAIRAM OUMAR MBODJ	CI	6	fille	Oui    Non		Oui    Non	MALICK MAMOUDOU MBODJ, MAIRAM MAMOUDOU MBODJ, KARDIATA OUMAR MBODJ, MAIRAM OUMAR MBODJ, THIERNO OUMAR MBODJ
-132B	132B0904	PENDA NDIAYE	CI	7	fille	Oui    Non		Oui    Non	MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE
-132B	132B1103	DJIBRIL OUMAR FALL	CP	8	garçon	Oui    Non		Oui    Non	SAFRA FALL, OUMAR HAMADY FALL, DJIBRIL OUMAR FALL, KARDIATA FALL
-132B	132B1206	FATMATOU WADOU	CP	7	fille	Oui    Non		Oui    Non	FATIMATA DJIKINDE, AISSATA IDY KONÃ, FAMA THIAM, AISSATA NDIAYE, AISSATA AHMADOU NDIAYE, FATMATOU WADOU
-132B	132B1507	HAROUNA GAYE	CP	7	garçon	Oui    Non		Oui    Non	MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÃ MBODJI, ALY MBODJI
-132B	132B0803	KARDIATA OUMAR MBODJ	CP	8	fille	Oui    Non		Oui    Non	MALICK MAMOUDOU MBODJ, MAIRAM MAMOUDOU MBODJ, KARDIATA OUMAR MBODJ, MAIRAM OUMAR MBODJ, THIERNO OUMAR MBODJ
-132B	132B0705	DIEYNABA MBODJI	CE1	8	fille	Oui    Non		Oui    Non	ALASSANE OUSMANE MBODJI, RAMATA ABDOUL MBODJI, OUSMANE ALASSANE MBODJI, MARIAME ALASSANE MBODJI, DIEYNABA MBODJI, KHADIATOU MBODJI
-132B	132B0903	FATIMATA  MAMADOU NDIAYE	CE1	10	fille	Oui    Non		Oui    Non	MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE
-132B	132B1007	HAWA HAMADY SECK	CE1	11	fille	Oui    Non		Oui    Non	HAMADY SECK, TOMBA DIA, FAMA DIALLO, YERO NDIAYE, AISSATA NDIAYE, YOUGOUBA SECK, HAWA HAMADY SECK
-132B	132B1804	Rouguuyatou Nbodji	CE1	11	fille	Oui    Non		Oui    Non	Abdoulaye Nbodji, Fama Nbodji, MARIAMA Nbodji, Rouguuyatou Nbodji, Alassane Nbodji, Kardiatou Nbodji, Mainouma Nbodji
-132B	132B0305	AISSATA AMADOU MBODJ	CE2	10	fille	Oui    Non		Oui    Non	AMADOU MAMOUDOU MBODJ, KARDIATA OUSMANE MBODJ, KARDIATA AMADOU MBODJ, ALASSANE AMADOU MBODJ, AISSATA AMADOU MBODJ, MAIMOUNA AMADOU MBODJ, ROUGUIYATA AMADOU MBODJ
-132B	132B0105	AISSATA OUSMANE MBODJI	CE2	10	fille	Oui    Non		Oui    Non	MARIAM ALIOU MBODJI, HAMADY ALIOU MBODJI, OUSMANE ALIOU MBODJI, MOUCTAR OUSMANE MBODJI, AISSATA OUSMANE MBODJI
-132B	132B1404	MAIRAM MAMADOU MBODJ	CM1	11	fille	Oui    Non		Oui    Non	KARDIATA HAMADY MBODJ, ALASSANE MAMADOU MBODJ, MOCTAR MAMADOU MBODJ, MAIRAM MAMADOU MBODJ, RASSOULOU MAMADOU MBODJ, ELIMANE MAMADOU MBODJ
-132B	132B0905	ABDOULAYE NDIAYE		5	garçon	Oui    Non		Oui    Non	MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE
-132B	132B1603	AISSATA SY		5	fille	Oui    Non		Oui    Non	SAFIETOU OUSMANE GAYE, OUMAR FALL, AISSATA SY
-132B	132B1710	AMADOU KÃBA DIALLO		7	garçon	Oui    Non		Oui    Non	FARMATA AMADOU NDIAYE, ROUGUIATA HAMADY DIA, KÃBA DIALLO, BINETA ABDOURAHMANI DIALLO, HAMADY NDIAYE, AMADOU SANÃ, FARMATA SANÃ, ROUGUI SANÃ, NDEYE KÃBA DIALLO, AMADOU KÃBA DIALLO, FARMATA KÃBA DIALLO
-132B	132B0606	IBRAHIMA MBODJI		5	garçon	Oui    Non		Oui    Non	DIEYNABA ALIOU MBODJI, MAMOUDOU MALICK SALL, MARIAME ABDOUL NDIAYE, SOKHNA ABDOUL NDIAYE, AMINATA ABDOUL NDIAYE, IBRAHIMA MBODJI
-132B	132B1509	KALIDOU MBODJI		9	garçon	Oui    Non		Oui    Non	MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÃ MBODJI, ALY MBODJI
-132B	132B1905	MOUHAMADOU  NdiAYE		6	garçon	Oui    Non		Oui    Non	AMADOU MOUSSA  NDIAYE, AISSAITA MOUSSA  THIAM, ABDOUL  Ba, Alassane  Ndiaye, MOUHAMADOU  NdiAYE, Bylo NDIAYE, Laye Ndiaye, Mody Ndiaye
-132B	132B1304	MOUSSA MBODJ		6	garçon	Oui    Non		Oui    Non	MOUSSA ABDOULAYE MBODJ, MAIRAM WADE, FAMA MBODJ, MOUSSA MBODJ, SALAMATA MOUSSA MBODJ
-132B	132B0203	Nourrou sy		6	garçon	Oui    Non		Oui    Non	Tidjane Sy, Aminata Wade, Nourrou sy, THIERNO Sy, OUMAR Sy, Aliou sy
-132B	132B0509	SOUNA Nbodji		5	garçon	Oui    Non		Oui    Non	Ibrahima mouctar  Nbodji, Tacko NDIAYE, Djienaba  Pam, Alassane  Nbodji, Mouctar  Nbodji, Mamoudou  Nbodji, KADIATA  Nbodji, Fama Nbodji, SOUNA Nbodji, Boudy Nbodji, Djienaba  Nbodji, Tacko  Nbodji
+replace pull_hhid_village_1 = "132B" if hhid_village == "132B"
+replace pull_hhid_1 = "132B01" if hhid_village == "132B"
+replace pull_individ_1 = "132B0105" if hhid_village == "132B"
+replace pull_hh_first_name__1 = "AISSATA OUSMANE" if hhid_village == "132B"
+replace pull_hh_name__1 = "MBODJI" if hhid_village == "132B"
+replace pull_hh_full_name_calc__1 = "AISSATA OUSMANE MBODJI" if hhid_village == "132B"
+replace pull_hh_age_1 = 10 if hhid_village == "132B"
+replace pull_hh_gender_1 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_1 = "MARIAM ALIOU MBODJI" if hhid_village == "132B"
+replace pull_baselineniveau_1 = 4 if hhid_village == "132B"
+replace pull_family_members_1 = "MARIAM ALIOU MBODJI, HAMADY ALIOU MBODJI, OUSMANE ALIOU MBODJI, MOUCTAR OUSMANE MBODJI, AISSATA OUSMANE MBODJI" if hhid_village == "132B"
 
+replace pull_hhid_village_2 = "132B" if hhid_village == "132B"
+replace pull_hhid_2 = "132B02" if hhid_village == "132B"
+replace pull_individ_2 = "132B0203" if hhid_village == "132B"
+replace pull_hh_first_name__2 = "Nourrou" if hhid_village == "132B"
+replace pull_hh_name__2 = "sy" if hhid_village == "132B"
+replace pull_hh_full_name_calc__2 = "Nourrou sy" if hhid_village == "132B"
+replace pull_hh_age_2 = 6 if hhid_village == "132B"
+replace pull_hh_gender_2 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_2 = "Tidjane sy" if hhid_village == "132B"
+replace pull_family_members_2 = "Tidjane Sy, Aminata Wade, Nourrou sy, THIERNO Sy, OUMAR Sy, Aliou sy" if hhid_village == "132B"
+
+replace pull_hhid_village_3 = "132B" if hhid_village == "132B"
+replace pull_hhid_3 = "132B03" if hhid_village == "132B"
+replace pull_individ_3 = "132B0305" if hhid_village == "132B"
+replace pull_hh_first_name__3 = "AISSATA AMADOU" if hhid_village == "132B"
+replace pull_hh_name__3 = "MBODJ" if hhid_village == "132B"
+replace pull_hh_full_name_calc__3 = "AISSATA AMADOU MBODJ" if hhid_village == "132B"
+replace pull_hh_age_3 = 10 if hhid_village == "132B"
+replace pull_hh_gender_3 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_3 = "AMADOU MAMOUDOU MBODJ" if hhid_village == "132B"
+replace pull_baselineniveau_3 = 4 if hhid_village == "132B"
+replace pull_family_members_3 = "AMADOU MAMOUDOU MBODJ, KARDIATA OUSMANE MBODJ, KARDIATA AMADOU MBODJ, ALASSANE AMADOU MBODJ, AISSATA AMADOU MBODJ, MAIMOUNA AMADOU MBODJ, ROUGUIYATA AMADOU MBODJ" if hhid_village == "132B"
+
+replace pull_hhid_village_4 = "132B" if hhid_village == "132B"
+replace pull_hhid_4 = "132B05" if hhid_village == "132B"
+replace pull_individ_4 = "132B0508" if hhid_village == "132B"
+replace pull_hh_first_name__4 = "Fama" if hhid_village == "132B"
+replace pull_hh_name__4 = "Nbodji" if hhid_village == "132B"
+replace pull_hh_full_name_calc__4 = "Fama Nbodji" if hhid_village == "132B"
+replace pull_hh_age_4 = 8 if hhid_village == "132B"
+replace pull_hh_gender_4 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_4 = "Ibrahima mouctar NBODJI" if hhid_village == "132B"
+replace pull_baselineniveau_4 = 1 if hhid_village == "132B"
+replace pull_family_members_4 = "Ibrahima mouctar  Nbodji, Tacko NDIAYE, Djienaba  Pam, Alassane  Nbodji, Mouctar  Nbodji, Mamoudou  Nbodji, KADIATA  Nbodji, Fama Nbodji, SOUNA Nbodji, Boudy Nbodji, Djienaba  Nbodji, Tacko  Nbodji" if hhid_village == "132B"
+
+replace pull_hhid_village_5 = "132B" if hhid_village == "132B"
+replace pull_hhid_5 = "132B05" if hhid_village == "132B"
+replace pull_individ_5 = "132B0509" if hhid_village == "132B"
+replace pull_hh_first_name__5 = "SOUNA" if hhid_village == "132B"
+replace pull_hh_name__5 = "Nbodji" if hhid_village == "132B"
+replace pull_hh_full_name_calc__5 = "SOUNA Nbodji" if hhid_village == "132B"
+replace pull_hh_age_5 = 5 if hhid_village == "132B"
+replace pull_hh_gender_5 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_5 = "Ibrahima mouctar NBODJI" if hhid_village == "132B"
+replace pull_family_members_5 = "Ibrahima mouctar  Nbodji, Tacko NDIAYE, Djienaba  Pam, Alassane  Nbodji, Mouctar  Nbodji, Mamoudou  Nbodji, KADIATA  Nbodji, Fama Nbodji, SOUNA Nbodji, Boudy Nbodji, Djienaba  Nbodji, Tacko  Nbodji" if hhid_village == "132B"
+
+replace pull_hhid_village_6 = "132B" if hhid_village == "132B"
+replace pull_hhid_6 = "132B06" if hhid_village == "132B"
+replace pull_individ_6 = "132B0606" if hhid_village == "132B"
+replace pull_hh_first_name__6 = "IBRAHIMA" if hhid_village == "132B"
+replace pull_hh_name__6 = "MBODJI" if hhid_village == "132B"
+replace pull_hh_full_name_calc__6 = "IBRAHIMA MBODJI" if hhid_village == "132B"
+replace pull_hh_age_6 = 5 if hhid_village == "132B"
+replace pull_hh_gender_6 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_6 = "DIEYNABA ALIOU MBODJI" if hhid_village == "132B"
+replace pull_family_members_6 = "DIEYNABA ALIOU MBODJI, MAMOUDOU MALICK SALL, MARIAME ABDOUL NDIAYE, SOKHNA ABDOUL NDIAYE, AMINATA ABDOUL NDIAYE, IBRAHIMA MBODJI" if hhid_village == "132B"
+
+replace pull_hhid_village_7 = "132B" if hhid_village == "132B"
+replace pull_hhid_7 = "132B07" if hhid_village == "132B"
+replace pull_individ_7 = "132B0705" if hhid_village == "132B"
+replace pull_hh_first_name__7 = "DIEYNABA" if hhid_village == "132B"
+replace pull_hh_name__7 = "MBODJI" if hhid_village == "132B"
+replace pull_hh_full_name_calc__7 = "DIEYNABA MBODJI" if hhid_village == "132B"
+replace pull_hh_age_7 = 8 if hhid_village == "132B"
+replace pull_hh_gender_7 = 2 if hhid_village == "132B"
+replace pull_hh_head_name_complet_7 = "ALASSANE OUSMANE MBODJI" if hhid_village == "132B"
+replace pull_baselineniveau_7 = 3 if hhid_village == "132B"
+replace pull_family_members_7 = "ALASSANE OUSMANE MBODJI, RAMATA ABDOUL MBODJI, OUSMANE ALASSANE MBODJI, MARIAME ALASSANE MBODJI, DIEYNABA MBODJI, KHADIATOU MBODJI" if hhid_village == "132B"
+
+replace pull_hhid_village_8 = "132B" if hhid_village == "132B"
+replace pull_hhid_8 = "132B08" if hhid_village == "132B"
+replace pull_individ_8 = "132B0804" if hhid_village == "132B"
+replace pull_hh_first_name__8 = "MAIRAM OUMAR" if hhid_village == "132B"
+replace pull_hh_name__8 = "MBODJ" if hhid_village == "132B"
+replace pull_hh_full_name_calc__8 = "MAIRAM OUMAR MBODJ" if hhid_village == "132B"
+replace pull_hh_age_8 = 6 if hhid_village == "132B"
+replace pull_hh_gender_8 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_8 = "MALICK MAMOUDOU MBODJ" if hhid_village == "132B"
+replace pull_baselineniveau_8 = 1 if hhid_village == "132B"
+replace pull_family_members_8 = "MALICK MAMOUDOU MBODJ, MAIRAM MAMOUDOU MBODJ, KARDIATA OUMAR MBODJ, MAIRAM OUMAR MBODJ, THIERNO OUMAR MBODJ" if hhid_village == "132B"
+
+replace pull_hhid_village_9 = "132B" if hhid_village == "132B"
+replace pull_hhid_9 = "132B08" if hhid_village == "132B"
+replace pull_individ_9 = "132B0803" if hhid_village == "132B"
+replace pull_hh_first_name__9 = "KARDIATA OUMAR" if hhid_village == "132B"
+replace pull_hh_name__9 = "MBODJ" if hhid_village == "132B"
+replace pull_hh_full_name_calc__9 = "KARDIATA OUMAR MBODJ" if hhid_village == "132B"
+replace pull_hh_age_9 = 8 if hhid_village == "132B"
+replace pull_hh_gender_9 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_9 = "MALICK MAMOUDOU MBODJ" if hhid_village == "132B"
+replace pull_baselineniveau_9 = 2 if hhid_village == "132B"
+replace pull_family_members_9 = "MALICK MAMOUDOU MBODJ, MAIRAM MAMOUDOU MBODJ, KARDIATA OUMAR MBODJ, MAIRAM OUMAR MBODJ, THIERNO OUMAR MBODJ" if hhid_village == "132B"
+
+replace pull_hhid_village_10 = "132B" if hhid_village == "132B"
+replace pull_hhid_10 = "132B09" if hhid_village == "132B"
+replace pull_individ_10 = "132B0904" if hhid_village == "132B"
+replace pull_hh_first_name__10 = "PENDA" if hhid_village == "132B"
+replace pull_hh_name__10 = "NDIAYE" if hhid_village == "132B"
+replace pull_hh_full_name_calc__10 = "PENDA NDIAYE" if hhid_village == "132B"
+replace pull_hh_age_10 = 7 if hhid_village == "132B"
+replace pull_hh_gender_10 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_10 = "MAMADOU NDIAYE" if hhid_village == "132B"
+replace pull_baselineniveau_10 = 1 if hhid_village == "132B"
+replace pull_family_members_10 = "MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE" if hhid_village == "132B"
+
+replace pull_hhid_village_11 = "132B" if hhid_village == "132B"
+replace pull_hhid_11 = "132B09" if hhid_village == "132B"
+replace pull_individ_11 = "132B0905" if hhid_village == "132B"
+replace pull_hh_first_name__11 = "ABDOULAYE" if hhid_village == "132B"
+replace pull_hh_name__11 = "NDIAYE" if hhid_village == "132B"
+replace pull_hh_full_name_calc__11 = "ABDOULAYE NDIAYE" if hhid_village == "132B"
+replace pull_hh_age_11 = 5 if hhid_village == "132B"
+replace pull_hh_gender_11 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_11 = "MAMADOU NDIAYE" if hhid_village == "132B"
+replace pull_family_members_11 = "MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE" if hhid_village == "132B"
+
+replace pull_hhid_village_12 = "132B" if hhid_village == "132B"
+replace pull_hhid_12 = "132B09" if hhid_village == "132B"
+replace pull_individ_12 = "132B0903" if hhid_village == "132B"
+replace pull_hh_first_name__12 = "FATIMATA  MAMADOU" if hhid_village == "132B"
+replace pull_hh_name__12 = "NDIAYE" if hhid_village == "132B"
+replace pull_hh_full_name_calc__12 = "FATIMATA  MAMADOU NDIAYE" if hhid_village == "132B"
+replace pull_hh_age_12 = 10 if hhid_village == "132B"
+replace pull_hh_gender_12 == "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_12 == "MAMADOU NDIAYE" if hhid_village == "132B"
+replace pull_baselineniveau_12 = 3 if hhid_village == "132B"
+replace pull_family_members_12 = "MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE" if hhid_village == "132B"
+
+replace pull_hhid_village_13 = "132B" if hhid_village == "132B"
+replace pull_hhid_13 = "132B10" if hhid_village == "132B"
+replace pull_individ_13 = "132B1007" if hhid_village == "132B"
+replace pull_hh_first_name__13 = "HAWA HAMADY" if hhid_village == "132B"
+replace pull_hh_name__13 = "SECK" if hhid_village == "132B"
+replace pull_hh_full_name_calc__13 = "HAWA HAMADY SECK" if hhid_village == "132B"
+replace pull_hh_age_13 = 11 if hhid_village == "132B"
+replace pull_hh_gender_13 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_13 = "HAMADY SECK" if hhid_village == "132B"
+replace pull_baselineniveau_13 = 3 if hhid_village == "132B"
+replace pull_family_members_13 = "HAMADY SECK, TOMBA DIA, FAMA DIALLO, YERO NDIAYE, AISSATA NDIAYE, YOUGOUBA SECK, HAWA HAMADY SECK" if hhid_village == "132B"
+
+replace pull_hhid_village_14 = "132B" if hhid_village == "132B"
+replace pull_hhid_14 = "132B11" if hhid_village == "132B"
+replace pull_individ_14 = "132B1103" if hhid_village == "132B"
+replace pull_hh_first_name__14 = "DJIBRIL OUMAR" if hhid_village == "132B"
+replace pull_hh_name__14 = "FALL" if hhid_village == "132B"
+replace pull_hh_full_name_calc__14 = "DJIBRIL OUMAR FALL" if hhid_village == "132B"
+replace pull_hh_age_14 = 8 if hhid_village == "132B"
+replace pull_hh_gender_14 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_14 = "OUMAR HAMADY FALL" if hhid_village == "132B"
+replace pull_baselineniveau_14 = 2 if hhid_village == "132B"
+replace pull_family_members_14 = "SAFRA FALL, OUMAR HAMADY FALL, DJIBRIL OUMAR FALL, KARDIATA FALL" if hhid_village == "132B"
+
+replace pull_hhid_village_15 = "132B" if hhid_village == "132B"
+replace pull_hhid_15 = "132B12" if hhid_village == "132B"
+replace pull_individ_15 = "132B1206" if hhid_village == "132B"
+replace pull_hh_first_name__15 = "FATMATOU" if hhid_village == "132B"
+replace pull_hh_name__15 = "WADOU" if hhid_village == "132B"
+replace pull_hh_full_name_calc__15=== "FATMATOU WADOU" if hhid_village == "132B"
+replace pull_hh_age_15 = 7 if hhid_village == "132B"
+replace pull_hh_gender_15 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_15 = "GAMADJI SARRE" if hhid_village == "132B"
+replace pull_baselineniveau_15 = 2 if hhid_village == "132B"
+replace pull_family_members_15 = "FATIMATA DJIKINDE, AISSATA IDY KONÉ, FAMA THIAM, AISSATA NDIAYE, AISSATA AHMADOU NDIAYE, FATMATOU WADOU" if hhid_village == "132B"
+
+replace pull_hhid_village_16 = "132B" if hhid_village == "132B"
+replace pull_hhid_16 = "132B13" if hhid_village == "132B"
+replace pull_individ_16 = "132B1304" if hhid_village == "132B"
+replace pull_hh_first_name__16 = "MOUSSA" if hhid_village == "132B"
+replace pull_hh_name__16 = "MBODJ" if hhid_village == "132B"
+replace pull_hh_full_name_calc__16 = "MOUSSA MBODJ" if hhid_village == "132B"
+replace pull_hh_age_16 = 6 if hhid_village == "132B"
+replace pull_hh_gender_16 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_16 = "MOUSSA ABDOULAYE MBODJ" if hhid_village == "132B"
+replace pull_family_members_16 = "MOUSSA ABDOULAYE MBODJ, MAIRAM WADE, FAMA MBODJ, MOUSSA MBODJ, SALAMATA MOUSSA MBODJ" if hhid_village == "132B"
+
+replace pull_hhid_village_17 = "132B" if hhid_village == "132B"
+replace pull_hhid_17 = "132B14" if hhid_village == "132B"
+replace pull_individ_17 = "132B1404" if hhid_village == "132B"
+replace pull_hh_first_name__17 = "MAIRAM MAMADOU" if hhid_village == "132B"
+replace pull_hh_name__17 = "MBODJ" if hhid_village == "132B"
+replace pull_hh_full_name_calc__17 = "MAIRAM MAMADOU MBODJ" if hhid_village == "132B"
+replace pull_hh_age_17 = 11 if hhid_village == "132B"
+replace pull_hh_gender_17 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_17 = "MAMADOU MOCTAR MBODJ" if hhid_village == "132B"
+replace pull_baselineniveau_17 = 5 if hhid_village == "132B"
+replace pull_family_members_17 = "KARDIATA HAMADY MBODJ, ALASSANE MAMADOU MBODJ, MOCTAR MAMADOU MBODJ, MAIRAM MAMADOU MBODJ, RASSOULOU MAMADOU MBODJ, ELIMANE MAMADOU MBODJ" if hhid_village == "132B"
+
+replace pull_hhid_village_18 = "132B" if hhid_village == "132B"
+replace pull_hhid_18 = "132B15" if hhid_village == "132B"
+replace pull_individ_18 = "132B1509" if hhid_village == "132B"
+replace pull_hh_first_name__18 = "KALIDOU" if hhid_village == "132B"
+replace pull_hh_name__18 = "MBODJI" if hhid_village == "132B"
+replace pull_hh_full_name_calc__18 = "KALIDOU MBODJI" if hhid_village == "132B"
+replace pull_hh_age_18 = 9 if hhid_village == "132B"
+replace pull_hh_gender_18 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_18 = "MBODJI  MAMADOU" if hhid_village == "132B"
+replace pull_family_members_18 = "MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÉ MBODJI, ALY MBODJI" if hhid_village == "132B"
+
+replace pull_hhid_village_19 = "132B" if hhid_village == "132B"
+replace pull_hhid_19 = "132B15" if hhid_village == "132B"
+replace pull_individ_19 = "132B1508" if hhid_village == "132B"
+replace pull_hh_first_name__19 = "AMADOU" if hhid_village == "132B"
+replace pull_hh_name__19 = "MBODJI" if hhid_village == "132B"
+replace pull_hh_full_name_calc__19 = "AMADOU MBODJI" if hhid_village == "132B"
+replace pull_hh_age_19 = 7 if hhid_village == "132B"
+replace pull_hh_gender_19 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_19 = "MBODJI  MAMADOU" if hhid_village == "132B"
+replace pull_baselineniveau_19 = 1 if hhid_village == "132B"
+replace pull_family_members_19 = "MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÉ MBODJI, ALY MBODJI" if hhid_village == "132B"
+
+replace pull_hhid_village_20 = "132B" if hhid_village == "132B"
+replace pull_hhid_20 = "132B15" if hhid_village == "132B"
+replace pull_individ_20 = "132B1507" if hhid_village == "132B"
+replace pull_hh_first_name__20 = "HAROUNA" if hhid_village == "132B"
+replace pull_hh_name__20 = "GAYE" if hhid_village == "132B"
+replace pull_hh_full_name_calc__20 = "HAROUNA GAYE" if hhid_village == "132B"
+replace pull_hh_age_20 = 7 if hhid_village == "132B"
+replace pull_hh_gender_20 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_20 = "MBODJI  MAMADOU" if hhid_village == "132B"
+replace pull_baselineniveau_20 = 2 if hhid_village == "132B"
+replace pull_family_members_20 = "MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÉ MBODJI, ALY MBODJI" if hhid_village == "132B"
+
+replace pull_hhid_village_21 = "132B" if hhid_village == "132B"
+replace pull_hhid_21 = "132B16" if hhid_village == "132B"
+replace pull_individ_21 = "132B1603" if hhid_village == "132B"
+replace pull_hh_first_name__21 = "AISSATA" if hhid_village == "132B"
+replace pull_hh_name__21 = "SY" if hhid_village == "132B"
+replace pull_hh_full_name_calc__21 = "AISSATA SY" if hhid_village == "132B"
+replace pull_hh_age_21 = 5 if hhid_village == "132B"
+replace pull_hh_gender_21 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_21 = "OUMAR FALL" if hhid_village == "132B"
+replace pull_family_members_21 = "SAFIETOU OUSMANE GAYE, OUMAR FALL, AISSATA SY" if hhid_village == "132B"
+
+replace pull_hhid_village_22 = "132B" if hhid_village == "132B"
+replace pull_hhid_22 = "132B17" if hhid_village == "132B"
+replace pull_individ_22 = "132B1710" if hhid_village == "132B"
+replace pull_hh_first_name__22 = "AMADOU KÉBA" if hhid_village == "132B"
+replace pull_hh_name__22 = "DIALLO" if hhid_village == "132B"
+replace pull_hh_full_name_calc__22 = "AMADOU KÉBA DIALLO" if hhid_village == "132B"
+replace pull_hh_age_22 = 7 if hhid_village == "132B"
+replace pull_hh_gender_22 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_22 = "FARMATA AMADOU NDIAYE" if hhid_village == "132B"
+replace pull_family_members_22 = "FARMATA AMADOU NDIAYE, ROUGUIATA HAMADY DIA, KÉBA DIALLO, BINETA ABDOURAHMANI DIALLO, HAMADY NDIAYE, AMADOU SANÉ, FARMATA SANÉ, ROUGUI SANÉ, NDEYE KÉBA DIALLO, AMADOU KÉBA DIALLO, FARMATA KÉBA DIALLO" if hhid_village == "132B"
+
+replace pull_hhid_village_23 = "132B" if hhid_village == "132B"
+replace pull_hhid_23 = "132B18" if hhid_village == "132B"
+replace pull_individ_23 = "132B1805" if hhid_village == "132B"
+replace pull_hh_first_name__23 = "Alassane" if hhid_village == "132B"
+replace pull_hh_name__23 = "Nbodji" if hhid_village == "132B"
+replace pull_hh_full_name_calc__23 = "Alassane Nbodji" if hhid_village == "132B"
+replace pull_hh_age_23 = 10 if hhid_village == "132B"
+replace pull_hh_gender_23 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_23 = "Abdoulaye Nbodji" if hhid_village == "132B"
+replace pull_baselineniveau_23 = 1 if hhid_village == "132B"
+replace pull_family_members_23 = "Abdoulaye Nbodji, Fama Nbodji, MARIAMA Nbodji, Rouguuyatou Nbodji, Alassane Nbodji, Kardiatou Nbodji, Mainouma Nbodji" if hhid_village == "132B"
+
+replace pull_hhid_village_24 = "132B" if hhid_village == "132B"
+replace pull_hhid_24 = "132B18" if hhid_village == "132B"
+replace pull_individ_24 = "132B1804" if hhid_village == "132B"
+replace pull_hh_first_name__24 = "Rouguuyatou" if hhid_village == "132B"
+replace pull_hh_name__24 = "Nbodji" if hhid_village == "132B"
+replace pull_hh_full_name_calc__24 = "Rouguuyatou Nbodji" if hhid_village == "132B"
+replace pull_hh_age_24 = 11 if hhid_village == "132B"
+replace pull_hh_gender_24 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_24 = "Abdoulaye Nbodji" if hhid_village == "132B"
+replace pull_baselineniveau_24 = 3 if hhid_village == "132B"
+replace pull_family_members_24 = "Abdoulaye Nbodji, Fama Nbodji, MARIAMA Nbodji, Rouguuyatou Nbodji, Alassane Nbodji, Kardiatou Nbodji, Mainouma Nbodji" if hhid_village == "132B"
+
+replace pull_hhid_village_25 = "132B" if hhid_village == "132B"
+replace pull_hhid_25 = "132B19" if hhid_village == "132B"
+replace pull_individ_25 = "132B1906" if hhid_village == "132B"
+replace pull_hh_first_name__25 = "Bylo" if hhid_village == "132B"
+replace pull_hh_name__25 = "NDIAYE" if hhid_village == "132B"
+replace pull_hh_full_name_calc__25 = "Bylo NDIAYE" if hhid_village == "132B"
+replace pull_hh_age_25 = 8 if hhid_village == "132B"
+replace pull_hh_gender_25 = "Fille" if hhid_village == "132B"
+replace pull_hh_head_name_complet_25 = "AMADOU MOUSSA NDIAYE" if hhid_village == "132B"
+replace pull_baselineniveau_25 = 1 if hhid_village == "132B"
+replace pull_family_members_25 = "AMADOU MOUSSA  NDIAYE, AISSAITA MOUSSA  THIAM, ABDOUL  Ba, Alassane  Ndiaye, MOUHAMADOU  NdiAYE, Bylo NDIAYE, Laye Ndiaye, Mody Ndiaye" if hhid_village == "132B"
+
+replace pull_hhid_village_26 = "132B" if hhid_village == "132B"
+replace pull_hhid_26 = "132B19" if hhid_village == "132B"
+replace pull_individ_26 = "132B1905" if hhid_village == "132B"
+replace pull_hh_first_name__26 = "MOUHAMADOU" if hhid_village == "132B"
+replace pull_hh_name__26 = "NdiAYE" if hhid_village == "132B"
+replace pull_hh_full_name_calc__26 = "MOUHAMADOU NdiAYE" if hhid_village == "132B"
+replace pull_hh_age_26 = 6 if hhid_village == "132B"
+replace pull_hh_gender_26 = "GarÃ§on" if hhid_village == "132B"
+replace pull_hh_head_name_complet_26 = "AMADOU MOUSSA NDIAYE" if hhid_village == "132B"
+replace pull_family_members_26 = "AMADOU MOUSSA  NDIAYE, AISSAITA MOUSSA  THIAM, ABDOUL  Ba, Alassane  Ndiaye, MOUHAMADOU  NdiAYE, Bylo NDIAYE, Laye Ndiaye, Mody Ndiaye" if hhid_village == "132B"
+
+
+/*
+hhid_village	hhid	individ	hh_first_name_	hh_name_	hh_full_name_calc_	hh_age_	hh_gender_	hh_head_name_complet	baselineniveau	family_members
+132B	132B01	132B0105	AISSATA OUSMANE	MBODJI	AISSATA OUSMANE MBODJI	10	2	MARIAM ALIOU MBODJI	4	MARIAM ALIOU MBODJI, HAMADY ALIOU MBODJI, OUSMANE ALIOU MBODJI, MOUCTAR OUSMANE MBODJI, AISSATA OUSMANE MBODJI
+132B	132B02	132B0203	Nourrou	sy	Nourrou sy	6	1	Tidjane sy		Tidjane Sy, Aminata Wade, Nourrou sy, THIERNO Sy, OUMAR Sy, Aliou sy
+132B	132B03	132B0305	AISSATA AMADOU	MBODJ	AISSATA AMADOU MBODJ	10	2	AMADOU MAMOUDOU MBODJ	4	AMADOU MAMOUDOU MBODJ, KARDIATA OUSMANE MBODJ, KARDIATA AMADOU MBODJ, ALASSANE AMADOU MBODJ, AISSATA AMADOU MBODJ, MAIMOUNA AMADOU MBODJ, ROUGUIYATA AMADOU MBODJ
+132B	132B05	132B0508	Fama	Nbodji	Fama Nbodji	8	2	Ibrahima mouctar NBODJI	1	Ibrahima mouctar  Nbodji, Tacko NDIAYE, Djienaba  Pam, Alassane  Nbodji, Mouctar  Nbodji, Mamoudou  Nbodji, KADIATA  Nbodji, Fama Nbodji, SOUNA Nbodji, Boudy Nbodji, Djienaba  Nbodji, Tacko  Nbodji
+132B	132B05	132B0509	SOUNA	Nbodji	SOUNA Nbodji	5	1	Ibrahima mouctar NBODJI		Ibrahima mouctar  Nbodji, Tacko NDIAYE, Djienaba  Pam, Alassane  Nbodji, Mouctar  Nbodji, Mamoudou  Nbodji, KADIATA  Nbodji, Fama Nbodji, SOUNA Nbodji, Boudy Nbodji, Djienaba  Nbodji, Tacko  Nbodji
+132B	132B06	132B0606	IBRAHIMA	MBODJI	IBRAHIMA MBODJI	5	1	DIEYNABA ALIOU MBODJI		DIEYNABA ALIOU MBODJI, MAMOUDOU MALICK SALL, MARIAME ABDOUL NDIAYE, SOKHNA ABDOUL NDIAYE, AMINATA ABDOUL NDIAYE, IBRAHIMA MBODJI
+132B	132B07	132B0705	DIEYNABA	MBODJI	DIEYNABA MBODJI	8	2	ALASSANE OUSMANE MBODJI	3	ALASSANE OUSMANE MBODJI, RAMATA ABDOUL MBODJI, OUSMANE ALASSANE MBODJI, MARIAME ALASSANE MBODJI, DIEYNABA MBODJI, KHADIATOU MBODJI
+132B	132B08	132B0804	MAIRAM OUMAR	MBODJ	MAIRAM OUMAR MBODJ	6	2	MALICK MAMOUDOU MBODJ	1	MALICK MAMOUDOU MBODJ, MAIRAM MAMOUDOU MBODJ, KARDIATA OUMAR MBODJ, MAIRAM OUMAR MBODJ, THIERNO OUMAR MBODJ
+132B	132B08	132B0803	KARDIATA OUMAR	MBODJ	KARDIATA OUMAR MBODJ	8	2	MALICK MAMOUDOU MBODJ	2	MALICK MAMOUDOU MBODJ, MAIRAM MAMOUDOU MBODJ, KARDIATA OUMAR MBODJ, MAIRAM OUMAR MBODJ, THIERNO OUMAR MBODJ
+132B	132B09	132B0904	PENDA	NDIAYE	PENDA NDIAYE	7	2	MAMADOU NDIAYE	1	MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE
+132B	132B09	132B0905	ABDOULAYE	NDIAYE	ABDOULAYE NDIAYE	5	1	MAMADOU NDIAYE		MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE
+132B	132B09	132B0903	FATIMATA  MAMADOU	NDIAYE	FATIMATA  MAMADOU NDIAYE	10	2	MAMADOU NDIAYE	3	MAMADOU NDIAYE, FATIMATA NDIAYE, FATIMATA  MAMADOU NDIAYE, PENDA NDIAYE, ABDOULAYE NDIAYE, AMADOU NDIAYE
+132B	132B10	132B1007	HAWA HAMADY	SECK	HAWA HAMADY SECK	11	2	HAMADY SECK	3	HAMADY SECK, TOMBA DIA, FAMA DIALLO, YERO NDIAYE, AISSATA NDIAYE, YOUGOUBA SECK, HAWA HAMADY SECK
+132B	132B11	132B1103	DJIBRIL OUMAR	FALL	DJIBRIL OUMAR FALL	8	1	OUMAR HAMADY FALL	2	SAFRA FALL, OUMAR HAMADY FALL, DJIBRIL OUMAR FALL, KARDIATA FALL
+132B	132B12	132B1206	FATMATOU	WADOU	FATMATOU WADOU	7	2	GAMADJI SARRE	2	FATIMATA DJIKINDE, AISSATA IDY KONÃ, FAMA THIAM, AISSATA NDIAYE, AISSATA AHMADOU NDIAYE, FATMATOU WADOU
+132B	132B13	132B1304	MOUSSA	MBODJ	MOUSSA MBODJ	6	1	MOUSSA ABDOULAYE MBODJ		MOUSSA ABDOULAYE MBODJ, MAIRAM WADE, FAMA MBODJ, MOUSSA MBODJ, SALAMATA MOUSSA MBODJ
+132B	132B14	132B1404	MAIRAM MAMADOU	MBODJ	MAIRAM MAMADOU MBODJ	11	2	MAMADOU MOCTAR MBODJ	5	KARDIATA HAMADY MBODJ, ALASSANE MAMADOU MBODJ, MOCTAR MAMADOU MBODJ, MAIRAM MAMADOU MBODJ, RASSOULOU MAMADOU MBODJ, ELIMANE MAMADOU MBODJ
+132B	132B15	132B1509	KALIDOU	MBODJI	KALIDOU MBODJI	9	1	MBODJI  MAMADOU		MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÃ MBODJI, ALY MBODJI
+132B	132B15	132B1508	AMADOU	MBODJI	AMADOU MBODJI	7	1	MBODJI  MAMADOU	1	MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÃ MBODJI, ALY MBODJI
+132B	132B15	132B1507	HAROUNA	GAYE	HAROUNA GAYE	7	1	MBODJI  MAMADOU	2	MAMADOU MBODJI, KHARDIATA PAME, FADIME MBODJI, HAWA MBODJI, AISSATA GUAYE, MARIAME MBODJI, HAROUNA GAYE, AMADOU MBODJI, KALIDOU MBODJI, ALIOU MBODJI, NGAIDÃ MBODJI, ALY MBODJI
+132B	132B16	132B1603	AISSATA	SY	AISSATA SY	5	2	OUMAR FALL		SAFIETOU OUSMANE GAYE, OUMAR FALL, AISSATA SY
+132B	132B17	132B1710	AMADOU KÃBA	DIALLO	AMADOU KÃBA DIALLO	7	1	FARMATA AMADOU NDIAYE		FARMATA AMADOU NDIAYE, ROUGUIATA HAMADY DIA, KÃBA DIALLO, BINETA ABDOURAHMANI DIALLO, HAMADY NDIAYE, AMADOU SANÃ, FARMATA SANÃ, ROUGUI SANÃ, NDEYE KÃBA DIALLO, AMADOU KÃBA DIALLO, FARMATA KÃBA DIALLO
+132B	132B18	132B1805	Alassane	Nbodji	Alassane Nbodji	10	1	Abdoulaye Nbodji	1	Abdoulaye Nbodji, Fama Nbodji, MARIAMA Nbodji, Rouguuyatou Nbodji, Alassane Nbodji, Kardiatou Nbodji, Mainouma Nbodji
+132B	132B18	132B1804	Rouguuyatou	Nbodji	Rouguuyatou Nbodji	11	2	Abdoulaye Nbodji	3	Abdoulaye Nbodji, Fama Nbodji, MARIAMA Nbodji, Rouguuyatou Nbodji, Alassane Nbodji, Kardiatou Nbodji, Mainouma Nbodji
+132B	132B19	132B1906	Bylo	NDIAYE	Bylo NDIAYE	8	2	AMADOU MOUSSA NDIAYE	1	AMADOU MOUSSA  NDIAYE, AISSAITA MOUSSA  THIAM, ABDOUL  Ba, Alassane  Ndiaye, MOUHAMADOU  NdiAYE, Bylo NDIAYE, Laye Ndiaye, Mody Ndiaye
+132B	132B19	132B1905	MOUHAMADOU	NdiAYE	MOUHAMADOU  NdiAYE	6	1	AMADOU MOUSSA NDIAYE		AMADOU MOUSSA  NDIAYE, AISSAITA MOUSSA  THIAM, ABDOUL  Ba, Alassane  Ndiaye, MOUHAMADOU  NdiAYE, Bylo NDIAYE, Laye Ndiaye, Mody Ndiaye
+*/
 
 * 073A (there's a picture)
-replace pull_hhid_village_1 pull_hhid_1 pull_individ_1 pull_hh_first_name__1 pull_hh_name__1 pull_hh_full_name_calc__1 pull_hh_age_1 pull_hh_gender_1 pull_hh_head_name_complet_1 pull_baselineniveau_1 pull_family_members_1 pull_temp_1 pull_fu_mem_id_1
 
-hhid_village	individ	nom_complet	niveau	age	sexe	inscrit	niveau_classe	present	ménage
-072A	072A1206	ALHADJI MALICK THIAM	Pas enregistré. Vérifiez primaire.	9	garçon	Oui    Non		Oui    Non	PAPE CHEIKH THIAM, MBAYANG MBODJ, AMINTA DIOP, AWA THIAM, NDEYE ARAME THIAM, ALHADJI MALICK THIAM, ATOU THIAM, OUMEU DIAGNE
-072A	072A0607	Assane Ndao	Pas enregistré. Vérifiez primaire.	5	garçon	Oui    Non		Oui    Non	Amadou Ndao, Yatta Diop, Mame coumba GuÃ©ye, Talla Ndao, Diakher Ndao, Bathie Ndao, Assane Ndao, NdoumbÃ© GuÃ©ye
-072A	072A0410	Gamou Diop	Pas enregistré. Vérifiez primaire.	5	fille	Oui    Non		Oui    Non	Ndiaga Diop, Adama Sy, Cheikh Diop, Fatou Diop, Ousmane Diop, Asy Mbodji, Khady Mbaye, Malick Diop, Massamba Diop, Gamou Diop, Ameth Diop, Cheikh Diop, Doudou Diop, Faty Diop
-072A	072A0711	IBRAHIMA SALL	Pas enregistré. Vérifiez primaire.	5	garçon	Oui    Non		Oui    Non	IBEU SALL, NDIAKANE SALL, AWA BA, YAMAR SALL, COUMBA BA, SAMBA LAOBÃ SALL, OUSMANE SALL, ANNA SEYE, ALHASSANE SALL, AMINATA SALL, IBRAHIMA SALL, YACINE SALL, MOUHAMED SALL
-072A	072A1708	MACODE JUNIOR DIOP	Pas enregistré. Vérifiez primaire.	6	garçon	Oui    Non		Oui    Non	MACODE DIOP, FATOU CISSE, DIAGUA DIOP, Fatou DIOP, Yaram DIOP, MOUHAMED DIOP, AMINTA DIOP, MACODE JUNIOR DIOP, MBAYE DIOP, NDEYE DIAW, NDEYE DIOP, DIAGUA JUNIOR DIOP, RAMALAYE NIANG, DIADJI DIOP
-072A	072A0713	MOUHAMED SALL	Pas enregistré. Vérifiez primaire.	5	garçon	Oui    Non		Oui    Non	IBEU SALL, NDIAKANE SALL, AWA BA, YAMAR SALL, COUMBA BA, SAMBA LAOBÃ SALL, OUSMANE SALL, ANNA SEYE, ALHASSANE SALL, AMINATA SALL, IBRAHIMA SALL, YACINE SALL, MOUHAMED SALL
-072A	072A1304	Maremme GUEYE	Pas enregistré. Vérifiez primaire.	5	fille	Oui    Non		Oui    Non	FATOU birame WADE, AWA MBODIE, COUMBA MBODIE, Maremme GUEYE, Tagne MBODIE, MBAYE MBODIE, Ousseynou MBODIE, OUSMANE MBODIE
-072A	072A1506	PAPE KARIM SANE	Pas enregistré. Vérifiez primaire.	6	garçon	Oui    Non		Oui    Non	PAPE DIOP, LOLY SARR, SANTO DIOP, MAREME DIAGNE, MOHAMED EL AMINE SANE, PAPE KARIM SANE, ZEYNABOU HADIJA SANE
-072A	072A0807	NDEYE DIABY	CI	6	fille	Oui    Non		Oui    Non	BANDA DIÃNG, PENDA DIOP, NOGAYE DIENG, IBRAHIMA DIENG, BOURA NDIAYE DIENG, NDEYE COUMBA DIABI, NDEYE DIABY
-072A	072A0203	Ndeye  THIAM	CI	7	fille	Oui    Non		Oui    Non	Ibrahima  GUEYE, Mariama  THIAM, Ndeye  THIAM
-072A	072A0911	OULEY NDOUR	CI	7	fille	Oui    Non		Oui    Non	SODDA NDIAYE, COUMBA NDAO, NAKE NIANG, MAGUETTE NIANG, MOHAMED NIANG, ROKHAYA NIANG, PAPE AMADOU NIANG, ABDOU DIEYE, MOHAMED NDIAYE, OUMAR NDIAYE, OULEY NDOUR
-072A	072A0409	Massamba Diop	CP	8	garçon	Oui    Non		Oui    Non	Ndiaga Diop, Adama Sy, Cheikh Diop, Fatou Diop, Ousmane Diop, Asy Mbodji, Khady Mbaye, Malick Diop, Massamba Diop, Gamou Diop, Ameth Diop, Cheikh Diop, Doudou Diop, Faty Diop
-072A	072A0413	Doudou Diop	CE1	11	garçon	Oui    Non		Oui    Non	Ndiaga Diop, Adama Sy, Cheikh Diop, Fatou Diop, Ousmane Diop, Asy Mbodji, Khady Mbaye, Malick Diop, Massamba Diop, Gamou Diop, Ameth Diop, Cheikh Diop, Doudou Diop, Faty Diop
-072A	072A1505	MOHAMED EL AMINE SANE	CE1	8	garçon	Oui    Non		Oui    Non	PAPE DIOP, LOLY SARR, SANTO DIOP, MAREME DIAGNE, MOHAMED EL AMINE SANE, PAPE KARIM SANE, ZEYNABOU HADIJA SANE
-072A	072A1806	MOUHAMED SEYE	CE1	10	garçon	Oui    Non		Oui    Non	PAPE SEYE, Salimata SALL, Mame SEYE, ABDOUL AZIZ SEYE, Elhadji MASEYE SEYE, MOUHAMED SEYE, OULIMATA Diouf
-072A	072A1711	NDEYE DIOP	CE1	8	fille	Oui    Non		Oui    Non	MACODE DIOP, FATOU CISSE, DIAGUA DIOP, Fatou DIOP, Yaram DIOP, MOUHAMED DIOP, AMINTA DIOP, MACODE JUNIOR DIOP, MBAYE DIOP, NDEYE DIAW, NDEYE DIOP, DIAGUA JUNIOR DIOP, RAMALAYE NIANG, DIADJI DIOP
-072A	072A0606	Bathie Ndao	CE2	9	garçon	Oui    Non		Oui    Non	Amadou Ndao, Yatta Diop, Mame coumba GuÃ©ye, Talla Ndao, Diakher Ndao, Bathie Ndao, Assane Ndao, NdoumbÃ© GuÃ©ye
-072A	072A1707	AMINTA DIOP	CM1	10	garçon	Oui    Non		Oui    Non	MACODE DIOP, FATOU CISSE, DIAGUA DIOP, Fatou DIOP, Yaram DIOP, MOUHAMED DIOP, AMINTA DIOP, MACODE JUNIOR DIOP, MBAYE DIOP, NDEYE DIAW, NDEYE DIOP, DIAGUA JUNIOR DIOP, RAMALAYE NIANG, DIADJI DIOP
-072A	072A1805	Elhadji MASEYE SEYE	CM1	11	garçon	Oui    Non		Oui    Non	PAPE SEYE, Salimata SALL, Mame SEYE, ABDOUL AZIZ SEYE, Elhadji MASEYE SEYE, MOUHAMED SEYE, OULIMATA Diouf
-072A	072A1606	Fatou MBODJI	CM2	9	fille	Oui    Non		Oui    Non	LIMALE DIOP, CODOU FALL, Moado Diop, ASSANE DIOP, Bathio DIOP, Fatou MBODJI, Sigueu Toure, ASTOU TOURE, Amadou TOURE
+replace pull_hhid_village_1 = "073A" if hhid_village == "073A"
+replace pull_hhid_1 = "073A02" if hhid_village == "073A"
+replace pull_individ_1 = "073A0211" if hhid_village == "073A"
+replace pull_hh_first_name__1 = "MADY" if hhid_village == "073A"
+replace pull_hh_name__1 = "DIOP" if hhid_village == "073A"
+replace pull_hh_full_name_calc__1 = "MADY DIOP" if hhid_village == "073A"
+replace pull_hh_age_1 = 8 if hhid_village == "073A"
+replace pull_hh_gender_1 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_1 = "ADAMA DIOP" if hhid_village == "073A"
+replace pull_baselineniveau_1 = 2 if hhid_village == "073A"
+replace pull_family_members_1 =  "ADAMA DIOP, KHADY DIOP, ALIOUNE DIOP, IBRAHIMA DIOP, MALY KEBE, KHADY GUEYE, ASSANE DIOP, OUMAR DIOP, SEYNABOU DIOP, NDEYE DIOP, MADY DIOP, ALIOUNE DIOP, MAREME DIOP, MARETOU DIOP" if hhid_village == "073A"
+
+replace pull_hhid_village_2 = "073A" if hhid_village == "073A"
+replace pull_hhid_2 = "073A02" if hhid_village == "073A"
+replace pull_individ_2 = "073A0212" if hhid_village == "073A"
+replace pull_hh_first_name__2 = "ALIOUNE" if hhid_village == "073A"
+replace pull_hh_name__2 = "DIOP" if hhid_village == "073A"
+replace pull_hh_full_name_calc__2 = "ALIOUNE DIOP" if hhid_village == "073A"
+replace pull_hh_age_2 = 8 if hhid_village == "073A"
+replace pull_hh_gender_2 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_2 = "ADAMA DIOP" if hhid_village == "073A"
+replace pull_baselineniveau_2 = 2 if hhid_village == "073A"
+replace pull_family_members_2 = "ADAMA DIOP, KHADY DIOP, ALIOUNE DIOP, IBRAHIMA DIOP, MALY KEBE, KHADY GUEYE, ASSANE DIOP, OUMAR DIOP, SEYNABOU DIOP, NDEYE DIOP, MADY DIOP, ALIOUNE DIOP, MAREME DIOP, MARETOU DIOP" if hhid_village == "073A"
+
+replace pull_hhid_village_3 = "073A" if hhid_village == "073A"
+replace pull_hhid_3 = "073A06" if hhid_village == "073A"
+replace pull_individ_3 = "073A0606" if hhid_village == "073A"
+replace pull_hh_first_name__3 = "PAPE CHEIKH" if hhid_village == "073A"
+replace pull_hh_name__3 = "DIOP" if hhid_village == "073A"
+replace pull_hh_full_name_calc__3 = "PAPE CHEIKH DIOP" if hhid_village == "073A"
+replace pull_hh_age_3 = 5 if hhid_village == "073A"
+replace pull_hh_gender_3 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_3 = "PAPE BALLA DIOP" if hhid_village == "073A"
+replace pull_family_members_3 = "Sata Diop, Aminata Mbaye, Pape balla Diop, Aminata Diop, Sacoura Diop, Pape cheikh Diop, Maimouna Diop" if hhid_village == "073A"
+
+replace pull_hhid_village_4 = "073A" if hhid_village == "073A"
+replace pull_hhid_4 = "073A07" if hhid_village == "073A"
+replace pull_individ_4 = "073A0703" if hhid_village == "073A"
+replace pull_hh_first_name__4 = "KOUKA" if hhid_village == "073A"
+replace pull_hh_name__4 = "FALL" if hhid_village == "073A"
+replace pull_hh_full_name_calc__4 = "KOUKA FALL" if hhid_village == "073A"
+replace pull_hh_age_4 = 10 if hhid_village == "073A"
+replace pull_hh_gender_4 = "Fille" if hhid_village == "073A"
+replace pull_hh_head_name_complet_4 = "NDEYE KENDA" if hhid_village == "073A"
+replace pull_family_members_4 = "NDEYE KENDA, ALIOU FALL, KOUKA FALL, AMINETA FALL, MAREME FALL, SOFI FALL, OUMOU FALL, PAPE DIOP, SIDY FALL, BASSE FALL"
+
+replace pull_hhid_village_5 = "073A" if hhid_village == "073A"
+replace pull_hhid_5 = "073A08" if hhid_village == "073A"
+replace pull_individ_5 = "073A0805" if hhid_village == "073A"
+replace pull_hh_first_name__5 = "ATOU" if hhid_village == "073A"
+replace pull_hh_name__5 = "DIOP" if hhid_village == "073A"
+replace pull_hh_full_name_calc__5 = "ATOU DIOP" if hhid_village == "073A"
+replace pull_hh_age_5 = 5 if hhid_village == "073A"
+replace pull_hh_gender_5 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_5 = "MOUSSA DIOP" if hhid_village == "073A"
+replace pull_family_members_5 = "MOUSSA DIOP, SALIMATA FALL, ATOU DIOP, FATOU DIOP, ATOU DIOP, SEYNABOU DIOP, ABDOULAYE DIOP" if hhid_village == "073A"
+
+replace pull_hhid_village_6 = "073A" if hhid_village == "073A"
+replace pull_hhid_6 = "073A09" if hhid_village == "073A"
+replace pull_individ_6 = "073A0904" if hhid_village == "073A"
+replace pull_hh_first_name__6 = "ALINE" if hhid_village == "073A"
+replace pull_hh_name__6 = "SOW" if hhid_village == "073A"
+replace pull_hh_full_name_calc__6 = "ALINE SOW" if hhid_village == "073A"
+replace pull_hh_age_6 = 6 if hhid_village == "073A"
+replace pull_hh_gender_6 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_6 = "SEYNABOU DIOP" if hhid_village == "073A"
+replace pull_family_members_6 = "SEYNABOU DIOP, GAMOU DIOUF, BAYE DIOUF, ALINE SOW, SAER DIOUF, HARI DIOUF, AWA SOW, KHADY GAYE" if hhid_village == "073A"
+
+replace pull_hhid_village_7 = "073A" if hhid_village == "073A"
+replace pull_hhid_7 = "073A10" if hhid_village == "073A"
+replace pull_individ_7 = "073A1004" if hhid_village == "073A"
+replace pull_hh_first_name__7 = "AICHA" if hhid_village == "073A"
+replace pull_hh_name__7 = "FOFANA" if hhid_village == "073A"
+replace pull_hh_full_name_calc__7 = "AICHA FOFANA" if hhid_village == "073A"
+replace pull_hh_age_7 = 10 if hhid_village == "073A"
+replace pull_hh_gender_7 = "Fille" if hhid_village == "073A"
+replace pull_hh_head_name_complet_7 = "BABACAR FOFANA" if hhid_village == "073A"
+replace pull_baselineniveau_7 = 4 if hhid_village == "073A"
+replace pull_family_members_7 = "FATOU FALL, BABACAR FOFANA, MATALA FOFANA, AICHA FOFANA, SERIGNE FOFANA" if hhid_village == "073A"
+
+replace pull_hhid_village_8 = "073A" if hhid_village == "073A"
+replace pull_hhid_8 = "073A10" if hhid_village == "073A"
+replace pull_individ_8 = "073A1005" if hhid_village == "073A"
+replace pull_hh_first_name__8 = "SERIGNE" if hhid_village == "073A"
+replace pull_hh_name__8 = "FOFANA" if hhid_village == "073A"
+replace pull_hh_full_name_calc__8 = "SERIGNE FOFANA" if hhid_village == "073A"
+replace pull_hh_age_8 = 5 if hhid_village == "073A"
+replace pull_hh_gender_8 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_8 = "BABACAR FOFANA" if hhid_village == "073A"
+replace pull_family_members_8 = "FATOU FALL, BABACAR FOFANA, MATALA FOFANA, AICHA FOFANA, SERIGNE FOFANA" if hhid_village == "073A"
+
+replace pull_hhid_village_9 = "073A" if hhid_village == "073A"
+replace pull_hhid_9 = "073A12" if hhid_village == "073A"
+replace pull_individ_9 = "073A1208" if hhid_village == "073A"
+replace pull_hh_first_name__9 = "CHEIKH" if hhid_village == "073A"
+replace pull_hh_name__9 = "GAYE" if hhid_village == "073A"
+replace pull_hh_full_name_calc__9 = "CHEIKH GAYE" if hhid_village == "073A"
+replace pull_hh_age_9 = 8 if hhid_village == "073A"
+replace pull_hh_gender_9 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_9 = "LALA DIOP" if hhid_village == "073A"
+replace pull_baselineniveau_9 = 2 if hhid_village == "073A"
+replace pull_family_members_9 = "Lala Diop, Allassane Ndiaye, Seynabou Ndiaye, Aida Mbaye, Adama Diop, Adama Diop, Hamadou Gaye, Cheikh Gaye, Makhtar Gaye, Tacko Gaye" if hhid_village == "073A"
+
+replace pull_hhid_village_10 = "073A" if hhid_village == "073A"
+replace pull_hhid_10 = "073A12" if hhid_village == "073A"
+replace pull_individ_10 = "073A1210" if hhid_village == "073A"
+replace pull_hh_first_name__10 = "TACKO" if hhid_village == "073A"
+replace pull_hh_name__10 = "GAYE" if hhid_village == "073A"
+replace pull_hh_full_name_calc__10 = "TACKO GAYE" if hhid_village == "073A"
+replace pull_hh_age_10 = 5 if hhid_village == "073A"
+replace pull_hh_gender_10 = "Fille" if hhid_village == "073A"
+replace pull_hh_head_name_complet_10 = "LALA DIOP" if hhid_village == "073A"
+replace pull_family_members_10 = "Lala Diop, Allassane Ndiaye, Seynabou Ndiaye, Aida Mbaye, Adama Diop, Adama Diop, Hamadou Gaye, Cheikh Gaye, Makhtar Gaye, Tacko Gaye" if hhid_village == "073A"
+
+replace pull_hhid_village_11 = "073A" if hhid_village == "073A"
+replace pull_hhid_11 = "073A13" if hhid_village == "073A"
+replace pull_individ_11 = "073A1305" if hhid_village == "073A"
+replace pull_hh_first_name__11 = "AMADOU DIAW" if hhid_village == "073A"
+replace pull_hh_name__11 = "ANNE" if hhid_village == "073A"
+replace pull_hh_full_name_calc__11 = "AMADOU DIAW ANNE" if hhid_village == "073A"
+replace pull_hh_age_11 = 5 if hhid_village == "073A"
+replace pull_hh_gender_11 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_11 = "ASTOU KANE" if hhid_village == "073A"
+replace pull_family_members_11 = "ASTOU KANE, WALY HANNE, BINETA NDIAYE, ATOUMANE ANNE, AMADOU DIAW ANNE, OUSMANE ANNE, BINETOU NDIAYE, NDEYE DIOP ANNE, KALTOUM ANNE, NOGAYE NIANG, ABLAYE ANNE, BEUGUE ASTOU KANE HANNE, DIEYNABA KANE, YACINE ANNE, OUSSEYNOU ANNE, AMETH ANNE, AISSE ANNE" if hhid_village == "073A"
+
+replace pull_hhid_village_12 = "073A" if hhid_village == "073A"
+replace pull_hhid_12 = "073A13" if hhid_village == "073A"
+replace pull_individ_12 = "073A1304" if hhid_village == "073A"
+replace pull_hh_first_name__12 = "ATOUMANE" if hhid_village == "073A"
+replace pull_hh_name__12 = "ANNE" if hhid_village == "073A"
+replace pull_hh_full_name_calc__12 = "ATOUMANE ANNE" if hhid_village == "073A"
+replace pull_hh_age_12 = 10 if hhid_village == "073A"
+replace pull_hh_gender_12 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_12 = "ASTOU KANE" if hhid_village == "073A"
+replace pull_baselineniveau_12 = 4 if hhid_village == "073A"
+replace pull_family_members_12 = "ASTOU KANE, WALY HANNE, BINETA NDIAYE, ATOUMANE ANNE, AMADOU DIAW ANNE, OUSMANE ANNE, BINETOU NDIAYE, NDEYE DIOP ANNE, KALTOUM ANNE, NOGAYE NIANG, ABLAYE ANNE, BEUGUE ASTOU KANE HANNE, DIEYNABA KANE, YACINE ANNE, OUSSEYNOU ANNE, AMETH ANNE, AISSE ANNE" if hhid_village == "073A"
+
+replace pull_hhid_village_13 = "073A" if hhid_village == "073A"
+replace pull_hhid_13 = "073A13" if hhid_village == "073A"
+replace pull_individ_13 = "073A1308" if hhid_village == "073A"
+replace pull_hh_first_name__13 = "NDEYE DIOP" if hhid_village == "073A"
+replace pull_hh_name__13 = "ANNE" if hhid_village == "073A"
+replace pull_hh_full_name_calc__13 = "NDEYE DIOP ANNE" if hhid_village == "073A"
+replace pull_hh_age_13 = 5 if hhid_village == "073A"
+replace pull_hh_gender_13 = "Fille" if hhid_village == "073A"
+replace pull_hh_head_name_complet_13 = "ASTOU KANE" if hhid_village == "073A"
+replace pull_family_members_13 = "ASTOU KANE, WALY HANNE, BINETA NDIAYE, ATOUMANE ANNE, AMADOU DIAW ANNE, OUSMANE ANNE, BINETOU NDIAYE, NDEYE DIOP ANNE, KALTOUM ANNE, NOGAYE NIANG, ABLAYE ANNE, BEUGUE ASTOU KANE HANNE, DIEYNABA KANE, YACINE ANNE, OUSSEYNOU ANNE, AMETH ANNE, AISSE ANNE" if hhid_village == "073A"
+
+replace pull_hhid_village_14 = "073A" if hhid_village == "073A"
+replace pull_hhid_14 = "073A16" if hhid_village == "073A"
+replace pull_individ_14 = "073A1605" if hhid_village == "073A"
+replace pull_hh_first_name__14 = "ASSI" if hhid_village == "073A"
+replace pull_hh_name__14 = "LAM" if hhid_village == "073A"
+replace pull_hh_full_name_calc__14 = "ASSI LAM" if hhid_village == "073A"
+replace pull_hh_age_14 = 9 if hhid_village == "073A"
+replace pull_hh_gender_14 = "Fille" if hhid_village == "073A"
+replace pull_hh_head_name_complet_14 = "DIERY DIAGNE" if hhid_village == "073A"
+replace pull_family_members_14 = "DIERY DIAGNE, COUMBA ANNE, NDOUMBE DIAGNE, CODOU DIAGNE, ASSI LAM, DIERY NDAO, MAME CHEIKH DIAGNE, MAREME DIAGNE, ABSSA DIOP, ADAMA DIAGNE, AWA DIAGNE, DIONE BOYE" if hhid_village == "073A"
+
+replace pull_hhid_village_15 = "073A" if hhid_village == "073A"
+replace pull_hhid_15 = "073A16" if hhid_village == "073A"
+replace pull_individ_15 = "073A1606" if hhid_village == "073A"
+replace pull_hh_first_name__15 = "DIERY" if hhid_village == "073A"
+replace pull_hh_name__15 = "NDAO" if hhid_village == "073A"
+replace pull_hh_full_name_calc__15 = "DIERY NDAO" if hhid_village == "073A"
+replace pull_hh_age_15 = 6 if hhid_village == "073A"
+replace pull_hh_gender_15 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_15 = "DIERY DIAGNE" if hhid_village == "073A"
+replace pull_family_members_15 = "DIERY DIAGNE, COUMBA ANNE, NDOUMBE DIAGNE, CODOU DIAGNE, ASSI LAM, DIERY NDAO, MAME CHEIKH DIAGNE, MAREME DIAGNE, ABSSA DIOP, ADAMA DIAGNE, AWA DIAGNE, DIONE BOYE" if hhid_village == "073A"
+
+replace pull_hhid_village_16 = "073A" if hhid_village == "073A"
+replace pull_hhid_16 = "073A16" if hhid_village == "073A"
+replace pull_individ_16 = "073A1607" if hhid_village == "073A"
+replace pull_hh_first_name__16 = "MAME CHEIKH" if hhid_village == "073A"
+replace pull_hh_name__16 = "DIAGNE" if hhid_village == "073A"
+replace pull_hh_full_name_calc__16 = "MAME CHEIKH DIAGNE" if hhid_village == "073A"
+replace pull_hh_age_16 = 7 if hhid_village == "073A"
+replace pull_hh_gender_16 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_16 = "DIERY DIAGNE" if hhid_village == "073A"
+replace pull_baselineniveau_16 = 1 if hhid_village == "073A"
+replace pull_family_members_16 = "DIERY DIAGNE, COUMBA ANNE, NDOUMBE DIAGNE, CODOU DIAGNE, ASSI LAM, DIERY NDAO, MAME CHEIKH DIAGNE, MAREME DIAGNE, ABSSA DIOP, ADAMA DIAGNE, AWA DIAGNE, DIONE BOYE" if hhid_village == "073A"
+
+replace pull_hhid_village_17 = "073A" if hhid_village == "073A"
+replace pull_hhid_17 = "073A17" if hhid_village == "073A"
+replace pull_individ_17 = "073A1710" if hhid_village == "073A"
+replace pull_hh_first_name__17 = "DIAMA" if hhid_village == "073A"
+replace pull_hh_name__17 = "GUEYE" if hhid_village == "073A"
+replace pull_hh_full_name_calc__17 = "DIAMA GUEYE" if hhid_village == "073A"
+replace pull_hh_age_17 = 7 if hhid_village == "073A"
+replace pull_hh_gender_17 = "Fille" if hhid_village == "073A"
+replace pull_hh_head_name_complet_17 = "MAR GUEYE" if hhid_village == "073A"
+replace pull_baselineniveau_17 = 2 if hhid_village == "073A"
+replace pull_family_members_17 = "MAR GUEYE, AMINETA DIOP, MASSAR GUEYE, TABASKI GUEYE, KHADY DIOP, MALICK GUEYE, MOUSSA GUEYE, NDEYE NGOM, KHADY MALICK DIOP, DIAMA GUEYE, ALIOUNE GUEYE, NDEYE KALAMAR GUEYE" if hhid_village == "073A"
+
+replace pull_hhid_village_18 = "073A" if hhid_village == "073A"
+replace pull_hhid_18 = "073A18" if hhid_village == "073A"
+replace pull_individ_18 = "073A1803" if hhid_village == "073A"
+replace pull_hh_first_name__18 = "MAGATTE" if hhid_village == "073A"
+replace pull_hh_name__18 = "DIOP" if hhid_village == "073A"
+replace pull_hh_full_name_calc__18 = "MAGATTE DIOP" if hhid_village == "073A"
+replace pull_hh_age_18 = 10 if hhid_village == "073A"
+replace pull_hh_gender_18 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_18 = "ALY DIOP" if hhid_village == "073A"
+replace pull_baselineniveau_18 = 3 if hhid_village == "073A"
+replace pull_family_members_18 = "ALY DIOP, TACKO DIOP, MAGATTE DIOP, HADY DIOP, FAMA DIOP, MADIOP DIOP" if hhid_village == "073A"
+
+replace pull_hhid_village_19 = "073A" if hhid_village == "073A"
+replace pull_hhid_19 = "073A18" if hhid_village == "073A"
+replace pull_individ_19 = "073A1804" if hhid_village == "073A"
+replace pull_hh_first_name__19 = "HADY" if hhid_village == "073A"
+replace pull_hh_name__19 = "DIOP" if hhid_village == "073A"
+replace pull_hh_full_name_calc__19 = "HADY DIOP" if hhid_village == "073A"
+replace pull_hh_age_19 = 5 if hhid_village == "073A"
+replace pull_hh_gender_19 = "Fille" if hhid_village == "073A"
+replace pull_hh_head_name_complet_19 = "ALY DIOP" if hhid_village == "073A"
+replace pull_family_members_19 = "ALY DIOP, TACKO DIOP, MAGATTE DIOP, HADY DIOP, FAMA DIOP, MADIOP DIOP" if hhid_village == "073A"
+
+replace pull_hhid_village_20 = "073A" if hhid_village == "073A"
+replace pull_hhid_20 = "073A20" if hhid_village == "073A"
+replace pull_individ_20 = "073A2009" if hhid_village == "073A"
+replace pull_hh_first_name__20 = "SOGUI" if hhid_village == "073A"
+replace pull_hh_name__20 = "DIOP" if hhid_village == "073A"
+replace pull_hh_full_name_calc__20 = "SOGUI DIOP" if hhid_village == "073A"
+replace pull_hh_age_20 = 11 if hhid_village == "073A"
+replace pull_hh_gender_20 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_20 = "ALI NDIAYE DIOP" if hhid_village == "073A"
+replace pull_baselineniveau_20 = 6 if hhid_village == "073A"
+replace pull_family_members_20 = "ALI NDIAYE DIOP, MALICK DIOP, GUITE DIOP, MADIOR DIOP, BAYE DIOP, ASSI DIOP, BATER DIOP, AMADOU DIOP, SOGUI DIOP, DIERY DIOP, AWA DIOP, AWA GUEYE, Binta Soumare, ABY DIOP, ADAMA MBAYE, MAGUATE DIOP" if hhid_village == "073A"
+
+replace pull_hhid_village_21 = "073A" if hhid_village == "073A"
+replace pull_hhid_21 = "073A20" if hhid_village == "073A"
+replace pull_individ_21 = "073A2010" if hhid_village == "073A"
+replace pull_hh_first_name__21 = "DIERY" if hhid_village == "073A"
+replace pull_hh_name__21 = "DIOP" if hhid_village == "073A"
+replace pull_hh_full_name_calc__21 = "DIERY DIOP" if hhid_village == "073A"
+replace pull_hh_age_21 = 9 if hhid_village == "073A"
+replace pull_hh_gender_21 = "GarÃ§on" if hhid_village == "073A"
+replace pull_hh_head_name_complet_21 = "ALI NDIAYE DIOP" if hhid_village == "073A"
+replace pull_baselineniveau_21 = 5 if hhid_village == "073A"
+replace pull_family_members_21 = "ALI NDIAYE DIOP, MALICK DIOP, GUITE DIOP, MADIOR DIOP, BAYE DIOP, ASSI DIOP, BATER DIOP, AMADOU DIOP, SOGUI DIOP, DIERY DIOP, AWA DIOP, AWA GUEYE, Binta Soumare, ABY DIOP, ADAMA MBAYE, MAGUATE DIOP" if hhid_village == "073A"
+
+/* ....
+hhid_village	hhid	individ	hh_first_name_	hh_name_	hh_full_name_calc_	hh_age_	hh_gender_	hh_head_name_complet	baselineniveau	family_members
+073A	073A02	073A0211	MADY	DIOP	MADY DIOP	8	1	ADAMA DIOP	2	ADAMA DIOP, KHADY DIOP, ALIOUNE DIOP, IBRAHIMA DIOP, MALY KEBE, KHADY GUEYE, ASSANE DIOP, OUMAR DIOP, SEYNABOU DIOP, NDEYE DIOP, MADY DIOP, ALIOUNE DIOP, MAREME DIOP, MARETOU DIOP
+073A	073A02	073A0212	ALIOUNE	DIOP	ALIOUNE DIOP	8	1	ADAMA DIOP	2	ADAMA DIOP, KHADY DIOP, ALIOUNE DIOP, IBRAHIMA DIOP, MALY KEBE, KHADY GUEYE, ASSANE DIOP, OUMAR DIOP, SEYNABOU DIOP, NDEYE DIOP, MADY DIOP, ALIOUNE DIOP, MAREME DIOP, MARETOU DIOP
+073A	073A06	073A0606	Pape cheikh	Diop	Pape cheikh Diop	5	1	Pape balla diop		Sata Diop, Aminata Mbaye, Pape balla Diop, Aminata Diop, Sacoura Diop, Pape cheikh Diop, Maimouna Diop
+073A	073A07	073A0703	KOUKA	FALL	KOUKA FALL	10	2	NDEYE KENDA	6	NDEYE KENDA, ALIOU FALL, KOUKA FALL, AMINETA FALL, MAREME FALL, SOFI FALL, OUMOU FALL, PAPE DIOP, SIDY FALL, BASSE FALL
+073A	073A08	073A0805	ATOU	DIOP	ATOU DIOP	5	1	MOUSSA DIOP		MOUSSA DIOP, SALIMATA FALL, ATOU DIOP, FATOU DIOP, ATOU DIOP, SEYNABOU DIOP, ABDOULAYE DIOP
+073A	073A09	073A0904	ALINE	SOW	ALINE SOW	6	1	SEYNABOU DIOP		SEYNABOU DIOP, GAMOU DIOUF, BAYE DIOUF, ALINE SOW, SAER DIOUF, HARI DIOUF, AWA SOW, KHADY GAYE
+073A	073A10	073A1004	AICHA	FOFANA	AICHA FOFANA	10	2	BABACAR FOFANA	4	FATOU FALL, BABACAR FOFANA, MATALA FOFANA, AICHA FOFANA, SERIGNE FOFANA
+073A	073A10	073A1005	SERIGNE	FOFANA	SERIGNE FOFANA	5	1	BABACAR FOFANA		FATOU FALL, BABACAR FOFANA, MATALA FOFANA, AICHA FOFANA, SERIGNE FOFANA
+073A	073A12	073A1208	Cheikh	Gaye	Cheikh Gaye	8	1	Lala diop	2	Lala Diop, Allassane Ndiaye, Seynabou Ndiaye, Aida Mbaye, Adama Diop, Adama Diop, Hamadou Gaye, Cheikh Gaye, Makhtar Gaye, Tacko Gaye
+073A	073A12	073A1210	Tacko	Gaye	Tacko Gaye	5	2	Lala diop		Lala Diop, Allassane Ndiaye, Seynabou Ndiaye, Aida Mbaye, Adama Diop, Adama Diop, Hamadou Gaye, Cheikh Gaye, Makhtar Gaye, Tacko Gaye
+073A	073A13	073A1305	AMADOU DIAW	ANNE	AMADOU DIAW ANNE	5	1	ASTOU KANE		ASTOU KANE, WALY HANNE, BINETA NDIAYE, ATOUMANE ANNE, AMADOU DIAW ANNE, OUSMANE ANNE, BINETOU NDIAYE, NDEYE DIOP ANNE, KALTOUM ANNE, NOGAYE NIANG, ABLAYE ANNE, BEUGUE ASTOU KANE HANNE, DIEYNABA KANE, YACINE ANNE, OUSSEYNOU ANNE, AMETH ANNE, AISSE ANNE
+073A	073A13	073A1304	ATOUMANE	ANNE	ATOUMANE ANNE	10	1	ASTOU KANE	4	ASTOU KANE, WALY HANNE, BINETA NDIAYE, ATOUMANE ANNE, AMADOU DIAW ANNE, OUSMANE ANNE, BINETOU NDIAYE, NDEYE DIOP ANNE, KALTOUM ANNE, NOGAYE NIANG, ABLAYE ANNE, BEUGUE ASTOU KANE HANNE, DIEYNABA KANE, YACINE ANNE, OUSSEYNOU ANNE, AMETH ANNE, AISSE ANNE
+073A	073A13	073A1308	NDEYE DIOP	ANNE	NDEYE DIOP ANNE	5	2	ASTOU KANE		ASTOU KANE, WALY HANNE, BINETA NDIAYE, ATOUMANE ANNE, AMADOU DIAW ANNE, OUSMANE ANNE, BINETOU NDIAYE, NDEYE DIOP ANNE, KALTOUM ANNE, NOGAYE NIANG, ABLAYE ANNE, BEUGUE ASTOU KANE HANNE, DIEYNABA KANE, YACINE ANNE, OUSSEYNOU ANNE, AMETH ANNE, AISSE ANNE
+073A	073A16	073A1605	ASSI	LAM	ASSI LAM	9	2	DIERY DIAGNE		DIERY DIAGNE, COUMBA ANNE, NDOUMBE DIAGNE, CODOU DIAGNE, ASSI LAM, DIERY NDAO, MAME CHEIKH DIAGNE, MAREME DIAGNE, ABSSA DIOP, ADAMA DIAGNE, AWA DIAGNE, DIONE BOYE
+073A	073A16	073A1606	DIERY	NDAO	DIERY NDAO	6	1	DIERY DIAGNE		DIERY DIAGNE, COUMBA ANNE, NDOUMBE DIAGNE, CODOU DIAGNE, ASSI LAM, DIERY NDAO, MAME CHEIKH DIAGNE, MAREME DIAGNE, ABSSA DIOP, ADAMA DIAGNE, AWA DIAGNE, DIONE BOYE
+073A	073A16	073A1607	MAME CHEIKH	DIAGNE	MAME CHEIKH DIAGNE	7	1	DIERY DIAGNE	1	DIERY DIAGNE, COUMBA ANNE, NDOUMBE DIAGNE, CODOU DIAGNE, ASSI LAM, DIERY NDAO, MAME CHEIKH DIAGNE, MAREME DIAGNE, ABSSA DIOP, ADAMA DIAGNE, AWA DIAGNE, DIONE BOYE
+073A	073A17	073A1710	DIAMA	GUEYE	DIAMA GUEYE	7	2	MAR GUEYE	2	MAR GUEYE, AMINETA DIOP, MASSAR GUEYE, TABASKI GUEYE, KHADY DIOP, MALICK GUEYE, MOUSSA GUEYE, NDEYE NGOM, KHADY MALICK DIOP, DIAMA GUEYE, ALIOUNE GUEYE, NDEYE KALAMAR GUEYE
+073A	073A18	073A1803	MAGATTE	DIOP	MAGATTE DIOP	10	1	ALY DIOP	3	ALY DIOP, TACKO DIOP, MAGATTE DIOP, HADY DIOP, FAMA DIOP, MADIOP DIOP
+073A	073A18	073A1804	HADY	DIOP	HADY DIOP	5	2	ALY DIOP		ALY DIOP, TACKO DIOP, MAGATTE DIOP, HADY DIOP, FAMA DIOP, MADIOP DIOP
+073A	073A20	073A2009	SOGUI	DIOP	SOGUI DIOP	11	1	ALI NDIAYE DIOP	6	ALI NDIAYE DIOP, MALICK DIOP, GUITE DIOP, MADIOR DIOP, BAYE DIOP, ASSI DIOP, BATER DIOP, AMADOU DIOP, SOGUI DIOP, DIERY DIOP, AWA DIOP, AWA GUEYE, Binta Soumare, ABY DIOP, ADAMA MBAYE, MAGUATE DIOP
+073A	073A20	073A2010	DIERY	DIOP	DIERY DIOP	9	1	ALI NDIAYE DIOP	5	ALI NDIAYE DIOP, MALICK DIOP, GUITE DIOP, MADIOR DIOP, BAYE DIOP, ASSI DIOP, BATER DIOP, AMADOU DIOP, SOGUI DIOP, DIERY DIOP, AWA DIOP, AWA GUEYE, Binta Soumare, ABY DIOP, ADAMA MBAYE, MAGUATE DIOP
+*/
 
 
 * 101A (needs to be changed to 120A then use picture of 120A)
 replace hhid_village == "120A" if hhid_village == "101A"
-replace pull_hhid_village_1 pull_hhid_1 pull_individ_1 pull_hh_first_name__1 pull_hh_name__1 pull_hh_full_name_calc__1 pull_hh_age_1 pull_hh_gender_1 pull_hh_head_name_complet_1 pull_baselineniveau_1 pull_family_members_1 pull_temp_1 pull_fu_mem_id_1
 
-hhid_village	individ	nom_complet	niveau	age	sexe	inscrit	niveau_classe	present	ménage
-120A	120A0405	ALASSANE FALL	CI	7	garçon	Oui    Non		Oui    Non	FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL
-120A	120A1406	ALIOU DIOP	CI	7	garçon	Oui    Non		Oui    Non	BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP
-120A	120A0404	ALIOU FALL	CI	7	garçon	Oui    Non		Oui    Non	FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL
-120A	120A1407	ALSSANE DIOP	CI	7	garçon	Oui    Non		Oui    Non	BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP
-120A	120A0205	AMINATA SALL	CI	6	fille	Oui    Non		Oui    Non	BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL
-120A	120A1106	Aminata Diop	CI	7	fille	Oui    Non		Oui    Non	Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop
-120A	120A0703	AÃSSÃ  DIOP	CI	5	fille	Oui    Non		Oui    Non	OUMAR DIOP, FATY LY, AÃSSÃ  DIOP, DIEYNABA  DIOP, SEYDOU OUMAR  DIOP
-120A	120A2005	FARMATA DIOP	CI	8	fille	Oui    Non		Oui    Non	FARMATA BAIDY DIOP, ALASSANE BANA DIOP, YOUBA DIOP, MOUSSA DIOP, FARMATA DIOP, THIERNO BOCAR DIOP, FAT DIEYNABA DIOP
-120A	120A0510	IBA SY	CI	5	garçon	Oui    Non		Oui    Non	OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA
-120A	120A1603	MAMADOU SETT	CI	5	garçon	Oui    Non		Oui    Non	IBRAHIMA SETT, RACKY SETT, MAMADOU SETT, HOULEYE SETT, FARMATA SETT
-120A	120A1906	Mama Wone	CI	11	garçon	Oui    Non		Oui    Non	MALICK SAMBA  WONE, Hawa  Tome, Mariama  Wone, Adama  WONE, ThielÃ© Wone, Mama Wone, Cherif Wone, Dielia Wone, Moussa Wone, Salif Wone
-120A	120A0105	OUMAR DIOP	CI	6	garçon	Oui    Non		Oui    Non	MAMADOU DIOP, HAWA DIENG, HABIB DIOP, MARIAMA DIOP, OUMAR DIOP, FATY LY DIOP
-120A	120A0509	RACKY SALL	CI	7	fille	Oui    Non		Oui    Non	OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA
-120A	120A1008	Dicko  Sarr	CP	8	fille	Oui    Non		Oui    Non	BALIOU Sarr, Dicko  Diop, Oumar  Sarr, FATI  Sall, Penda Sow, Amar  Sarr, OUSMANE  Sarr, Dicko  Sarr
-120A	120A0508	HAWA SY	CP	6	fille	Oui    Non		Oui    Non	OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA
-120A	120A1708	KADIA SARR	CP	6	fille	Oui    Non		Oui    Non	THIERNO SARR, AMINATA DIAGNE, FATY SARR, OUSMANE SARR, BANAA SARR, COUMBA SARR, HAWO SARR, KADIA SARR, FATY THIERNO SARR
-120A	120A1105	Mamadou Diop	CP	8	garçon	Oui    Non		Oui    Non	Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop
-120A	120A1509	NAZIRE NDIAYE	CP	9	garçon	Oui    Non		Oui    Non	IBRAHIMA MOCTAR NDIAYE, HAWO ISSA SY, SILEYMANE NDIAYE, BOUBOU NDIAYE, MARIAME NDIAYE, FATY NDIAYE, RAMATOULAYE NDIAYE, MOCTAR IBRAHIMA NDIAYE, NAZIRE NDIAYE, ALASSANE NDIAYE, ISSA NDIAYE
-120A	120A1007	OUSMANE  Sarr	CP	8	garçon	Oui    Non		Oui    Non	BALIOU Sarr, Dicko  Diop, Oumar  Sarr, FATI  Sall, Penda Sow, Amar  Sarr, OUSMANE  Sarr, Dicko  Sarr
-120A	120A0806	SILEYE MALICK DIOP	CP	8	garçon	Oui    Non		Oui    Non	MALICK IBRAHIMA DIOP, KADIATA SARR, HAMATH MALICK DIOP, HAWA MALICK DIOP, AISSATA MALICK DIOP, SILEYE MALICK DIOP
-120A	120A0403	AISSATA MARIAME DIOP	CE1	9	fille	Oui    Non		Oui    Non	FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL
-120A	120A1104	Fati Diop	CE1	9	fille	Oui    Non		Oui    Non	Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop
-120A	120A0204	HABSATOU SALL	CE1	8	fille	Oui    Non		Oui    Non	BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL
-120A	120A1807	HOULEYE  LY	CE1	9	fille	Oui    Non		Oui    Non	IBRAHIMA Ly, AMINATA BA, MAMADOU  LY, BOUBOU LY, MADOUDOU LY, MOUHAMED LY, HOULEYE  LY
-120A	120A1405	OUMOU DIOP	CE1	10	fille	Oui    Non		Oui    Non	BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP
-120A	120A0507	SOULEYMANE SY	CE1	9	garçon	Oui    Non		Oui    Non	OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA
-120A	120A0604	Toly Wone	CE1	11	fille	Oui    Non		Oui    Non	Ibrahima Sy, Bassirou Sylla, Fatimata Ly, Toly Wone, Adama Wone, miyel Wone, Bocar Sall, Hawa Wone, Hawa Dia
-120A	120A0203	AISSATA SALL	CE2	10	fille	Oui    Non		Oui    Non	BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL
-120A	120A0605	Adama Wone		5	garçon	Oui    Non		Oui    Non	Ibrahima Sy, Bassirou Sylla, Fatimata Ly, Toly Wone, Adama Wone, miyel Wone, Bocar Sall, Hawa Wone, Hawa Dia
-120A	120A1907	Cherif Wone		7	garçon	Oui    Non		Oui    Non	MALICK SAMBA  WONE, Hawa  Tome, Mariama  Wone, Adama  WONE, ThielÃ© Wone, Mama Wone, Cherif Wone, Dielia Wone, Moussa Wone, Salif Wone
-120A	120A1908	Dielia Wone		5	fille	Oui    Non		Oui    Non	MALICK SAMBA  WONE, Hawa  Tome, Mariama  Wone, Adama  WONE, ThielÃ© Wone, Mama Wone, Cherif Wone, Dielia Wone, Moussa Wone, Salif Wone
-120A	120A0406	HAWA FALL		5	fille	Oui    Non		Oui    Non	FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL
-120A	120A1910	Salif Wone		6	garçon	Oui    Non		Oui    Non	MALICK SAMBA  WONE, Hawa  Tome, Mariama  Wone, Adama  WONE, ThielÃ© Wone, Mama Wone, Cherif Wone, Dielia Wone, Moussa Wone, Salif Wone
-120A	120A2006	THIERNO BOCAR DIOP		7	garçon	Oui    Non		Oui    Non	FARMATA BAIDY DIOP, ALASSANE BANA DIOP, YOUBA DIOP, MOUSSA DIOP, FARMATA DIOP, THIERNO BOCAR DIOP, FAT DIEYNABA DIOP
+replace pull_hhid_village_1 = "120A" if hhid_village == "120A"
+replace pull_hhid_1 = "120A01" if hhid_village == "120A"
+replace pull_individ_1 = "120A0105" if hhid_village == "120A"
+replace pull_hh_first_name__1 = "OUMAR" if hhid_village == "120A"
+replace pull_hh_name__1 = "DIOP" if hhid_village == "120A"
+replace pull_hh_full_name_calc__1 = "OUMAR DIOP" if hhid_village == "120A"
+replace pull_hh_age_1 = 6 if hhid_village == "120A"
+replace pull_hh_gender_1 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_1 = "MAMADOU DIOP" if hhid_village == "120A"
+replace pull_baselineniveau_1 = 1 if hhid_village == "120A"
+replace pull_family_members_1 = "MAMADOU DIOP, HAWA DIENG, HABIB DIOP, MARIAMA DIOP, OUMAR DIOP, FATY LY DIOP" if hhid_village == "120A"
 
+replace pull_hhid_village_2 = "120A" if hhid_village == "120A"
+replace pull_hhid_2 = "120A02" if hhid_village == "120A"
+replace pull_individ_2 = "120A0203" if hhid_village == "120A"
+replace pull_hh_first_name__2 = "AISSATA" if hhid_village == "120A"
+replace pull_hh_name__2 = "SALL" if hhid_village == "120A"
+replace pull_hh_full_name_calc__2 = "AISSATA SALL" if hhid_village == "120A"
+replace pull_hh_age_2 = 10 if hhid_village == "120A"
+replace pull_hh_gender_2 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_2 = "BOCAR TIDIANE SALL" if hhid_village == "120A"
+replace pull_baselineniveau_2 = 4 if hhid_village == "120A"
+replace pull_family_members_2 = "BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL" if hhid_village == "120A"
+
+replace pull_hhid_village_3 = "120A" if hhid_village == "120A"
+replace pull_hhid_3 = "120A02" if hhid_village == "120A"
+replace pull_individ_3 = "120A0204" if hhid_village == "120A"
+replace pull_hh_first_name__3 = "HABSATOU" if hhid_village == "120A"
+replace pull_hh_name__3 = "SALL" if hhid_village == "120A"
+replace pull_hh_full_name_calc__3 = "HABSATOU SALL" if hhid_village == "120A"
+replace pull_hh_age_3 = 8 if hhid_village == "120A"
+replace pull_hh_gender_3 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_3 = "BOCAR TIDIANE SALL" if hhid_village == "120A"
+replace pull_baselineniveau_3 = 3 if hhid_village == "120A"
+replace pull_family_members_3 = "BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL" if hhid_village == "120A"
+
+replace pull_hhid_village_4 = "120A" if hhid_village == "120A"
+replace pull_hhid_4 = "120A02" if hhid_village == "120A"
+replace pull_individ_4 = "120A0205" if hhid_village == "120A"
+replace pull_hh_first_name__4 = "AMINATA" if hhid_village == "120A"
+replace pull_hh_name__4 = "SALL" if hhid_village == "120A"
+replace pull_hh_full_name_calc__4 = "AMINATA SALL" if hhid_village == "120A"
+replace pull_hh_age_4 = 6 if hhid_village == "120A"
+replace pull_hh_gender_4 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_4 = "BOCAR TIDIANE SALL" if hhid_village == "120A"
+replace pull_baselineniveau_4 = 1 if hhid_village == "120A"
+replace pull_family_members_4 = "BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL" if hhid_village == "120A"
+
+replace pull_hhid_village_5 = "120A" if hhid_village == "120A"
+replace pull_hhid_5 = "120A04" if hhid_village == "120A"
+replace pull_individ_5 = "120A0403" if hhid_village == "120A"
+replace pull_hh_first_name__5 = "AISSATA MARIAME" if hhid_village == "120A"
+replace pull_hh_name__5 = "DIOP" if hhid_village == "120A"
+replace pull_hh_full_name_calc__5 = "AISSATA MARIAME DIOP" if hhid_village == "120A"
+replace pull_hh_age_5 = 9 if hhid_village == "120A"
+replace pull_hh_gender_5 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_5 = "FALL  KHALIFA" if hhid_village == "120A"
+replace pull_baselineniveau_5 = 3 if hhid_village == "120A"
+replace pull_family_members_5 = "FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL" if hhid_village == "120A"
+
+replace pull_hhid_village_6 = "120A" if hhid_village == "120A"
+replace pull_hhid_6 = "120A04" if hhid_village == "120A"
+replace pull_individ_6 = "120A0405" if hhid_village == "120A"
+replace pull_hh_first_name__6 = "ALASSANE" if hhid_village == "120A"
+replace pull_hh_name__6 = "FALL" if hhid_village == "120A"
+replace pull_hh_full_name_calc__6 = "ALASSANE FALL" if hhid_village == "120A"
+replace pull_hh_age_6 = 7 if hhid_village == "120A"
+replace pull_hh_gender_6 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_6 = "FALL  KHALIFA" if hhid_village == "120A"
+replace pull_baselineniveau_6 = 1 if hhid_village == "120A"
+replace pull_family_members_6 = "FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL" if hhid_village == "120A"
+
+replace pull_hhid_village_7 = "120A" if hhid_village == "120A"
+replace pull_hhid_7 = "120A04" if hhid_village == "120A"
+replace pull_individ_7=== "120A0404" if hhid_village == "120A"
+replace pull_hh_first_name__7 = "ALIOU" if hhid_village == "120A"
+replace pull_hh_name__7 = "FALL" if hhid_village == "120A"
+replace pull_hh_full_name_calc__7 = "ALIOU FALL" if hhid_village == "120A"
+replace pull_hh_age_7 = 7 if hhid_village == "120A"
+replace pull_hh_gender_7 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_7 = "FALL  KHALIFA" if hhid_village == "120A"
+replace pull_baselineniveau_7 = 1 if hhid_village == "120A"
+replace pull_family_members_7 = "FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL"
+
+replace pull_hhid_village_8 = "120A" if hhid_village == "120A"
+replace pull_hhid_8 = "120A04" if hhid_village == "120A"
+replace pull_individ_8 = "120A0406" if hhid_village == "120A"
+replace pull_hh_first_name__8 = "HAWA" if hhid_village == "120A"
+replace pull_hh_name__8 = "FALL" if hhid_village == "120A"
+replace pull_hh_full_name_calc__8 = "HAWA FALL" if hhid_village == "120A"
+replace pull_hh_age_8 = 5 if hhid_village == "120A"
+replace pull_hh_gender_8 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_8 = "FALL  KHALIFA" if hhid_village == "120A"
+replace pull_family_members_8 = "FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL" if hhid_village == "120A"
+
+replace pull_hhid_village_9 = "120A" if hhid_village == "120A"
+replace pull_hhid_9 = "120A05" if hhid_village == "120A"
+replace pull_individ_9 = "120A0509" if hhid_village == "120A"
+replace pull_hh_first_name__9 = "RACKY" if hhid_village == "120A"
+replace pull_hh_name__9 = "SALL" if hhid_village == "120A"
+replace pull_hh_full_name_calc__9 = "RACKY SALL" if hhid_village == "120A"
+replace pull_hh_age_9 = 7 if hhid_village == "120A"
+replace pull_hh_gender_9 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_9 = "OUMAR SY" if hhid_village == "120A"
+replace pull_baselineniveau_9 = 1 if hhid_village == "120A"
+replace pull_family_members_9 = "OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA" if hhid_village == "120A"
+
+replace pull_hhid_village_10 = "120A" if hhid_village == "120A"
+replace pull_hhid_10 = "120A05" if hhid_village == "120A"
+replace pull_individ_10 = "120A0510" if hhid_village == "120A"
+replace pull_hh_first_name__10 = "IBA" if hhid_village == "120A"
+replace pull_hh_name__10 = "SY" if hhid_village == "120A"
+replace pull_hh_full_name_calc__10 = "IBA SY" if hhid_village == "120A"
+replace pull_hh_age_10 = 5 if hhid_village == "120A"
+replace pull_hh_gender_10 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_10 = "OUMAR SY" if hhid_village == "120A"
+replace pull_baselineniveau_10 = 1 if hhid_village == "120A"
+replace pull_family_members_10 = "OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA" if hhid_village == "120A"
+
+replace pull_hhid_village_11 = "120A" if hhid_village == "120A"
+replace pull_hhid_11 = "120A05" if hhid_village == "120A"
+replace pull_individ_11 = "120A0507" if hhid_village == "120A"
+replace pull_hh_first_name__11 = "SOULEYMANE" if hhid_village == "120A"
+replace pull_hh_name__11 = "SY" if hhid_village == "120A"
+replace pull_hh_full_name_calc__11 = "SOULEYMANE SY" if hhid_village == "120A"
+replace pull_hh_age_11 = 9 if hhid_village == "120A"
+replace pull_hh_gender_11 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_11 = "OUMAR SY" if hhid_village == "120A"
+replace pull_baselineniveau_11 = 3 if hhid_village == "120A"
+replace pull_family_members_11 = "OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA" if hhid_village == "120A"
+
+replace pull_hhid_village_12 = "120A" if hhid_village == "120A"
+replace pull_hhid_12 = "120A05" if hhid_village == "120A"
+replace pull_individ_12 = "120A0508" if hhid_village == "120A"
+replace pull_hh_first_name__12 = "HAWA" if hhid_village == "120A"
+replace pull_hh_name__12 = "SY" if hhid_village == "120A"
+replace pull_hh_full_name_calc__12 = "HAWA SY" if hhid_village == "120A"
+replace pull_hh_age_12 = 6 if hhid_village == "120A"
+replace pull_hh_gender_12 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_12 = "OUMAR SY" if hhid_village == "120A"
+replace pull_baselineniveau_12 = 2 if hhid_village == "120A"
+replace pull_family_members_12 = "OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA" if hhid_village == "120A"
+
+replace pull_hhid_village_13 = "120A" if hhid_village == "120A"
+replace pull_hhid_13 = "120A06" if hhid_village == "120A"
+replace pull_individ_13 = "120A0604" if hhid_village == "120A"
+replace pull_hh_first_name__13 = "Toly" if hhid_village == "120A"
+replace pull_hh_name__13 = "Wone" if hhid_village == "120A"
+replace pull_hh_full_name_calc__13 = "Toly Wone" if hhid_village == "120A"
+replace pull_hh_age_13 = 11 if hhid_village == "120A"
+replace pull_hh_gender_13 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_13 = "HAWA DIAW" if hhid_village == "120A"
+replace pull_baselineniveau_13 = 3 if hhid_village == "120A"
+replace pull_family_members_13 = "Ibrahima Sy, Bassirou Sylla, Fatimata Ly, Toly Wone, Adama Wone, miyel Wone, Bocar Sall, Hawa Wone, Hawa Dia" if hhid_village == "120A"
+
+replace pull_hhid_village_14 = "120A" if hhid_village == "120A"
+replace pull_hhid_14 = "120A06" if hhid_village == "120A"
+replace pull_individ_14 = "120A0605" if hhid_village == "120A"
+replace pull_hh_first_name__14 = "Adama" if hhid_village == "120A"
+replace pull_hh_name__14 = "Wone" if hhid_village == "120A"
+replace pull_hh_full_name_calc__14 = "Adama Wone" if hhid_village == "120A"
+replace pull_hh_age_14 = 5 if hhid_village == "120A"
+replace pull_hh_gender_14 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_14 = "HAWA DIAW" if hhid_village == "120A"
+replace pull_family_members_14 = "Ibrahima Sy, Bassirou Sylla, Fatimata Ly, Toly Wone, Adama Wone, miyel Wone, Bocar Sall, Hawa Wone, Hawa Dia" if hhid_village == "120A"
+
+replace pull_hhid_village_15 = "120A" if hhid_village == "120A"
+replace pull_hhid_15 = "120A07" if hhid_village == "120A"
+replace pull_individ_15 = "120A0703" if hhid_village == "120A"
+replace pull_hh_first_name__15 = "AÏSSÉ" if hhid_village == "120A"
+replace pull_hh_name__15 = "DIOP" if hhid_village == "120A"
+replace pull_hh_full_name_calc__15 = "AÏSSÉ DIOP" if hhid_village == "120A"
+replace pull_hh_age_15 = 5 if hhid_village == "120A"
+replace pull_hh_gender_15 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_15 = "OUMAR DIOP" if hhid_village == "120A"
+replace pull_baselineniveau_15 = 1 if hhid_village == "120A"
+replace pull_family_members_15 = "OUMAR DIOP, FATY LY, AÏSSÉ DIOP, DIEYNABA DIOP, SEYDOU OUMAR DIOP" if hhid_village == "120A"
+
+replace pull_hhid_village_16 = "120A" if hhid_village == "120A"
+replace pull_hhid_16 = "120A08" if hhid_village == "120A"
+replace pull_individ_16 = "120A0806" if hhid_village == "120A"
+replace pull_hh_first_name__16 = "SILEYE MALICK" if hhid_village == "120A"
+replace pull_hh_name__16 = "DIOP" if hhid_village == "120A"
+replace pull_hh_full_name_calc__16 = "SILEYE MALICK DIOP" if hhid_village == "120A"
+replace pull_hh_age_16 = 8 if hhid_village == "120A"
+replace pull_hh_gender_16 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_16 = "MALICK IBRAHIMA DIOP" if hhid_village == "120A"
+replace pull_baselineniveau_16 = 2 if hhid_village == "120A"
+replace pull_family_members_16 = "MALICK IBRAHIMA DIOP, KADIATA SARR, HAMATH MALICK DIOP, HAWA MALICK DIOP, AISSATA MALICK DIOP, SILEYE MALICK DIOP" if hhid_village == "120A"
+
+replace pull_hhid_village_17 = "120A" if hhid_village == "120A"
+replace pull_hhid_17 = "120A10" if hhid_village == "120A"
+replace pull_individ_17 = "120A1007" if hhid_village == "120A"
+replace pull_hh_first_name__17 = "OUSMANE" if hhid_village == "120A"
+replace pull_hh_name__17 = "Sarr" if hhid_village == "120A"
+replace pull_hh_full_name_calc__17 = "OUSMANE Sarr" if hhid_village == "120A"
+replace pull_hh_age_17 = 8 if hhid_village == "120A"
+replace pull_hh_gender_17 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_17 = "ALIOU SARR" if hhid_village == "120A"
+replace pull_baselineniveau_17 = 2 if hhid_village == "120A"
+replace pull_family_members_17 = "BALIOU Sarr, Dicko Diop, Oumar Sarr, FATI Sall, Penda Sow, Amar Sarr, OUSMANE Sarr, Dicko Sarr" if hhid_village == "120A"
+
+replace pull_hhid_village_18 = "120A" if hhid_village == "120A"
+replace pull_hhid_18 = "120A10" if hhid_village == "120A"
+replace pull_individ_18 = "120A1008" if hhid_village == "120A"
+replace pull_hh_first_name__18 = "Dicko" if hhid_village == "120A"
+replace pull_hh_name__18 = "Sarr" if hhid_village == "120A"
+replace pull_hh_full_name_calc__18 = "Dicko Sarr" if hhid_village == "120A"
+replace pull_hh_age_18 = 8 if hhid_village == "120A"
+replace pull_hh_gender_18 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_18 = "ALIOU SARR" if hhid_village == "120A"
+replace pull_baselineniveau_18 = 2 if hhid_village == "120A"
+replace pull_family_members_18 = "BALIOU Sarr, Dicko Diop, Oumar Sarr, FATI Sall, Penda Sow, Amar Sarr, OUSMANE Sarr, Dicko Sarr" if hhid_village == "120A"
+
+replace pull_hhid_village_19 = "120A" if hhid_village == "120A"
+replace pull_hhid_19 = "120A11" if hhid_village == "120A"
+replace pull_individ_19 = "120A1104" if hhid_village == "120A"
+replace pull_hh_first_name__19 = "Fati" if hhid_village == "120A"
+replace pull_hh_name__19 = "Diop" if hhid_village == "120A"
+replace pull_hh_full_name_calc__19 = "Fati Diop" if hhid_village == "120A"
+replace pull_hh_age_19 = 9 if hhid_village == "120A"
+replace pull_hh_gender_19 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_19 = "Sileymane diop" if hhid_village == "120A"
+replace pull_baselineniveau_19 = 3 if hhid_village == "120A"
+replace pull_family_members_19 = "Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop" if hhid_village == "120A"
+
+replace pull_hhid_village_20 = "120A" if hhid_village == "120A"
+replace pull_hhid_20 = "120A11" if hhid_village == "120A"
+replace pull_individ_20 = "120A1105" if hhid_village == "120A"
+replace pull_hh_first_name__20 = "Mamadou" if hhid_village == "120A"
+replace pull_hh_name__20 = "Diop" if hhid_village == "120A"
+replace pull_hh_full_name_calc__20 = "Mamadou Diop" if hhid_village == "120A"
+replace pull_hh_age_20 = 8 if hhid_village == "120A"
+replace pull_hh_gender_20 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_20 = "Sileymane diop" if hhid_village == "120A"
+replace pull_baselineniveau_20 = 2 if hhid_village == "120A"
+replace pull_family_members_20 = "Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop" if hhid_village == "120A"
+
+replace pull_hhid_village_21 = "120A" if hhid_village == "120A"
+replace pull_hhid_21 = "120A11" if hhid_village == "120A"
+replace pull_individ_21 = "120A1106" if hhid_village == "120A"
+replace pull_hh_first_name__21 = "Aminata" if hhid_village == "120A"
+replace pull_hh_name__21 = "Diop" if hhid_village == "120A"
+replace pull_hh_full_name_calc__21 = "Aminata Diop" if hhid_village == "120A"
+replace pull_hh_age_21 = 7 if hhid_village == "120A"
+replace pull_hh_gender_21 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_21 = "Sileymane diop" if hhid_village == "120A"
+replace pull_baselineniveau_21 = 1 if hhid_village == "120A"
+replace pull_family_members_21 = "Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop" if hhid_village == "120A"
+
+replace pull_hhid_village_22 = "120A" if hhid_village == "120A"
+replace pull_hhid_22 = "120A14" if hhid_village == "120A"
+replace pull_individ_22 = "120A1406" if hhid_village == "120A"
+replace pull_hh_first_name__22 = "ALIOU" if hhid_village == "120A"
+replace pull_hh_name__22 = "DIOP" if hhid_village == "120A"
+replace pull_hh_full_name_calc__22 = "ALIOU DIOP" if hhid_village == "120A"
+replace pull_hh_age_22 = 7 if hhid_village == "120A"
+replace pull_hh_gender_22 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_22 = "BOCAR DIOP" if hhid_village == "120A"
+replace pull_baselineniveau_22 = 1 if hhid_village == "120A"
+replace pull_family_members_22 = "BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP" if hhid_village == "120A"
+
+replace pull_hhid_village_23 = "120A" if hhid_village == "120A"
+replace pull_hhid_23 = "120A14" if hhid_village == "120A"
+replace pull_individ_23 = "120A1407" if hhid_village == "120A"
+replace pull_hh_first_name__23 = "ALSSANE" if hhid_village == "120A"
+replace pull_hh_name__23 = "DIOP" if hhid_village == "120A"
+replace pull_hh_full_name_calc__23 = "ALSSANE DIOP" if hhid_village == "120A"
+replace pull_hh_age_23 = 7 if hhid_village == "120A"
+replace pull_hh_gender_23 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_23 = "BOCAR DIOP" if hhid_village == "120A"
+replace pull_baselineniveau_23 = 1 if hhid_village == "120A"
+replace pull_family_members_23 = "BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP" if hhid_village == "120A"
+
+replace pull_hhid_village_24 = "120A" if hhid_village == "120A"
+replace pull_hhid_24 = "120A14" if hhid_village == "120A"
+replace pull_individ_24 = "120A1405" if hhid_village == "120A"
+replace pull_hh_first_name__24 = "OUMOU" if hhid_village == "120A"
+replace pull_hh_name__24 = "DIOP" if hhid_village == "120A"
+replace pull_hh_full_name_calc__24 = "OUMOU DIOP" if hhid_village == "120A"
+replace pull_hh_age_24 = 10 if hhid_village == "120A"
+replace pull_hh_gender_24 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_24 = "BOCAR DIOP" if hhid_village == "120A"
+replace pull_baselineniveau_24 = 3 if hhid_village == "120A"
+replace pull_family_members_24 = "BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP" if hhid_village == "120A"
+
+replace pull_hhid_village_25 = "120A" if hhid_village == "120A"
+replace pull_hhid_25 = "120A15" if hhid_village == "120A"
+replace pull_individ_25 = "120A1509" if hhid_village == "120A"
+replace pull_hh_first_name__25 = "NAZIRE" if hhid_village == "120A"
+replace pull_hh_name__25 = "NDIAYE" if hhid_village == "120A"
+replace pull_hh_full_name_calc__25 = "NAZIRE NDIAYE" if hhid_village == "120A"
+replace pull_hh_age_25 = 9 if hhid_village == "120A"
+replace pull_hh_gender_25 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_25 = "NDIAYE IBRAHIMA MOCTAR" if hhid_village == "120A"
+replace pull_baselineniveau_25 = 2 if hhid_village == "120A"
+replace pull_family_members_25 = "IBRAHIMA MOCTAR NDIAYE, HAWO ISSA SY, SILEYMANE NDIAYE, BOUBOU NDIAYE, MARIAME NDIAYE, FATY NDIAYE, RAMATOULAYE NDIAYE, MOCTAR IBRAHIMA NDIAYE, NAZIRE NDIAYE, ALASSANE NDIAYE, ISSA NDIAYE" if hhid_village == "120A"
+
+replace pull_hhid_village_26 = "120A" if hhid_village == "120A"
+replace pull_hhid_26 = "120A16" if hhid_village == "120A"
+replace pull_individ_26 = "120A1603" if hhid_village == "120A"
+replace pull_hh_first_name__26 = "MAMADOU" if hhid_village == "120A"
+replace pull_hh_name__26 = "SETT" if hhid_village == "120A"
+replace pull_hh_full_name_calc__26 = "MAMADOU SETT" if hhid_village == "120A"
+replace pull_hh_age_26 = 5 if hhid_village == "120A"
+replace pull_hh_gender_26 = "GarÃ§on" if hhid_village == "120A"
+replace pull_hh_head_name_complet_26 = "IBRAHIMA SETT" if hhid_village == "120A"
+replace pull_baselineniveau_26 = 1 if hhid_village == "120A"
+replace pull_family_members_26 = "IBRAHIMA SETT, RACKY SETT, MAMADOU SETT, HOULEYE SETT, FARMATA SETT" if hhid_village == "120A"
+
+replace pull_hhid_village_27 = "120A" if hhid_village == "120A"
+replace pull_hhid_27 = "120A17" if hhid_village == "120A"
+replace pull_individ_27 = "120A1708" if hhid_village == "120A"
+replace pull_hh_first_name__27 = "KADIA" if hhid_village == "120A"
+replace pull_hh_name__27 = "SARR" if hhid_village == "120A"
+replace pull_hh_full_name_calc__27 = "KADIA SARR" if hhid_village == "120A"
+replace pull_hh_age_27 = 6 if hhid_village == "120A"
+replace pull_hh_gender_27 = "Fille" if hhid_village == "120A"
+replace pull_hh_head_name_complet_27 = "THIERNO SARR" if hhid_village == "120A"
+replace pull_baselineniveau_27 = 2 if hhid_village == "120A"
+replace pull_family_members_27 = "THIERNO SARR, AMINATA DIAGNE, FATY SARR, OUSMANE SARR, BANAA SARR, COUMBA SARR, HAWO SARR, KADIA SARR, FATY THIERNO SARR" if hhid_village == "120A"
+
+
+/*
+hhid_village	hhid	individ	hh_first_name_	hh_name_	hh_full_name_calc_	hh_age_	hh_gender_	hh_head_name_complet	baselineniveau	family_members
+120A	120A01	120A0105	OUMAR	DIOP	OUMAR DIOP	6	1	MAMADOU DIOP	1	MAMADOU DIOP, HAWA DIENG, HABIB DIOP, MARIAMA DIOP, OUMAR DIOP, FATY LY DIOP
+120A	120A02	120A0203	AISSATA	SALL	AISSATA SALL	10	2	BOCAR TIDIANE SALL	4	BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL
+120A	120A02	120A0204	HABSATOU	SALL	HABSATOU SALL	8	2	BOCAR TIDIANE SALL	3	BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL
+120A	120A02	120A0205	AMINATA	SALL	AMINATA SALL	6	2	BOCAR TIDIANE SALL	1	BOCAR TIDIANE SALL, BINTA SYLLA, AISSATA SALL, HABSATOU SALL, AMINATA SALL, BANNDEL SALL
+120A	120A04	120A0403	AISSATA MARIAME	DIOP	AISSATA MARIAME DIOP	9	2	FALL  KHALIFA	3	FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL
+120A	120A04	120A0405	ALASSANE	FALL	ALASSANE FALL	7	1	FALL  KHALIFA	1	FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL
+120A	120A04	120A0404	ALIOU	FALL	ALIOU FALL	7	1	FALL  KHALIFA	1	FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL
+120A	120A04	120A0406	HAWA	FALL	HAWA FALL	5	2	FALL  KHALIFA		FARMATA BOCAR FALL, KHALIFA FALL, AISSATA MARIAME DIOP, ALIOU FALL, ALASSANE FALL, HAWA FALL, RAMATOULAYE FALL
+120A	120A05	120A0509	RACKY	SALL	RACKY SALL	7	2	OUMAR SY	1	OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA
+120A	120A05	120A0510	IBA	SY	IBA SY	5	1	OUMAR SY	1	OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA
+120A	120A05	120A0507	SOULEYMANE	SY	SOULEYMANE SY	9	1	OUMAR SY	3	OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA
+120A	120A05	120A0508	HAWA	SY	HAWA SY	6	2	OUMAR SY	2	OUMAR SY, IBRAHIMA OUMAR SY, MAMADOU SY, DEYIBOU SY, MAMADOU SY, SEYDOU SY, SOULEYMANE SY, HAWA SY, RACKY SALL, IBA SY, KHADY SOW, FATIMATA BA
+120A	120A06	120A0604	Toly	Wone	Toly Wone	11	2	HAWA DIAW	3	Ibrahima Sy, Bassirou Sylla, Fatimata Ly, Toly Wone, Adama Wone, miyel Wone, Bocar Sall, Hawa Wone, Hawa Dia
+120A	120A06	120A0605	Adama	Wone	Adama Wone	5	1	HAWA DIAW		Ibrahima Sy, Bassirou Sylla, Fatimata Ly, Toly Wone, Adama Wone, miyel Wone, Bocar Sall, Hawa Wone, Hawa Dia
+120A	120A07	120A0703	AÃSSÃ	DIOP	AÃSSÃ  DIOP	5	2	OUMAR DIOP	1	OUMAR DIOP, FATY LY, AÃSSÃ  DIOP, DIEYNABA  DIOP, SEYDOU OUMAR  DIOP
+120A	120A08	120A0806	SILEYE MALICK	DIOP	SILEYE MALICK DIOP	8	1	MALICK IBRAHIMA DIOP	2	MALICK IBRAHIMA DIOP, KADIATA SARR, HAMATH MALICK DIOP, HAWA MALICK DIOP, AISSATA MALICK DIOP, SILEYE MALICK DIOP
+120A	120A10	120A1007	OUSMANE	Sarr	OUSMANE  Sarr	8	1	ALIOU SARR	2	BALIOU Sarr, Dicko  Diop, Oumar  Sarr, FATI  Sall, Penda Sow, Amar  Sarr, OUSMANE  Sarr, Dicko  Sarr
+120A	120A10	120A1008	Dicko	Sarr	Dicko  Sarr	8	2	ALIOU SARR	2	BALIOU Sarr, Dicko  Diop, Oumar  Sarr, FATI  Sall, Penda Sow, Amar  Sarr, OUSMANE  Sarr, Dicko  Sarr
+120A	120A11	120A1104	Fati	Diop	Fati Diop	9	2	Sileymane diop	3	Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop
+120A	120A11	120A1105	Mamadou	Diop	Mamadou Diop	8	1	Sileymane diop	2	Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop
+120A	120A11	120A1106	Aminata	Diop	Aminata Diop	7	2	Sileymane diop	1	Sileymane Diop, KADIATA Lome, Mamadou Diop, Fati Diop, Mamadou Diop, Aminata Diop
+120A	120A14	120A1406	ALIOU	DIOP	ALIOU DIOP	7	1	BOCAR DIOP	1	BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP
+120A	120A14	120A1407	ALSSANE	DIOP	ALSSANE DIOP	7	1	BOCAR DIOP	1	BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP
+120A	120A14	120A1405	OUMOU	DIOP	OUMOU DIOP	10	2	BOCAR DIOP	3	BOCAR DIOP, FARMATA ABDOULAYE GADIO, AISSATA BOCAR DIOP, MAMADOU DIOP, OUMOU DIOP, ALIOU DIOP, ALSSANE DIOP, OUMAR DIOP, MALICK DIOP
+120A	120A15	120A1509	NAZIRE	NDIAYE	NAZIRE NDIAYE	9	1	NDIAYE  IBRAHIMA MOCTAR	2	IBRAHIMA MOCTAR NDIAYE, HAWO ISSA SY, SILEYMANE NDIAYE, BOUBOU NDIAYE, MARIAME NDIAYE, FATY NDIAYE, RAMATOULAYE NDIAYE, MOCTAR IBRAHIMA NDIAYE, NAZIRE NDIAYE, ALASSANE NDIAYE, ISSA NDIAYE
+120A	120A16	120A1603	MAMADOU	SETT	MAMADOU SETT	5	1	IBRAHIMA SETT	1	IBRAHIMA SETT, RACKY SETT, MAMADOU SETT, HOULEYE SETT, FARMATA SETT
+120A	120A17	120A1708	KADIA	SARR	KADIA SARR	6	2	THIERNO SARR	2	THIERNO SARR, AMINATA DIAGNE, FATY SARR, OUSMANE SARR, BANAA SARR, COUMBA SARR, HAWO SARR, KADIA SARR, FATY THIERNO SARR
+120A	120A18	120A1807	HOULEYE	LY	HOULEYE  LY	9	2	IBRAHIMA LY	3	IBRAHIMA Ly, AMINATA BA, MAMADOU  LY, BOUBOU LY, MADOUDOU LY, MOUHAMED LY, HOULEYE  LY
+120A	120A19	120A1906	Mama	Wone	Mama Wone	11	1	MALICK SAMBA WONE	1	MALICK SAMBA  WONE, Hawa  Tome, Mariama  Wone, Adama  WONE, ThielÃ© Wone, Mama Wone, Cherif Wone, Dielia Wone, Moussa Wone, Salif Wone
+120A	120A19	120A1910	Salif	Wone	Salif Wone	6	1	MALICK SAMBA WONE		MALICK SAMBA  WONE, Hawa  Tome, Mariama  Wone, Adama  WONE, ThielÃ© Wone, Mama Wone, Cherif Wone, Dielia Wone, Moussa Wone, Salif Wone
+120A	120A19	120A1907	Cherif	Wone	Cherif Wone	7	1	MALICK SAMBA WONE		MALICK SAMBA  WONE, Hawa  Tome, Mariama  Wone, Adama  WONE, ThielÃ© Wone, Mama Wone, Cherif Wone, Dielia Wone, Moussa Wone, Salif Wone
+120A	120A19	120A1908	Dielia	Wone	Dielia Wone	5	2	MALICK SAMBA WONE		MALICK SAMBA  WONE, Hawa  Tome, Mariama  Wone, Adama  WONE, ThielÃ© Wone, Mama Wone, Cherif Wone, Dielia Wone, Moussa Wone, Salif Wone
+120A	120A20	120A2005	FARMATA	DIOP	FARMATA DIOP	8	2	DIOP ALASSANE BANA	1	FARMATA BAIDY DIOP, ALASSANE BANA DIOP, YOUBA DIOP, MOUSSA DIOP, FARMATA DIOP, THIERNO BOCAR DIOP, FAT DIEYNABA DIOP
+120A	120A20	120A2006	THIERNO BOCAR	DIOP	THIERNO BOCAR DIOP	7	1	DIOP ALASSANE BANA		FARMATA BAIDY DIOP, ALASSANE BANA DIOP, YOUBA DIOP, MOUSSA DIOP, FARMATA DIOP, THIERNO BOCAR DIOP, FAT DIEYNABA DIOP
+*/
 
 * Save the corrected dataset
-export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_27Mar2025.xlsx", firstrow(variables) replace
+export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_28Mar2025.xlsx", firstrow(variables) replace

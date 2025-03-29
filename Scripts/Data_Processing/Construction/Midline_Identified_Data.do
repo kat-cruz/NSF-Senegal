@@ -23,8 +23,8 @@ global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Dat
 global replacement "$master\Data_Management\_CRDES_RawData\Midline\Replacement_Survey_Data"
 global baselineids "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
 global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
-global corrected "$master\Data_Management\Output\Data_Corrections\Midline"
-global clean "$master\Data_Management\_CRDES_CleanData\Midline\Identified"
+global corrected "$master\\Data_Management\Output\Data_Processing\Checks\Data_Corrections\Midline"
+global clean "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
 
 ************************ Household Data **************************************
 *** Import baseline data 
@@ -202,7 +202,7 @@ import excel "$corrected\CORRECTED_Community_Survey_13May2025.xlsx", firstrow cl
 save "$clean\DISES_Complete_Midline_Community", replace
 
 ************************** School Principal Survey *****************************
-import excel "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_12Mar2025.xlsx", firstrow clear
+import excel "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_29Mar2025.xlsx", firstrow clear
 
 save "$clean\DISES_Complete_Midline_SchoolPrincipal", replace
 

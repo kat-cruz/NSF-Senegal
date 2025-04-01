@@ -1079,9 +1079,10 @@ save `balance_table_ata'
 	* hh_27
 	* hh_31_bin
 	
-preserve 
+		** Drop missings (are now ONLY the true missings)
 
 
+		
 
 		 keep hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
 		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
@@ -1091,6 +1092,13 @@ preserve
 		 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin  ///
 		 health_5_3_bin health_5_6_ ///
 		 num_water_access_points q_51 target_village
+		 
+		 
+		 		
+		foreach var of varlist * {
+    drop if missing(`var')
+}
+
 		 
 		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
 		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_  hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
@@ -1103,10 +1111,11 @@ preserve
 		 
 		 save "${dataOutput}\baseline_balance_tables_data_PAP.dta", replace
 
-restore 
 
 
 
+
+/*
 use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 
 
@@ -1138,6 +1147,7 @@ mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills
     beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin ///
     beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///
     health_5_3_bin health_5_6_ num_water_access_points q_51, baseoutcome(1)
+*/
 
 
 

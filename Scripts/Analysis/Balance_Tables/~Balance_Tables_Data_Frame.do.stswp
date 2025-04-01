@@ -376,7 +376,7 @@ foreach var of varlist _all {
 	replace hh_26_ind = 1 if (hh_age_ >= 4 & hh_age_ <= 18) & missing(hh_26_)
 	replace hh_26_ = 0 if missing(hh_26_) & hh_26_ind == 0
 		
-			*Go back to the origin of the condition
+			*Go back to the orgigin of the condition
 		*hh_38 is also conditional on hh_32, and hh_32 is conditional on hh_26
 			foreach var in hh_29_ hh_37_ hh_38_ {
 		replace `var' = 0 if hh_26_ == 0
@@ -1079,9 +1079,10 @@ save `balance_table_ata'
 	* hh_27
 	* hh_31_bin
 	
-preserve 
+		** Drop missings (are now ONLY the true missings)
 
 
+		
 
 		 keep hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
 		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
@@ -1091,6 +1092,13 @@ preserve
 		 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin  ///
 		 health_5_3_bin health_5_6_ ///
 		 num_water_access_points q_51 target_village
+		 
+		 
+		 		
+		foreach var of varlist * {
+    drop if missing(`var')
+}
+
 		 
 		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
 		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_  hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
@@ -1103,10 +1111,10 @@ preserve
 		 
 		 save "${dataOutput}\baseline_balance_tables_data_PAP.dta", replace
 
-restore 
 
 
-*** Run mulinomial logit regression with clustered SEs 
+
+
 
 use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 
@@ -1138,8 +1146,8 @@ mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills
     agri_6_34_comp_any agri_income_01 agri_income_05 beliefs_01_bin ///
     beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin ///
     beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///
-    health_5_3_bin health_5_6_ num_water_access_points q_51, ///
-    baseoutcome(1) vce(cluster hhid_village)
+    health_5_3_bin health_5_6_ num_water_access_points q_51, baseoutcome(1)
+
 
 
 

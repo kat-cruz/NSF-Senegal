@@ -18,30 +18,50 @@ This script outputs:
 #INITIATE SCRIPT
 
 ```{r}
+# Define a vector of required packages
+packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
+              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
+              "sandwich", "lmtest", "stats", "nnet", "car", "aod")
+
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages
+lapply(packages, library, character.only = TRUE)
+
+
+```
+
+
+
+
+
+```{r}
 
 #install.packages("writexl")
 #install.packages("mclogit")
 #install.packages("clusterSEs")
 #install.packages("fixest")
-library(fixest)
-library(clusterSEs)
-library(mlogit)
-library(writexl) #to output to excel doc
-library(dplyr)
-library(readr) #to read in dta's
-library(tidyr)
-library(haven)
-library(data.table)
-library(tidyverse)
-library(estimatr)
-library(broom) 
-library(kableExtra) #to output to HTML tables
-library(sandwich) #to wrangle data
-library(lmtest)  # For likelihood ratio test
-library(stats)   #for FDR q-stats
-library(nnet)  #to use multilogit regression 
-library(car) 
-library(aod)
+# library(fixest)
+# library(clusterSEs)
+# library(mlogit)
+# library(writexl) #to output to excel doc
+# library(dplyr)
+# library(readr) #to read in dta's
+# library(tidyr)
+# library(haven)
+# library(data.table)
+# library(tidyverse)
+# library(estimatr)
+# library(broom) 
+# library(kableExtra) #to output to HTML tables
+# library(sandwich) #to wrangle data
+# library(lmtest)  # For likelihood ratio test
+# library(stats)   #for FDR q-stats
+# library(nnet)  #to use multilogit regression 
+# library(car) 
+# library(aod)
 
 
 ```
@@ -413,7 +433,7 @@ symbol = c(
 
 ```{r}
 # Excel spreadsheet
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
 # Manually add footnotes as a single row
 footnotes <- data.frame(
   Variable = "Footnotes:",
@@ -430,7 +450,7 @@ summary_table_complete <- summary_table_complete %>%
 summary_table_with_footnotes <- bind_rows(summary_table_complete, footnotes)
 
 # Save to Excel
-write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV4.xlsx")
+write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV5.xlsx")
 
 ```
 
@@ -1782,14 +1802,15 @@ balance_df
 
 
 ```{r}
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
 
 final_table %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
   footnote(
     general = c(
-      "LR chi2( 123 ) = 387.6",
-      "Prob > chi2 = 0 ",
+      "LR chi2( 123 ) = 404.55",
+      "Prob > chi2 = 0.00",
+      "Number of obs = 2,052",
       "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01)."
     ),
     symbol = c(
@@ -1798,9 +1819,23 @@ final_table %>%
     ),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev_jointf.html")
+  save_kable("balance_tablev_jointf_2.html")
 ##balance_tablev11.html = without -9s
 ```
+#####excel output
+
+```{r}
+
+# Excel spreadsheet
+setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+
+# Save the final table as an Excel file
+write_xlsx(final_table, "balance_tablev_jointf_2.xlsx")
+
+```
+
+##Compute joint f-test - test work
+
 
 
 

@@ -167,7 +167,7 @@ balance_df <- balance_df %>%
        group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # Moved to the top
       group %in% c("3A", "3B") ~ "Treatment3"
     )
-  ) %>% select(-group)
+  ) %>% select(-group, -trained_hh)
 balance_df
 # 
 # long_data <- balance_df %>%
@@ -191,8 +191,10 @@ balance_df
 
 ```{r}
 
+
 compute_summary_stats <- function(df) {
   df %>%
+    mutate(variable = factor(variable, levels = unique(variable))) %>%  # Preserve variable order
     group_by(group, variable) %>%
     summarise(
       mean_value = round(mean(value, na.rm = TRUE), 2),
@@ -203,15 +205,40 @@ compute_summary_stats <- function(df) {
     pivot_longer(cols = c(mean_value, sd_value, N), names_to = "stat_type", values_to = "stat_value") %>%
     mutate(stat_type = case_when(
       stat_type == "mean_value" ~ "Mean",
-      stat_type == "sd_value" ~ "SD",  # SD should come before N
+      stat_type == "sd_value" ~ "SD",
       stat_type == "N" ~ "N"
     )) %>%
-    mutate(stat_type = factor(stat_type, levels = c("Mean", "SD", "N"))) %>%  # Set order
+    mutate(stat_type = factor(stat_type, levels = c("Mean", "SD", "N"))) %>%  # Set order of statistics
     arrange(variable, stat_type) %>%
     pivot_wider(names_from = group, values_from = stat_value) %>%
     select(variable, stat_type, everything())  # Ensure variable and stat_type come first
 }
 
+
+
+
+# 
+# compute_summary_stats <- function(df) {
+#   df %>%
+#     group_by(group, variable) %>%
+#     summarise(
+#       mean_value = round(mean(value, na.rm = TRUE), 2),
+#       sd_value = round(sd(value, na.rm = TRUE), 2),
+#       N = sum(!is.na(value)),  # Count of non-missing values
+#       .groups = "drop"
+#     ) %>%
+#     pivot_longer(cols = c(mean_value, sd_value, N), names_to = "stat_type", values_to = "stat_value") %>%
+#     mutate(stat_type = case_when(
+#       stat_type == "mean_value" ~ "Mean",
+#       stat_type == "sd_value" ~ "SD",  # SD should come before N
+#       stat_type == "N" ~ "N"
+#     )) %>%
+#     mutate(stat_type = factor(stat_type, levels = c("Mean", "SD", "N"))) %>%  # Set order
+#     arrange(variable, stat_type) %>%
+#     pivot_wider(names_from = group, values_from = stat_value) %>%
+#     select(variable, stat_type, everything())  # Ensure variable and stat_type come first
+# }
+# 
 
 
 # compute_summary_stats <- function(df) {
@@ -334,7 +361,7 @@ summary_table3 <- summary_table2 %>%
     variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) †",
     variable == "hh_10_" ~ "Average weekly hours spent within 1 meter of surface water source, in the past 12 months.",
     variable == "hh_12_6_" ~ "Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months. (1=Yes, 0=No)",
-    variable == "hh_16_" ~ "Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source)."
+    variable == "hh_16_" ~ "Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source).",
     variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
     
     variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †",
@@ -409,7 +436,7 @@ symbol = c(
   "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("_baseline_summary_statsV3.html")
+  save_kable("_baseline_summary_statsV4.html")
 
 
 # setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex_Output/Balance_Table")
@@ -433,7 +460,7 @@ symbol = c(
 
 ```{r}
 # Excel spreadsheet
-setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
 # Manually add footnotes as a single row
 footnotes <- data.frame(
   Variable = "Footnotes:",
@@ -450,7 +477,7 @@ summary_table_complete <- summary_table_complete %>%
 summary_table_with_footnotes <- bind_rows(summary_table_complete, footnotes)
 
 # Save to Excel
-write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV6.xlsx")
+write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV7.xlsx")
 
 ```
 
@@ -742,7 +769,6 @@ subtable <- regression_results_qvals %>%
 
 subtable <- subtable %>%
   distinct(variable, control_mean, control_se, .keep_all = TRUE)
-view(subtable)
 
 # Pivot the table to have variables as rows and comparisons as columns
 final_table <- regression_results_qvals %>%
@@ -797,24 +823,42 @@ final_table <- final_table %>%
   # Ensure f-stat values remain unchanged except for p-values
   mutate(across(starts_with("control_mean"), ~ ifelse(type == "p", as.character(control_se), as.character(.)))) 
   final_table
-  
+ 
   
   
 final_table <- final_table %>%
   # Format p-values with parentheses and add significance stars
-  mutate(across(everything(), ~ as.character(ifelse(
-    grepl("p", type), 
-    paste0("(", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
-    .x)))) 
+  mutate(across(c(`Control vs Treatment1`, `Control vs Treatment2`, `Control vs Treatment3`, `Control vs Local Control`), 
+    ~ as.character(ifelse(
+      grepl("p", type), 
+      paste0("(", trimws(.), ifelse(as.numeric(.) <= 0.01, "**", ifelse(as.numeric(.) <= 0.05, "*", "")), ")"), 
+      .))))
+
+  
+# final_table <- final_table %>%
+#   # Format p-values with parentheses and add significance stars
+#   mutate(across(everything(), ~ as.character(ifelse(
+#     grepl("p", type), 
+#     paste0("(", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
+#     .x)))) 
 
  final_table 
  
 final_table <- final_table %>%
   # Add brackets around numeric q-values in each cell
-  mutate(across(everything(), ~ as.character(ifelse(
-    grepl("q", type), 
-    paste0("[", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), "]"), 
-    .x)))) 
+ mutate(across(c(`Control vs Treatment1`, `Control vs Treatment2`, `Control vs Treatment3`, `Control vs Local Control`), 
+ ~ as.character(ifelse(
+    grepl("q", type),
+    paste0("[", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), "]"),
+    .x))))
+ 
+ 
+# final_table <- final_table %>%
+#   # Add brackets around numeric q-values in each cell
+#   mutate(across(everything(), ~ as.character(ifelse(
+#     grepl("q", type), 
+#     paste0("[", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), "]"), 
+#     .x)))) 
 
 
 final_table
@@ -907,12 +951,12 @@ final_table
 
 final_table <- final_table %>%
   mutate(
-    variable = if_else(type == "(pNA)" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
-    control_mean = if_else(type == "[qNA]" & !is.na(type), "", control_mean),
-    type = if_else(type == "(pNA)" & !is.na(type), "", as.character(type)),  # Clear type when type == "(p)", leave other values unchanged
-    f_statistic = if_else(type == "[qNA]" & !is.na(type), "", f_statistic),
-    variable = if_else(type == "[qNA]" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
-    type = if_else(type == "[qNA]" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
+    variable = if_else(type == "p" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
+    control_mean = if_else(type == "p" & !is.na(type), "", control_mean),
+    type = if_else(type == "p" & !is.na(type), "", as.character(type)),  # Clear type when type == "(p)", leave other values unchanged
+    f_statistic = if_else(type == "q" & !is.na(type), "", f_statistic),
+    variable = if_else(type == "q" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
+    type = if_else(type == "q" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
   
   ) %>%
   select(-p_value, -control_se)  # Remove the 'type' column after modification
@@ -940,7 +984,7 @@ mutate(Question = case_when(
     variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) †",
     variable == "hh_10_" ~ "Average weekly hours spent within 1 meter of surface water source, in the past 12 months.",
     variable == "hh_12_6_" ~ "Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months. (1=Yes, 0=No)",
-    variable == "hh_16_" ~ "Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source)."
+    variable == "hh_16_" ~ "Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source).",
     variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
     
     variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †",
@@ -1802,15 +1846,15 @@ balance_df
 
 
 ```{r}
-setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
 
 final_table %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
   footnote(
     general = c(
-      "LR chi2( 123 ) = 404.56",
+      "LR chi2( 123 ) = 428.87",
       "Prob > chi2 = 0.00",
-      "Number of obs = 2,052",
+      "Number of obs = 1,928",
       "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01)."
     ),
     symbol = c(
@@ -1819,22 +1863,24 @@ final_table %>%
     ),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev_jointf_2.html")
+  save_kable("balance_tablev_jointf_3.html")
 ##balance_tablev11.html = without -9s
 ```
+
+
 #####excel output
 
 ```{r}
 
 # Excel spreadsheet
-setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
 
 # Define footnotes as a data frame
 footnotes <- data.frame(
   Notes = c(
-    "LR chi2( 123 ) = 404.56",
+    "LR chi2( 123 ) = 428.87",
     "Prob > chi2 = 0.00",
-    "Number of obs = 2,052",
+    "Number of obs = 1,928",
     "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets.",
     "Standard errors are clustered at the village level.",
     "The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses.",
@@ -1848,7 +1894,7 @@ footnotes <- data.frame(
 write_xlsx(list(
   "Baseline Balance Table" = final_table,
   "Footnotes" = footnotes
-), "balance_tablev_jointf_2.xlsx")
+), "balance_tablev_jointf_3.xlsx")
 
 ```
 

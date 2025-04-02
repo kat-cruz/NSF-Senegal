@@ -375,38 +375,104 @@ foreach var of varlist _all {
 		**	health_5_12_ 
 		**	agri_income_05
 
-
+	***INCOME MODULE*****************************************************
 
 	foreach var in hh_38_ health_5_12_ agri_income_05 {
 		replace `var' = .a if `var' == -9
 	}
-
-
 
 		replace agri_income_05 = 0 if agri_income_01 == 0
 		
 		
 		replace agri_6_15 = 0 if agri_6_14 == 0
 		
-	***CHILD MODULE:***
+	***CHILD MODULE*****************************************************
 	
 		egen child_in_home = max(hh_age_ >= 4 & hh_age_ <= 18), by(hhid)
 
 	
 		
 		*if for each hhid, age is not >= 4 & <= 18, replace hh_26_ == 0
-		
+/*		
+
 		gen hh_26_ind = 0
 	replace hh_26_ind = 1 if (hh_age_ >= 4 & hh_age_ <= 18) & missing(hh_26_)
 	replace hh_26_ = 0 if missing(hh_26_) & hh_26_ind == 0
+*/
+	**left off here 
+		*replace hh_26_ = 0 if missing(hh_26_) & (hh_age_ >= 4 & hh_age_ <= 18)
 		
 			*Go back to the orgin of the condition
 		*hh_38 is also conditional on hh_32, and hh_32 is conditional on hh_26
+
 			foreach var in hh_29_ hh_37_ hh_38_ {
-		replace `var' = 0 if hh_26_ == 0
+		replace `var' = 0 if missing(`var') & (hh_age_ >= 4 & hh_age_ <= 18)
 	}
 	
+	
+		* DROPPED VAR - not including in the PAP balance table
+* Creating binary variables for hh_31
 
+	*1. Graduated, studies completed
+	*2. Moving to the next class
+	*3. Failure, repetition
+	*5. Dropping out during the year
+	
+
+		gen hh_31_bin = 0
+		replace hh_31_bin = 1 if hh_31_ == 1 | hh_31_ == 2
+		replace hh_31_bin = . if missing(hh_31_) & (hh_age_ >= 4 & hh_age_ <= 18) // Set to missing if hh_31_ is empty to account for ONLY the child population 
+
+	
+* Creating binary variables for hh_29 conditional on grade level:
+
+		* 1.Primary – 1st year
+		* 2.Primary – 2nd year
+		* 3.Primary – 3rd year
+		* 4.Primary – 4th year
+		* 5.Primary – 5th year
+		* 6.Primary – 6th year
+		* 7. Secondary 1 (Middle) - 7th year
+		* 8. Secondary 1 (Middle) - 8th year
+		* 9. Secondary 1 (Middle) - 9th year
+		* 10. Secondary 1 (Middle) - 10th year
+		* 11. Secondary 2 (Higher) - 11th year
+		* 12. Secondary 2 (Higher) - 12th year
+		* 13. Secondary 2 (Higher) - 13th year
+		* 14. More than upper secondary (e.g. university)
+		* 99. Other (to be specified)
+
+
+		
+		gen hh_29_01 = (0 < hh_29_ & hh_29_ <= 6)  // Primary level
+
+			replace hh_29_01 = .a if missing(hh_29_)
+			replace hh_29_01 = 0 if missing(hh_29_01) & (hh_age_ >= 4 & hh_age_ <= 18)
+
+
+			*replace hh_29_01 = 0 if hh_29_ > 6 & hh_29_ != .
+
+		gen hh_29_02 = (hh_29_ >= 7 & hh_29_ <= 10)  // Secondary middle level
+			replace hh_29_02 = .a if missing(hh_29_)
+			replace hh_29_02 = 0 if missing(hh_29_02) & (hh_age_ >= 4 & hh_age_ <= 18)
+
+	
+			*replace hh_29_02 = 0 if (hh_29_ < 7 | hh_29_ > 10) & hh_29_ != . 
+
+		gen hh_29_03 = (hh_29_ >= 11 & hh_29_ <= 13)  // Secondary higher level
+			replace hh_29_03 = .a if missing(hh_29_)
+			replace hh_29_03 = 0 if missing(hh_29_03) & (hh_age_ >= 4 & hh_age_ <= 18)
+
+			
+			*replace hh_29_03 = 0 if (hh_29_ < 11 | hh_29_ > 13) & hh_29_ != . 
+
+		gen hh_29_04 = (hh_29_ == 14)  // Upper secondary
+			replace hh_29_04 = .a if missing(hh_29_)
+			replace hh_29_04 = 0 if missing(hh_29_04) & (hh_age_ >= 4 & hh_age_ <= 18)
+			
+			*replace hh_29_04 = 0 if hh_29_ != 14 & hh_29_ != . 
+
+	***TIME USE VARIABLES***
 	
 			foreach var in hh_12_6_ hh_16_  {
 		replace `var' = 0 if hh_10_ == 0
@@ -420,11 +486,12 @@ foreach var of varlist _all {
 			replace hh_13_0`j' = hh_13_`i' if hh_12index_`i' == `j'
 		}
 	}
-
-   **drop unecessary variables
-	drop hh_13_7_ hh_13_6_ hh_13_5_ hh_13_4_ hh_13_3_ hh_13_2_ hh_13_1_ 
-	drop hh_12index_7_ hh_12index_6_ hh_12index_5_ hh_12index_4_ hh_12index_3_ hh_12index_2_ hh_12index_1_
 	
+
+	   **drop unecessary variables
+		drop hh_13_7_ hh_13_6_ hh_13_5_ hh_13_4_ hh_13_3_ hh_13_2_ hh_13_1_ 
+		drop hh_12index_7_ hh_12index_6_ hh_12index_5_ hh_12index_4_ hh_12index_3_ hh_12index_2_ hh_12index_1_
+		
 	
 	
 		
@@ -521,38 +588,6 @@ foreach x in 0 1 2 3 4 99 {
 			}
 
 
-* Creating binary variables for hh_29 conditional on grade level:
-
-		* 1.Primary – 1st year
-		* 2.Primary – 2nd year
-		* 3.Primary – 3rd year
-		* 4.Primary – 4th year
-		* 5.Primary – 5th year
-		* 6.Primary – 6th year
-		* 7. Secondary 1 (Middle) - 7th year
-		* 8. Secondary 1 (Middle) - 8th year
-		* 9. Secondary 1 (Middle) - 9th year
-		* 10. Secondary 1 (Middle) - 10th year
-		* 11. Secondary 2 (Higher) - 11th year
-		* 12. Secondary 2 (Higher) - 12th year
-		* 13. Secondary 2 (Higher) - 13th year
-		* 14. More than upper secondary (e.g. university)
-		* 99. Other (to be specified)
-
-
-		
-		gen hh_29_01 = (0 < hh_29_ & hh_29_ <= 6)  // Primary level
-			replace hh_29_01 = 0 if hh_29_ > 6 & hh_29_ != .
-
-		gen hh_29_02 = 1 if hh_29_ >= 7 & hh_29_ <= 10  // Secondary middle level
-			replace hh_29_02 = 0 if (hh_29_ < 7 | hh_29_ > 10) & hh_29_ != . 
-
-		gen hh_29_03 = 1 if hh_29_ >= 11 & hh_29_ <= 13  // Secondary higher level
-			replace hh_29_03 = 0 if (hh_29_ < 11 | hh_29_ > 13) & hh_29_ != . 
-
-		gen hh_29_04 = 1 if hh_29_ == 14  // Upper secondary
-			replace hh_29_04 = 0 if hh_29_ != 14 & hh_29_ != . 
-
 
 
 /*
@@ -563,22 +598,6 @@ foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
 */
 			
 			
-* DROPPED VAR - not including in the PAP balance table
-* Creating binary variables for hh_31
-
-	*1. Graduated, studies completed
-	*2. Moving to the next class
-	*3. Failure, repetition
-	*5. Dropping out during the year
-	
-
-		gen hh_31_bin = 0
-		replace hh_31_bin = 1 if hh_31_ == 1 | hh_31_ == 2
-		replace hh_31_bin = . if missing(hh_31_)  // Set to missing if hh_31_ is empty to account for ONLY the child population 
-
-
-
-
 /*
 * Creating binary variables for living_01
 foreach x in 1 2 3 4 5 6 7 8 9 10 99 {
@@ -929,8 +948,7 @@ save `balance_table_ata'
 			
 					keep if child_in_home == 1
 
-					*
-					collapse (mean) hh_26_ hh_27_ hh_31_bin hh_37_ hh_38_ hh_29_*, by(hhid)
+					collapse (mean) child_in_home hh_26_ hh_27_ hh_31_bin hh_37_ hh_38_ hh_29_*, by(hhid)
 
 					tempfile child_aggregates
 					save `child_aggregates'
@@ -959,11 +977,7 @@ save `balance_table_ata'
 			merge 1:1 hhid using `child_aggregates'
 	//hh_26_ hh_27_  hh_31_bin hh_37_ hh_38_ hh_29_*  ///  //edu vars 
 	
-			foreach var in hh_26_ hh_27_ hh_31_bin hh_37_ hh_38_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 { 
-				replace `var' = 0 if missing(`var') 
-			}
-			
-	
+
 		
 		order hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
 			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_* /// 	
@@ -1153,6 +1167,7 @@ save `balance_table_ata'
 		foreach var of varlist * {
     drop if missing(`var')
 }
+*/
 
 		 
 		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
@@ -1192,15 +1207,7 @@ drop group  // Remove the temporary 'group' variable if not needed
 encode treatment_group, gen(treatment_group_num)  // Convert string to numeric
 
 * Run multinomial logit regression
-mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills_5_h ///
-    hh_gender_h hh_numero hh_03_ hh_10_ hh_12_6_ hh_16_ ///
-    hh_15_2 hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 ///
-    hh_37_ hh_38_ living_01_bin game_A_total game_B_total ///
-    TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha ///
-    agri_6_34_comp_any agri_income_01 agri_income_05 beliefs_01_bin ///
-    beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin ///
-    beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///
-    health_5_3_bin health_5_6_ num_water_access_points q_51, baseoutcome(1)
+mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero hh_03_ hh_10_ hh_12_6_ hh_16_ hh_15_2 hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_ living_01_bin game_A_total game_B_total TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any agri_income_01 agri_income_05 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin health_5_3_bin health_5_6_ num_water_access_points q_51 target_village, baseoutcome(1)
 
 
 

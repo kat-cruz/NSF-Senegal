@@ -46,6 +46,8 @@ set matsize 11000
 set more off
 
 
+**check list of villge IDs and hhids to spot non-updated ID
+
 *<><<><><>><><<><><>>
 * SET FILE PATHS
 *<><<><><>><><<><><>>
@@ -304,6 +306,12 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 			health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_  health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_99_ ///
 			health_5_5_ health_5_6_ health_5_12_, i(hhid) j(id)
 			
+			
+			
+gen village_third = substr(hhid_village, 3, 1)  
+tab village_third
+
+
 
 *<><<><><>><><<><><>>
 * REPLACE MISSINGS 
@@ -376,7 +384,7 @@ foreach var of varlist _all {
 	replace hh_26_ind = 1 if (hh_age_ >= 4 & hh_age_ <= 18) & missing(hh_26_)
 	replace hh_26_ = 0 if missing(hh_26_) & hh_26_ind == 0
 		
-			*Go back to the orgigin of the condition
+			*Go back to the orgin of the condition
 		*hh_38 is also conditional on hh_32, and hh_32 is conditional on hh_26
 			foreach var in hh_29_ hh_37_ hh_38_ {
 		replace `var' = 0 if hh_26_ == 0
@@ -517,8 +525,8 @@ foreach x in 0 1 2 3 4 99 {
 
 
 		
-		gen hh_29_01 = 1 if hh_29_ <= 6  // Primary level
-			replace hh_29_01 = 0 if hh_29_ > 6 & hh_29_ != . 
+		gen hh_29_01 = (0 < hh_29_ & hh_29_ <= 6)  // Primary level
+			replace hh_29_01 = 0 if hh_29_ > 6 & hh_29_ != .
 
 		gen hh_29_02 = 1 if hh_29_ >= 7 & hh_29_ <= 10  // Secondary middle level
 			replace hh_29_02 = 0 if (hh_29_ < 7 | hh_29_ > 10) & hh_29_ != . 
@@ -1115,7 +1123,7 @@ save `balance_table_ata'
 
 
 
-/*
+
 use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 
 
@@ -1147,7 +1155,7 @@ mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills
     beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin ///
     beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///
     health_5_3_bin health_5_6_ num_water_access_points q_51, baseoutcome(1)
-*/
+
 
 
 

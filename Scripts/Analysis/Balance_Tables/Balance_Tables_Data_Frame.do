@@ -110,6 +110,8 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 *<><<><><>><><<><><>>		
 		
 
+
+
   *^*^* Keep relevant variables 
 
 	keep hhid hhid_village ///
@@ -295,6 +297,12 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 	
 	drop _merge
 	
+	
+			*** WILL DELETE LATER - WRONG VILLAGE CODE ***
+		
+		replace hhid_village = "153A" if hhid_village == "132A"
+		replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
+	
 *<><<><><>><><<><><>> 
 * RESHAPE THE DATA 
 *<><<><><>><><<><><>>
@@ -308,8 +316,10 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 			
 			
 			
+/*
 gen village_third = substr(hhid_village, 3, 1)  
 tab village_third
+*/
 
 
 
@@ -377,6 +387,12 @@ foreach var of varlist _all {
 		
 		
 		replace agri_6_15 = 0 if agri_6_14 == 0
+		
+	***CHILD MODULE:***
+	
+		egen child_in_home = max(hh_age_ >= 4 & hh_age_ <= 18), by(hhid)
+
+	
 		
 		*if for each hhid, age is not >= 4 & <= 18, replace hh_26_ == 0
 		
@@ -829,13 +845,24 @@ save `balance_table_ata'
 
    use "$trainedData\Treated_variables_df.dta", clear 
    
+   		*replace hhid_village = "153A" if hhid_village == "132A"
+		replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
+
+   
 			keep hhid trained_hh
 				merge m:m hhid using `balance_table_wip'
 					drop _merge
 
 	
 	  *^*^* bring in Asset index 
+	  *** WILL DELETE LATER -- WRONG VILLAGE CODE ***
 
+/*
+	  	use "$dataOutput\PCA_asset_index_var.dta", clear
+		replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
+		save"$dataOutput\PCA_asset_index_var.dta", replace 
+*/
+	 	  
 		merge m:m hhid using "$dataOutput\PCA_asset_index_var.dta"
 		
 		
@@ -892,16 +919,30 @@ save `balance_table_ata'
 			replace `var'_h = `var' if hh_complete == 1
 		}
 
-
-	
 		 
+		 
+	*^*^* collaspe by mean at the CHILD level 	 
+		 
+		
+			preserve
 
-  *^*^* collaspe by mean at the household level & order variables
+			
+					keep if child_in_home == 1
+
+					*
+					collapse (mean) hh_26_ hh_27_ hh_31_bin hh_37_ hh_38_ hh_29_*, by(hhid)
+
+					tempfile child_aggregates
+					save `child_aggregates'
+
+			
+			restore
+
+  *^*^* collaspe by mean at the HOUSEHOLD level & order variables
   
 		collapse (mean) ///
-			hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
-			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_* /// 	
-			hh_26_ hh_27_  hh_31_bin hh_37_ hh_38_  ///  //edu vars 
+			hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh child_in_home ///
+			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ /// 	
 			health_5_2_ health_5_3_bin health_5_5_ health_5_6_ health_5_12 ///
 			agri_income_01 agri_income_05 ///
 			montant_02 montant_05 face_04 face_13 game_A_total game_B_total ///
@@ -913,8 +954,17 @@ save `balance_table_ata'
 			asset_index asset_index_std ///
 			 (first) hhid_village num_water_access_points q_51 target_village, ///
 			by(hhid)
-
-
+			
+			
+			merge 1:1 hhid using `child_aggregates'
+	//hh_26_ hh_27_  hh_31_bin hh_37_ hh_38_ hh_29_*  ///  //edu vars 
+	
+			foreach var in hh_26_ hh_27_ hh_31_bin hh_37_ hh_38_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 { 
+				replace `var' = 0 if missing(`var') 
+			}
+			
+	
+		
 		order hhid_village hhid hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh ///
 			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ hh_29_* /// 	
 			hh_26_ hh_27_ hh_31_bin hh_37_ hh_38_ ///  //edu vars 
@@ -930,15 +980,14 @@ save `balance_table_ata'
 			num_water_access_points q_51 target_village
 			
 			
- ** Initial look at data - check missings for each var
+ **  - check missings for each var
 
 		foreach var of varlist _all {
 			quietly count if missing(`var')
 			display "`var': " r(N)
 		}
 
- ** There's a lot - handle later for regressions 
- 
+ ** check -9s
  
 		 foreach var of varlist _all {
 			* Check if the variable is numeric (ignoring strings)
@@ -951,9 +1000,6 @@ save `balance_table_ata'
 				}
 			}
 		}
-
-
- ** Handle -9s after collapsing 
 
 
 				
@@ -1093,7 +1139,8 @@ save `balance_table_ata'
 		
 
 		 keep hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
-		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
+		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 ///
+		 hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  /// //education variables 
 		 living_01_bin game_A_total game_B_total   ///
 		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
 		 agri_income_01 agri_income_05 ///
@@ -1109,7 +1156,8 @@ save `balance_table_ata'
 
 		 
 		 order hhid_village hhid trained_hh hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero  ///
-		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 hh_26_  hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
+		 hh_03_ hh_10_ hh_12_6 hh_16_ hh_15_2 ///
+		 hh_26_  hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  /// //education variables 
 		 living_01_bin game_A_total game_B_total   ///
 		 TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
 		 agri_income_01 agri_income_05 ///
@@ -1120,27 +1168,25 @@ save `balance_table_ata'
 		 save "${dataOutput}\baseline_balance_tables_data_PAP.dta", replace
 
 
+*<><<><><>><><<><><>> 
+* RUN MULTILOGIT REGRESSION
+*<><<><><>><><<><><>>
 
 
 
-
-use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
-
-
+		use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 
 
 
 gen group = substr(hhid, 3, 2)  // Extract characters 3-4 from hhid
 
-gen treatment_group = ""  // Initialize variable
-replace treatment_group = "Control"    if inlist(group, "0A", "0B")
-replace treatment_group = "Treatment1" if inlist(group, "1A", "1B")
-replace treatment_group = "Treatment2" if inlist(group, "2A", "2B")
-replace treatment_group = "Treatment3" if inlist(group, "3A", "3B")
+	gen treatment_group = ""  // Initialize variable
+	replace treatment_group = "Control"    if inlist(group, "0A", "0B")
+	replace treatment_group = "Treatment1" if inlist(group, "1A", "1B")
+	replace treatment_group = "Treatment2" if inlist(group, "2A", "2B")
+	replace treatment_group = "Treatment3" if inlist(group, "3A", "3B")
 
 drop group  // Remove the temporary 'group' variable if not needed
-
-
 
 
 encode treatment_group, gen(treatment_group_num)  // Convert string to numeric

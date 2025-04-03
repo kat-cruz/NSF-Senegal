@@ -16,17 +16,17 @@ clear all
 set maxvar 20000
 
 **** Master file path  ****
-if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
-if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
-if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
-if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
-if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
+if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\Data_Management"
+if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\Data_Management"
+if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal\Data_Management"
+if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
+if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\Data_Management"
 
 *** additional file paths ***
-global clean_data "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
+global clean_data "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 *global data2 "$master\Surveys\Baseline CRDES data (April 2024)"
 global corrected_data "$master\Data_Management\Output\Data_Corrections\Baseline"
-global raw_data "$master\Data_Management\_CRDES_RawData\Baseline"
+global raw_data "$master\Data\_CRDES_RawData\Baseline"
 global ids   "$master\Data_Management\Output\Household_IDs"
 
 global village_observations "$master\Data Quality Checks\Code\Village_Household_Identifiers"
@@ -41,7 +41,7 @@ global standard_living "$master\Data Quality Checks\Code\Standard_Living"
 global beliefs "$master\Data Quality Checks\Code\Beliefs" 
 global public_goods "$master\Data Quality Checks\Code\Public_Goods"
 global enum_observations "$master\Data Quality Checks\Code\Enumerator_Observations"
-global april_id "$master\Data Quality Checks\April Output\Village_Household_Identifiers"
+global april_id "$master\Output\Data_Processing\Checks\Baseline\April_Output\Baseline_Village_Household_Identifiers"
 
 import delimited "$raw_data\DISES_enquete_ménage_FINALE_WIDE_27Feb24.csv", clear varnames(1) bindquote(strict)
 
@@ -4072,7 +4072,7 @@ quietly bysort hh_phone hh_head_name_complet hh_name_complet_resp villageid: gen
 *save "$data\household_ids_april"
 
 *** Import data - update this every new data cleaning session ***
-import delimited "$data2\DISES_enquete_ménage_FINALE_V2_WIDE_26April24.csv", clear varnames(1) bindquote(strict)
+import delimited "$raw_data\DISES_enquete_ménage_FINALE_V2_WIDE_26April24.csv", clear varnames(1) bindquote(strict)
 
 gen villageid = substr(village_select_o, 1, 4)
 

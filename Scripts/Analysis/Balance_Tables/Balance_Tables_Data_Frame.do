@@ -1191,8 +1191,23 @@ save `balance_table_ata'
 
 		use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 
+* Create group variable by extracting characters 3-4 from hhid
+gen group = substr(hhid, 3, 2)
 
+* Initialize treatment_group variable
+gen treatment_group = ""
 
+* Assign treatment groups based on 'group' variable
+replace treatment_group = "Control"    if inlist(group, "0A", "0B")
+replace treatment_group = "Treatment1" if inlist(group, "1A", "1B")
+replace treatment_group = "Treatment2" if inlist(group, "2A", "2B")
+replace treatment_group = "Treatment3" if inlist(group, "3A", "3B")
+
+* Assign 'Local Control' based on the combination of group and trained_hh
+replace treatment_group = "Local Control" if inlist(group, "1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0
+drop group 
+
+/*
 gen group = substr(hhid, 3, 2)  // Extract characters 3-4 from hhid
 
 	gen treatment_group = ""  // Initialize variable
@@ -1202,13 +1217,24 @@ gen group = substr(hhid, 3, 2)  // Extract characters 3-4 from hhid
 	replace treatment_group = "Treatment3" if inlist(group, "3A", "3B")
 
 drop group  // Remove the temporary 'group' variable if not needed
+ */
 
 
 encode treatment_group, gen(treatment_group_num)  // Convert string to numeric
 
-* Run multinomial logit regression
-mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero hh_03_ hh_10_ hh_12_6_ hh_16_ hh_15_2 hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_ living_01_bin game_A_total game_B_total TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any agri_income_01 agri_income_05 beliefs_01_bin beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin health_5_3_bin health_5_6_ num_water_access_points q_51 target_village, baseoutcome(1)
 
+mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills_5_h, baseoutcome(1) vce(cluster hhid_village)
+
+* Run multinomial logit regression with clustered standard errors at the hhid_village level
+mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero hh_03_ hh_10_ hh_12_6_ hh_16_ ///
+  hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
+  living_01_bin game_A_total game_B_total ///
+  TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any agri_income_01 agri_income_05 beliefs_01_bin ///
+  beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///
+  health_5_3_bin health_5_6_ num_water_access_points q_51 target_village, baseoutcome(1) vce(cluster hhid_village)
+
+
+*cluster(hhid_village)
 
 
 

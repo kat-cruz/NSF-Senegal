@@ -21,7 +21,7 @@ This script outputs:
 # Define a vector of required packages
 packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
               "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
-              "sandwich", "lmtest", "stats", "nnet", "car", "aod")
+              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich")
 
 # Install any missing packages
 new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
@@ -533,29 +533,30 @@ write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV7.xlsx")
 
 ###Completed function
 
+
 ```{r}
 
 run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
   results_list <- list()  # Store results for all variables
-  
+
   for (var in vars_to_test) {
     # Select relevant columns
     subset <- data %>% select(all_of(var), all_of(treatment_col), all_of(village_col))
-    
+
     # Run regression with Control as baseline
     model <- lm(as.formula(paste(var, "~", treatment_col)), data = subset)
-    
+
     # Clustered standard errors at the village level
     clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
-    
+
     # Extract control mean (intercept) and SE
     control_mean <- round(clustered_se[1, 1], 2)  # Intercept
     control_se <- round(clustered_se[1, 2], 2)    # SE of the intercept
-    
+
     # Extract coefficients and p-values for treatment arms
     num_treatments <- nrow(clustered_se) - 1  # Number of treatment arms
     comparisons <- paste("Control vs", unique(data[[treatment_col]])[-1])  # Skip "Control"
-    
+
     results <- data.frame(
       variable = var,
       comparison = comparisons,
@@ -564,11 +565,11 @@ run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) 
       control_mean = control_mean,  # Control group mean
       control_se = control_se  # Control group SE
     )
-    
+
     # Store results in list
     results_list[[var]] <- results
   }
-  
+
   # Combine all results into one data frame
   final_results <- bind_rows(results_list)
   return(final_results)
@@ -649,109 +650,329 @@ print(regression_results)
 
 ######Compute F-test across arms for each var
 
+
+```{r}
+# # Fit model
+# set.seed(123)
+# 
+# # Create fake data for 100 observations
+# n <- 100
+# hhid_village <- sample(1:5, n, replace = TRUE)  # Cluster variable (village-level)
+# treatment_col <- sample(c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3"), n, replace = TRUE)
+# var <- rnorm(n)  # Outcome variable (e.g., hh_15_2)
+# 
+# # Create a data frame
+# data <- data.frame(
+#   hhid_village = hhid_village,
+#   treatment_col = treatment_col,
+#   var = var
+# )
+# 
+# # View the first few rows of the data
+# head(data)
+# 
+# 
+# 
+# model <- lm(var ~ treatment_col, data = data)
+# model
+# # Clustered standard errors (clustered by hhid_village)
+# clustered_vcov <- vcovCL(model, cluster = data$hhid_village)
+# clustered_vcov
+# # Wald test for treatment effect
+# wald <- waldtest(model, vcov = clustered_vcov)
+# wald
+# # Extract the F-statistic and p-value
+# f_stat <- round(wald[2, "F"], 2)
+# f_stat 
+# p_value <- round(wald[2, "Pr(>F)"], 2)
+# p_value
+# # Output the results
+# data.frame(variable = var, f_statistic = f_stat, p_value = p_value)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+# run_f_tests <- function(data, treatment_col, vars_to_test, cluster_var = "hhid_village") {
+#   results <- list()
+#   
+#   for (var in vars_to_test) {
+#     formula <- as.formula(paste(var, "~", treatment_col))
+#     
+#     # Fit model
+#     model <- lm(formula, data = data)
+#     
+#     # Make sure the clustering variable matches model data (after NA removal)
+#     model_data <- model.frame(model)
+#     cluster_values <- data[[cluster_var]][as.numeric(rownames(model_data))]
+#     
+#     # Clustered standard errors
+#     clustered_vcov <- vcovCL(model, cluster = cluster_values, type = "HC1")
+#     
+#     # F-test using Wald test
+#     wald <- waldtest(model, vcov = clustered_vcov)
+#     f_stat <- round(wald[2, "F"], 2)
+#     p_value <- round(wald[2, "Pr(>F)"], 2)
+#     
+#     # Store results in a data frame
+#     f_test <- data.frame(variable = var, f_statistic = f_stat, p_value = p_value)
+#     
+#     results[[var]] <- f_test
+#   }
+#   
+#   # Combine results into one data frame
+#   return(bind_rows(results))
+# }
+# 
+# 
+# 
+# vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# 
+# f_test_results <- run_f_tests(
+#   data = balance_df,
+#   treatment_col = "treatment_group",
+#   vars_to_test = vars_to_test_fstat,
+#   cluster_var = "hhid_village"
+# )
+# 
+# f_test_results
+# 
+# 
+# variance_check <- balance_df %>%
+#   group_by(treatment_group) %>%
+#   summarise(variance = var(hh_15_2, na.rm = TRUE))
+# 
+# # Print the result
+# print(variance_check)
+
+```
+
+
+
 ```{r}
 
-#<><<><><>><><<><><>>
-#CREATE F-STAT FUNCTION FOR EACH VAR
-#<><<><><>><><<><><>>
-
-# Function to perform F-test for each variable
-run_f_tests <- function(data, treatment_col, vars_to_test) {
+run_f_tests <- function(data, treatment_col, vars_to_test, cluster_var = "hhid_village") {
   results <- list()
   
   for (var in vars_to_test) {
-    # Construct formula dynamically (e.g., hh_15_2 ~ group)
     formula <- as.formula(paste(var, "~", treatment_col))
-        # Run ANOVA for each variable
-    anova_result <- aov(formula, data = data)
-        # Get the F-statistic and p-value
-    f_stat <- summary(anova_result)[[1]]$`F value`[1]
-    p_value <- summary(anova_result)[[1]]$`Pr(>F)`[1]
     
-    # Store results
-    results <- append(results, list(data.frame(variable = var, 
-                                               f_statistic = round(f_stat, 2), 
-                                               p_value = round(p_value, 2))))
+    # Fit model
+    model <- lm(formula, data = data)
+    
+    # Make sure the clustering variable matches model data (after NA removal)
+    model_data <- model.frame(model)
+    cluster_values <- data[[cluster_var]][as.numeric(rownames(model_data))]
+    
+    # Clustered standard errors
+    clustered_vcov <- vcovCL(model, cluster = cluster_values, type = "HC1")
+    
+    # F-test
+    f_test <- tryCatch({
+      wald <- waldtest(model, vcov = clustered_vcov)
+      f_stat <- round(wald[2, "F"], 2)
+      p_value <- round(wald[2, "Pr(>F)"], 2)
+      data.frame(variable = var, f_statistic = f_stat, p_value = p_value)
+    }, error = function(e) {
+      data.frame(variable = var, f_statistic = NA, p_value = NA)
+    })
+    
+    results[[var]] <- f_test
   }
-  # Combine and return the results as a data frame
-  return(bind_rows(results))
-}
-    vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-
-    f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
-    print(f_test_results)
-
-
-
-
-compute_fdr_qvalues <- function(regression_results) {
   
-  # Apply Benjamini-Hochberg correction to regression p-values
-  regression_results <- regression_results %>%
-      mutate(q_value = round(p.adjust(p, method = "BH"), 2))  # Adjust and round q-values # Adjusting only regression p-values
-  
-  return(regression_results)  # Return the updated regression table with q-values
+  bind_rows(results)
 }
 
-# Run the function on regression results
-regression_results_qvals <- compute_fdr_qvalues(regression_results)
 
-# Print results
-print(regression_results_qvals)
-    
+# vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# 
+# f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
+# print(f_test_results)
 
 
-#<><<><><>><><<><><>>
-#CREATE F-STAT FUNCTION FOR TREATMENT ARM
-#<><<><><>><><<><><>>
+vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
 
-# # Function to compute Joint F-statistics for each treatment arm (Wide Format)
-# run_pairwise_f_test <- function(data, treatment_col, vars_to_test) {
+f_test_results <- run_f_tests(
+  data = balance_df,
+  treatment_col = "treatment_group",
+  vars_to_test = vars_to_test_fstat,
+  cluster_var = "hhid_village"
+)
+
+f_test_results
+
+```
+
+
+#####no clustering, for reference 
+
+```{r}
+# run_f_tests_no_clustering <- function(data, treatment_col, vars_to_test) {
 #   results <- list()
 #   
-#   # Get all treatment arms (excluding 'Control')
-#   treatments <- unique(data[[treatment_col]])
-#   treatments <- treatments[treatments != "Control"]
-#   
-#   # Loop over all pairwise combinations of treatments
-#   for (i in 1:(length(treatments) - 1)) {
-#     for (j in (i + 1):length(treatments)) {
-#       # Subset the data for the current pair of treatments
-#       subset <- data[data[[treatment_col]] %in% c(treatments[i], treatments[j]), ]
-#       
-#       # Create regression formula (e.g., hh_15_2 + hh_26_ + hh_27_ ~ group)
-#       formula <- as.formula(paste(paste(vars_to_test, collapse = " + "), "~", treatment_col))
-#       
-#       # Run the regression model
-#       model <- lm(formula, data = subset)
-#       
-#       # Compute F-statistic for the joint test
-#       f_stat <- summary(model)$fstatistic[1]
-#       p_value <- pf(f_stat, df1 = summary(model)$fstatistic[2], df2 = summary(model)$fstatistic[3], lower.tail = FALSE)
-#       
-#       # Store results for this pairwise comparison
-#       results <- append(results, list(data.frame(treatment_comparison = paste(treatments[i], "vs", treatments[j]),
-#                                                  f_statistic = round(f_stat, 2), 
-#                                                  p_value = round(p_value, 4))))
-#     }
+#   for (var in vars_to_test) {
+#     formula <- as.formula(paste(var, "~", treatment_col))
+#     
+#     # Fit model (no clustering)
+#     model <- lm(formula, data = data)
+#     
+#     # F-test using Wald test (no clustering)
+#     wald <- waldtest(model)
+#     
+#     # Get the F-statistic and p-value
+#     f_stat <- round(wald[2, "F"], 2)
+#     p_value <- round(wald[2, "Pr(>F)"], 2)
+#     
+#     # Store results
+#     results <- append(results, list(data.frame(variable = var, f_statistic = f_stat, p_value = p_value)))
 #   }
 #   
 #   # Combine and return the results as a data frame
 #   return(bind_rows(results))
 # }
 # 
-#  vars_to_test_fjoint <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-#     joint_f_test_results <- run_pairwise_f_test(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fjoint)
+# # Example usage with your data
+# vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
 # 
+# f_test_results <- run_f_tests_no_clustering(
+#   data = balance_df,
+#   treatment_col = "treatment_group",
+#   vars_to_test = vars_to_test_fstat
+# )
+# 
+# f_test_results
 
-   
+```
 
-# Print results
-#print(joint_f_test_results)
-print(f_test_results)
-regression_results
 
-regression_results_qvals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+#<><<><><>><><<><><>>
+#CREATE F-STAT FUNCTION FOR EACH VAR
+#<><<><><>><><<><><>>
+
+# # Function to perform F-test for each variable
+# run_f_tests <- function(data, treatment_col, vars_to_test) {
+#   results <- list()
+# 
+#   for (var in vars_to_test) {
+#     # Construct formula dynamically (e.g., hh_15_2 ~ group)
+#     formula <- as.formula(paste(var, "~", treatment_col))
+#         # Run ANOVA for each variable
+#     anova_result <- aov(formula, data = data)
+#         # Get the F-statistic and p-value
+#     f_stat <- summary(anova_result)[[1]]$`F value`[1]
+#     p_value <- summary(anova_result)[[1]]$`Pr(>F)`[1]
+# 
+#     # Store results
+#     results <- append(results, list(data.frame(variable = var,
+#                                                f_statistic = round(f_stat, 2),
+#                                                p_value = round(p_value, 2))))
+#   }
+#   # Combine and return the results as a data frame
+#   return(bind_rows(results))
+# }
+#     vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# 
+#     f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
+#     print(f_test_results)
+# 
+# 
+# 
+# 
+# compute_fdr_qvalues <- function(regression_results) {
+#   
+#   # Apply Benjamini-Hochberg correction to regression p-values
+#   regression_results <- regression_results %>%
+#       mutate(q_value = round(p.adjust(p, method = "BH"), 2))  # Adjust and round q-values # Adjusting only regression p-values
+#   
+#   return(regression_results)  # Return the updated regression table with q-values
+# }
+# 
+# # Run the function on regression results
+# regression_results_qvals <- compute_fdr_qvalues(regression_results)
+# 
+# # Print results
+# print(regression_results_qvals)
+#     
+# 
+# 
+# #<><<><><>><><<><><>>
+# #CREATE F-STAT FUNCTION FOR TREATMENT ARM
+# #<><<><><>><><<><><>>
+# 
+# # # Function to compute Joint F-statistics for each treatment arm (Wide Format)
+# # run_pairwise_f_test <- function(data, treatment_col, vars_to_test) {
+# #   results <- list()
+# #   
+# #   # Get all treatment arms (excluding 'Control')
+# #   treatments <- unique(data[[treatment_col]])
+# #   treatments <- treatments[treatments != "Control"]
+# #   
+# #   # Loop over all pairwise combinations of treatments
+# #   for (i in 1:(length(treatments) - 1)) {
+# #     for (j in (i + 1):length(treatments)) {
+# #       # Subset the data for the current pair of treatments
+# #       subset <- data[data[[treatment_col]] %in% c(treatments[i], treatments[j]), ]
+# #       
+# #       # Create regression formula (e.g., hh_15_2 + hh_26_ + hh_27_ ~ group)
+# #       formula <- as.formula(paste(paste(vars_to_test, collapse = " + "), "~", treatment_col))
+# #       
+# #       # Run the regression model
+# #       model <- lm(formula, data = subset)
+# #       
+# #       # Compute F-statistic for the joint test
+# #       f_stat <- summary(model)$fstatistic[1]
+# #       p_value <- pf(f_stat, df1 = summary(model)$fstatistic[2], df2 = summary(model)$fstatistic[3], lower.tail = FALSE)
+# #       
+# #       # Store results for this pairwise comparison
+# #       results <- append(results, list(data.frame(treatment_comparison = paste(treatments[i], "vs", treatments[j]),
+# #                                                  f_statistic = round(f_stat, 2), 
+# #                                                  p_value = round(p_value, 4))))
+# #     }
+# #   }
+# #   
+# #   # Combine and return the results as a data frame
+# #   return(bind_rows(results))
+# # }
+# # 
+# #  vars_to_test_fjoint <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# #     joint_f_test_results <- run_pairwise_f_test(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fjoint)
+# # 
+# 
+#    
+# 
+# # Print results
+# #print(joint_f_test_results)
+# print(f_test_results)
+# regression_results
+# 
+# regression_results_qvals
 
 ```
 
@@ -1852,8 +2073,8 @@ final_table %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
   footnote(
     general = c(
-      "LR chi2( 123 ) = 428.87",
-      "Prob > chi2 = 0.00",
+      "LR chi2( 123 ) = ",
+      "Prob > chi2 = ",
       "Number of obs = 1,928",
       "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01)."
     ),
@@ -1863,7 +2084,7 @@ final_table %>%
     ),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev_jointf_3.html")
+  save_kable("balance_tablev_jointf_4.html")
 ##balance_tablev11.html = without -9s
 ```
 

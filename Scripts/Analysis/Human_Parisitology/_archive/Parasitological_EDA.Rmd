@@ -1,0 +1,436 @@
+---
+title: "Infection_model"
+output: html_document
+date: "2024-11-05"
+---
+
+
+
+#BEGIN HERE - load packages
+
+
+Random stuff tot test things whatever
+```{r}
+#install.packages("ggmosaic")
+#install.packages("vcd")
+library(vcd)
+library(ggmosaic)
+library(officer)
+library(r2rtf)
+library(dplyr)
+library(ggplot2)
+library(kwb.utils)
+library(haven)
+library(data.table)
+library(rtf)
+library(tidyverse)
+library(estimatr)
+library(broom)
+```
+
+
+#Load file paths
+
+```{r}
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Dataframe"
+  ))
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data Management/_PartnerData/Child infection dataframe/Dataframe"
+  ))
+}
+
+file_path_infection_df <- file.path(proj$p1, "child_infection_dataframe_01.dta")
+infection_df <- read_dta(file_path_infection_df)
+#view(infection_df)
+
+```
+
+## Filter df
+
+
+```{r}
+
+matched_only_df <- infection_df %>%
+  filter(match_score != "")
+
+#view(matched_only_df)
+
+```
+
+#Create relevant variables
+
+```{r}
+
+#view(matched_only_df)
+
+# Calculate egg counts
+matched_only_df <- matched_only_df %>%
+  # Step 1: Calculate S. haematobium egg count
+  mutate(
+    sh_egg_count = if_else(fu_p1 > 0, fu_p1, fu_p2),  # max of fu_p1 and fu_p2, only use fu_p2 if fu_p1 is zero
+
+    # Step 2: Calculate S. mansoni egg count
+    # Calculate average of each pass
+    p1_avg = (p1_kato1_k1_pg + p1_kato2_k2_peg) / 2,
+    p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2,
+
+    # Only calculate p2_avg if p1_avg is zero, then take the maximum of p1_avg and p2_avg
+    sm_egg_count = if_else(p1_avg > 0, p1_avg, p2_avg)
+  )# %>%
+
+
+#prep variables for ggplot by changing them to factors 
+
+matched_only_df <- matched_only_df %>%
+  mutate(
+    health_5_3_2_ = as.factor(health_5_3_2_), 
+    health_5_5_ = as.factor(health_5_5_),
+    health_5_6_ = as.factor(health_5_6_),
+    health_5_8_ = as.factor(health_5_8_),
+    health_5_9_ = as.factor(health_5_9_),
+    # Survey response: has had bilharzia
+    sm_inf = as.factor(sm_inf),  # Infection status indicator
+    sh_inf = as.factor(sh_inf),
+    infected_var = case_when(
+    sm_inf == 0 & sh_inf == 0 ~ 0,
+    sm_inf == 1 & sh_inf == 0 ~ 1,
+    sm_inf == 0 & sh_inf == 1 ~ 2,
+    sm_inf == 1 & sh_inf == 1 ~ 3)
+  )
+
+
+table(matched_only_df$health_5_3_2_, useNA = "ifany")
+table(matched_only_df$health_5_5_, useNA = "ifany")
+table(matched_only_df$health_5_6_, useNA = "ifany")
+table(matched_only_df$health_5_8_, useNA = "ifany")
+table(matched_only_df$health_5_9_, useNA = "ifany")
+
+
+summary(matched_only_df[c("health_5_3_2_", "health_5_5_", "health_5_6_", "health_5_8_", "health_5_9_")])
+
+```
+
+###health_5_3_2_ Plot
+
+```{r}
+
+ggplot(matched_only_df, aes(y = sm_egg_count + sh_egg_count, x = health_5_3_2_, color = factor(infected_var))) +
+  geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +  # Adds slight jitter for readability
+  labs(
+    title = "Perceived vs. Actual Bilharzia Infection",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    y = "S. mansoni & S. haematobium Egg Count",
+    x = "Survey Response: Has Had Bilharzia (health_5_3_2_)",
+    color = "Infection status",
+    #shape = "Type of Virus"
+  ) +
+ scale_color_manual(
+    values = c("0" = "blue", "1" = "red", "2" = "green", "3" = "orange"),
+    labels = c("0" = "No infection", "1" = "S. mansoni", "2" = "S. haematobium", "3" = "Both infections")
+  ) +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "NA" = "NA")) +
+  #scale_shape_manual(values = c("0" = 16, "1" = 17)) + 
+  theme_minimal()+
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+
+
+
+
+```
+
+####Just health_5_3_2_ v sh_egg_count
+```{r}
+
+ggplot(matched_only_df, aes(y = sh_egg_count, x = health_5_3_2_, color = factor(health_5_3_2_))) +
+  geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +  # Adds slight jitter for readability
+  labs(
+    title = "Perceived vs. Actual Bilharzia Infection for S.haematobium",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    y = "S. haematobium Egg Count",
+    x = "Survey Response: Has Had Bilharzia (health_5_3_2_)") +
+  scale_color_manual(
+    values = c("0" = "blue", "1" = "red"),guide = "none")+
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "NA" = "NA")) +
+  theme_minimal()+
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+```
+
+
+####Just health_5_3_2_ v sm_egg_count
+```{r}
+
+ggplot(matched_only_df, aes(y = sm_egg_count, x = health_5_3_2_, color = factor(health_5_3_2_))) +
+  geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +  # Adds slight jitter for readability
+  labs(
+    title = "Perceived vs. Actual Bilharzia Infection",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    y = "S. mansoni Egg Count",
+    x = "Survey Response: Has Had Bilharzia (health_5_3_2_)") +
+  scale_color_manual(
+    values = c("0" = "blue", "1" = "red"),guide = "none")+
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "NA" = "NA")) +
+  theme_minimal()+
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+```
+
+
+
+
+
+####Just sh_inf v health_5_3_2_
+```{r}
+
+ggplot(matched_only_df, aes(x = as.factor(health_5_3_2_), y = as.factor(sh_inf), color = factor(sh_inf))) +
+  geom_jitter(width = 0.1, height = 0.1, alpha = 0.7) +
+  scale_color_manual(
+    values = c("0" = "blue", "1" = "red"),guide = "none")+
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "NA" = "NA")) +
+  scale_y_discrete(labels = c("0" = "No", "1" = "Yes", "NA" = "NA")) +
+  labs(
+    title = "S.haematobium Infection Status vs. Reported Bilharzia",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    x = "Has Had Bilharzia (health_5_3_2_)",
+    y = "S. haematobium Infection Status"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+```
+
+
+
+####Just sm_inf v health_5_3_2_
+```{r}
+
+ggplot(matched_only_df, aes(x = as.factor(health_5_3_2_), y = as.factor(sm_inf), color = factor(sm_inf))) +
+  geom_jitter(width = 0.1, height = 0.1, alpha = 0.7) +
+  scale_color_manual(
+    values = c("0" = "blue", "1" = "red"),guide = "none")+
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "NA" = "NA")) +
+  scale_y_discrete(labels = c("0" = "No", "1" = "Yes", "NA" = "NA")) +
+  labs(
+    title = "S.mansoni Infection Status vs. Reported Bilharzia",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    x = "Has Had Bilharzia (health_5_3_2_)",
+    y = "S. mansoni Infection Status"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+```
+
+
+
+###health_5_5_ Plot
+
+```{r}
+
+ggplot(matched_only_df, aes(y = sm_egg_count + sh_egg_count, x = health_5_5_, color = factor(infected_var))) +
+  geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +  # Adds slight jitter for readability
+  labs(
+    title = "Medication Received for Bilharzia vs. Infection Status",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    y = "S. mansoni & S. haematobium Egg Count",
+    x = "Survey Response: Has Had Bilharzia Medication (health_5_5_)",
+    color = "Infection status",
+    #shape = "Type of Virus"
+  ) +
+ scale_color_manual(
+    values = c("0" = "blue", "1" = "red", "2" = "green", "3" = "orange"),
+    labels = c("0" = "No infection", "1" = "S. mansoni", "2" = "S. haematobium", "3" = "Both infections")
+  ) +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "2" = "Don't know/answer", "NA" = "NA")) +
+  #scale_shape_manual(values = c("0" = 16, "1" = 17)) + 
+  theme_minimal()+
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+
+
+```
+
+###health_5_6 Plot
+
+```{r}
+
+ggplot(matched_only_df, aes(y = sm_egg_count + sh_egg_count, x = health_5_6_, color = factor(infected_var))) +
+  geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +  # Adds slight jitter for readability
+  labs(
+    title = "Ever Diagnosed with Bilharzia vs. Infection Status",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    y = "S. mansoni & S. haematobium Egg Count",
+    x = "Survey Response: Was Ever Diagnosed with Bilharzia (health_5_6_)",
+    color = "Infection status",
+    #shape = "Type of Virus"
+  ) +
+ scale_color_manual(
+    values = c("0" = "blue", "1" = "red", "2" = "green", "3" = "orange"),
+    labels = c("0" = "No infection", "1" = "S. mansoni", "2" = "S. haematobium", "3" = "Both infections")
+  ) +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "2" = "Don't know/answer", "NA" = "NA")) +
+  #scale_shape_manual(values = c("0" = 16, "1" = 17)) + 
+  theme_minimal()+
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+
+
+```
+
+
+### health_5_8 Plot
+
+```{r}
+
+ggplot(matched_only_df, aes(y = sm_egg_count + sh_egg_count, x = health_5_8_, color = factor(infected_var))) +
+  geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +  # Adds slight jitter for readability
+  labs(
+    title = "Blood in Urine vs. Infection Status",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    y = "S. mansoni & S. haematobium Egg Count",
+    x = "Survey Response: Blood in urine (health_5_8_)",
+    color = "Infection status",
+    #shape = "Type of Virus"
+  ) +
+ scale_color_manual(
+    values = c("0" = "blue", "1" = "red", "2" = "green", "3" = "orange"),
+    labels = c("0" = "No infection", "1" = "S. mansoni", "2" = "S. haematobium", "3" = "Both infections")
+  ) +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "2" = "Don't know/answer", "NA" = "NA")) +
+  #scale_shape_manual(values = c("0" = 16, "1" = 17)) + 
+  theme_minimal()+
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+
+
+```
+
+###health_5_9 Plot
+
+```{r}
+
+ggplot(matched_only_df, aes(y = sm_egg_count + sh_egg_count, x = health_5_9_, color = factor(infected_var))) +
+  geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +  # Adds slight jitter for readability
+  labs(
+    title = "Blood in Stool vs. Infection Status",
+    subtitle = "Baseline Responses for Schoolchildren Sample",
+    y = "S. mansoni & S. haematobium Egg Count",
+    x = "Survey Response: Blood in stool (health_5_9_)",
+    color = "Infection status",
+    #shape = "Type of Virus"
+  ) +
+ scale_color_manual(
+    values = c("0" = "blue", "1" = "red", "2" = "green", "3" = "orange"),
+    labels = c("0" = "No infection", "1" = "S. mansoni", "2" = "S. haematobium", "3" = "Both infections")
+  ) +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes", "2" = "Don't know/answer", "NA" = "NA")) +
+  #scale_shape_manual(values = c("0" = 16, "1" = 17)) + 
+  theme_minimal()+
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5, family = "Calibri"), 
+    plot.subtitle = element_text(size = 10, hjust = 0.5, family = "Calibri"),  # Center title and set font
+    axis.title.y = element_text(hjust = 0.7, vjust = 1.5, size = 12, family = "Calibri"),
+    axis.title.x = element_text(hjust = 0.5, vjust = -0.9, size = 11, family = "Calibri"),  # Apply Calibri font to axis labels
+    legend.title = element_text(family = "Calibri"), # Apply Calibri font to legend title
+    legend.text = element_text(family = "Calibri") ,
+    plot.title.position = "plot",  # Positions title above plot area
+    plot.margin = margin(t = 30, r = 20, b = 20, l = 20)  # Adds more top margin for space
+  )
+
+
+```
+
+###Finding and dealing with NAs
+```{r}
+
+Na_df <- matched_only_df %>%
+  filter(is.na(health_5_9_)) %>%
+  select(individual_id_crdes, village_name, epls_or_ucad, epls_ucad_id, match_score, hhid_crdes, age_crdes)
+
+
+write.csv(Na_df, "C:/Users/Kateri/Box/NSF Senegal/Data Management/Output/Data Analysis/Na_df.csv", row.names = TRUE)
+
+```
+
+
+
+
+
+

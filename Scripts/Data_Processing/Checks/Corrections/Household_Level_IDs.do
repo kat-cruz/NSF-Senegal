@@ -1,7 +1,7 @@
 *** DISES Baseline Data - Code used to create Household IDs***
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: May 21, 2024 ***
+*** File Last Updated On: April 3, 2025 ***
 
 
  *** This Do File PROCESSES: DISES_enquete_ménage_FINALE_WIDE_6Feb24.csv, DISES_enquete_ménage_FINALE_V2_WIDE23April2024.csv, DISES_enquete_ménage_FINALE_V2_WIDE_26April2024.csv
@@ -24,20 +24,22 @@ set maxvar 20000
 **** Master file path  ****
 
 if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Baseline Data Collection"
+                global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
 }
 else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Baseline Data Collection"
+                global master "C:\Users\km978\Box\NSF Senegal\Data Managment"
 				
 }
 
 
 *** file paths ***
+*** Need to be updated *** 
 global data "$master\Surveys\Baselin CRDES data (April 2024)"
 global data2 "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
 global output "$master\Data Quality Checks\Output"
 global eplsOutput "$master\EPLS and DISES data"
 global village_observations "$master\Data Quality Checks\April Output\Village_Household_Identifiers"
+global id_data "$master\Output\Data_Processing\Household_IDs"
 
 *use "$data2\DISES_Baseline_Household_Corrected_PII.dta", clear 
 
@@ -153,6 +155,33 @@ append using "$data2\HouseholdIDs_Original_88"
 
 *save "$output\Complete_HouseholdIDs"
 
+**** fix village ID issue where 153A was labeled as 132A *** 
+use "$id_data\Complete_HouseholdIDs.dta"
+
+replace villageid = "153A" if villageid == "132A"
+
+replace hhid = "153A01" if hhid == "132A01"
+replace hhid = "153A02" if hhid == "132A02"
+replace hhid = "153A03" if hhid == "132A03"
+replace hhid = "153A04" if hhid == "132A04"
+replace hhid = "153A05" if hhid == "132A05"
+replace hhid = "153A06" if hhid == "132A06"
+replace hhid = "153A07" if hhid == "132A07"
+replace hhid = "153A08" if hhid == "132A08"
+replace hhid = "153A09" if hhid == "132A09"
+replace hhid = "153A10" if hhid == "132A10"
+replace hhid = "153A11" if hhid == "132A11"
+replace hhid = "153A12" if hhid == "132A12"
+replace hhid = "153A13" if hhid == "132A13"
+replace hhid = "153A14" if hhid == "132A14"
+replace hhid = "153A15" if hhid == "132A15"
+replace hhid = "153A16" if hhid == "132A16"
+replace hhid = "153A17" if hhid == "132A17"
+replace hhid = "153A18" if hhid == "132A18"
+replace hhid = "153A19" if hhid == "132A19"
+replace hhid = "153A20" if hhid == "132A20"
+
+*save "$id_data\Compelte_HouseholdIDs_Final.dta" 
 
 
 

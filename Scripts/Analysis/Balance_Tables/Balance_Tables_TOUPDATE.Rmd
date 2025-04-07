@@ -1,0 +1,118 @@
+---
+title: "Balance_Tables_TOUPDATE"
+author: "Kateri Mouawad"
+date: "2025-04-07"
+output: html_document
+---
+
+#INITIATE SCRIPT
+
+```{r}
+# Define a vector of required packages
+packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
+              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
+              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich")
+
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages
+lapply(packages, library, character.only = TRUE)
+
+
+```
+
+### Define file paths and load data 
+
+```{r}
+
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data_Management/Output/Analysis/Balance_Tables"
+  ))  
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data_Management/Output/Analysis/Balance_Tables"
+  ))
+}
+
+
+file_path_balance_tables_df <- file.path(proj$p1, "baseline_balance_tables_data_PAP.dta")
+balance_df <- read_dta(file_path_balance_tables_df)
+balance_df
+
+```
+
+
+
+```{r}
+
+
+
+# Adding a single categorical variable for household training categories - this is for computing summary stats since I'm keeping the trained_hh variable
+joint_df <- balance_df %>%
+  mutate(
+    group = str_sub(hhid, 3, 4),
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1",
+      group %in% c("2A", "2B") ~ "Treatment2",
+      group %in% c("3A", "3B") ~ "Treatment3",
+         )
+  ) %>% select(-group)
+
+names(joint_df)
+
+
+summary_df <- balance_df %>%
+  mutate(
+    group = str_sub(hhid, 3, 4),
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1",
+      group %in% c("2A", "2B") ~ "Treatment2",
+      group %in% c("3A", "3B") ~ "Treatment3",
+      group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control"
+    )
+  ) %>% select(-group)
+
+long_data_sum <- summary_df %>%
+  pivot_longer(
+    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+    names_to = "variable",    # Create a column named "variable" for former column names
+    values_to = "value"       # Store values in a column named "value"
+  )
+
+  long_data_sum <- long_data_sum %>%
+    rename(group = treatment_group)
+
+# Adding a single categorical variable for household training categories - this is for running regressions to avoid multicollinearity with trained_hh
+balance_df <- balance_df %>%
+  mutate(
+    # Extract the two middle characters (e.g., 2A) from hhid
+    group = str_sub(hhid, 3, 4),
+        # Assign treatment group, ensuring "Local Control" is prioritized
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1",
+      group %in% c("2A", "2B") ~ "Treatment2",
+       group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # Moved to the top
+      group %in% c("3A", "3B") ~ "Treatment3"
+    )
+  ) %>% select(-group, -trained_hh)
+balance_df
+
+
+```
+
+

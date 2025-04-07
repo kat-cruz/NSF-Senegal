@@ -31,9 +31,8 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 
 *^*^* Define project-specific paths
-global data "$master\Data_Management\_Partner_CleanData\Child_Matches\EPLS_Child_Matches\Archive\Household & Individual IDs"
-global output "$master\Data_Management\_Partner_CleanData\Child_Matches\UCAD_Child_Matches"
-
+global data "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline\UCAD_EPLS_IDs"
+global output "$master\Data_Management\Data\_Partner_CleanData\Child_Matches\UCAD_Child_Matches"
 
 *<><<><><>><><<><><>>
 * LOAD IN DATA
@@ -60,7 +59,7 @@ tostring  hh_relation_with, gen(hh_relation)
 		replace hh_relation = "Other person not related to the head of the family" if hh_relation_with == 13
 
 
-*preserve 
+preserve 
 
 rename hhid_village villageid
 
@@ -78,54 +77,9 @@ rename hhid_village villageid
 	
 	order villageid hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation hh_relation_with_o_ hhid individ UCAD_ID MATCH Unique SCORE Notes
 
-	export excel using "$output\Village_Ndiayene_Sare_090B.xlsx", firstrow(variables) sheet("Ndiayene Sare (090B)") replace 
-
-*restore 
-
-
-
-
-
-
-
-
-/*
-use "$data\All_Villages.dta", clear
-
-preserve 
-
-	keep if villageid == "020B"
-	keep if hh_age_ <= 18
-	count if !missing(hh_age_)
-
-	*export excel using "$output\Village_Dioss_Peulh_032A.xlsx", firstrow(variables) sheet("Dioss Peulh (032A)") replace 
+	*export excel using "$output\Village_Ndiayene_Sare_090B.xlsx", firstrow(variables) sheet("Ndiayene Sare (090B)")  
 
 restore 
-
-
-preserve 
-
-	keep if villageid == "020B"
-	keep if hh_age_ <= 18
-	count if !missing(hh_age_)
-
-	*export excel using "$output\Village_Dioss_Peulh_032A.xlsx", firstrow(variables) sheet("Dioss Peulh (032A)") replace 
-
-restore 
-
-
-
-keep if villageid == "020B"
-keep if villageid == "090B" 
-*/
-
-
-
-
-
-
-
-
 
 
 

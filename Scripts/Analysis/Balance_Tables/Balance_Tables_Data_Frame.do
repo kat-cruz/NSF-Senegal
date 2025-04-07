@@ -6,7 +6,7 @@
 * Created: December 2024
 * Updates recorded in GitHub 
 
-
+	
  ** This file processes: 
 	* Complete_Baseline_Household_Roster.dta
 	* Complete_Baseline_Health.dta
@@ -1163,7 +1163,7 @@ save `balance_table_ata'
 		 num_water_access_points q_51 target_village
 		 
 		 
-		 		
+/*
 		foreach var of varlist * {
     drop if missing(`var')
 }
@@ -1187,7 +1187,7 @@ save `balance_table_ata'
 * RUN MULTILOGIT REGRESSION
 *<><<><><>><><<><><>>
 
-
+/*
 
 		use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 

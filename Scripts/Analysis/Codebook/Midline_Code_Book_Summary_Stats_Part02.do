@@ -37,7 +37,7 @@ global community "$survey\Complete_Midline_Community.dta"
 global enumerator"$survey\Complete_Midline_Enumerator_Observations.dta"
 global geographies"$survey\Complete_Midline_Geographies.dta"
 global health"$survey\Complete_Midline_Health.dta"
-global household"$survey\Complete_Midline_Household_Roster.dta"
+global household "$survey\Complete_Midline_Household_Roster.dta"
 global income"$survey\Complete_Midline_Income.dta"
 global knowledge"$survey\Complete_Midline_Knowledge.dta"
 global lean "$survey\Complete_Midline_Lean_Season.dta"
@@ -47,11 +47,37 @@ global standard "$survey\Complete_Midline_Standard_Of_Living.dta"
 **************************************************
 * Income Data Summary
 **************************************************
+use "$household", clear
+
+drop hh_12_a_o*
+
+keep hh_education_level* hhid_village hhid hh_12_a* hh_15* hh_27* hh_28* hh_29* hh_33* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*
+
+reshape long hh_education_level_ hh_12_a_ hh_15_ hh_27_ hh_28_ hh_29_ hh_33* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*, i(hhid_village hhid) j(individual)
+
+tab hh_education_level_
+
+tab hh_12_a_
+replace hh_12_a_ = . if hh_12_a_ == 2
+sum hh_12_a_
+
+tab hh_15_
+
+tab hh_27_
+replace hh_27_ = . if hh_27_ == 2
+sum hh_27_
+
+tab hh_28_
+
+tab hh_29_
+
+
+**************************************************
+* Income Data Summary
+**************************************************
 
 * Use Income data
-use "$income"
-
-sum
+use "$income", clear
 
 * Summarize agricultural income variables
 tabulate agri_income_01

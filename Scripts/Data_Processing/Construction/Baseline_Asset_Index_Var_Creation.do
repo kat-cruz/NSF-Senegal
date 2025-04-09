@@ -62,10 +62,10 @@
 
   *^*^* Define project-specific paths
 
-	global data "${master}\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
+	global data "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
 
   *^*^* Output folders 
-	global dataOutput "${master}\Data_Management\Output\Data_Analysis\Balance_Tables" 
+	global dataOutput "${master}\Data_Management\Output\Analysis\Balance_Tables" 
 	global latexOutput "$git_path\Latex_Output\Balance_Tables"
 	
   *^*^*  Bring in data 
@@ -284,6 +284,7 @@
 	 if _n <= 10, sep(0)
 	  
 
+
 preserve 
 
  keep hhid asset_index asset_index_std
@@ -291,9 +292,5 @@ preserve
 save "$dataOutput\PCA_asset_index_var.dta", replace
 
 restore 
-
-
-
-
 
 

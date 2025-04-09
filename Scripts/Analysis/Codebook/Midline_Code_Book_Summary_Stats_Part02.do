@@ -49,11 +49,15 @@ global standard "$survey\Complete_Midline_Standard_Of_Living.dta"
 **************************************************
 use "$household", clear
 
+sum hh_49
+
+sum final_list_confirm
+
 drop hh_12_a_o*
 
-keep hh_education_level* hhid_village hhid hh_12_a* hh_15* hh_27* hh_28* hh_29* hh_33* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*
+keep hh_education_level* hhid_village hhid hh_12_a* hh_15* hh_27* hh_28* hh_29* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*
 
-reshape long hh_education_level_ hh_12_a_ hh_15_ hh_27_ hh_28_ hh_29_ hh_33* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*, i(hhid_village hhid) j(individual)
+reshape long hh_education_level_ hh_12_a_ hh_15_ hh_27_ hh_28_ hh_29_ hh_35_ hh_36_ hh_37_ hh_38_ hh_39_ hh_40_ hh_41_ hh_42_ hh_43_ hh_44_ hh_45_ hh_46_ hh_47_a_ hh_47_b_ hh_47_c_ hh_47_d_ hh_47_e_ hh_47_f_ hh_47_g_ hh_48_ hh_50_ hh_51_, i(hhid_village hhid) j(individual)
 
 tab hh_education_level_
 
@@ -71,6 +75,81 @@ tab hh_28_
 
 tab hh_29_
 
+tab hh_35_
+
+tab hh_36_
+replace hh_36_ = . if hh_36_ == 2
+sum hh_36_
+
+tab hh_37_
+replace hh_37_ = . if hh_37_ == 2
+sum hh_37_
+
+sum hh_38_
+
+tab hh_39_
+
+tab hh_40_
+
+tab hh_41_
+replace hh_41_ = . if hh_41_ == -9
+sum hh_41_
+
+tab hh_42_ 
+replace hh_42_ = . if hh_42_ == 2
+sum hh_42_
+
+tab hh_43_
+
+tab hh_44_
+replace hh_44_ = . if hh_44_ == 2
+sum hh_44_
+
+tab hh_45_
+replace hh_45_ = . if hh_45_ ==2
+sum hh_45_
+
+tab hh_46_
+
+sum hh_47_a_ hh_47_b_ hh_47_c_ hh_47_d_ hh_47_e_ hh_47_f_ hh_47_g_
+
+tab hh_47_a_
+tab hh_47_b_
+tab hh_47_c_
+tab hh_47_d_
+tab hh_47_e_
+tab hh_47_f_
+tab hh_47_g_
+
+replace hh_47_a_ = . if hh_47_a_ == -9 
+sum hh_47_a_
+
+replace hh_47_b_ = . if hh_47_b_ == -9 
+sum hh_47_b_
+
+replace hh_47_c_ = . if hh_47_c_ == -9 
+sum hh_47_c_
+
+replace hh_47_d_ = . if hh_47_d_ == -9 
+sum hh_47_d_
+
+replace hh_47_e_ = . if hh_47_e_ == -9
+sum hh_47_e_
+
+replace hh_47_f_ = . if hh_47_f_ == -9
+sum hh_47_f_
+
+replace hh_47_g_ = . if hh_47_g_ == -9
+sum hh_47_g_
+
+tab hh_48_
+replace hh_48_ = . if hh_48_ == 2
+sum hh_48_
+
+tab hh_50_
+sum hh_50_
+
+tab hh_51_
 
 **************************************************
 * Income Data Summary
@@ -89,8 +168,11 @@ tab agri_income_02
 summarize agri_income_03 agri_income_04 agri_income_05 agri_income_06
 summarize species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_autre
 
-sum agri_income_07*
-sum agri_income_08*
+tab agri_income_07_o
+sum agri_income_07_o if agri_income_07_o != -9
+
+tab agri_income_08
+sum agri_income_08_o if agri_income_08_o != -9
 
 * Loop for tabulating agri_income_09
 forvalues i = 1/6 {
@@ -213,6 +295,24 @@ foreach var in living_01 living_03 living_04 living_05 living_06 {
 use "$lean", clear
 sum food*
 
+tab food02
+sum food02 if food02 < 2
+
+tab food06
+sum food06 if food06 < 2
+
+tab food07
+sum food07 if food07 < 2
+
+tab food08
+sum food08 if food08 < 2
+
+tab food09
+sum food09 if food09 < 2
+
+tab food12
+sum food12 if food12 < 2
+
 **************************************************
 * Beliefs Data Summary
 **************************************************
@@ -233,6 +333,7 @@ summarize
 use "$public", clear
 summarize
 */
+
 **************************************************
 * Enumerator Observations Data Summary
 **************************************************
@@ -246,6 +347,80 @@ tabulate enum_04
 tabulate enum_05 
 tabulate enum_06 
 tabulate enum_08
+
+**************************************************
+* Health Data Summary
+**************************************************
+use "$health", clear
+
+keep hhid health_5_7_*
+
+reshape long health_5_7_ health_5_7_1_, i(hhid) j(individual)
+
+tab health_5_7_
+replace health_5_7_ = . if health_5_7_ == 2
+sum health_5_7_
+
+tab health_5_7_1_
+replace health_5_7_1_ = . if health_5_7_1_ == 2
+sum health_5_7_1_
+
+
+**************************************************
+* Agriculture Data Summary
+**************************************************
+use "$agriculture", clear
+
+keep hhid agri_6_34_* agri_6_35_* agri_6_36_* agri_6_37_* agri_6_38_a_* agri_6_38_a_code_* agri_6_38_a_code_o_* agri_6_39_a_* agri_6_39_a_code_* agri_6_39_a_code_o_* agri_6_40_a_* agri_6_40_a_code_* agri_6_40_a_code_o_* agri_6_41_a_* agri_6_41_a_code_* agri_6_41_a_code_o_*
+
+*** create string variables where necessary *** 
+tostring agri_6_38_a_code_o*, replace 
+tostring agri_6_39_a_code_o*, replace 
+tostring agri_6_40_a_code_o*, replace 
+tostring agri_6_41_a_code_o*, replace 
+
+*** reshape missing variables from wide to long *** 
+reshape long agri_6_34_ agri_6_35_ agri_6_36_ agri_6_37_ agri_6_38_a_ agri_6_38_a_code_ agri_6_38_a_code_o_ agri_6_39_a_ agri_6_39_a_code_ agri_6_39_a_code_o_ agri_6_40_a_ agri_6_40_a_code_ agri_6_40_a_code_o_ agri_6_41_a_ agri_6_41_a_code_ agri_6_41_a_code_o_, i(hhid) j(plotn) 
+
+*** summarize variables for codebook *** 
+summarize agri_6_35_ agri_6_37_ agri_6_38_a_ agri_6_39_a_ agri_6_40_a_ agri_6_41_a_  
+
+tab agri_6_34_ 
+summarize agri_6_34_ if agri_6_34_ < 2
+
+tab agri_6_36_ 
+summarize agri_6_36_ if agri_6_36_ < 2
+
+tab agri_6_38_a_code_
+
+tab agri_6_39_a_code_
+
+tab agri_6_40_a_code_ 
+
+tab agri_6_41_a_code_
+
+tab agri_6_37_
+sum agri_6_37_ if agri_6_37_ > -9
+
+**************************************************
+* Production Data Summary
+**************************************************
+use "$production", clear
+
+sum cereals_01_6 cereals_02_6 cereals_03_6 cereals_04_6 cereals_05_6
+
+tab farine_tubercules_consumption_1
+tab farine_tubercules_consumption_2
+tab farine_tubercules_consumption_3
+tab farine_tubercules_consumption_4
+tab farine_tubercules_consumption_5
+tab farine_tubercules_consumption_6
+
+tab legumes_03_5
+sum legumes_03_5 if legumes_03_5 >= 0
+
+tab legumes_03_6
+sum legumes_03_6 if legumes_03_6 >= 0
 
 **************************************************
 * End of Script

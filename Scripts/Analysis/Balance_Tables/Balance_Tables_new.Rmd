@@ -692,7 +692,7 @@ print(regression_results)
 
 
 
-
+####f-stats non robust SE test
 
 ```{r}
 # 
@@ -702,7 +702,7 @@ print(regression_results)
 #   for (var in vars_to_test) {
 #     # Select relevant columns and drop NAs
 #     subset <- data %>%
-#       select(all_of(var), all_of(treatment_col), all_of(village_col)) 
+#       select(all_of(var), all_of(treatment_col), all_of(village_col))
 #    # %>% na.omit()
 # 
 #     # Run regression
@@ -754,60 +754,60 @@ print(regression_results)
 # 
 # # Print the combined results
 # print(regression_results)
-
+# 
 
 ```
-
+####Orginial function
 
 ```{r}
-# 
-# run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
-#   results_list <- list()  # Store results for all variables
-# 
-#   for (var in vars_to_test) {
-#     # Select relevant columns
-#     subset <- data %>% select(all_of(var), all_of(treatment_col), all_of(village_col))
-# 
-#     # Run regression with Control as baseline
-#     model <- lm(as.formula(paste(var, "~", treatment_col)), data = subset)
-# 
-#     # Clustered standard errors at the village level
-#     clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
-# 
-#     # Extract control mean (intercept) and SE
-#     control_mean <- round(clustered_se[1, 1], 2)  # Intercept
-#     control_se <- round(clustered_se[1, 2], 2)    # SE of the intercept
-# 
-#     # Extract coefficients and p-values for treatment arms
-#     num_treatments <- nrow(clustered_se) - 1  # Number of treatment arms
-#     comparisons <- paste("Control vs", unique(data[[treatment_col]])[-1])  # Skip "Control"
-# 
-#     results <- data.frame(
-#       variable = var,
-#       comparison = comparisons,
-#       stat = round(clustered_se[2:(num_treatments + 1), 1], 2),  # Coefficients
-#       p = round(clustered_se[2:(num_treatments + 1), 4], 3),  # P-values
-#       control_mean = control_mean,  # Control group mean
-#       control_se = control_se  # Control group SE
-#     )
-# 
-#     # Store results in list
-#     results_list[[var]] <- results
-#   }
-# 
-#   # Combine all results into one data frame
-#   final_results <- bind_rows(results_list)
-#   return(final_results)
-# }
-# 
-# 
-# # Run regressions for the baseline variables
-#  vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-#  vars_to_test_reg
-#     regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
-# 
-# # Print the combined results
-# print(regression_results)
+
+run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+  results_list <- list()  # Store results for all variables
+
+  for (var in vars_to_test) {
+    # Select relevant columns
+    subset <- data %>% select(all_of(var), all_of(treatment_col), all_of(village_col))
+
+    # Run regression with Control as baseline
+    model <- lm(as.formula(paste(var, "~", treatment_col)), data = subset)
+
+    # Clustered standard errors at the village level
+    clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+
+    # Extract control mean (intercept) and SE
+    control_mean <- round(clustered_se[1, 1], 2)  # Intercept
+    control_se <- round(clustered_se[1, 2], 2)    # SE of the intercept
+
+    # Extract coefficients and p-values for treatment arms
+    num_treatments <- nrow(clustered_se) - 1  # Number of treatment arms
+    comparisons <- paste("Control vs", unique(data[[treatment_col]])[-1])  # Skip "Control"
+
+    results <- data.frame(
+      variable = var,
+      comparison = comparisons,
+      stat = round(clustered_se[2:(num_treatments + 1), 1], 2),  # Coefficients
+      p = round(clustered_se[2:(num_treatments + 1), 4], 3),  # P-values
+      control_mean = control_mean,  # Control group mean
+      control_se = control_se  # Control group SE
+    )
+
+    # Store results in list
+    results_list[[var]] <- results
+  }
+
+  # Combine all results into one data frame
+  final_results <- bind_rows(results_list)
+  return(final_results)
+}
+
+
+# Run regressions for the baseline variables
+ vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+ vars_to_test_reg
+    regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
+
+# Print the combined results
+print(regression_results)
 
 
 
@@ -875,7 +875,110 @@ print(regression_results)
 
 ######Compute F-test across arms for each var
 
+####test for the f-stats
 
+```{R}
+
+# run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+#   results_list <- list()
+# 
+#   for (var in vars_to_test) {
+#     tryCatch({
+#       # Subset and drop rows with NA in outcome
+#       subset <- data %>%
+#         select(all_of(var), all_of(treatment_col), all_of(village_col)) %>%
+#         drop_na()
+# 
+#       # Define model
+#       formula <- as.formula(paste(var, "~", treatment_col))
+#       model <- lm(formula, data = subset)
+# 
+#       # Clustered standard errors
+#       clustered_vcov <- vcovCL(model, cluster = subset[[village_col]])
+#       clustered_se <- coeftest(model, vcov = clustered_vcov)
+# 
+#       # --- 1. F-stat from summary(model)
+#       model_summary <- summary(model)
+#       f_raw <- round(model_summary$fstatistic[1], 2)
+#       p_raw <- round(pf(model_summary$fstatistic[1],
+#                         model_summary$fstatistic[2],
+#                         model_summary$fstatistic[3],
+#                         lower.tail = FALSE), 3)
+# 
+#       # --- 2. F-stat from Wald test with clustered SE
+#       wald_clustered <- waldtest(model, vcov = clustered_vcov, test = "F")
+#       f_clustered <- round(wald_clustered[2, "F"], 2)
+#       p_clustered <- round(wald_clustered[2, "Pr(>F)"], 3)
+# 
+#       # --- 3. F-stat from Wald test without clustering
+#       wald_unclustered <- waldtest(model, test = "F")
+#       f_unclustered <- round(wald_unclustered[2, "F"], 2)
+#       p_unclustered <- round(wald_unclustered[2, "Pr(>F)"], 3)
+# 
+#       # Sample size
+#       n_obs <- nobs(model)
+# 
+#       # Extract control group stats
+#       control_mean <- round(clustered_se[1, 1], 2)
+#       control_se <- round(clustered_se[1, 2], 2)
+# 
+#       # Treatment stats
+#       coef_names <- rownames(clustered_se)[-1]
+#       stats <- clustered_se[-1, 1]
+#       pvals <- clustered_se[-1, 4]
+# 
+#       results <- data.frame(
+#         variable = var,
+#         comparison = coef_names,
+#         stat = round(stats, 2),
+#         p = round(pvals, 3),
+#         control_mean = control_mean,
+#         control_se = control_se,
+#         N = n_obs,
+#         f_stat_raw = f_raw,
+#         p_value_raw = p_raw,
+#         f_stat_clustered = f_clustered,
+#         p_value_clustered = p_clustered,
+#         f_stat_unclustered = f_unclustered,
+#         p_value_unclustered = p_unclustered,
+#         row.names = NULL
+#       )
+# 
+#       results_list[[var]] <- results
+#     }, error = function(e) {
+#       # Handle errors gracefully
+#       results_list[[var]] <- data.frame(
+#         variable = var,
+#         comparison = NA,
+#         stat = NA,
+#         p = NA,
+#         control_mean = NA,
+#         control_se = NA,
+#         N = NA,
+#         f_stat_raw = NA,
+#         p_value_raw = NA,
+#         f_stat_clustered = NA,
+#         p_value_clustered = NA,
+#         f_stat_unclustered = NA,
+#         p_value_unclustered = NA,
+#         row.names = NULL
+#       )
+#     })
+#   }
+# 
+#   final_results <- bind_rows(results_list)
+#   return(final_results)
+# }
+# 
+#  vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+#  vars_to_test_reg
+#     regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
+# 
+# # Print the combined results
+# print(regression_results)
+
+
+```
 ```{r}
 # # Fit model
 # set.seed(123)
@@ -1101,34 +1204,34 @@ f_test_results
 #CREATE F-STAT FUNCTION FOR EACH VAR
 #<><<><><>><><<><><>>
 
-# # Function to perform F-test for each variable
-# run_f_tests <- function(data, treatment_col, vars_to_test) {
-#   results <- list()
-# 
-#   for (var in vars_to_test) {
-#     # Construct formula dynamically (e.g., hh_15_2 ~ group)
-#     formula <- as.formula(paste(var, "~", treatment_col))
-#         # Run ANOVA for each variable
-#     anova_result <- aov(formula, data = data)
-#         # Get the F-statistic and p-value
-#     f_stat <- summary(anova_result)[[1]]$`F value`[1]
-#     p_value <- summary(anova_result)[[1]]$`Pr(>F)`[1]
-# 
-#     # Store results
-#     results <- append(results, list(data.frame(variable = var,
-#                                                f_statistic = round(f_stat, 2),
-#                                                p_value = round(p_value, 2))))
-#   }
-#   # Combine and return the results as a data frame
-#   return(bind_rows(results))
-# }
-#     vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
-# 
-#     f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
-#     print(f_test_results)
-# 
-# 
-# 
+# Function to perform F-test for each variable
+run_f_tests <- function(data, treatment_col, vars_to_test) {
+  results <- list()
+
+  for (var in vars_to_test) {
+    # Construct formula dynamically (e.g., hh_15_2 ~ group)
+    formula <- as.formula(paste(var, "~", treatment_col))
+        # Run ANOVA for each variable
+    anova_result <- aov(formula, data = data)
+        # Get the F-statistic and p-value
+    f_stat <- summary(anova_result)[[1]]$`F value`[1]
+    p_value <- summary(anova_result)[[1]]$`Pr(>F)`[1]
+
+    # Store results
+    results <- append(results, list(data.frame(variable = var,
+                                               f_statistic = round(f_stat, 2),
+                                               p_value = round(p_value, 2))))
+  }
+  # Combine and return the results as a data frame
+  return(bind_rows(results))
+}
+    vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+
+    f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
+    print(f_test_results)
+
+
+
 # 
 compute_fdr_qvalues <- function(regression_results) {
 

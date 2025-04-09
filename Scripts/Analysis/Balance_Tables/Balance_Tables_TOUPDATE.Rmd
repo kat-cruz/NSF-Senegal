@@ -712,68 +712,6 @@ write_xlsx(list(
 
 #Asset index summary
 
-```{r}
-
-
-# Load necessary packages
-# library(dplyr)
-# library(knitr)
-# library(kableExtra)
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
-# Sample data (replace with your actual data)
-# data <- your_data
-
-# Summary statistics for the variables
-summary_stats <- asset_df_raw %>%
-  summarise(
-    asset_index_mean = mean(asset_index, na.rm = TRUE),
-    asset_index_sd = sd(asset_index, na.rm = TRUE),
-    asset_index_min = min(asset_index, na.rm = TRUE),
-    asset_index_max = max(asset_index, na.rm = TRUE),
-    
-    asset_index_std_mean = mean(asset_index_std, na.rm = TRUE),
-    asset_index_std_sd = sd(asset_index_std, na.rm = TRUE),
-    asset_index_std_min = min(asset_index_std, na.rm = TRUE),
-    asset_index_std_max = max(asset_index_std, na.rm = TRUE)
-  )
-
-# Description of how the index was created (included in the note)
-index_description <- "
-<b><u>Note on Asset Index Creation:</u></b><br><br>
-The asset index was created using Principal Component Analysis (PCA). The first principal component (PC1) was extracted from a set of variables, including information on physical assets, living conditions, and household characteristics. The index represents the variation in these factors, and is often interpreted as a measure of wealth or socioeconomic status. The asset index was then standardized (asset_index_std) to allow for easier interpretation and comparison across households.
-"
-
-# Combine summary statistics into a table
-output_table <- bind_rows(
-  tibble(
-    Variable = c("Asset Index", "Asset Index Standardized"),
-    Mean = c(summary_stats$asset_index_mean, summary_stats$asset_index_std_mean),
-    SD = c(summary_stats$asset_index_sd, summary_stats$asset_index_std_sd),
-    Min = c(summary_stats$asset_index_min, summary_stats$asset_index_std_min),
-    Max = c(summary_stats$asset_index_max, summary_stats$asset_index_std_max)
-  )
-)
-
-# Create HTML output with table and note
-html_output <- kable(output_table, "html", caption = "Summary Statistics for Asset Index Variables") %>%
-  kable_styling() %>%
-  add_header_above(c("Variable Summary" = 5)) %>%
-  row_spec(0, bold = TRUE)
-
-# Combine the description and the table for the HTML output
-html_content <- paste0(index_description, as.character(html_output))
-
-# Specify the file to save the HTML output
-output_file <- "asset_index_summary_results.html"
-
-# Write the combined content (note + table) to the HTML file
-writeLines(html_content, output_file)
-
-# Check output
-cat("HTML file has been created: ", output_file)
-
-
-```
 
 
 

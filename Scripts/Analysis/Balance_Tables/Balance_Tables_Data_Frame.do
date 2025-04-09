@@ -53,11 +53,11 @@ set more off
 *<><<><><>><><<><><>>
 
 *^*^* Set base Box path for each user
-if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
-if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
+if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
+if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
 if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
-if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
+if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 if "`c(username)'"=="km978" global gitmaster "C:\Users\Kateri\Downloads\GIT-Senegal\NSF-Senegal"
 if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Senegal\NSF-Senegal"
@@ -1187,7 +1187,7 @@ save `balance_table_ata'
 * RUN MULTILOGIT REGRESSION
 *<><<><><>><><<><><>>
 
-/*
+
 
 		use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 
@@ -1204,7 +1204,7 @@ replace treatment_group = "Treatment2" if inlist(group, "2A", "2B")
 replace treatment_group = "Treatment3" if inlist(group, "3A", "3B")
 
 * Assign 'Local Control' based on the combination of group and trained_hh
-replace treatment_group = "Local Control" if inlist(group, "1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0
+*replace treatment_group = "Local Control" if inlist(group, "1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0
 drop group 
 
 /*
@@ -1231,8 +1231,14 @@ mlogit treatment_group_num hh_age_h hh_education_level_bin_h hh_education_skills
   living_01_bin game_A_total game_B_total ///
   TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any agri_income_01 agri_income_05 beliefs_01_bin ///
   beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///
-  health_5_3_bin health_5_6_ num_water_access_points q_51 target_village, baseoutcome(1) vce(cluster hhid_village)
+  health_5_3_bin health_5_6_ num_water_access_points q_51 target_village, baseoutcome(1) vce(cluster hhid_village) 
 
+  test hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero hh_03_ hh_10_ hh_12_6_ hh_16_ ///
+  hh_26_ hh_29_01 hh_29_02 hh_29_03 hh_29_04 hh_37_ hh_38_  ///
+  living_01_bin game_A_total game_B_total ///
+  TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any agri_income_01 agri_income_05 beliefs_01_bin ///
+  beliefs_02_bin beliefs_03_bin beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin ///
+  health_5_3_bin health_5_6_ num_water_access_points q_51 target_village
 
 *cluster(hhid_village)
 

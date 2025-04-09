@@ -1,7 +1,21 @@
 *** Household Data Corrections *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Kateri Mouawad ***
-*** File Last Updated On: May 31, 2024 ***
+*** Updates recorded in Git ***
+
+
+* <><<><><>> Read Me  <><<><><>>
+
+
+ *^*^* This script corrects incorrect values that were caught in the Baseline Checks .do file
+ ** 1) Load in final baseline data
+ ** 2) Check and remove duplicates
+ ** 3) Merge in with HHIDs to run checks
+ ** 4) Run individual checks by replacing mistaken values 
+ ** 5) Save final output 
+
+ *^*^* NOTE: most recent update on 09 April 2025. We found an old village ID: 132A's should be 153A's. Since this was part of the later 16 villages that were added, updates were made only in the new village correction section. 
+
 
  *** This Do File PROCESSES: 
 							* HouseholdIDs_8Feb24.xlsx
@@ -23,12 +37,13 @@ if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal\Data
 if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\Data_Management"
 
 *** additional file paths ***
-global clean_data "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
+global clean_data "$master\Data\_CRDES_CleanData\Baseline\Identified"
 *global data2 "$master\Surveys\Baseline CRDES data (April 2024)"
-global corrected_data "$master\Data_Management\Output\Data_Corrections\Baseline"
+global corrected_data "$master\Output\Data_Processing\Checks\Baseline"
 global raw_data "$master\Data\_CRDES_RawData\Baseline"
-global ids   "$master\Data_Management\Output\Household_IDs"
+global ids   "$master\Output\Data_Processing\ID_Creation\Baseline"
 
+/*
 global village_observations "$master\Data Quality Checks\Code\Village_Household_Identifiers"
 global household_roster "$master\Data Quality Checks\Code\Household_Roster"
 global knowledge "$master\Data Quality Checks\Code\Knowledge"
@@ -41,7 +56,8 @@ global standard_living "$master\Data Quality Checks\Code\Standard_Living"
 global beliefs "$master\Data Quality Checks\Code\Beliefs" 
 global public_goods "$master\Data Quality Checks\Code\Public_Goods"
 global enum_observations "$master\Data Quality Checks\Code\Enumerator_Observations"
-global april_id "$master\Output\Data_Processing\Checks\Baseline\April_Output\Baseline_Village_Household_Identifiers"
+global april_id "$master\Output\Data_Processing\ID_Creation\Baseline"
+*/
 
 import delimited "$raw_data\DISES_enquete_ménage_FINALE_WIDE_27Feb24.csv", clear varnames(1) bindquote(strict)
 
@@ -4046,7 +4062,8 @@ save "$data\DISES_Baseline_Household_Corrected_PII"
 */
 
 
-*** Additional corrections ***
+*** Additional corrections - leaving here as record ***
+/*
 
 use "$corrected_data\DISES_Baseline_Household_Corrected_PII.dta", clear 
 
@@ -4056,25 +4073,60 @@ replace hh_education_level_5 = 1 if hhid == "030A02"
 save "$corrected_data\DISES_Baseline_Household_Corrected_PII.dta", replace 
 
 
-
-
+*/
 
 
 
 ************************************ New 16 Villages CHECKS **********************************************
 *** Import data checks household ID numbers to merge *** 
+*** UPDATE: Outdated file here, leaving as record but this won't run. 
+
+/*
 import excel "$april_id\HouseholdIDs_042624.xlsx", clear firstrow
 
 *gen villageid = substr(hhid, 1, 4)
 
 quietly bysort hh_phone hh_head_name_complet hh_name_complet_resp villageid: gen dup = cond(_N==1,0,_n)
 
-*save "$data\household_ids_april"
+save "$data\household_ids_april"
+*/
+
+*<><<><><>><><<><><>>
+*SUBSET UPDATED VILLAGE IDS (Molly fixed the Compelte_HouseholdIDs_Final.dta to include the corrected hhids - changed all 132As to 153As)
+*<><<><><>><><<><><>>
+
+/*
+use "$ids\Compelte_HouseholdIDs_Final.dta", clear
+
+
+gen keepme = villageid == "122A" | villageid == "123A" | villageid == "121B" | ///
+             villageid == "131B" | villageid == "120B" | villageid == "123B" | ///
+             villageid == "153A" | villageid == "121A" | villageid == "131A" | ///
+             villageid == "141A" | villageid == "142A" | villageid == "151A" | ///
+             villageid == "161A" | villageid == "133A" | villageid == "171A" | ///
+             villageid == "143A"
+
+keep if keepme
+drop keepme
+
+
+
+keep hh_phone hh_head_name_complet hh_name_complet_resp villageid hhid
+
+
+
+save "$ids\householdIDs_april_updated_04092025.dta", replace 
+*/
+
 
 *** Import data - update this every new data cleaning session ***
 import delimited "$raw_data\DISES_enquete_ménage_FINALE_V2_WIDE_26April24.csv", clear varnames(1) bindquote(strict)
+*** UPDATE village ID to merge with household IDs
 
 gen villageid = substr(village_select_o, 1, 4)
+replace villageid = "153A" if villageid == "132A"
+
+*** 
 
 *** drop duplicated data *** 
 drop if key == "uuid:37e8d522-be4e-4376-8bb7-91a970c58ece"
@@ -4089,15 +4141,16 @@ drop if key == "uuid:e02da6a0-cc1a-4ef7-887a-37198091a7aa"
 drop if key == "uuid:b992c83d-579b-474d-9163-856b0c5c8ae1"
 
 *** merge in household identifiers *** 
-merge 1:1 hh_phone hh_head_name_complet hh_name_complet_resp villageid using "$data\household_ids_april"
+merge 1:1 hh_phone hh_head_name_complet hh_name_complet_resp villageid using "$ids\householdIDs_april_updated_04092025.dta"
 
 *** drop the duplicates that we previously got rid of ***
 drop if _merge == 2 
 
-drop _merge dup
+drop _merge 
+*drop _merge dup
 
 
-replace agri_6_38_a_code_1 = 1 if hhid == "132A02"
+replace agri_6_38_a_code_1 = 1 if hhid == "153A02"
 replace agri_6_38_a_code_1 = 1 if hhid == "141A16"
 replace agri_6_38_a_code_1 = 1 if hhid == "143A02"
 replace agri_6_38_a_code_1 = 1 if hhid == "120B01"
@@ -4106,9 +4159,9 @@ replace agri_6_38_a_code_1 = 1 if hhid == "121A04"
 replace agri_6_38_a_code_1 = 1 if hhid == "121A07"
 replace agri_6_38_a_code_1 = 1 if hhid == "121A14"
 replace agri_6_38_a_code_1 = 1 if hhid == "121A20"
-replace agri_6_38_a_code_1 = 1 if hhid == "132A17"
-replace agri_6_38_a_code_1 = 1 if hhid == "132A18"
-replace agri_6_38_a_code_1 = 1 if hhid == "132A20"
+replace agri_6_38_a_code_1 = 1 if hhid == "153A17"
+replace agri_6_38_a_code_1 = 1 if hhid == "153A18"
+replace agri_6_38_a_code_1 = 1 if hhid == "153A20"
 replace agri_6_38_a_code_1 = 1 if hhid == "141A17"
 
 replace agri_6_39_a_code_1 = 1 if hhid == "121B01"
@@ -4120,10 +4173,10 @@ replace agri_6_39_a_code_1 = 1 if hhid == "131B09"
 replace agri_6_39_a_code_1 = 1 if hhid == "120B01"
 replace agri_6_39_a_code_1 = 1 if hhid == "120B04"
 replace agri_6_39_a_code_1 = 1 if hhid == "120B16"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A05"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A07"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A13"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A15"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A05"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A07"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A13"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A15"
 replace agri_6_39_a_code_1 = 1 if hhid == "121A04"
 replace agri_6_39_a_code_1 = 1 if hhid == "121A07"
 replace agri_6_39_a_code_1 = 1 if hhid == "141A03"
@@ -4141,7 +4194,7 @@ replace agri_6_39_a_code_1 = 1 if hhid == "120B08"
 replace agri_6_39_a_code_1 = 1 if hhid == "123B06"
 replace agri_6_39_a_code_1 = 1 if hhid == "123B11"
 replace agri_6_39_a_code_1 = 1 if hhid == "123B14"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A11"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A11"
 replace agri_6_39_a_code_1 = 1 if hhid == "143A07"
 replace agri_6_39_a_code_1 = 1 if hhid == "143A12"
 replace agri_6_39_a_code_1 = 1 if hhid == "121B02"
@@ -4155,10 +4208,10 @@ replace agri_6_39_a_code_1 = 1 if hhid == "120B11"
 replace agri_6_39_a_code_1 = 1 if hhid == "123B04"
 replace agri_6_39_a_code_1 = 1 if hhid == "123B07"
 replace agri_6_39_a_code_1 = 1 if hhid == "123B13"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A01"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A02"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A08"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A10"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A01"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A02"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A08"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A10"
 replace agri_6_39_a_code_1 = 1 if hhid == "121A09"
 replace agri_6_39_a_code_1 = 1 if hhid == "121A12"
 replace agri_6_39_a_code_1 = 1 if hhid == "141A01"
@@ -4175,10 +4228,10 @@ replace agri_6_39_a_code_1 = 1 if hhid == "123B17"
 replace agri_6_39_a_code_1 = 1 if hhid == "123B18"
 replace agri_6_39_a_code_1 = 1 if hhid == "131B19"
 replace agri_6_39_a_code_1 = 1 if hhid == "131B20"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A17"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A18"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A19"
-replace agri_6_39_a_code_1 = 1 if hhid == "132A20"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A17"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A18"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A19"
+replace agri_6_39_a_code_1 = 1 if hhid == "153A20"
 replace agri_6_39_a_code_1 = 1 if hhid == "141A17"
 replace agri_6_39_a_code_1 = 1 if hhid == "141A18"
 replace agri_6_39_a_code_1 = 1 if hhid == "141A19"
@@ -4199,8 +4252,8 @@ replace agri_6_39_a_code_2 = 1 if hhid == "120B06"
 replace agri_6_39_a_code_2 = 1 if hhid == "120B11"
 replace agri_6_39_a_code_2 = 1 if hhid == "123B04"
 replace agri_6_39_a_code_2 = 1 if hhid == "123B07"
-replace agri_6_39_a_code_2 = 1 if hhid == "132A08"
-replace agri_6_39_a_code_2 = 1 if hhid == "132A10"
+replace agri_6_39_a_code_2 = 1 if hhid == "153A08"
+replace agri_6_39_a_code_2 = 1 if hhid == "153A10"
 replace agri_6_39_a_code_2 = 1 if hhid == "143A10"
 
 replace agri_6_39_a_code_3 = 1 if hhid == "121B08"
@@ -4212,7 +4265,7 @@ replace agri_6_40_a_code_1 = 1 if hhid == "121A14"
 replace agri_6_40_a_code_1 = 1 if hhid == "141A03"
 replace agri_6_40_a_code_1 = 1 if hhid == "131B16"
 replace agri_6_40_a_code_1 = 1 if hhid == "120B02"
-replace agri_6_40_a_code_1 = 1 if hhid == "132A02"
+replace agri_6_40_a_code_1 = 1 if hhid == "153A02"
 replace agri_6_40_a_code_1 = 1 if hhid == "121A12"
 replace agri_6_40_a_code_1 = 1 if hhid == "143A02"
 replace agri_6_40_a_code_1 = 1 if hhid == "143A10"
@@ -4227,9 +4280,9 @@ replace agri_6_40_a_code_1 = 1 if hhid == "121A07"
 replace agri_6_40_a_code_1 = 1 if hhid == "131B09"
 replace agri_6_40_a_code_1 = 1 if hhid == "131B16"
 replace agri_6_40_a_code_1 = 1 if hhid == "131B19"
-replace agri_6_40_a_code_1 = 1 if hhid == "132A17"
-replace agri_6_40_a_code_1 = 1 if hhid == "132A18"
-replace agri_6_40_a_code_1 = 1 if hhid == "132A20"
+replace agri_6_40_a_code_1 = 1 if hhid == "153A17"
+replace agri_6_40_a_code_1 = 1 if hhid == "153A18"
+replace agri_6_40_a_code_1 = 1 if hhid == "153A20"
 replace agri_6_40_a_code_1 = 1 if hhid == "141A17"
 replace agri_6_40_a_code_1 = 1 if hhid == "141A18"
 replace agri_6_40_a_code_1 = 1 if hhid == "171A06"
@@ -4251,10 +4304,10 @@ replace agri_6_41_a_code_1 = 1 if hhid == "120B10"
 replace agri_6_41_a_code_1 = 1 if hhid == "120B16"
 replace agri_6_41_a_code_1 = 1 if hhid == "123B01"
 replace agri_6_41_a_code_1 = 1 if hhid == "123B08"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A05"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A07"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A13"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A15"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A05"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A07"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A13"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A15"
 replace agri_6_41_a_code_1 = 1 if hhid == "121A04"
 replace agri_6_41_a_code_1 = 1 if hhid == "121A07"
 replace agri_6_41_a_code_1 = 1 if hhid == "121A14"
@@ -4270,7 +4323,7 @@ replace agri_6_41_a_code_1 = 1 if hhid == "121B09"
 replace agri_6_41_a_code_1 = 1 if hhid == "121B10"
 replace agri_6_41_a_code_1 = 1 if hhid == "121B09"
 replace agri_6_41_a_code_1 = 1 if hhid == "121B17"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A06"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A06"
 replace agri_6_41_a_code_1 = 1 if hhid == "121B02"
 replace agri_6_41_a_code_1 = 1 if hhid == "121B05"
 replace agri_6_41_a_code_1 = 1 if hhid == "121B16"
@@ -4283,10 +4336,10 @@ replace agri_6_41_a_code_1 = 1 if hhid == "120B05"
 replace agri_6_41_a_code_1 = 1 if hhid == "120B06"
 replace agri_6_41_a_code_1 = 1 if hhid == "120B11"
 replace agri_6_41_a_code_1 = 1 if hhid == "123B04"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A01"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A02"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A08"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A10"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A01"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A02"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A08"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A10"
 replace agri_6_41_a_code_1 = 1 if hhid == "121A09"
 replace agri_6_41_a_code_1 = 1 if hhid == "121A12"
 replace agri_6_41_a_code_1 = 1 if hhid == "141A01"
@@ -4305,10 +4358,10 @@ replace agri_6_41_a_code_1 = 1 if hhid == "123B17"
 replace agri_6_41_a_code_1 = 1 if hhid == "131B17"
 replace agri_6_41_a_code_1 = 1 if hhid == "131B18"
 replace agri_6_41_a_code_1 = 1 if hhid == "131B19"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A17"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A18"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A19"
-replace agri_6_41_a_code_1 = 1 if hhid == "132A20"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A17"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A18"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A19"
+replace agri_6_41_a_code_1 = 1 if hhid == "153A20"
 replace agri_6_41_a_code_1 = 1 if hhid == "141A17"
 replace agri_6_41_a_code_1 = 1 if hhid == "141A18"
 replace agri_6_41_a_code_1 = 1 if hhid == "141A19"
@@ -4328,8 +4381,8 @@ replace agri_6_41_a_code_2 = 1 if hhid == "120B06"
 replace agri_6_41_a_code_2 = 1 if hhid == "120B11"
 replace agri_6_41_a_code_2 = 1 if hhid == "123B04"
 replace agri_6_41_a_code_2 = 1 if hhid == "123B07"
-replace agri_6_41_a_code_2 = 1 if hhid == "132A08"
-replace agri_6_41_a_code_2 = 1 if hhid == "132A10"
+replace agri_6_41_a_code_2 = 1 if hhid == "153A08"
+replace agri_6_41_a_code_2 = 1 if hhid == "153A10"
 replace agri_6_41_a_code_2 = 1 if hhid == "143A10"
 replace agri_6_41_a_code_2 = 1 if hhid == "121A19"
 replace agri_6_41_a_code_2 = 1 if hhid == "141A17"
@@ -4355,18 +4408,18 @@ replace cereals_02_1 = 16200 if hhid == "133A06"
 replace cereals_02_1 = 14400 if hhid == "141A17"
 
 
-replace farines_02_1 = 160 if hhid == "132A15"
+replace farines_02_1 = 160 if hhid == "153A15"
 replace farines_02_1 = 120 if hhid == "143A03"
 replace farines_02_1 = 100 if hhid == "143A15"
 
 replace farines_02_2 = 250 if hhid == "120B01"
 
-replace legumes_02_3 = 200 if hhid == "132A15"
+replace legumes_02_3 = 200 if hhid == "153A15"
 replace legumes_02_3 = 250 if hhid == "143A15"
 
 replace legumineuses_01_1 = 0.3 if hhid == "120B06"
 
-replace legumineuses_02_1 = 104 if hhid == "132A15"
+replace legumineuses_02_1 = 104 if hhid == "153A15"
 
 replace legumineuses_05_1 = 700 if hhid == "121B17"
 replace legumineuses_05_1 = 600 if hhid == "143A12"
@@ -4385,15 +4438,15 @@ replace legumineuses_05_3 = 0 if hhid == "171A09"
 replace legumineuses_05_3 = 0 if hhid == "171A11"
 replace legumineuses_05_3 = 500 if hhid == "171A13"
 replace legumineuses_05_3 = 0 if hhid == "171A17"
-replace legumineuses_05_3 = 400 if hhid == "132A13"
-replace legumineuses_05_3 = 400 if hhid == "132A15"
+replace legumineuses_05_3 = 400 if hhid == "153A13"
+replace legumineuses_05_3 = 400 if hhid == "153A15"
 replace legumineuses_05_3 = 400 if hhid == "143A03"
 replace legumineuses_05_3 = 400 if hhid == "143A08"
 replace legumineuses_05_3 = 400 if hhid == "143A11"
 replace legumineuses_05_3 = 400 if hhid == "143A15"
 replace legumineuses_05_3 = 800 if hhid == "131B12"
-replace legumineuses_05_3 = 600 if hhid == "132A11"
-replace legumineuses_05_3 = 300 if hhid == "132A12"
+replace legumineuses_05_3 = 600 if hhid == "153A11"
+replace legumineuses_05_3 = 300 if hhid == "153A12"
 replace legumineuses_05_3 = 300 if hhid == "120B06"
 replace legumineuses_05_3 = 300 if hhid == "143A16"
 
@@ -4421,7 +4474,7 @@ replace farines_04_4 = 600000 if hhid == "143A17"
 
 replace hh_age_6 = 53 if hhid == "122A18"
 
-replace agri_6_41_a_1 = 1 if hhid == "132A06"
+replace agri_6_41_a_1 = 1 if hhid == "153A06"
 
 replace health_5_12_5 = 1 if hhid == "131A13"
 
@@ -4445,7 +4498,7 @@ replace agri_loan_name = 1 if hhid == "142A17"
 replace face_04 = 1000 if hhid == "123A14"
 
 
-*save "$data\DISES_Baseline_Additional16_Corrected_PII" 
+save "$corrected_data\DISES_Baseline_Additional16_Corrected_PII.dta", replace 
 
 
 ****************************** Import community survey data ********************************************

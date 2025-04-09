@@ -48,8 +48,13 @@ if (file.exists(proj_paths$projects)) {
 
 
 file_path_balance_tables_df <- file.path(proj$p1, "baseline_balance_tables_data_PAP.dta")
-balance_df <- read_dta(file_path_balance_tables_df)
-balance_df
+balance_df_raw <- read_dta(file_path_balance_tables_df)
+balance_df_raw
+
+
+file_path_asset_index_df <- file.path(proj$p1, "PCA_asset_index_var.dta")
+asset_df_raw <- read_dta(file_path_asset_index_df)
+asset_df_raw
 
 ```
 
@@ -60,21 +65,21 @@ balance_df
 
 
 # Adding a single categorical variable for household training categories - this is for computing summary stats since I'm keeping the trained_hh variable
-joint_df <- balance_df %>%
-  mutate(
-    group = str_sub(hhid, 3, 4),
-    treatment_group = case_when(
-      group %in% c("0A", "0B") ~ "Control",
-      group %in% c("1A", "1B") ~ "Treatment1",
-      group %in% c("2A", "2B") ~ "Treatment2",
-      group %in% c("3A", "3B") ~ "Treatment3",
-         )
-  ) %>% select(-group)
+# joint_df <- balance_df %>%
+#   mutate(
+#     group = str_sub(hhid, 3, 4),
+#     treatment_group = case_when(
+#       group %in% c("0A", "0B") ~ "Control",
+#       group %in% c("1A", "1B") ~ "Treatment1",
+#       group %in% c("2A", "2B") ~ "Treatment2",
+#       group %in% c("3A", "3B") ~ "Treatment3",
+#          )
+#   ) %>% select(-group)
+# 
+# names(joint_df)
 
-names(joint_df)
 
-
-summary_df <- balance_df %>%
+summary_df <- balance_df_raw %>%
   mutate(
     group = str_sub(hhid, 3, 4),
     treatment_group = case_when(
@@ -97,7 +102,7 @@ long_data_sum <- summary_df %>%
     rename(group = treatment_group)
 
 # Adding a single categorical variable for household training categories - this is for running regressions to avoid multicollinearity with trained_hh
-balance_df <- balance_df %>%
+balance_df <- balance_df_raw %>%
   mutate(
     # Extract the two middle characters (e.g., 2A) from hhid
     group = str_sub(hhid, 3, 4),
@@ -263,7 +268,7 @@ summary_table_complete
 #%>%   filter(variable != "target_village")
 ```
 
-###Export summary table to HTML
+####Export summary table to HTML
 
 ```{r}
 
@@ -272,18 +277,18 @@ setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Ta
 summary_table_complete %>%
   kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics") %>%
   footnote(
-general = "Table presents mean values, with standard deviations in parentheses and the number of observations listed below them.",
+general = "Table reports mean values, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.",
 symbol = c(
   "Binary variables were created from Likert scale responses based on their distribution.",
   "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("_baseline_summary_statsV4.html")
+  save_kable("baseline_summary_statsV5.html")
 
 
 ```
 
-###Export summary table to Excel
+####Export summary table to Excel
 
 ```{r}
 # Excel spreadsheet
@@ -311,10 +316,12 @@ write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV7.xlsx")
 
 
 
-##Create function for regression coefficients
+## Create function for regression coefficients
+
+
+
 
 ```{r}
-
 
 run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
   results_list <- list()
@@ -338,28 +345,29 @@ run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) 
       f_pval <- round(wald[2, "Pr(>F)"], 3)
 
       # Sample size used
-      n_obs <- nobs(model)
+      n_obs <- as.character(nobs(model))
 
       # Extract control group stats (intercept)
-      control_mean <- round(clustered_se[1, 1], 2)
-      control_se <- round(clustered_se[1, 2], 2)
+      control_mean <- as.character(round(clustered_se[1, 1], 2))
+      control_se <- as.character(round(clustered_se[1, 2], 2))
 
       # Extract treatment comparisons
       coef_names <- rownames(clustered_se)[-1]
-      stats <- clustered_se[-1, 1]
-      pvals <- clustered_se[-1, 4]
+      stats <- as.character(round(clustered_se[-1, 1], 2))
+      pvals <- as.character(round(clustered_se[-1, 4], 2))
 
       results <- data.frame(
         variable = var,
         comparison = coef_names,
-        stat = round(stats, 2),
-        p = round(pvals, 3),
+        stat = stats,
+        p = pvals,
         control_mean = control_mean,
         control_se = control_se,
         N = n_obs,
-        f_statistic = f_stat,
-        f_p_value = f_pval,
-        row.names = NULL
+        f_statistic = as.character(f_stat),
+        f_p_value = as.character(f_pval),
+        row.names = NULL,
+        stringsAsFactors = FALSE
       )
 
       results_list[[var]] <- results
@@ -375,7 +383,8 @@ run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) 
         N = NA,
         f_statistic = NA,
         f_p_value = NA,
-        row.names = NULL
+        row.names = NULL,
+        stringsAsFactors = FALSE
       )
     })
   }
@@ -385,7 +394,7 @@ run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) 
 }
 
 
-# Run regressions for the baseline variables
+#Run regressions for the baseline variables
  vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
  vars_to_test_reg
     regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
@@ -395,14 +404,14 @@ print(regression_results)
 
 ```
 
-### compute FDR adjusted p-values
+#### compute FDR adjusted p-values
 
 ```{r}
 compute_fdr_qvalues <- function(regression_results) {
 
   # Apply Benjamini-Hochberg correction to regression p-values
   regression_results <- regression_results %>%
-      mutate(q_value = round(p.adjust(p, method = "BH"), 2))  # Adjust and round q-values # Adjusting only regression p-values
+      mutate(q_value = as.character(round(p.adjust(p, method = "BH"), 2)))  # Adjust and round q-values # Adjusting only regression p-values
 
   return(regression_results)  # Return the updated regression table with q-values
 }
@@ -414,7 +423,7 @@ regression_results_qvals <- compute_fdr_qvalues(regression_results)
 print(regression_results_qvals)
 ```
 
-### Create complete balance table
+#### create complete balance table
 
 ```{r}
 
@@ -427,90 +436,115 @@ subtable <- subtable %>%
   distinct(variable, control_mean, control_se, .keep_all = TRUE)
 
 # Pivot the table to have variables as rows and comparisons as columns
-final_table <- regression_results_qvals %>%
+balance_tablev1 <- regression_results_qvals %>%
    select(-control_mean,-control_se) %>%
   rename(q = q_value)    %>%
   pivot_wider(names_from = comparison, values_from = c(stat, p, q))
 
-final_table
+balance_tablev1
 # Rearrange to stack t-stats and p-values in rows
-final_table <- final_table %>%
-  pivot_longer(cols = -c(variable), names_to = 'comparison', values_to = 'value') %>%
+
+balance_tablev2 <- balance_tablev1 %>%
+  pivot_longer(
+    cols = -c(variable,  f_statistic, f_p_value, N),
+    names_to = 'comparison',
+    values_to = 'value'
+  ) %>%
   separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
   pivot_wider(names_from = comparison, values_from = value)
-final_table
-# Merge F-statistics data into final_table
-final_table <- final_table %>%
-  left_join(f_test_results, by = "variable")
-final_table
 
-final_table <- final_table %>%
+balance_tablev2
+
+
+balance_tablev3 <- balance_tablev2 %>%
   left_join(subtable, by = "variable")
-final_table
+balance_tablev3
 
 
-final_table <- final_table %>%
-  # Ensure f-stat values remain unchanged except for p-values
-  mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) 
-  final_table
+balance_tablev4 <- balance_tablev3 %>%
+  mutate(
+    f_statistic = ifelse(
+      type == "p",
+      paste0("(", sprintf("%.2f", round(as.numeric(f_p_value), 2)), ")"),
+      as.character(f_statistic)
+    )
+  )
+
+
+balance_tablev4
   
- final_table <- final_table %>%
+ balance_tablev5 <- balance_tablev4 %>%
   # Ensure f-stat values remain unchanged except for p-values
   mutate(across(starts_with("control_mean"), ~ ifelse(type == "p", as.character(control_se), as.character(.)))) 
-  final_table
+  balance_tablev5
  
   
   
-final_table <- final_table %>%
+balance_tablev6 <- balance_tablev5 %>%
   # Format p-values with parentheses and add significance stars
-  mutate(across(c(`Control vs Treatment1`, `Control vs Treatment2`, `Control vs Treatment3`, `Control vs Local Control`), 
+  mutate(across(c(`treatment_groupLocal Control`, `treatment_groupTreatment1`, `treatment_groupTreatment2`, `treatment_groupTreatment3`), 
     ~ as.character(ifelse(
       grepl("p", type), 
       paste0("(", trimws(.), ifelse(as.numeric(.) <= 0.01, "**", ifelse(as.numeric(.) <= 0.05, "*", "")), ")"), 
       .))))
 
   
- final_table 
+ balance_tablev6 
  
-final_table <- final_table %>%
+balance_tablev7 <- balance_tablev6 %>%
   # Add brackets around numeric q-values in each cell
- mutate(across(c(`Control vs Treatment1`, `Control vs Treatment2`, `Control vs Treatment3`, `Control vs Local Control`), 
+ mutate(across(c(`treatment_groupLocal Control`, `treatment_groupTreatment1`, `treatment_groupTreatment2`, `treatment_groupTreatment3`), 
  ~ as.character(ifelse(
     grepl("q", type),
     paste0("[", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), "]"),
     .x))))
  
 
-final_table
+balance_tablev7
 
 ```
+```{r}
+balance_tablev7
 
-###Bring in survey questions and values
+balance_tablev8
+```
+
+
+####Add survey questions and values 
 
 ```{r}
 
-final_table <- final_table %>%
+balance_tablev8 <- balance_tablev7 %>%
   mutate(
-    variable = if_else(type == "p" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
-    control_mean = if_else(type == "p" & !is.na(type), "", control_mean),
+    variable = if_else(type == "p" & !is.na(type), "", variable),
+    control_mean = ifelse(
+      type == "p",
+      paste0("(", sprintf("%.2f", round(as.numeric(control_se), 2)), ")"),
+      as.character(control_mean)),# Clear variable when type == "(p)" and type is not NA
+    #control_mean = if_else(type == "p" & !is.na(type), control_se, control_mean),
+    N = if_else(type == "p" & !is.na(type), "", N),
     type = if_else(type == "p" & !is.na(type), "", as.character(type)),  # Clear type when type == "(p)", leave other values unchanged
     f_statistic = if_else(type == "q" & !is.na(type), "", f_statistic),
-    variable = if_else(type == "q" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
-    type = if_else(type == "q" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
+    variable = if_else(type == "q" & !is.na(type), "", variable), 
+    N = if_else(type == "q" & !is.na(type), "", N),
+    control_mean = if_else(type == "q" & !is.na(type), "", control_mean),# Clear variable when type == "(p)" and type is not NA
+    type = if_else(type == "q" & !is.na(type), "", as.character(type))
+ # Clear type when type == "(p)", leave other values unchanged
   
   ) %>%
-  select(-p_value, -control_se)  # Remove the 'type' column after modification
-final_table
+  select(-f_p_value, -control_se)  # Remove the 'type' column after modification
+
+ balance_tablev8
 
 
-final_table <- final_table %>%
+balance_tablev9 <- balance_tablev8 %>%
   mutate(across(everything(), 
                 ~ ifelse(. %in% c("[NaNNA]", "(NaNNA)"), NA, .)))
-
+balance_tablev9
 # Print the modified final_table
-final_table
 
-final_table <- final_table %>%
+
+balance_tablev10 <- balance_tablev9 %>%
 mutate(Question = case_when(
     variable == "hhid_village" ~ "Village ID",
     variable == "hhid" ~ "Household ID",
@@ -571,26 +605,30 @@ mutate(Question = case_when(
     TRUE ~ variable  # Default case
   ))
 
-  final_table  
+  balance_tablev10  
 
-names(final_table)
+names(balance_tablev10)
 
+balance_tablev11 <- balance_tablev10 %>%
+  rename(
+    Variable = variable,
+    N = N,  # Keep N as is
+    `F-test` = f_statistic,
+    Type = type,  # Optional: keep or drop depending on usage
+    `Local Control` = `treatment_groupLocal Control`,
+    `Private Treatment` = `treatment_groupTreatment1`,
+    `Public Treatment` = `treatment_groupTreatment2`,
+    `Public & Private Treatment` = `treatment_groupTreatment3`,
+    `Control Mean` = control_mean,
+    Question = Question
+  )
+balance_tablev11
 
-
-final_table <- final_table %>% 
-  select(Question, everything()) %>%
-  rename(Variable = variable,
-          `Control Mean` = control_mean,
-          `Private Treatment` = `Control vs Treatment1`,
-          `Public Treatment` = `Control vs Treatment2`,
-          `Public & Private Treatment` = `Control vs Treatment3`,
-          `Local Control` = `Control vs Local Control`,
-          `F-test` = f_statistic)
-
-final_table
-
-
+# final_table
+# 
+# 
 desired_column_order <- c(
+       "N",
        "Control Mean",
        "Local Control",
        "Private Treatment",
@@ -598,18 +636,19 @@ desired_column_order <- c(
        "Public & Private Treatment",
        "F-test")
 
-
-
-final_table <- final_table %>%
+# Reorder the columns in final_table
+final_table <- balance_tablev11 %>%
   select(Question, Variable, all_of(desired_column_order))  # Ensure 'variable' stays the first column
 
-# Print the modified final_table
-print(final_table)
+# # Print the modified final_table
+ print(final_table)
 
-final_table
+
 
 
 ```
+
+
 
 #OUTPUT TABLE WITH JOINT F TEST
 
@@ -632,7 +671,7 @@ final_table %>%
     ),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev_jointf_4.html")
+  save_kable("balance_tablev_jointf_5.html")
 ##balance_tablev11.html = without -9s
 ```
 
@@ -665,3 +704,167 @@ write_xlsx(list(
 ), "balance_tablev_jointf_3.xlsx")
 
 ```
+
+
+
+
+
+
+#Asset index summary
+
+```{r}
+
+
+# Load necessary packages
+# library(dplyr)
+# library(knitr)
+# library(kableExtra)
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+# Sample data (replace with your actual data)
+# data <- your_data
+
+# Summary statistics for the variables
+summary_stats <- asset_df_raw %>%
+  summarise(
+    asset_index_mean = mean(asset_index, na.rm = TRUE),
+    asset_index_sd = sd(asset_index, na.rm = TRUE),
+    asset_index_min = min(asset_index, na.rm = TRUE),
+    asset_index_max = max(asset_index, na.rm = TRUE),
+    
+    asset_index_std_mean = mean(asset_index_std, na.rm = TRUE),
+    asset_index_std_sd = sd(asset_index_std, na.rm = TRUE),
+    asset_index_std_min = min(asset_index_std, na.rm = TRUE),
+    asset_index_std_max = max(asset_index_std, na.rm = TRUE)
+  )
+
+# Description of how the index was created (included in the note)
+index_description <- "
+<b><u>Note on Asset Index Creation:</u></b><br><br>
+The asset index was created using Principal Component Analysis (PCA). The first principal component (PC1) was extracted from a set of variables, including information on physical assets, living conditions, and household characteristics. The index represents the variation in these factors, and is often interpreted as a measure of wealth or socioeconomic status. The asset index was then standardized (asset_index_std) to allow for easier interpretation and comparison across households.
+"
+
+# Combine summary statistics into a table
+output_table <- bind_rows(
+  tibble(
+    Variable = c("Asset Index", "Asset Index Standardized"),
+    Mean = c(summary_stats$asset_index_mean, summary_stats$asset_index_std_mean),
+    SD = c(summary_stats$asset_index_sd, summary_stats$asset_index_std_sd),
+    Min = c(summary_stats$asset_index_min, summary_stats$asset_index_std_min),
+    Max = c(summary_stats$asset_index_max, summary_stats$asset_index_std_max)
+  )
+)
+
+# Create HTML output with table and note
+html_output <- kable(output_table, "html", caption = "Summary Statistics for Asset Index Variables") %>%
+  kable_styling() %>%
+  add_header_above(c("Variable Summary" = 5)) %>%
+  row_spec(0, bold = TRUE)
+
+# Combine the description and the table for the HTML output
+html_content <- paste0(index_description, as.character(html_output))
+
+# Specify the file to save the HTML output
+output_file <- "asset_index_summary_results.html"
+
+# Write the combined content (note + table) to the HTML file
+writeLines(html_content, output_file)
+
+# Check output
+cat("HTML file has been created: ", output_file)
+
+
+```
+
+
+
+```{r}
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+
+
+# Example summary stats (assuming asset_df_raw is your dataframe)
+summary_stats <- asset_df_raw %>%
+  summarise(
+    asset_index_mean = mean(asset_index, na.rm = TRUE),
+    asset_index_sd = sd(asset_index, na.rm = TRUE),
+    asset_index_min = min(asset_index, na.rm = TRUE),
+    asset_index_max = max(asset_index, na.rm = TRUE),
+    
+    asset_index_std_mean = mean(asset_index_std, na.rm = TRUE),
+    asset_index_std_sd = sd(asset_index_std, na.rm = TRUE),
+    asset_index_std_min = min(asset_index_std, na.rm = TRUE),
+    asset_index_std_max = max(asset_index_std, na.rm = TRUE)
+  )
+
+# Description of how the index was created (included in the note)
+index_description <- "
+<p style='font-family: Arial, sans-serif;'><strong><u>Note on Asset Index Creation:</u></strong><br><br>
+<b>Summary of Variable Creation & Analysis:</b><br>
+<b>Variable Creation:</b><br>
+<ul>
+  <li><strong>Living Condition Variables:</strong> Binary variables were created for the following:</li>
+  <ul>
+    <li><strong>Water Source (living_01):</strong> Indoor tap, Public tap, or Neighbor's tap (coded as 1).</li>
+    <li><strong>Water Treatment (living_02):</strong> Household water treated (1 for Yes).</li>
+    <li><strong>Toilet Type (living_04):</strong> Flush toilet with sewer or septic tank (coded as 1).</li>
+    <li><strong>Cooking Fuel (living_05):</strong> Gas, Electricity, Petrol/oil/ethanol, Animal waste/dung, or Solar (coded as 1).</li>
+    <li><strong>Lighting (living_06):</strong> Electric generator or Solar (coded as 1).</li>
+  </ul>
+  <li><strong>Asset Index Creation:</strong> A Total Livestock Unit (TLU) variable was created based on the type and number of livestock species (Cattle, Sheep, Goats, etc.).</li>
+  <li><strong>Ownership and Agricultural Activities:</strong> Binary variables were created for household ownership of dwelling (agri_6_5_bin) and certain agricultural activities (agri_6_23_bin).</li>
+  <li><strong>Data Standardization:</strong> Continuous variables TLU and rooms per member were standardized using z-scores.</li>
+  <li><strong>Principal Component Analysis (PCA):</strong> PCA was performed on the binary living conditions variables, the asset-related variables, and standardized continuous variables (TLU and rooms_per_member). The first principal component (PC1) was extracted as the asset index, representing household wealth or socioeconomic status.</li>
+  <li><strong>Normalization:</strong> The asset index (asset_index) was standardized (z-score transformation) to create the variable asset_index_std.</li>
+</ul>
+<b>Final Variables:</b><br>
+<ul>
+  <li>living_01_bin, living_02_bin, living_05_bin, living_06_bin, agri_6_5_bin, agri_6_23_bin, TLU, rooms_per_member, asset_index, asset_index_std</li>
+</ul>
+</p>
+"
+
+# Combine summary statistics into a table
+output_table <- tibble(
+  Variable = c("Asset Index", "Asset Index Standardized"),
+  Mean = c(summary_stats$asset_index_mean, summary_stats$asset_index_std_mean),
+  SD = c(summary_stats$asset_index_sd, summary_stats$asset_index_std_sd),
+  Min = c(summary_stats$asset_index_min, summary_stats$asset_index_std_min),
+  Max = c(summary_stats$asset_index_max, summary_stats$asset_index_std_max)
+)
+
+# Create HTML output with table and note (in standard font)
+html_output <- kable(output_table, "html", caption = "Summary Statistics for Asset Index Variables") %>%
+  kable_styling() %>%
+  add_header_above(c("Variable Summary" = 5)) %>%
+  row_spec(0, bold = TRUE)
+
+# Combine the description and the table for the HTML output
+html_content <- paste0(
+  "<html><head><style>body {font-family: Arial, sans-serif;}</style></head><body>", 
+  as.character(html_output), 
+  "<br>", 
+  index_description,
+  "</body></html>"
+)
+
+# Specify the file to save the HTML output
+output_file <- "asset_index_summary_results_with_notes.html"
+
+# Write the combined content (note + table) to the HTML file
+writeLines(html_content, output_file)
+
+# Check output
+cat("HTML file has been created: ", output_file)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+

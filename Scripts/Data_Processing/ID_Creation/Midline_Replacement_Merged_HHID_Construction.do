@@ -53,11 +53,11 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 **************************** Data file paths ****************************
 
-global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
-global replacement "$master\Data_Management\_CRDES_RawData\Midline\Replacement_Survey_Data"
-global baselineids "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
-global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
-global corrected "$master\Data_Management\Output\Data_Corrections\Midline"
+global data "$master\Data_Management\Data\_CRDES_RawData\Midline\Household_Survey_Data"
+global replacement "$master\Data_Management\Data\_CRDES_RawData\Midline\Replacement_Survey_Data"
+global baselineids "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
+global issues "$master\Data_Management\Output\Data_Processing\Checks\Midline\_Midline_Original_Issues_Output"
+global corrected "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Midline"
 
 **************************** Import baseline data ****************************
 
@@ -71,7 +71,7 @@ save "$baselineids\DISES_Baseline_HHID_List.dta", replace
 
 **************************** Import midline data & Mark Attrition ****************************
 
-use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_20Mar2025.dta", clear  
+use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_10April2025.dta", clear  
 keep hh_global_id hhid_village consent  // Keep relevant variables
 rename hh_global_id hhid
 gen attritted = 0  // Default is not attritted
@@ -97,7 +97,7 @@ save "$issues\DISES_Attrition_List.dta", replace
 export delimited "$issues\DISES_Attrition_List.csv", replace
 
 **************************** HHID's for Replacements ****************************
-import delimited "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_12Mar2025.csv", clear varnames(1) bindquote(strict)     
+import delimited "$corrected\CORRECTED_DISES_enquete_ménage_FINALE_MIDLINE_REPLACEMENT_WIDE_10April2025.csv", clear varnames(1) bindquote(strict)     
 
 keep hhid_village hhid  // Keep relevant replacement variables
 gen replaced = 1  // Mark as a replacement household
@@ -112,7 +112,7 @@ drop rep_number
 save "$issues\DISES_Replacements.dta", replace
 
 **************************** HHID's for Merged Households ****************************
-use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_20Mar2025.dta", clear  
+use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_10April2025.dta", clear  
 keep hh_global_id hhid_village consent  // Keep relevant variables
 rename hh_global_id hhid  
 drop if consent == 0

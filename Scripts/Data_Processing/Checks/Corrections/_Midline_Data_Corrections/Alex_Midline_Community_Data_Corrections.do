@@ -683,7 +683,8 @@ replace wealth_stratum_03_19 = 1 if hhid_village == "130A"
 replace wealth_stratum_03_20 = 1 if hhid_village == "130A"
 
 // TAKE THIS XXX away once you are ready to save the actual corrections
-//xxx
+// MAKE SURE ALL DATES ARE UP TO DATE
+xxx
 * Save the corrected dataset. Change date everytime you run this
 export excel using "$corrected\CORRECTED_Community_Survey_10April2025.xlsx", firstrow(variables) replace
 

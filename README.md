@@ -1,51 +1,52 @@
-# NSF Senegal: DISES Project  (WIP - not accurate atm)
+# NSF Senegal: DISES Project (updates are in progress)
 ## This is where we store and manage our scripts to clean, analyze, and process data. No data is **ever** stored in these folders.
 
-## Software used:  
+## 💻 Software used:  
 Stata, R, and Python  
 
 As of yet, there is no replication package associated with this.  
 
-# Maintenance of scripts:  
+# 🧑‍🔧 Maintenance of scripts:  
 All scripts must contain a README or comments explaining how to run the script. They should include:  
 - What data is being processed.  
 - What is being outputted (tables, figures, summaries, etc.).  
 - File paths, which should be specified at the beginning of the script.  
 
-# Order of Scripts:  
+# 🔢 Order of Scripts:  
 We organize our scripts in the following parts:  
-* `Data_Cleaning/` – Prepares raw data for analysis (e.g., variable transformations, missing value handling).  
-* `Data_Checks/` – Includes validation scripts to check data consistency and integrity.  
-* `Data_Analysis/` – Contains scripts for statistical analysis, summarization, and result interpretation.  
+* `Data_Processing/` – Prepares raw data for analysis (e.g., variable transformations, missing value handling) and includes validation scripts to check data consistency and integrity.   
+* `Analysis/` – Contains scripts for statistical analysis, summarization, and result interpretation.  
 
 ## What to expect in each folder  
 
-### `Data_Analysis` 📊 
+### 📊 `Analysis`  
 This folder contains scripts for data analysis, summarization, and manipulation with the intention of interpreting the results. Currently, the following subfolders are stored here:  
 * `Balance_Tables`
-  * `Balance_Tables_Data_Frame.do`
-    *  This .do file creates the data frame for the baseline balance tables.
-  *  `Asset_Index_Var_Creation.do`
-     *  This .do file creates the assest index variable using principal component analysis
-  *  `Balance_Tables.Rmd`
-      *   This markdown computes and outputs the balance tables and summary statistics for the relevant variables. 
-  *  `asset_index_TEST.do` and `balance_table_TEST.Rmd` are test scripts that simulated the process for developing the asset variable and balance tables.
+  *  Contains scripts used to build the balance table data frame and output the summary stats and the balance table. 
 * `Human_Parasitology`
-  *  `Parasitological_Predictive_Analysis.Rmd`
-     *  This markdown runs the predictive analysis. 
-  *  `Parasitological_EDA.Rmd`
-     *  This markdown creates scatter plots and summary stats for initial review 
-  *  `Parisitology_Summary_Stats.do`
-  *  `Human_Parasitological_Dataframe_toupdate.do`
-      *  This .Do file creates the Parasitological data frame used to run analysis.
- 
-### `Data_Processing`
-TThis folder contains scripts for data validation, processing, and preperation to ensure the datasets are clean and ready for anlysis. The following subfolders are included:
-* `Checks`
+  * Contains scritps used to construct the base data frame of child infections and ID matching across the housheold and community survey data, create the dataframe used for analysis, and the scripts used to run the analysese. 
+* `Codebook`
+  * Contains scripts to output summary stats for baseline and midline data. No actual outputs are produced from these scripts since we copy and paste the results in a Word document, unfortunetly. 
+* `Winsorization`
+  * Contains scripts that windsorize variables for the codebook. Similar to above, no actual outputs are produced from this script. 
+   
+### 🔄 `Data_Processing`
+
+This folder contains scripts for data validation, processing, and preperation to ensure the datasets are clean and ready for analysis. The following subfolders are included:
+* 🔍 `Checks` 
   * `Baseline`
   * `Midline`
-    * Scripts verify data quality and consistency as survey responses were collected in real-time. These check for missing values, logical inconsistencies, skip patters, and outliers in the incoming survey data.
-* `Cleaning/Ecology`
-* `Construction`
-* `Corrections`
-  * Contains scripts that implement corrections based on identified errors in the data. These corrections correspond to issues flagged in the `Checks` scripts and adjustments procotred by the team in Senegal.
+  * `Treatment`
+    *  Scripts verify data quality for baseline and midline  and consistency as survey responses were collected in real-time. These check for missing values, logical inconsistencies, skip patters, and outliers in the incoming survey data.
+  * 🔧 `Corrections` 
+    * `_Midline_Data_Corrections`
+      *  Contains scripts that implement corrections based on identified errors in the data. These corrections correspond to issues flagged in the `Checks` scripts and adjustments procotred by the team in Senegal.
+    * `Ecology`
+      * Contains a script to update old village IDs for the Baseline ecological data 
+     
+* 🏗️ `Construction` 
+   * Contains scripts that create new variables, data frames, and merged data for the purpose of analysing, deidentifying, and processing data for analytical use. 
+  
+* 🪪 `ID_Creation` 
+   * Contain scripts that create vilage IDs, household IDs, and individual IDs.
+ 

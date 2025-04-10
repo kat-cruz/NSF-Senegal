@@ -16,11 +16,11 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 
 *** additional file paths ***
-global data "$master\Data_Management\Output\Data_Corrections\Midline"
-global data_raw "$master\Data_Management\_CRDES_RawData\Midline"
-global hhids "$master\Data_Management\Output\Household_IDs"
-global data_deidentified "$master\Data_Management\_CRDES_CleanData\Midline\Deidentified"
-global data_identified "$master\Data_Management\_CRDES_CleanData\Midline\Identified"
+global data "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Midline"
+global data_raw "$master\Data_Management\Data\_CRDES_RawData\Midline"
+global hhids "$master\Data_Management\Output\ID_Creation"
+global data_deidentified "$master\Data_Management\Data\_CRDES_CleanData\Midline\Deidentified"
+global data_identified "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
 
 *** import complete data for geographic and preliminary information ***
 use "$data_identified\DISES_Midline_Complete_PII", clear 

@@ -165,13 +165,27 @@ summarize agri_income_01
 
 tab agri_income_02
 
+tab agri_income_03
+tab agri_income_04
+tab agri_income_05
+tab agri_income_06
+tab species_1
+tab species_2
+tab species_3
+tab species_4 
+tab species_5 
+tab species_6 
+tab species_7 
+tab species_8 
+tab species_9 
+tab species_autre
 summarize agri_income_03 agri_income_04 agri_income_05 agri_income_06
 summarize species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_autre
 
 tab agri_income_07_o
 sum agri_income_07_o if agri_income_07_o != -9
 
-tab agri_income_08
+tab agri_income_08_o
 sum agri_income_08_o if agri_income_08_o != -9
 
 * Loop for tabulating agri_income_09
@@ -180,11 +194,31 @@ forvalues i = 1/6 {
 }
 
 summarize agri_income_10_1 agri_income_10_2 agri_income_10_3 agri_income_10_4 agri_income_10_5 agri_income_10_6 agri_income_10_o 
+
 summarize animals_sales_1 animals_sales_2 animals_sales_3 animals_sales_4 animals_sales_5 animals_sales_6 animals_sales_7 animals_sales_8 animals_sales_9 animals_sales_o animals_sales_t 
-summarize agri_income_11_1 agri_income_11_2 agri_income_11_3 agri_income_11_4 agri_income_11_5 agri_income_11_o 
-summarize agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_o 
-summarize agri_income_14_1 agri_income_14_2 agri_income_14_3 agri_income_14_4 agri_income_14_5 agri_income_14_o 
+tab animals_sales_o
+sum animals_sales_o if animals_sales_o < 2
+
+summarize agri_income_11_o 
+
+summarize agri_income_12_o 
+
+tab agri_income_13_o
+
+summarize agri_income_14_o 
+
 summarize agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19 
+tab agri_income_15
+sum agri_income_15 if agri_income_15 < 2
+tab agri_income_16
+sum agri_income_16 if agri_income_16 > -9
+tab agri_income_18
+tab agri_income_18_1
+tab agri_income_18_2
+tab agri_income_18_3
+tab agri_income_19
+sum agri_income_19 if agri_income_19 > -9
+
 summarize agri_income_20_1 agri_income_20_2 agri_income_20_3 agri_income_20_4 agri_income_20_5 agri_income_20_6 agri_income_20_7 agri_income_20_8 agri_income_20_9 agri_income_20_t agri_income_20_o
 
 * Summarize agri_income_22* variables
@@ -195,82 +229,26 @@ summarize agri_income_23*
 summarize agri_income_24*
 
 * Summarize agri_income_25 to agri_income_30
-summarize agri_income_25 agri_income_26 agri_income_27 agri_income_28 agri_income_29 agri_income_30
+summarize agri_income_25 agri_income_26 agri_income_27 agri_income_28 agri_income_29 agri_income_30 agri_income_30_note
+tab agri_income_28
+sum agri_income_29 if agri_income_29 > -9
+sum agri_income_30 if agri_income_30 < 2
+
 
 * Summarize agri_income_31_*
 summarize agri_income_31_*
 
 * Summarize additional income variables
-summarize agri_income_32 agri_income_33 agri_income_34 agri_income_35
-summarize agri_income_36*
-summarize agri_income_38*
-summarize agri_income_39*
-summarize agri_income_40*
-summarize agri_income_41*
-summarize agri_income_42*
-summarize agri_income_43*
+tab agri_income_32
+sum agri_income_32 if agri_income_32 < 2
+tab agri_income_33
+sum agri_income_33 if agri_income_33 > -9
+tab agri_income_34
+sum agri_income_34 if agri_income_34 < 2
+tab agri_income_35
 
-
-* Replace -9 with missing values for specific variables
-* Loop through numeric variables starting with agri_income_
-ds agri_income_*, has(type numeric)
-foreach var of varlist `r(varlist)' {
-    * Replace -9 and -99 with missing for each numeric variable
-    replace `var' = . if `var' == -9 | `var' == -99
-}
-
-
-// Summarize income variables again for summary statistics not accounting for -9 or 99
-
-* Summarize agricultural income variables
-tabulate agri_income_01
-replace agri_income_01 = . if agri_income_01 == 2
-summarize agri_income_01
-
-summarize agri_income_03 agri_income_04 agri_income_05 agri_income_06
-summarize species_1 species_2 species_3 species_4 species_5 species_6 species_7 species_8 species_9 species_autre
-
-* Loop for summarizing agri_income_07 and agri_income_08
-forvalues i = 1/6 {
-    summarize agri_income_07_`i' agri_income_08_`i'
-}
-summarize agri_income_07_o agri_income_08_o
-
-* Loop for tabulating agri_income_09
-forvalues i = 1/6 {
-    tabulate agri_income_09_`i'
-}
-
-summarize agri_income_10_1 agri_income_10_2 agri_income_10_3 agri_income_10_4 agri_income_10_5 agri_income_10_6 agri_income_10_o 
-summarize animals_sales_1 animals_sales_2 animals_sales_3 animals_sales_4 animals_sales_5 animals_sales_6 animals_sales_7 animals_sales_8 animals_sales_9 animals_sales_o animals_sales_t 
-summarize agri_income_11_1 agri_income_11_2 agri_income_11_3 agri_income_11_4 agri_income_11_5 agri_income_11_o 
-summarize agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_o 
-summarize agri_income_14_1 agri_income_14_2 agri_income_14_3 agri_income_14_4 agri_income_14_5 agri_income_14_o 
-summarize agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19 
-summarize agri_income_20_1 agri_income_20_2 agri_income_20_3 agri_income_20_4 agri_income_20_5 agri_income_20_6 agri_income_20_7 agri_income_20_8 agri_income_20_9 agri_income_20_t agri_income_20_o
-
-* Summarize agri_income_22* variables
-summarize agri_income_22*
-
-* Summarize agri_income_23 and agri_income_24
-summarize agri_income_23*
-summarize agri_income_24*
-
-* Summarize agri_income_25 to agri_income_30
-summarize agri_income_25 agri_income_26 agri_income_27 agri_income_28 agri_income_29 agri_income_30
-
-* Summarize agri_income_31_*
-summarize agri_income_31_*
-
-* Summarize additional income variables
-summarize agri_income_32 agri_income_33 agri_income_34 agri_income_35
-summarize agri_income_36*
-summarize agri_income_38*
-summarize agri_income_39*
-summarize agri_income_40*
-summarize agri_income_41*
-summarize agri_income_42*
-summarize agri_income_43*
+tab agri_income_40
+sum agri_income_40 if agri_income_40 < 2
 
 
 **************************************************

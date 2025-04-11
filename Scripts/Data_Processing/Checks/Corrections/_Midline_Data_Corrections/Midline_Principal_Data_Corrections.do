@@ -61,7 +61,7 @@ global data "$master\data\_CRDES_RawData\Midline\Principal_Survey_Data"
 global schoolprincipal "$master\Output\Data_Processing\Checks\Midline\Midline_Principal_Issues"
 global issues "$master\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues"
 global corrections "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
-global corrected "$master\Output\Data_Processing\Checks\Data_Corrections\Midline"
+global corrected "$master\Output\Data_Processing\Checks\Corrections\Midline"
 global childdatabase "$master\External_Corrections\Issues for Justin and Amina\Midline\Attendance Check Forms\Child Database"
 
 // import excel using "$childdatabase\baseline_child_database.xlsx", firstrow clear
@@ -112,7 +112,7 @@ export excel using "$issues\CORRECTIONS_QUESTIONNAIRE_PRINCIPAL_5Feb2025_key.xls
 * APPLY CORRECTIONS TO SURVEY DATASET
 **************************************************
 
-import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_6Mar2025.csv", clear varnames(1) bindquote(strict)
+import delimited "$data\DISES_Principal_Survey_MIDLINE_VF_WIDE_9Apr2025.csv", clear varnames(1) bindquote(strict)
 
 * Dealt with the ones commented out in the daily checks because those are actually valid answers of i dont know
 replace school_name = "ECOLE PRIMAIRE KASACK NORD" if key == "433515e7-f57f-4968-9fd1-d83a2cc493ed"
@@ -1838,5 +1838,18 @@ hhid_village	hhid	individ	hh_first_name_	hh_name_	hh_full_name_calc_	hh_age_	hh_
 120A	120A20	120A2006	THIERNO BOCAR	DIOP	THIERNO BOCAR DIOP	7	1	DIOP ALASSANE BANA		FARMATA BAIDY DIOP, ALASSANE BANA DIOP, YOUBA DIOP, MOUSSA DIOP, FARMATA DIOP, THIERNO BOCAR DIOP, FAT DIEYNABA DIOP
 */
 
+* Correction for 132A that should be 153A
+foreach var of varlist * {
+    capture confirm string variable `var'
+    if !_rc {
+        replace `var' = subinstr(`var', "132A", "153A", .)
+    }
+}
+
+
+// TAKE THIS XXX away once you are ready to save the actual corrections
+// MAKE SURE ALL DATES ARE CORRECTED
+xxx
+
 * Save the corrected dataset
-export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_29Mar2025.xlsx", firstrow(variables) replace
+export excel using "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_10April2025.xlsx", firstrow(variables) replace

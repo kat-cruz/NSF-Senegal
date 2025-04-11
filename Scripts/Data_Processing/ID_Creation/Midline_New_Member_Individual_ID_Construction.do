@@ -19,12 +19,12 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 **************************** Data file paths ****************************
 
-global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
-global replacement "$master\Data_Management\_CRDES_RawData\Midline\Replacement_Survey_Data"
-global baselineids "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
+global data "$master\Data_Management\Data\_CRDES_RawData\Midline\Household_Survey_Data"
+global replacement "$master\Data_Management\Data\_CRDES_RawData\Midline\Replacement_Survey_Data"
+global baselineids "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
-global corrected "$master\Data_Management\Output\Data_Corrections\Midline"
-global clean "$master\Data_Management\_CRDES_CleanData\Midline\Identified"
+global corrected "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Midline"
+global clean "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
 
 // "C:\Users\admmi\Box\NSF Senegal\Data_Management\_CRDES_CleanData\Baseline\Identified\All_Villages_With_Individual_IDs.dta"
 

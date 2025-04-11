@@ -48,12 +48,12 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 **************************** Data file paths ****************************
 
-global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
-global replacement "$master\Data_Management\_CRDES_RawData\Midline\Replacement_Survey_Data"
-global baselineids "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
+global data "$master\Data_Management\Data\_CRDES_RawData\Midline\Household_Survey_Data"
+global replacement "$master\Data_Management\Data\_CRDES_RawData\Midline\Replacement_Survey_Data"
+global baselineids "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
-global corrections "$master\Data_Management\External_Corrections\Issues for Justin and Amina\Midline\Issues"
-global corrected "$master\Data_Management\Output\Data_Corrections\Midline"
+global corrections "$master\Data_Management\Data_Processing\External_Corrections\Issues for Justin and Amina\Midline\Issues"
+global corrected "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Midline"
 
 * PART 1
 /*
@@ -4624,8 +4624,19 @@ replace hh_49 = 1 if hh_global_id == "171A17"
 replace hh_49 = 1 if hh_global_id == "171A18"
 replace hh_49 = 1 if hh_global_id == "171A20"
 
+* Correction for 132A that should be 153A
+foreach var of varlist * {
+    capture confirm string variable `var'
+    if !_rc {
+        replace `var' = subinstr(`var', "132A", "153A", .)
+    }
+}
+
+// TAKE THIS XXX away once you are ready to save the actual corrections
+// ENSURE ALL DATES ARE CORRECT
+xxx
 
 * Save the corrected dataset
-export delimited using "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.csv", replace
+export delimited using "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_10April2025.csv", replace
 
-save "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025.dta", replace
+save "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_10April2025.dta", replace

@@ -17,11 +17,11 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
 
 
 *** additional file paths ***
-global data "$master\Data_Management\Output\Data_Corrections\Baseline"
-global data_raw "$master\Data_Management\_CRDES_RawData\Baseline"
-global hhids "$master\Data_Management\Output\Household_IDs"
-global data_deidentified "$master\Data_Management\_CRDES_CleanData\Baseline\Deidentified"
-global data_identified "$master\Data_Management\_CRDES_CleanData\Baseline\Identified"
+global data "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Baseline"
+global data_raw "$master\Data_Management\Data\_CRDES_RawData\Baseline"
+global hhids "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline"
+global data_deidentified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
+global data_identified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 
 *** import complete data for geographic and preliminary information ***
 use "$data\DISES_Baseline_Household_Corrected_PII", clear 

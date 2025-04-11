@@ -52,15 +52,15 @@ if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box\NSF Senegal"
 global master "$box_path\Data_Management"
 
 * Define specific paths for output and input data
-global schoolprincipal "$master\Output\Data_Quality_Checks\Midline\Midline_Principal_Issues"
-global issues "$master\Output\Data_Quality_Checks\Midline\Full Issues"
-global schooldata "$master\_CRDES_RawData\Midline\Principal_Survey_Data"
-global hhdata "$master\_CRDES_RawData\Midline\Household_Survey_Data"
+global schoolprincipal "$master\Output\Data_Processing\Checks\Midline\Midline_Principal_Issues"
+global issues "$master\Output\Data_Processing\Checks\Midline\Full Issues"
+global schooldata "$master\Data\_CRDES_RawData\Midline\Principal_Survey_Data"
+global hhdata "$master\Data\_CRDES_RawData\Midline\Household_Survey_Data"
 global crdes "$master\External_Corrections\Issues for Justin and Amina\Midline\Issues"
-global corrected "$master\Output\Data_Corrections\Midline"
+global corrected "$master\Output\Data_Processing\Checks\Corrections\Midline"
 
 * Import the HH data  // change to corrected hh data
-use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_14Mar2025", clear
+use "$corrected\CORRECTED_DISES_Enquête_ménage_midline_VF_WIDE_10April2025", clear
 
 drop if missing(hh_global_id)
 
@@ -73,7 +73,7 @@ drop sup_name
 save "$hhdata\DISES_Enquête_ménage_midline_VF_WIDE_14Mar_Missing_hh49.dta", replace
 
 * Import School Attendance check  // change to corrected
-import excel "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_12Mar2025.xlsx", clear firstrow
+import excel "$corrected\CORRECTED_DISES_Principal_Survey_MIDLINE_VF_WIDE_10April2025.xlsx", clear firstrow
 
 * Drop completely empty variables
 ds
@@ -128,7 +128,7 @@ drop _merge
 
  keep respondent_phone_primary respondent_phone_secondary school_name sup_name school_name pull_hhid_village_ hh_global_id pull_individ_ pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ pull_baselineniveau_ pull_family_members_ key
 
-export excel using "$schoolprincipal\attendance_checks_missing_hh49_14Mar2025.xlsx", firstrow(variables) replace 
+export excel using "$schoolprincipal\attendance_checks_missing_hh49_10April2025.xlsx", firstrow(variables) replace 
 
 // export excel using "$crdes\attendance_checks_missing_hh49_10Feb2025.xlsx", firstrow(variables) replace 
 

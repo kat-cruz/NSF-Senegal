@@ -51,8 +51,6 @@ use "$household", clear
 
 sum hh_49
 
-sum final_list_confirm
-
 drop hh_12_a_o*
 
 keep hh_education_level* hhid_village hhid hh_12_a* hh_15* hh_27* hh_28* hh_29* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*
@@ -229,7 +227,7 @@ summarize agri_income_23*
 summarize agri_income_24*
 
 * Summarize agri_income_25 to agri_income_30
-summarize agri_income_25 agri_income_26 agri_income_27 agri_income_28 agri_income_29 agri_income_30 agri_income_30_note
+summarize agri_income_25 agri_income_26 agri_income_27 agri_income_28 agri_income_29 agri_income_30
 tab agri_income_28
 sum agri_income_29 if agri_income_29 > -9
 sum agri_income_30 if agri_income_30 < 2
@@ -399,6 +397,48 @@ sum legumes_03_5 if legumes_03_5 >= 0
 
 tab legumes_03_6
 sum legumes_03_6 if legumes_03_6 >= 0
+
+
+**************************************************
+* Community Data Summary
+**************************************************
+use "$community", clear
+sum
+tab number_total
+sum number_total if number_total > -9
+tab q_43
+sum q_43 if q_43 > -9
+tab q_45
+sum q_45 if q_45 > -9
+tab q62
+tab q63_2
+sum q63_2 if q63_2 > -9
+tab q63_4
+sum q63_4 if q63_4 > -9
+tab q63_5
+sum q63_5 if q63_5 > -9
+tab q63_6
+sum q63_6 if q63_6 > -9
+tab q63_7
+sum q63_7 if q63_7 > -9
+tab q63_8
+sum q63_8 if q63_8 > -9
+tab q63_9
+sum q63_9 if q63_9 > -9
+tab q63_10
+sum q63_10 if q63_10 > -9
+tab q65
+sum q65 if q65 > -9
+tab q66
+sum q66 if q66 > -9
+
+reshape long wealth_stratum_02_ wealth_stratum_03_, i(hhid hhid_village) j(hh)
+tab wealth_stratum_02_
+sum wealth_stratum_03_
+
+**************************************************
+* School Principal Data Summary
+**************************************************
 
 **************************************************
 * End of Script

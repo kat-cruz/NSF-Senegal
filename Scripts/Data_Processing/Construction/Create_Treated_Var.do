@@ -19,29 +19,37 @@
  *(5) Save the dta. 
  
  
+ *** UPDATE: This was rerun to update an old village code: all 132A's were updated to be 153A's
  
  
+*<><<><><>><><<><><>>
+* INITIATE SCRIPT
+*<><<><><>><><<><><>>
  
 clear all 
 
 *** set maximum variables to at least 20,000 ***
 set maxvar 20000
 
-**** Master file path  ****
+*<><<><><>><><<><><>>
+* SET FILE PATHS
+*<><<><><>><><<><><>>
 
 if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal"
+                global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
 }
 else if "`c(username)'"=="Kateri" {
-                global master "C:\Users\Kateri\Box\NSF Senegal"
+                global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
 				
 }
 else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal"
+                global master "C:\Users\km978\Box\NSF Senegal\Data_Management"
 				
 }
 
-****************************************************** Step one ***************************************************************
+*<><<><><>><><<><><>>
+* PROCEDURE
+*<><<><><>><><<><><>>
 
 *2.	Set up the data to create the trained variable
 *a.	Start with DISES_Baseline_Complete_PII.dta 
@@ -49,10 +57,10 @@ else if "`c(username)'"=="km978" {
 *c.	Output file to Excel 
 
 
-global data "$master\Data Management\_PartnerData\EPLS and DISES data\Archive\Household & Individual IDs"
-global output  "$master\Data Management\Output\Data Corrections\Treatments"
-global uniqueIDs "$master\Data Management\_PartnerData\EPLS and DISES data\Household & Individual IDs"
-global participant "$master\Data Management\_CRDES_RawData\Treatment"
+global data "$master\Output\Data_Processing\ID_Creation\Baseline\UCAD_EPLS_IDs"
+global output  "$master\Output\Data_Processing\Checks\Corrections\Treatment"
+*global uniqueIDs "$master\Data\_PartnerData\EPLS and DISES data\Household & Individual IDs"
+global participant "$master\Data\_CRDES_RawData\Treatment"
 
 
 /*
@@ -60,7 +68,9 @@ ssc install distinct
 distinct villageid
 */
  
-********************************************** Include indiviIDs for matching: ***************************************************
+*<><<><><>><><<><><>>
+*BRING IN INDIVIDUAL IDS
+*<><<><><>><><<><><>>
 
 
 use "$data\All_Villages.dta", clear
@@ -2132,35 +2142,35 @@ replace trained_indiv = 1 if individ == "131B0401"
 replace trained_hh = 1 if  hhid == "131B13"
 replace trained_indiv = 1 if individ == "131B1301"
 
-replace trained_hh = 1 if  hhid == "132A10"
-replace trained_indiv = 1 if individ == "132A1001"
+replace trained_hh = 1 if  hhid == "153A10"
+replace trained_indiv = 1 if individ == "153A1001"
 
-replace trained_hh = 1 if  hhid == "132A20"
-replace trained_indiv = 1 if individ == "132A2001"
+replace trained_hh = 1 if  hhid == "153A20"
+replace trained_indiv = 1 if individ == "153A2001"
 
-replace trained_hh = 1 if  hhid == "132A05"
-replace trained_indiv = 1 if individ == "132A0502"
+replace trained_hh = 1 if  hhid == "153A05"
+replace trained_indiv = 1 if individ == "153A0502"
 
-replace trained_hh = 1 if  hhid == "132A01"
-replace trained_indiv = 1 if individ == "132A0101"
+replace trained_hh = 1 if  hhid == "153A01"
+replace trained_indiv = 1 if individ == "153A0101"
 
-replace trained_hh = 1 if  hhid == "132A08"
-replace trained_indiv = 1 if individ == "132A0801"
+replace trained_hh = 1 if  hhid == "153A08"
+replace trained_indiv = 1 if individ == "153A0801"
 
-replace trained_hh = 1 if  hhid == "132A04"
-replace trained_indiv = 1 if individ == "132A0401"
+replace trained_hh = 1 if  hhid == "153A04"
+replace trained_indiv = 1 if individ == "153A0401"
 
-replace trained_hh = 1 if  hhid == "132A09"
-replace trained_indiv = 1 if individ == "132A0908"
+replace trained_hh = 1 if  hhid == "153A09"
+replace trained_indiv = 1 if individ == "153A0908"
 
-replace trained_hh = 1 if  hhid == "132A17"
-replace trained_indiv = 1 if individ == "132A1701"
+replace trained_hh = 1 if  hhid == "153A17"
+replace trained_indiv = 1 if individ == "153A1701"
 
-replace trained_hh = 1 if  hhid == "132A07"
-replace trained_indiv = 1 if individ == "132A0701"
+replace trained_hh = 1 if  hhid == "153A07"
+replace trained_indiv = 1 if individ == "153A0701"
 
-replace trained_hh = 1 if  hhid == "132A20"
-replace trained_indiv = 1 if individ == "132A2001"
+replace trained_hh = 1 if  hhid == "153A20"
+replace trained_indiv = 1 if individ == "153A2001"
 
 replace trained_hh = 1 if  hhid == "132B05"
 replace trained_indiv = 1 if individ == "132B0501"
@@ -2454,8 +2464,8 @@ replace trained_hh = 1 if  hhid == "123A18"
 replace trained_hh = 1 if  hhid == "123B06"
 *replace trained_indiv = 1 if individ == ""
 
-replace trained_hh = 1 if  hhid == "132A13"
-replace trained_indiv = 1 if individ == "132A1301"
+replace trained_hh = 1 if  hhid == "153A13"
+replace trained_indiv = 1 if individ == "153A1301"
 
 replace trained_hh = 1 if  hhid == "151A08"
 replace trained_indiv = 1 if individ == "151A0801"
@@ -2558,7 +2568,7 @@ replace trained_indiv = 1 if individ == "062A1801"
 
 replace trained_hh = 1 if hhid == "062A19" 
 
-save "$output/Treated_variables_df",replace
+save "$output\treated_variable_df.dta", replace
 
 
 ******************************* Merge with Questionnaire Data set ************************

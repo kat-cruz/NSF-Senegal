@@ -481,7 +481,8 @@ import delimited "$data_raw\Questionnaire Communautaire - NSF DISES_V2_WIDE_10Ju
 drop full_name phone_resp q56_2 q56_3 q59_2 q59_3 
 
 drop deviceid devicephonenum username device_info caseid record_text gps* description_village instanceid formdef_version key village 
-
+*** UPDATE: RETIRE OLD VILLAGE ID 
+replace hhid_village = "153A" if hhid_village == "133A" 
 *** save deidentified data *** 
 save "$data_deidentified\Additional_16_Community", replace 
 

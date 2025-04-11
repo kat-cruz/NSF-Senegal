@@ -66,7 +66,7 @@ if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Sene
 *^*^* Define project-specific paths
 
 global data "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
-global trainedData "${master}\Data_Management\Output\Data_Processing\Checks\Data_Corrections\Treatment"
+global trainedData "${master}\Data_Management\Output\Data_Processing\Checks\Corrections\Treatment"
 global index "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
 
 *^*^* Data folders 
@@ -298,10 +298,12 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 	drop _merge
 	
 	
+/*
 			*** WILL DELETE LATER - WRONG VILLAGE CODE ***
 		
 		replace hhid_village = "153A" if hhid_village == "132A"
 		replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
+*/
 	
 *<><<><><>><><<><><>> 
 * RESHAPE THE DATA 
@@ -862,10 +864,10 @@ save `balance_table_ata'
 
 	* bring in trained_hh var 
 
-   use "$trainedData\Treated_variables_df.dta", clear 
+   use "$trainedData\treated_variable_df.dta", clear 
    
    		*replace hhid_village = "153A" if hhid_village == "132A"
-		replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
+		*replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
 
    
 			keep hhid trained_hh

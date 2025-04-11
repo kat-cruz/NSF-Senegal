@@ -285,6 +285,7 @@ symbol = c(
   ) %>%
   save_kable("baseline_summary_statsV5.html")
 
+my_quarto_project/reports/baseline_summary_statsV5.html
 
 ```
 

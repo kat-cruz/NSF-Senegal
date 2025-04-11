@@ -67,14 +67,18 @@ use "$data\01_prepped_inf_matches_df.dta", clear
 		drop _merge 
 
 	merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta" // ecological data 
+		drop _merge
+		
+	merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta" // ecological data 
 		drop _merge 
+
 
 
 	keep hhid hh_age* hh_gender*  ///
 		hh_26* ///
 		living_01  ///
 		health_5_3_* health_5_5* health_5_9* ///
-		q_23 q_24
+		q_23 q_24 ///
 		Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
 
 *^*^* keep only scored data 

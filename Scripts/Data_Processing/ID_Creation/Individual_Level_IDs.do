@@ -26,22 +26,24 @@ set maxvar 20000
 **** Master file path  ****
 
 if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Data Management"
+                global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
 }
 else if "`c(username)'"=="km978" {
-                global master "C:\Users\km978\Box\NSF Senegal\Data Management"
+                global master "C:\Users\km978\Box\NSF Senegal\Data_Management"
 				
 }
 
 *"C:\Users\socrm\Box\NSF Senegal\Data Management\_CRDES_CleanData\Baseline\Identified\DISES_Baseline_Complete_PII.dta"
 
 *** additional file paths ***
-global data "$master\_CRDES_CleanData\Baseline\Identified"
+global data "$master\Data\_CRDES_CleanData\Baseline\Identified"
 
 *global village_observations "$master\Data Quality Checks\Output\April\Village_Household_Identifiers"
 *global output "$master\Data Quality Checks\Output"
 *global data2 "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"
-global eplsOutput "$master\_PartnerData\EPLS and DISES data\Household & Individual IDs"
+*global eplsOutput "$master\_PartnerData\EPLS and DISES data\Household & Individual IDs"
+global eplsOutput "$master\Output\Data_Processing\ID_Creation\Baseline\UCAD_EPLS_IDs"
+
 
 *"C:\Users\socrm\Box\NSF Senegal\Data Management\_PartnerData\EPLS and DISES data\Household & Individual IDs\All_Villages.dta"
 

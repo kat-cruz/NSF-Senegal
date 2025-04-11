@@ -36,10 +36,11 @@ else if "`c(username)'"=="km978" {
 }
 
 *** file paths *** 
-global output  "$master\Data Management\Output\Data Corrections\Treatments"
-global deidentifed "$master\Data Management\_CRDES_CleanData\Treatment\Deidentified"
-global identifed "$master\Data Management\_CRDES_CleanData\Treatment\Identified"
-global raw "$master\Data Management\_CRDES_RawData\Treatment"
+
+global output  "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Treatment"
+global deidentifed "$master\Data_Management\Data\_CRDES_CleanData\Treatment\Deidentified"
+global identifed "$master\Data_Management\Data\_CRDES_CleanData\Treatment\Identified"
+global raw "$master\Data_Management\Data\_CRDES_RawData\Treatment"
 
 *** import dataset of treatment hosuehold and treatment individual indicator variables ***
 use "$output/Treated_variables_df.dta", clear

@@ -50,8 +50,10 @@ global ids   "$master\Output\Data_Processing\ID_Creation\Baseline"
 import delimited "$raw_data\DISES_enquete_ménage_FINALE_V2_WIDE_26April24.csv", clear varnames(1) bindquote(strict)
 *** UPDATE village ID to merge with household IDs
 
-gen villageid = substr(village_select_o, 1, 4)
-replace villageid = "153A" if villageid == "132A"
+*gen villageid = substr(village_select_o, 1, 4)
+*replace villageid = "153A" if villageid == "132A"
+
+replace hhid_village = "153A" if hhid_village == "132A"
 
 *** 
 
@@ -98,25 +100,26 @@ gen keepme = villageid == "122A" | villageid == "123A" | villageid == "121B" | /
              villageid == "161A" | villageid == "133A" | villageid == "171A" | ///
              villageid == "143A"
 
+replace hhid_village = villageid
 keep if keepme
 drop keepme
 
 
 
-keep hh_phone hh_head_name_complet hh_name_complet_resp villageid hhid
+keep hh_phone hh_head_name_complet hh_name_complet_resp villageid hhid_village hhid
 
 
 
 save "$ids\householdIDs_april_updated_04092025.dta", replace 
-*/
 
+*/
 
 *<><<><><>><><<><><>>
 * BRING IN DATA
 *<><<><><>><><<><><>>
 
 *** merge in household identifiers *** 
-merge 1:1 hh_phone hh_head_name_complet hh_name_complet_resp villageid using "$ids\householdIDs_april_updated_04092025.dta"
+merge 1:1 hh_phone hh_head_name_complet hh_name_complet_resp hhid_village using "$ids\householdIDs_april_updated_04092025.dta"
 
 *** drop the duplicates that we previously got rid of ***
 drop if _merge == 2 

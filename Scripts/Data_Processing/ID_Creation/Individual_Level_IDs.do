@@ -32,12 +32,16 @@ else if "`c(username)'"=="km978" {
                 global master "C:\Users\km978\Box\NSF Senegal\Data_Management"
 				
 }
+else if "`c(username)'"=="Kateri" {
+                global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
+				
+}
 
 *"C:\Users\socrm\Box\NSF Senegal\Data Management\_CRDES_CleanData\Baseline\Identified\DISES_Baseline_Complete_PII.dta"
 
 *** additional file paths ***
-global data "$master\Data\_CRDES_CleanData\Baseline\Identified"
-
+*global data "$master\Data\_CRDES_CleanData\Baseline\Identified"
+global data "$master\Output\Data_Processing\Checks\Corrections\Baseline"
 *global village_observations "$master\Data Quality Checks\Output\April\Village_Household_Identifiers"
 *global output "$master\Data Quality Checks\Output"
 *global data2 "$master\Surveys\Baseline CRDES data (Jan-Feb 2024)"

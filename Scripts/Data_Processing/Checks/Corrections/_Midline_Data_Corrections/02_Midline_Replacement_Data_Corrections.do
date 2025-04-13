@@ -4,6 +4,7 @@
 * Updates recorded in GitHub: [Alex_Midline_Replacement_Data_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Replacement_Data_Corrections.do)
 
 *>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+* Anytime there is a round of corrections sent back you should update this
 *
 * Description:
 * This script performs data corrections for the DISES Midline Replacement Household Survey dataset using the corrections given in the external corrections files.

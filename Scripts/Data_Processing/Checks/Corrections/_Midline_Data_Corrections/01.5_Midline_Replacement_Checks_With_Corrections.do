@@ -4,7 +4,8 @@
 * Updates recorded in GitHub: [Alex_Midline_Replacement_Data_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Replacement_Data_Corrections.do)
 
 *>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
-*
+* Once you've done one round of the replacement checks and have gotten a round of corrections back, you should ensure that these issues do not repeatedly export as issues by setting the issue to 0 if that specific case
+* 
 * Description:
 * This script performs data corrections for the DISES Midline Replacement Household Survey dataset using the corrections given in the external corrections files.
 * Easiest to use an excel formula then check each correction to make sure qualitative answers correspond to the correct numeric answer from the raw survey CTO file.

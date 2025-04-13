@@ -10,7 +10,7 @@
 *
 * Key Functions:
 * - Verify which issue files have been outputted.
-* - Append issue files module by module.
+* - Append issue files module by module. Comment out the section if there are no issues
 * - Perform a final append by combining the module issue files.
 * - Export the combined issue data to the Issues folder.
 *

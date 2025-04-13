@@ -4,6 +4,7 @@
 * Updates recorded in GitHub: [Midline_SchoolPrincipal_Data_Checks.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Midline_SchoolPrincipal_Data_Checks.do)
 
 *>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+* Once you've done one round of the community checks and have gotten a round of corrections back, you should ensure that these issues do not repeatedly export as issues by setting the issue to 0 if that specific case
 *
 * Description:
 * This script processes and checks the data from the Midline School Principal Survey for the NSF Senegal project. It includes data import, variable labeling, value checks, and exporting flagged issues for further review.

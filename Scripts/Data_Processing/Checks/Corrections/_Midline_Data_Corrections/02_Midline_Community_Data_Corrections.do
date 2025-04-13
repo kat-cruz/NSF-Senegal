@@ -5,8 +5,7 @@
 * Updates recorded in GitHub: [Alex_Midline_Community_Data_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Community_Data_Corrections.do)
 
 *>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
-* Once you've done one round of the community checks and have gotten a round of corrections back, you should ensure that these issues do not repeatedly export as issues by setting the issue to 0 if that specific case
-*
+* Update this everytime a round of corrections is sent back
 *
 * Description:
 * This script processes community survey data from the DISES Midline study.

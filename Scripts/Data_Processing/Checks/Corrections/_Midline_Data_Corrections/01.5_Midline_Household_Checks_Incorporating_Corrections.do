@@ -5,6 +5,7 @@
 * Updates recorded in GitHub: [Alex_Midline_Household_Checks_Incorporating_Corrections.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Corrections/_Midline_Data_Corrections/Alex_Midline_Household_Checks_Incorporating_Corrections.do)
 
 *>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+* Once you've done one round of the household checks and have gotten a round of corrections back, you should ensure that these issues do not repeatedly export as issues by setting the issue to 0 if that specific case
 *
 * Description:
 * This script performs data quality checks for the DISES Midline Household Survey dataset. It verifies completeness, consistency, and correctness of household survey records, largely focusing on skip patterns and other data integrity issues.

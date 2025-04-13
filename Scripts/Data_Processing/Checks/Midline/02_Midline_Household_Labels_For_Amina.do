@@ -4,6 +4,7 @@
 * Updates recorded in GitHub: [Alex_Midline_Household_Labels_For_Amina.do](https://github.com/kat-cruz/NSF-Senegal/blob/main/Scripts/Data_Processing/Checks/Midline/Alex_Midline_Household_Labels_For_Amina.do)
 
 *>>>>>>>>>>*===========================* READ ME *===========================*<<<<<<<<<<<*
+* Run this in between the checks and the append file for the household issues. Gives the labels to the final issues file that exports for Senegal Team
 *
 * Description:
 * This script processes and updates the Midline Household Survey labels for the NSF Senegal project. It sets file paths, defines replacement variables, replaces placeholders in the dataset, and saves the updated file.

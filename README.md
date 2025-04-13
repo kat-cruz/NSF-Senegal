@@ -41,6 +41,7 @@ This folder contains scripts for data validation, processing, and preperation to
   * 🔧 `Corrections` 
     * `_Midline_Data_Corrections`
       *  Contains scripts that implement corrections based on identified errors in the data. These corrections correspond to issues flagged in the `Checks` scripts and adjustments procotred by the team in Senegal.
+      *  The numbering system represents the order in which to run the scripts. "01_" corresponds to the initial checks. That is, the first pass scripts to run on raw data. "01.5_" are the follow-up checks and corrections. Start using these after the first round of corrections have been sent and implemented.
     * `Ecology`
       * Contains a script to update old village IDs for the Baseline ecological data 
      

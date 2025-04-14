@@ -499,6 +499,69 @@ tab enrollment_2024_female_5_1
 sum enrollment_2024_female_5_1 if enrollment_2024_female_5_1 > -9
 tab enrollment_2024_female_6_1
 sum enrollment_2024_female_6_1 if enrollment_2024_female_6_1 > -9
+sum passing_2024_total*
+tab passing_2024_total_1_1
+sum passing_2024_total_1_1 if passing_2024_total_1_1 > -9
+tab passing_2024_total_1_2
+sum passing_2024_total_1_2 if passing_2024_total_1_2 > -9
+tab passing_2024_total_2_1
+sum passing_2024_total_2_1 if passing_2024_total_2_1 > -9
+tab passing_2024_total_2_2
+sum passing_2024_total_2_2 if passing_2024_total_2_2 > -9
+tab passing_2024_total_3_1 
+sum passing_2024_total_3_1 if passing_2024_total_3_1 > -9
+tab passing_2024_total_3_2
+sum passing_2024_total_3_2 if passing_2024_total_3_2 > -9
+tab passing_2024_total_4_1
+sum passing_2024_total_4_1 if passing_2024_total_4_1 > -9
+tab passing_2024_total_4_2
+sum passing_2024_total_4_2 if passing_2024_total_4_2 > -9
+tab passing_2024_total_5_1
+sum passing_2024_total_5_1 if passing_2024_total_5_1 > -9
+tab passing_2024_total_5_2
+sum passing_2024_total_5_2 if passing_2024_total_5_2 > -9
+tab passing_2024_total_6_1
+sum passing_2024_total_6_1 if passing_2024_total_6_1 > -9
+tab passing_2024_total_6_2
+sum passing_2024_total_6_2 if passing_2024_total_6_2 > -9
+tab passing_2024_female_1_1
+sum passing_2024_female_1_1 if passing_2024_female_1_1 > -9
+tab passing_2024_female_1_2
+sum passing_2024_female_1_2 if passing_2024_female_1_2 > -9
+tab passing_2024_female_2_1
+sum passing_2024_female_2_1 if passing_2024_female_2_1 > -9
+tab passing_2024_female_2_2
+sum passing_2024_female_2_2 if passing_2024_female_2_2 > -9
+tab passing_2024_female_3_1 
+sum passing_2024_female_3_1 if passing_2024_female_3_1 > -9
+tab passing_2024_female_3_2
+sum passing_2024_female_3_2 if passing_2024_female_3_2 > -9
+tab passing_2024_female_4_1
+sum passing_2024_female_4_1 if passing_2024_female_4_1 > -9
+tab passing_2024_female_4_2
+sum passing_2024_female_4_2 if passing_2024_female_4_2 > -9
+tab passing_2024_female_5_1
+sum passing_2024_female_5_1 if passing_2024_female_5_1 > -9
+tab passing_2024_female_5_2
+sum passing_2024_female_5_2 if passing_2024_total_5_2 > -9
+tab passing_2024_female_6_1
+sum passing_2024_female_6_1 if passing_2024_female_6_1 > -9
+tab passing_2024_female_6_2
+sum passing_2024_female_6_2 if passing_2024_female_6_2 > -9
+sum grade_loop_2025*
+sum classroom_count_2025*
+sum enrollment_2025_total*
+sum enrollment_2025_female*
+sum attendence_regularly*
+tab absenteeism_problem
+sum main_absenteeism_reasons*
+tab absenteeism_top_reason
+tab schistosomiasis_problem
+tab peak_schistosomiasis_month
+tab schistosomiasis_primary_effect
+tab schistosomiasis_sources
+sum schistosomiasis_sources*
+sum schistosomiasis_treatment_minist
 
 **************************************************
 * School Attendance Data Summary

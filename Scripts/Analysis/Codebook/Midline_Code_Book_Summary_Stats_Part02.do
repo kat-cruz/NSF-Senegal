@@ -43,6 +43,8 @@ global knowledge"$survey\Complete_Midline_Knowledge.dta"
 global lean "$survey\Complete_Midline_Lean_Season.dta"
 global production "$survey\Complete_Midline_Production.dta"
 global standard "$survey\Complete_Midline_Standard_Of_Living.dta"
+global schoolprincipal "$survey\Complete_Midline_SchoolPrincipal"
+global schoolattendance "$survey\Complete_Midline_SchoolAttendance"
 
 **************************************************
 * Income Data Summary
@@ -439,6 +441,69 @@ sum wealth_stratum_03_
 **************************************************
 * School Principal Data Summary
 **************************************************
+use "$schoolprincipal", clear
+
+sum consent_obtain respondent_is_director
+tab respondent_is_not_director
+tab respondent_other_role
+tab respondent_gender
+sum respondent_age director_experience_general director_experience_specific
+tab respondent_age
+sum respondent_age if respondent_age > -9
+tab school_water_main
+sum school_distance_river
+sum school_children_water_collection
+sum school_water_use_* 
+sum school_reading_french
+sum school_reading_local
+sum school_computer_access
+sum school_meal_program
+sum school_teachers
+sum school_staff_paid_non_teaching
+sum school_staff_volunteers
+sum school_council
+sum council_school_staff council_community_members council_women council_chief_involvement
+sum grade_loop_*
+sum classroom_count_*
+sum enrollment_2024_total*
+tab enrollment_2024_total_1_1
+sum enrollment_2024_total_1_1 if enrollment_2024_total_1_1 > -9
+tab enrollment_2024_total_2_1
+sum enrollment_2024_total_2_1 if enrollment_2024_total_2_1 > -9
+tab enrollment_2024_total_3_1
+sum enrollment_2024_total_3_1 if enrollment_2024_total_3_1 > -9
+tab enrollment_2024_total_3_2
+sum enrollment_2024_total_3_2 if enrollment_2024_total_3_2 > -9
+tab enrollment_2024_total_4_1
+sum enrollment_2024_total_4_1 if enrollment_2024_total_4_1 > -9
+tab enrollment_2024_total_4_2
+sum enrollment_2024_total_4_2 if enrollment_2024_total_4_2 > -9
+tab enrollment_2024_total_5_1
+sum enrollment_2024_total_5_1 if enrollment_2024_total_5_1 > -9
+tab enrollment_2024_total_6_1
+sum enrollment_2024_total_6_1 if enrollment_2024_total_6_1 > -9
+sum enrollment_2024_female_*
+tab enrollment_2024_female_1_1
+sum enrollment_2024_female_1_1 if enrollment_2024_female_1_1 > -9
+tab enrollment_2024_female_2_1
+sum enrollment_2024_female_2_1 if enrollment_2024_female_2_1 > -9
+tab enrollment_2024_female_3_1
+sum enrollment_2024_female_3_1 if enrollment_2024_female_3_1 > -9
+tab enrollment_2024_female_3_2
+sum enrollment_2024_female_3_2 if enrollment_2024_female_3_2 > -9
+tab enrollment_2024_female_4_1
+sum enrollment_2024_female_4_1 if enrollment_2024_female_4_1 > -9
+tab enrollment_2024_female_4_2
+sum enrollment_2024_female_4_2 if enrollment_2024_female_4_2 > -9
+tab enrollment_2024_female_5_1
+sum enrollment_2024_female_5_1 if enrollment_2024_female_5_1 > -9
+tab enrollment_2024_female_6_1
+sum enrollment_2024_female_6_1 if enrollment_2024_female_6_1 > -9
+
+**************************************************
+* School Attendance Data Summary
+**************************************************
+use "$schoolattendance", clear
 
 **************************************************
 * End of Script

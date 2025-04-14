@@ -15,24 +15,28 @@ set more off
 * SET FILE PATHS
 **************************************************
 * Set base Box path for each user
-if "`c(username)'"=="socrm" global box_path "C:\Users\socrm\Box"
-if "`c(username)'"=="kls329" global box_path "C:\Users\kls329\Box"
-if "`c(username)'"=="km978" global box_path "C:\Users\km978\Box\NSF Senegal"
-if "`c(username)'"=="Kateri" global box_path "C:\Users\Kateri\Box\NSF Senegal"
-if "`c(username)'"=="admmi" global box_path "C:\Users\admmi\Box"
+if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
+if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
+if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box"
 
 
 
 * Define project-specific paths
 
-global path "${box_path}\Data Management\_PartnerData\Ecological data\Baseline"
+global raw_data "${master}\Data_Management\Data\_Partner_RawData\Ecological_Data\Baseline"
+global clean_data "${master}\Data_Management\Data\_Partner_CleanData\Ecological_Data"
+
+
 
 *** load in df ****
+**# Bookmark #1
 
 *use "$data\Baseline ecological data Jan-Feb 2024 CORRECTED.dta", clear 
  
  
-   import excel "$path\_DISES Baseline ecological data.xlsx", sheet("Sites biocomposition") firstrow clear 
+ import excel "$raw_data\_DISES Baseline ecological data.xlsx", sheet("Sites biocomposition") firstrow clear 
    
 *** Remove all up or downstream villages without village codes from the data ***
 
@@ -66,10 +70,12 @@ replace hhid_village = "122B" if hhid_village == "063B"
 replace hhid_village = "120A" if hhid_village == "101A"
 replace hhid_village = "130A" if hhid_village == "051A"
 replace hhid_village = "140A" if hhid_village == "111A"
+**Update
+replace hhid_village = "153A" if hhid_village == "132A"
 
 
 
-save "$path\DISES_baseline_ecological data.dta", replace 
+save "$clean_data\DISES_baseline_ecological data.dta", replace 
  
 
 

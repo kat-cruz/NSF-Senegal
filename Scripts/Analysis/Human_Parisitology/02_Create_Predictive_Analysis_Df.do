@@ -65,9 +65,6 @@ use "$data\01_prepped_inf_matches_df.dta", clear
 	 
 	merge m:1 hhid_village using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Community.dta" // community data
 		drop _merge 
-
-	merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta" // ecological data 
-		drop _merge
 		
 	merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta" // ecological data 
 		drop _merge 

@@ -1,0 +1,2867 @@
+---
+title: "Balance_Tables"
+author: "Kateri Mouawad"
+date: "2025-01-03"
+output: html_document
+---
+
+#Read Me
+
+This script processes: 
+  * baseline_balance_tables_data_PAP.dta
+
+This script outputs:
+  
+  
+  
+
+#INITIATE SCRIPT
+
+```{r}
+# Define a vector of required packages
+packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
+              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
+              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich")
+
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages
+lapply(packages, library, character.only = TRUE)
+
+
+```
+
+
+
+
+
+```{r}
+
+#install.packages("writexl")
+#install.packages("mclogit")
+#install.packages("clusterSEs")
+#install.packages("fixest")
+# library(fixest)
+# library(clusterSEs)
+# library(mlogit)
+# library(writexl) #to output to excel doc
+# library(dplyr)
+# library(readr) #to read in dta's
+# library(tidyr)
+# library(haven)
+# library(data.table)
+# library(tidyverse)
+# library(estimatr)
+# library(broom) 
+# library(kableExtra) #to output to HTML tables
+# library(sandwich) #to wrangle data
+# library(lmtest)  # For likelihood ratio test
+# library(stats)   #for FDR q-stats
+# library(nnet)  #to use multilogit regression 
+# library(car) 
+# library(aod)
+
+
+```
+
+
+### Define file paths and load data 
+
+```{r}
+
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data_Management/Output/Analysis/Balance_Tables"
+  ))  
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data_Management/Output/Analysis/Balance_Tables"
+  ))
+}
+
+
+file_path_balance_tables_df <- file.path(proj$p1, "baseline_balance_tables_data_PAP.dta")
+balance_df <- read_dta(file_path_balance_tables_df)
+balance_df
+
+```
+
+
+####Filter data and transform to long TO UPDATE
+
+
+```{r}
+
+
+
+# Adding a single categorical variable for household training categories - this is for computing summary stats since I'm keeping the trained_hh variable
+joint_df <- balance_df %>%
+  mutate(
+    group = str_sub(hhid, 3, 4),
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1",
+      group %in% c("2A", "2B") ~ "Treatment2",
+      group %in% c("3A", "3B") ~ "Treatment3",
+         )
+  ) %>% select(-group)
+
+names(joint_df)
+
+
+# joint_long_data <- joint_df %>%
+#   pivot_longer(
+#     cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+#     names_to = "variable",    # Create a column named "variable" for former column names
+#     values_to = "value"       # Store values in a column named "value"
+#   )
+# 
+#   joint_long_data <- joint_long_data %>%
+#     rename(group = treatment_group)
+ # view(joint_long_data)
+
+
+summary_df <- balance_df %>%
+  mutate(
+    group = str_sub(hhid, 3, 4),
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1",
+      group %in% c("2A", "2B") ~ "Treatment2",
+      group %in% c("3A", "3B") ~ "Treatment3",
+      group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control"
+    )
+  ) %>% select(-group)
+
+long_data_sum <- summary_df %>%
+  pivot_longer(
+    cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+    names_to = "variable",    # Create a column named "variable" for former column names
+    values_to = "value"       # Store values in a column named "value"
+  )
+
+  long_data_sum <- long_data_sum %>%
+    rename(group = treatment_group)
+
+# Adding a single categorical variable for household training categories - this is for running regressions to avoid multicollinearity with trained_hh
+balance_df <- balance_df %>%
+  mutate(
+    # Extract the two middle characters (e.g., 2A) from hhid
+    group = str_sub(hhid, 3, 4),
+        # Assign treatment group, ensuring "Local Control" is prioritized
+    treatment_group = case_when(
+      group %in% c("0A", "0B") ~ "Control",
+      group %in% c("1A", "1B") ~ "Treatment1",
+      group %in% c("2A", "2B") ~ "Treatment2",
+       group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # Moved to the top
+      group %in% c("3A", "3B") ~ "Treatment3"
+    )
+  ) %>% select(-group, -trained_hh)
+balance_df
+# 
+# long_data <- balance_df %>%
+#   pivot_longer(
+#     cols = -c(hhid, hhid_village, treatment_group),  # Keep hhid and group as is, pivot all other columns
+#     names_to = "variable",    # Create a column named "variable" for former column names
+#     values_to = "value"       # Store values in a column named "value"
+#   )
+# 
+#   long_data <- long_data %>%
+#     rename(group = treatment_group)
+# 
+# joint_long_data
+
+```
+
+
+##Compute summary stats
+
+
+
+```{r}
+
+
+compute_summary_stats <- function(df) {
+  df %>%
+    mutate(variable = factor(variable, levels = unique(variable))) %>%  # Preserve variable order
+    group_by(group, variable) %>%
+    summarise(
+      mean_value = round(mean(value, na.rm = TRUE), 2),
+      sd_value = round(sd(value, na.rm = TRUE), 2),
+      N = sum(!is.na(value)),  # Count of non-missing values
+      .groups = "drop"
+    ) %>%
+    pivot_longer(cols = c(mean_value, sd_value, N), names_to = "stat_type", values_to = "stat_value") %>%
+    mutate(stat_type = case_when(
+      stat_type == "mean_value" ~ "Mean",
+      stat_type == "sd_value" ~ "SD",
+      stat_type == "N" ~ "N"
+    )) %>%
+    mutate(stat_type = factor(stat_type, levels = c("Mean", "SD", "N"))) %>%  # Set order of statistics
+    arrange(variable, stat_type) %>%
+    pivot_wider(names_from = group, values_from = stat_value) %>%
+    select(variable, stat_type, everything())  # Ensure variable and stat_type come first
+}
+
+
+
+
+# 
+# compute_summary_stats <- function(df) {
+#   df %>%
+#     group_by(group, variable) %>%
+#     summarise(
+#       mean_value = round(mean(value, na.rm = TRUE), 2),
+#       sd_value = round(sd(value, na.rm = TRUE), 2),
+#       N = sum(!is.na(value)),  # Count of non-missing values
+#       .groups = "drop"
+#     ) %>%
+#     pivot_longer(cols = c(mean_value, sd_value, N), names_to = "stat_type", values_to = "stat_value") %>%
+#     mutate(stat_type = case_when(
+#       stat_type == "mean_value" ~ "Mean",
+#       stat_type == "sd_value" ~ "SD",  # SD should come before N
+#       stat_type == "N" ~ "N"
+#     )) %>%
+#     mutate(stat_type = factor(stat_type, levels = c("Mean", "SD", "N"))) %>%  # Set order
+#     arrange(variable, stat_type) %>%
+#     pivot_wider(names_from = group, values_from = stat_value) %>%
+#     select(variable, stat_type, everything())  # Ensure variable and stat_type come first
+# }
+# 
+
+
+# compute_summary_stats <- function(df) {
+#   df %>%
+#     group_by(group, variable) %>%
+#     summarise(
+#       mean_value = round(mean(value, na.rm = TRUE), 2),
+#       sd_value = round(sd(value, na.rm = TRUE), 2),
+#       .groups = "drop"  # Prevents group structure from persisting
+#     ) %>%
+#     pivot_longer(cols = c(mean_value, sd_value), names_to = "stat_type", values_to = "stat_value") %>%
+#     mutate(stat_type = ifelse(stat_type == "mean_value", "Mean", "SD")) %>%
+#     pivot_wider(names_from = group, values_from = stat_value) %>%
+#     arrange(variable, stat_type) %>%
+#     # This ensures the 'variable' and 'stat_type' columns come first
+#     select(variable, stat_type, everything()) %>%
+#     # Explicitly ensure 'variable' is ordered as it appears in the original data
+#     arrange(match(variable, unique(df$variable))) 
+# }
+
+summary_table1 <- compute_summary_stats(long_data_sum)
+
+# View output
+print(summary_table1)
+
+
+
+```
+
+
+####Add survey questions and values 
+
+```{r}
+
+# index2 <- which(summary_table$variable == "hh_12_1_")
+#   summary_table <- add_row(summary_table, variable = "hh_12", .before = index2)
+
+# Add "hh_13_1_" above "hh_12"
+# index3 <- which(summary_table$variable == "hh_13_01")
+#   summary_table <- add_row(summary_table, variable = "hh_13", .before = index3)
+
+# index5 <- which(summary_table$variable == "species_1")
+#   final_summary_tabletable <- add_row(summary_table, variable = "species", .before = index5)
+
+# summary_table <- summary_table %>%
+#   mutate(
+#     variable = ifelse(stat_type == "SD" & !is.na(stat_type), "", variable),  # Clear variable for SD rows
+#     stat_type = ifelse(stat_type == "SD" & !is.na(stat_type), "", stat_type)  # Clear stat_type for SD rows
+#   ) %>%
+#   mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%
+#   mutate(across(everything(), as.character)) %>%  # Ensure all columns are character type
+#   mutate(across(
+#     Control:Treatment3,  # Apply only to numeric columns
+#     ~ ifelse(stat_type == "", paste0("(", trimws(.), ")"), .)  # Add parentheses for SD values
+#   ))
+
+
+
+
+```
+
+
+
+```{R}
+
+summary_table2 <- summary_table1 %>%
+  
+  # Remove rows with stat_type == "N" but preserve the 'N_values' column
+  #filter(stat_type != "N") %>%
+  
+  # Apply two decimal places for numeric columns (Control, Treatment1, etc.)
+  mutate(across(where(is.numeric), ~ format(.x, nsmall = 2))) %>%
+  
+  # Convert everything to character type (for proper formatting)
+  mutate(across(everything(), as.character)) %>%
+  
+  # Add parentheses for SD values (only if stat_type is SD)
+  mutate(across(
+    Control:Treatment3,  # Apply only to numeric columns
+    ~ ifelse(stat_type == "SD", paste0("(", trimws(.), ")"), .)  # Add parentheses for SD values
+  )) %>%
+
+  # Add 'N_values' column to each of the treatments columns
+  #mutate(across(Control:Treatment3, ~ ifelse(is.na(N_values), ., N_values), .names = "updated_{.col}")) %>%
+
+  # Select necessary columns: variable, N_values, and treatment columns
+  select(variable, everything()) %>%
+
+#summary_table2 <- summary_table1 %>%
+
+mutate(
+  variable = ifelse(stat_type %in% c("SD", "N"), "", variable),
+  stat_type = ifelse(stat_type %in% c("SD", "N"), "", stat_type)
+) %>%
+  select(-stat_type)
+
+
+summary_table2
+
+
+
+
+```
+
+
+```{R}
+
+
+summary_table3 <- summary_table2 %>%
+  mutate(Question = case_when(
+    variable == "hhid_village" ~ "Village ID",
+    variable == "hhid" ~ "Household ID",
+    variable == "trained_hh" ~ "Trained household",
+    variable == "hh_age_h" ~ "Household head age",
+    variable == "hh_education_level_bin_h" ~ "Indicator for household head with secondary education or higher (1=Yes, 0=No)",
+    variable == "hh_education_skills_5_h" ~ "Indicator that household head is literate (1=Yes, 0=No)",
+    variable == "hh_gender_h" ~ "Household head gender (1=Male, 0=Female)",
+    variable == "hh_numero" ~ "Household size",
+    
+    variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) †",
+    variable == "hh_10_" ~ "Average weekly hours spent within 1 meter of surface water source, in the past 12 months.",
+    variable == "hh_12_6_" ~ "Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months. (1=Yes, 0=No)",
+    variable == "hh_16_" ~ "Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source).",
+    variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
+    
+    variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †",
+    variable == "hh_27_" ~ "Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) †",
+    variable == "hh_29_01" ~ "Indicator for primary level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_02" ~ "Indicator for secondary middle level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_03" ~ "Indicator for secondary higher level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_04" ~ "Indicator for upper secondary education (1=Yes, 0=No, asked about children)",
+    variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class for 2022/2023 (1=Yes, 0=No, asked about children)",
+    variable == "hh_37_" ~ "Indicator if missed >1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) †",
+    variable == "hh_38_" ~ "Number of attended school days in the past week (asked about children)",
+    
+    variable == "living_01_bin" ~ "Indicator for selected tap water as main drinking source (1=Yes, 0=No)",
+    variable == "game_A_total" ~ "Total paid for Game A (CFA)",
+    variable == "game_B_total" ~ "Total paid for Game B (CFA)",
+    
+    variable == "TLU" ~ "Tropical livestock units",
+    variable == "agri_6_15" ~ "Number of cultivated plots",
+    variable == "agri_6_32_bin" ~ "Indicator if used any organic fertilizer (1=Yes, 0=No)",
+    variable == "agri_6_36_bin" ~ "Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)",
+    variable == "total_land_ha" ~ "Total land cultivated (hectares)",
+    variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No) †",
+    
+    variable == "agri_income_01" ~ "Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †",
+    variable == "agri_income_05" ~ "Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture",
+    
+    variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree) +",
+    variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia (1=Yes, 0=No) +",
+    variable == "beliefs_03_bin" ~ "Probability of a child contracting bilharzia (1=Yes, 0=No) +",
+    variable == "beliefs_04_bin" ~ "Agree: Village land should belong to community (1=Yes, 0=No) +",
+    variable == "beliefs_05_bin" ~ "Agree: Village water sources should belong to community (1=Yes, 0=No) +",
+    variable == "beliefs_06_bin" ~ "Agree: Right to products from own land (1=Yes, 0=No) +",
+    variable == "beliefs_07_bin" ~ "Agree: Right to products from community land worked on (1=Yes, 0=No) +",
+    variable == "beliefs_08_bin" ~ "Agree: Right to products from community water sources fished in (1=Yes, 0=No) +",
+    variable == "beliefs_09_bin" ~ "Agree: Right to products from community water sources harvested from (1=Yes, 0=No) +",
+    
+    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness)",
+    variable == "health_5_6_" ~ "Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †",
+    
+    variable == "num_water_access_points" ~ "Number of village water access points",
+    variable == "q_51" ~ "Distance to nearest healthcare center (km) [village level]",
+    variable == "target_village" ~ "Indicator if auction village (1=Yes, 0=No)",
+    
+    TRUE ~ variable  # Default case
+  ))
+
+summary_table3
+
+summary_table_complete <- summary_table3 %>% select(Question, everything()) %>%
+  rename(Variable = variable,
+         `Private Treatment` = Treatment1,
+         `Public Treatment` = Treatment2, 
+         `Private and Public Treatment` = Treatment3)
+summary_table_complete
+#%>%   filter(variable != "target_village")
+
+
+```
+###Output table
+#####Sum stats - HTML output
+
+```{r}
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+#Create table with footnotes using kableExtra
+summary_table_complete %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics") %>%
+  footnote(
+general = "Table presents mean values, with standard deviations in parentheses and the number of observations listed below them.",
+symbol = c(
+  "Binary variables were created from Likert scale responses based on their distribution.",
+  "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+  ) %>%
+  save_kable("_baseline_summary_statsV4.html")
+
+
+# setwd("C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Latex_Output/Balance_Table")
+# 
+# summary_table %>%
+#   kable(format = "latex", booktabs = TRUE, escape = FALSE, caption = "Baseline Summary Statistics") %>%
+#   footnote(
+#     general = "Table presents mean values, with standard deviations in parentheses.",
+#     symbol = c(
+#       "Binary variables were created from Likert scale responses based on their distribution.",
+#       "'I Don't Know' responses (coded as 2) have been recoded as missing values."
+#     ),
+#     symbol_manual = c("+", "†")  # Custom symbols instead of default numbering
+#   ) %>%
+#   save_kable("SS_balance_tableV3.tex")
+
+#Create table with footnotes for excel spreadsheet
+
+```
+#####Sum stats - Excel output
+
+```{r}
+# Excel spreadsheet
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+# Manually add footnotes as a single row
+footnotes <- data.frame(
+  Variable = "Footnotes:",
+  Mean = "Table presents mean values, with standard deviations in parentheses.",
+  SD = "+ Binary variables were created from Likert scale responses based on their distribution.",
+  Other = "† 'I Don't Know' responses (coded as 2) have been recoded as missing values."
+)
+
+# Ensure all columns are character type to avoid coercion issues
+summary_table_complete <- summary_table_complete %>%
+  mutate(across(everything(), as.character))
+
+# Bind footnotes to the summary table
+summary_table_with_footnotes <- bind_rows(summary_table_complete, footnotes)
+
+# Save to Excel
+write_xlsx(summary_table_with_footnotes, "_baseline_summary_statsV7.xlsx")
+
+```
+
+
+##Compute regression coefficients and cluster SEs at the village level
+
+#######test data
+
+```{r}
+#====================================================
+# Test here
+#====================================================
+
+
+library(dplyr)
+library(lmtest)
+library(sandwich)
+
+#view(balance_df)
+# Subset relevant columns from wide data
+subset <- balance_df %>%
+  select(agri_income_05, treatment_group, hhid_village)
+#%>%  filter(!is.na(agri_income_05))
+subset
+# Run regression with Control as baseline
+model <- lm(agri_income_05 ~ treatment_group, data = subset)
+model
+# Clustered standard errors at the village level
+clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset$hhid_village))
+clustered_se
+
+summary(clustered_se)
+summary(model)
+# Extract control mean (intercept) and SE
+#control_mean <- round(summary(model)$coefficients[1, 1], 2)  # Intercept
+control_mean <- round(clustered_se[1, 1], 2)  # Intercept
+control_se <- round(clustered_se[1, 2], 2)  # SE of the intercept
+control_mean
+control_se
+# Extract coefficients and p-values for treatment arms
+results <- data.frame(
+  comparison = c("Control vs Treatment1", "Control vs Treatment2", "Control vs Treatment3", "Control vs Local Control"),
+  stat = round(clustered_se[2:5, 1], 2),  # Regression coefficients
+  p_value = round(clustered_se[2:5, 4], 3),  # p-values
+  control_mean = control_mean,  # Intercept (mean for control group)
+  control_se = control_se  # Standard error of control mean
+)
+
+# View results
+print(results)
+
+```
+
+
+###Completed function
+
+
+
+```{r}
+
+
+run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+  results_list <- list()
+
+  for (var in vars_to_test) {
+    tryCatch({
+      # Subset and drop rows with NA in outcome
+      subset <- data %>% select(all_of(var), all_of(treatment_col), all_of(village_col)) %>% drop_na()
+
+      # Define model
+      formula <- as.formula(paste(var, "~", treatment_col))
+      model <- lm(formula, data = subset)
+
+      # Clustered variance-covariance
+      clustered_vcov <- vcovCL(model, cluster = subset[[village_col]])
+      clustered_se <- coeftest(model, vcov = clustered_vcov)
+
+      # Wald test for F-statistic and p-value
+      wald <- waldtest(model, vcov = clustered_vcov, test = "F")
+      f_stat <- round(wald[2, "F"], 2)
+      f_pval <- round(wald[2, "Pr(>F)"], 3)
+
+      # Sample size used
+      n_obs <- nobs(model)
+
+      # Extract control group stats (intercept)
+      control_mean <- round(clustered_se[1, 1], 2)
+      control_se <- round(clustered_se[1, 2], 2)
+
+      # Extract treatment comparisons
+      coef_names <- rownames(clustered_se)[-1]
+      stats <- clustered_se[-1, 1]
+      pvals <- clustered_se[-1, 4]
+
+      results <- data.frame(
+        variable = var,
+        comparison = coef_names,
+        stat = round(stats, 2),
+        p = round(pvals, 3),
+        control_mean = control_mean,
+        control_se = control_se,
+        N = n_obs,
+        f_statistic = f_stat,
+        f_p_value = f_pval,
+        row.names = NULL
+      )
+
+      results_list[[var]] <- results
+    }, error = function(e) {
+      # In case of error, return NA for the variable
+      results_list[[var]] <- data.frame(
+        variable = var,
+        comparison = NA,
+        stat = NA,
+        p = NA,
+        control_mean = NA,
+        control_se = NA,
+        N = NA,
+        f_statistic = NA,
+        f_p_value = NA,
+        row.names = NULL
+      )
+    })
+  }
+
+  final_results <- bind_rows(results_list)
+  return(final_results)
+}
+
+
+# Run regressions for the baseline variables
+ vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+ vars_to_test_reg
+    regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
+
+# Print the combined results
+print(regression_results)
+
+```
+
+
+```{r}
+
+###non-robust f-stats for comparison
+run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+  results_list <- list()
+
+  for (var in vars_to_test) {
+    # Select and drop missing
+    subset <- data %>%
+      select(all_of(var), all_of(treatment_col), all_of(village_col))
+
+    # Run regression
+    model <- lm(as.formula(paste(var, "~", treatment_col)), data = subset)
+
+    # Clustered standard errors
+    clustered_vcov <- vcovCL(model, cluster = subset[[village_col]])
+    clustered_se <- coeftest(model, vcov = clustered_vcov)
+
+    # Extract F-statistic and p-value
+    fstats <- summary(model)$fstatistic
+    f_stat <- round(fstats["value"], 2)
+    f_pval <- round(pf(fstats["value"], fstats["numdf"], fstats["dendf"], lower.tail = FALSE), 3)
+
+    # Extract N used in the model
+    n_obs <- nobs(model)
+
+    # Extract control stats
+    control_mean <- round(clustered_se[1, 1], 2)
+    control_se <- round(clustered_se[1, 2], 2)
+
+    # Coefficient results
+    coef_names <- rownames(clustered_se)[-1]
+    stats <- clustered_se[-1, 1]
+    pvals <- clustered_se[-1, 4]
+
+    results <- data.frame(
+      variable = var,
+      comparison = coef_names,
+      stat = round(stats, 2),
+      p = round(pvals, 3),
+      control_mean = control_mean,
+      control_se = control_se,
+      N = n_obs,
+      f_statistic = f_stat,
+      f_p_value = f_pval,
+      row.names = NULL
+    )
+
+    results_list[[var]] <- results
+  }
+
+  final_results <- bind_rows(results_list)
+  return(final_results)
+}
+
+# Run regressions for the baseline variables
+ vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+ vars_to_test_reg
+    regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
+
+# Print the combined results
+print(regression_results)
+
+```
+
+
+
+
+
+
+
+
+
+####f-stats non robust SE test
+
+```{r}
+# 
+# run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+#   results_list <- list()  # Store results for all variables
+# 
+#   for (var in vars_to_test) {
+#     # Select relevant columns and drop NAs
+#     subset <- data %>%
+#       select(all_of(var), all_of(treatment_col), all_of(village_col))
+#    # %>% na.omit()
+# 
+#     # Run regression
+#     model <- lm(as.formula(paste(var, "~", treatment_col)), data = subset)
+# 
+#     # Clustered SEs
+#     clustered_vcov <- vcovCL(model, cluster = subset[[village_col]])
+#     clustered_se <- coeftest(model, vcov = clustered_vcov)
+# 
+#     # Get F-statistic from model summary
+#     f_stat <- round(summary(model)$fstatistic[1], 2)
+# 
+#     # Sample size
+#     n_obs <- nrow(subset)
+# 
+#     # Control group stats (intercept)
+#     control_mean <- round(clustered_se[1, 1], 2)
+#     control_se <- round(clustered_se[1, 2], 2)
+# 
+#     # Coefficients
+#     coef_names <- rownames(clustered_se)[-1]
+#     stats <- clustered_se[-1, 1]
+#     pvals <- clustered_se[-1, 4]
+# 
+#     results <- data.frame(
+#       variable = var,
+#       comparison = coef_names,
+#       stat = round(stats, 2),
+#       p = round(pvals, 3),
+#       control_mean = control_mean,
+#       control_se = control_se,
+#       N = n_obs,
+#       f_statistic = f_stat,
+#       row.names = NULL
+#     )
+# 
+#     results_list[[var]] <- results
+#   }
+# 
+#   final_results <- bind_rows(results_list)
+#   return(final_results)
+# }
+# 
+# 
+# # Run regressions for the baseline variables
+#  vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+#  vars_to_test_reg
+#     regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
+# 
+# # Print the combined results
+# print(regression_results)
+# 
+
+```
+####Orginial function
+
+```{r}
+
+run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+  results_list <- list()  # Store results for all variables
+
+  for (var in vars_to_test) {
+    # Select relevant columns
+    subset <- data %>% select(all_of(var), all_of(treatment_col), all_of(village_col))
+
+    # Run regression with Control as baseline
+    model <- lm(as.formula(paste(var, "~", treatment_col)), data = subset)
+
+    # Clustered standard errors at the village level
+    clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+
+    # Extract control mean (intercept) and SE
+    control_mean <- round(clustered_se[1, 1], 2)  # Intercept
+    control_se <- round(clustered_se[1, 2], 2)    # SE of the intercept
+
+    # Extract coefficients and p-values for treatment arms
+    num_treatments <- nrow(clustered_se) - 1  # Number of treatment arms
+    comparisons <- paste("Control vs", unique(data[[treatment_col]])[-1])  # Skip "Control"
+
+    results <- data.frame(
+      variable = var,
+      comparison = comparisons,
+      stat = round(clustered_se[2:(num_treatments + 1), 1], 2),  # Coefficients
+      p = round(clustered_se[2:(num_treatments + 1), 4], 3),  # P-values
+      control_mean = control_mean,  # Control group mean
+      control_se = control_se  # Control group SE
+    )
+
+    # Store results in list
+    results_list[[var]] <- results
+  }
+
+  # Combine all results into one data frame
+  final_results <- bind_rows(results_list)
+  return(final_results)
+}
+
+
+# Run regressions for the baseline variables
+ vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+ vars_to_test_reg
+    regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
+
+# Print the combined results
+print(regression_results)
+
+
+
+
+```
+
+#####pairwaise-comparisons (no longer needed)
+
+```{r}
+
+#<><<><><>><><<><><>>
+#CREATE REGRESSION FUNCTION
+
+
+# Loops through all variables in vars_to_test.
+# Compares each treatment group to the control group (first loop).
+# Compares treatment groups to each other (second loop).
+# Runs regressions for each comparison.
+# Clusters standard errors at the village level.
+# Stores and returns regression results in a data frame
+ 
+
+# 
+# run_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+#   results <- list()
+#   for (var in vars_to_test) {
+#     treatments <- unique(data[[treatment_col]])
+#     treatments <- setdiff(treatments, 'Control')
+#     for (arm in treatments) {
+#       subset <- data %>% filter(.data[[treatment_col]] %in% c('Control', arm) & variable == var)
+#       subset$treat <- ifelse(subset[[treatment_col]] == arm, 1, 0)
+#       model <- lm(value ~ treat, data = subset)
+#       clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+#       results <- append(results, list(data.frame(variable = var, comparison = paste('Control vs', arm),
+#                                                  stat = round(clustered_se[2, 1], 2),
+#                                                  p = round(clustered_se[2, 4], 2))))
+#     }
+#     for (i in 1:(length(treatments) - 1)) {
+#       for (j in (i + 1):length(treatments)) {
+#         subset <- data %>% filter(.data[[treatment_col]] %in% c(treatments[i], treatments[j]) & variable == var)
+#         subset$treat <- ifelse(subset[[treatment_col]] == treatments[j], 1, 0)
+#         model <- lm(value ~ treat, data = subset)
+#         clustered_se <- coeftest(model, vcov = vcovCL(model, cluster = subset[[village_col]]))
+#         results <- append(results, list(data.frame(variable = var, comparison = paste(treatments[i], 'vs', treatments[j]),
+#                                                  stat = round(clustered_se[2, 1], 2),
+#                                                  p = round(clustered_se[2, 4], 2))))
+#                 }
+#               }
+#             }
+#             bind_rows(results)
+#           }
+# 
+# 
+# 
+# 
+# names(balance_df)
+#     vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+#     regression_results <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test_reg)
+#       #regression_results_test <- run_regressions(long_data, 'group', 'hhid_village', vars_to_test_reg)
+#       
+#       
+# regression_results
+
+```
+
+######Compute F-test across arms for each var
+
+####test for the f-stats
+
+```{R}
+
+# run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
+#   results_list <- list()
+# 
+#   for (var in vars_to_test) {
+#     tryCatch({
+#       # Subset and drop rows with NA in outcome
+#       subset <- data %>%
+#         select(all_of(var), all_of(treatment_col), all_of(village_col)) %>%
+#         drop_na()
+# 
+#       # Define model
+#       formula <- as.formula(paste(var, "~", treatment_col))
+#       model <- lm(formula, data = subset)
+# 
+#       # Clustered standard errors
+#       clustered_vcov <- vcovCL(model, cluster = subset[[village_col]])
+#       clustered_se <- coeftest(model, vcov = clustered_vcov)
+# 
+#       # --- 1. F-stat from summary(model)
+#       model_summary <- summary(model)
+#       f_raw <- round(model_summary$fstatistic[1], 2)
+#       p_raw <- round(pf(model_summary$fstatistic[1],
+#                         model_summary$fstatistic[2],
+#                         model_summary$fstatistic[3],
+#                         lower.tail = FALSE), 3)
+# 
+#       # --- 2. F-stat from Wald test with clustered SE
+#       wald_clustered <- waldtest(model, vcov = clustered_vcov, test = "F")
+#       f_clustered <- round(wald_clustered[2, "F"], 2)
+#       p_clustered <- round(wald_clustered[2, "Pr(>F)"], 3)
+# 
+#       # --- 3. F-stat from Wald test without clustering
+#       wald_unclustered <- waldtest(model, test = "F")
+#       f_unclustered <- round(wald_unclustered[2, "F"], 2)
+#       p_unclustered <- round(wald_unclustered[2, "Pr(>F)"], 3)
+# 
+#       # Sample size
+#       n_obs <- nobs(model)
+# 
+#       # Extract control group stats
+#       control_mean <- round(clustered_se[1, 1], 2)
+#       control_se <- round(clustered_se[1, 2], 2)
+# 
+#       # Treatment stats
+#       coef_names <- rownames(clustered_se)[-1]
+#       stats <- clustered_se[-1, 1]
+#       pvals <- clustered_se[-1, 4]
+# 
+#       results <- data.frame(
+#         variable = var,
+#         comparison = coef_names,
+#         stat = round(stats, 2),
+#         p = round(pvals, 3),
+#         control_mean = control_mean,
+#         control_se = control_se,
+#         N = n_obs,
+#         f_stat_raw = f_raw,
+#         p_value_raw = p_raw,
+#         f_stat_clustered = f_clustered,
+#         p_value_clustered = p_clustered,
+#         f_stat_unclustered = f_unclustered,
+#         p_value_unclustered = p_unclustered,
+#         row.names = NULL
+#       )
+# 
+#       results_list[[var]] <- results
+#     }, error = function(e) {
+#       # Handle errors gracefully
+#       results_list[[var]] <- data.frame(
+#         variable = var,
+#         comparison = NA,
+#         stat = NA,
+#         p = NA,
+#         control_mean = NA,
+#         control_se = NA,
+#         N = NA,
+#         f_stat_raw = NA,
+#         p_value_raw = NA,
+#         f_stat_clustered = NA,
+#         p_value_clustered = NA,
+#         f_stat_unclustered = NA,
+#         p_value_unclustered = NA,
+#         row.names = NULL
+#       )
+#     })
+#   }
+# 
+#   final_results <- bind_rows(results_list)
+#   return(final_results)
+# }
+# 
+#  vars_to_test_reg <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+#  vars_to_test_reg
+#     regression_results <- run_all_regressions(balance_df, 'treatment_group', 'hhid_village', vars_to_test_reg)
+# 
+# # Print the combined results
+# print(regression_results)
+
+
+```
+```{r}
+# # Fit model
+# set.seed(123)
+# 
+# # Create fake data for 100 observations
+# n <- 100
+# hhid_village <- sample(1:5, n, replace = TRUE)  # Cluster variable (village-level)
+# treatment_col <- sample(c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3"), n, replace = TRUE)
+# var <- rnorm(n)  # Outcome variable (e.g., hh_15_2)
+# 
+# # Create a data frame
+# data <- data.frame(
+#   hhid_village = hhid_village,
+#   treatment_col = treatment_col,
+#   var = var
+# )
+# 
+# # View the first few rows of the data
+# head(data)
+# 
+# 
+# 
+# model <- lm(var ~ treatment_col, data = data)
+# model
+# # Clustered standard errors (clustered by hhid_village)
+# clustered_vcov <- vcovCL(model, cluster = data$hhid_village)
+# clustered_vcov
+# # Wald test for treatment effect
+# wald <- waldtest(model, vcov = clustered_vcov)
+# wald
+# # Extract the F-statistic and p-value
+# f_stat <- round(wald[2, "F"], 2)
+# f_stat 
+# p_value <- round(wald[2, "Pr(>F)"], 2)
+# p_value
+# # Output the results
+# data.frame(variable = var, f_statistic = f_stat, p_value = p_value)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+# run_f_tests <- function(data, treatment_col, vars_to_test, cluster_var = "hhid_village") {
+#   results <- list()
+#   
+#   for (var in vars_to_test) {
+#     formula <- as.formula(paste(var, "~", treatment_col))
+#     
+#     # Fit model
+#     model <- lm(formula, data = data)
+#     
+#     # Make sure the clustering variable matches model data (after NA removal)
+#     model_data <- model.frame(model)
+#     cluster_values <- data[[cluster_var]][as.numeric(rownames(model_data))]
+#     
+#     # Clustered standard errors
+#     clustered_vcov <- vcovCL(model, cluster = cluster_values, type = "HC1")
+#     
+#     # F-test using Wald test
+#     wald <- waldtest(model, vcov = clustered_vcov)
+#     f_stat <- round(wald[2, "F"], 2)
+#     p_value <- round(wald[2, "Pr(>F)"], 2)
+#     
+#     # Store results in a data frame
+#     f_test <- data.frame(variable = var, f_statistic = f_stat, p_value = p_value)
+#     
+#     results[[var]] <- f_test
+#   }
+#   
+#   # Combine results into one data frame
+#   return(bind_rows(results))
+# }
+# 
+# 
+# 
+# vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# 
+# f_test_results <- run_f_tests(
+#   data = balance_df,
+#   treatment_col = "treatment_group",
+#   vars_to_test = vars_to_test_fstat,
+#   cluster_var = "hhid_village"
+# )
+# 
+# f_test_results
+# 
+# 
+# variance_check <- balance_df %>%
+#   group_by(treatment_group) %>%
+#   summarise(variance = var(hh_15_2, na.rm = TRUE))
+# 
+# # Print the result
+# print(variance_check)
+
+```
+
+
+
+```{r}
+
+run_f_tests <- function(data, treatment_col, vars_to_test, cluster_var = "hhid_village") {
+  results <- list()
+  
+  for (var in vars_to_test) {
+    formula <- as.formula(paste(var, "~", treatment_col))
+    
+    # Fit model
+    model <- lm(formula, data = data)
+    
+    # Make sure the clustering variable matches model data (after NA removal)
+    model_data <- model.frame(model)
+    cluster_values <- data[[cluster_var]][as.numeric(rownames(model_data))]
+    
+    # Clustered standard errors
+    clustered_vcov <- vcovCL(model, cluster = cluster_values, type = "HC1")
+    
+    # F-test
+    f_test <- tryCatch({
+      wald <- waldtest(model, vcov = clustered_vcov)
+      f_stat <- round(wald[2, "F"], 2)
+      p_value <- round(wald[2, "Pr(>F)"], 2)
+      data.frame(variable = var, f_statistic = f_stat, p_value = p_value)
+    }, error = function(e) {
+      data.frame(variable = var, f_statistic = NA, p_value = NA)
+    })
+    
+    results[[var]] <- f_test
+  }
+  
+  bind_rows(results)
+}
+
+
+# vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# 
+# f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
+# print(f_test_results)
+
+
+vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+
+f_test_results <- run_f_tests(
+  data = balance_df,
+  treatment_col = "treatment_group",
+  vars_to_test = vars_to_test_fstat,
+  cluster_var = "hhid_village"
+)
+
+f_test_results
+
+```
+
+
+#####no clustering, for reference 
+
+```{r}
+# run_f_tests_no_clustering <- function(data, treatment_col, vars_to_test) {
+#   results <- list()
+#   
+#   for (var in vars_to_test) {
+#     formula <- as.formula(paste(var, "~", treatment_col))
+#     
+#     # Fit model (no clustering)
+#     model <- lm(formula, data = data)
+#     
+#     # F-test using Wald test (no clustering)
+#     wald <- waldtest(model)
+#     
+#     # Get the F-statistic and p-value
+#     f_stat <- round(wald[2, "F"], 2)
+#     p_value <- round(wald[2, "Pr(>F)"], 2)
+#     
+#     # Store results
+#     results <- append(results, list(data.frame(variable = var, f_statistic = f_stat, p_value = p_value)))
+#   }
+#   
+#   # Combine and return the results as a data frame
+#   return(bind_rows(results))
+# }
+# 
+# # Example usage with your data
+# vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# 
+# f_test_results <- run_f_tests_no_clustering(
+#   data = balance_df,
+#   treatment_col = "treatment_group",
+#   vars_to_test = vars_to_test_fstat
+# )
+# 
+# f_test_results
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+#<><<><><>><><<><><>>
+#CREATE F-STAT FUNCTION FOR EACH VAR
+#<><<><><>><><<><><>>
+
+# Function to perform F-test for each variable
+run_f_tests <- function(data, treatment_col, vars_to_test) {
+  results <- list()
+
+  for (var in vars_to_test) {
+    # Construct formula dynamically (e.g., hh_15_2 ~ group)
+    formula <- as.formula(paste(var, "~", treatment_col))
+        # Run ANOVA for each variable
+    anova_result <- aov(formula, data = data)
+        # Get the F-statistic and p-value
+    f_stat <- summary(anova_result)[[1]]$`F value`[1]
+    p_value <- summary(anova_result)[[1]]$`Pr(>F)`[1]
+
+    # Store results
+    results <- append(results, list(data.frame(variable = var,
+                                               f_statistic = round(f_stat, 2),
+                                               p_value = round(p_value, 2))))
+  }
+  # Combine and return the results as a data frame
+  return(bind_rows(results))
+}
+    vars_to_test_fstat <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+
+    f_test_results <- run_f_tests(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fstat)
+    print(f_test_results)
+
+
+
+# 
+compute_fdr_qvalues <- function(regression_results) {
+
+  # Apply Benjamini-Hochberg correction to regression p-values
+  regression_results <- regression_results %>%
+      mutate(q_value = round(p.adjust(p, method = "BH"), 2))  # Adjust and round q-values # Adjusting only regression p-values
+
+  return(regression_results)  # Return the updated regression table with q-values
+}
+
+# Run the function on regression results
+regression_results_qvals <- compute_fdr_qvalues(regression_results)
+
+# Print results
+print(regression_results_qvals)
+
+# 
+# 
+# #<><<><><>><><<><><>>
+# #CREATE F-STAT FUNCTION FOR TREATMENT ARM
+# #<><<><><>><><<><><>>
+# 
+# # # Function to compute Joint F-statistics for each treatment arm (Wide Format)
+# # run_pairwise_f_test <- function(data, treatment_col, vars_to_test) {
+# #   results <- list()
+# #   
+# #   # Get all treatment arms (excluding 'Control')
+# #   treatments <- unique(data[[treatment_col]])
+# #   treatments <- treatments[treatments != "Control"]
+# #   
+# #   # Loop over all pairwise combinations of treatments
+# #   for (i in 1:(length(treatments) - 1)) {
+# #     for (j in (i + 1):length(treatments)) {
+# #       # Subset the data for the current pair of treatments
+# #       subset <- data[data[[treatment_col]] %in% c(treatments[i], treatments[j]), ]
+# #       
+# #       # Create regression formula (e.g., hh_15_2 + hh_26_ + hh_27_ ~ group)
+# #       formula <- as.formula(paste(paste(vars_to_test, collapse = " + "), "~", treatment_col))
+# #       
+# #       # Run the regression model
+# #       model <- lm(formula, data = subset)
+# #       
+# #       # Compute F-statistic for the joint test
+# #       f_stat <- summary(model)$fstatistic[1]
+# #       p_value <- pf(f_stat, df1 = summary(model)$fstatistic[2], df2 = summary(model)$fstatistic[3], lower.tail = FALSE)
+# #       
+# #       # Store results for this pairwise comparison
+# #       results <- append(results, list(data.frame(treatment_comparison = paste(treatments[i], "vs", treatments[j]),
+# #                                                  f_statistic = round(f_stat, 2), 
+# #                                                  p_value = round(p_value, 4))))
+# #     }
+# #   }
+# #   
+# #   # Combine and return the results as a data frame
+# #   return(bind_rows(results))
+# # }
+# # 
+# #  vars_to_test_fjoint <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+# #     joint_f_test_results <- run_pairwise_f_test(balance_df, treatment_col = "treatment_group", vars_to_test = vars_to_test_fjoint)
+# # 
+# 
+#    
+# 
+# # Print results
+# #print(joint_f_test_results)
+# print(f_test_results)
+# regression_results
+# 
+# regression_results_qvals
+
+```
+
+
+
+##Create completed table
+
+
+```{r}
+
+subtable <- regression_results_qvals %>%
+  select(variable, control_mean, control_se) #%>%
+  # pivot_longer(cols = c(control_mean, control_se), names_to = "stat_type", values_to = "value") %>%
+  # mutate(stat_type = ifelse(stat_type == "control_mean", "Mean", "SD"))  # Rename for clarity
+
+subtable <- subtable %>%
+  distinct(variable, control_mean, control_se, .keep_all = TRUE)
+
+# Pivot the table to have variables as rows and comparisons as columns
+final_table <- regression_results_qvals %>%
+   select(-control_mean,-control_se) %>%
+  rename(q = q_value)    %>%
+  pivot_wider(names_from = comparison, values_from = c(stat, p, q))
+
+final_table
+# Rearrange to stack t-stats and p-values in rows
+final_table <- final_table %>%
+  pivot_longer(cols = -c(variable), names_to = 'comparison', values_to = 'value') %>%
+  separate(comparison, into = c('type', 'comparison'), sep = '_', extra = 'merge') %>%
+  pivot_wider(names_from = comparison, values_from = value)
+final_table
+# Merge F-statistics data into final_table
+final_table <- final_table %>%
+  left_join(f_test_results, by = "variable")
+final_table
+
+final_table <- final_table %>%
+  left_join(subtable, by = "variable")
+final_table
+
+
+
+# final_table <- final_table %>%
+#   # Ensure f-stat values remain unchanged except for p-values
+#   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+#   
+#   # Format p-values with parentheses and add significance stars
+#   mutate(across(everything(), ~ ifelse(
+#     grepl("p", type), 
+#     paste0("(", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
+#     .x))) %>%
+#   
+#   # Add brackets around q-values
+#   mutate(across(everything(), ~ ifelse(
+#     grepl("q", stat),  # If the stat column indicates q-values
+#     paste0("[", trimws(.x), "]"),  
+#     .x))) %>%
+#   
+#   # Replace character "NaNNA" values with "(NA)" for all columns except variable and type
+#   mutate(across(-c(variable, type), ~ ifelse(. == "(NaNNA)", "(NA)", .)))  
+
+
+final_table <- final_table %>%
+  # Ensure f-stat values remain unchanged except for p-values
+  mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) 
+  final_table
+  
+ final_table <- final_table %>%
+  # Ensure f-stat values remain unchanged except for p-values
+  mutate(across(starts_with("control_mean"), ~ ifelse(type == "p", as.character(control_se), as.character(.)))) 
+  final_table
+ 
+  
+  
+final_table <- final_table %>%
+  # Format p-values with parentheses and add significance stars
+  mutate(across(c(`Control vs Treatment1`, `Control vs Treatment2`, `Control vs Treatment3`, `Control vs Local Control`), 
+    ~ as.character(ifelse(
+      grepl("p", type), 
+      paste0("(", trimws(.), ifelse(as.numeric(.) <= 0.01, "**", ifelse(as.numeric(.) <= 0.05, "*", "")), ")"), 
+      .))))
+
+  
+# final_table <- final_table %>%
+#   # Format p-values with parentheses and add significance stars
+#   mutate(across(everything(), ~ as.character(ifelse(
+#     grepl("p", type), 
+#     paste0("(", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"), 
+#     .x)))) 
+
+ final_table 
+ 
+final_table <- final_table %>%
+  # Add brackets around numeric q-values in each cell
+ mutate(across(c(`Control vs Treatment1`, `Control vs Treatment2`, `Control vs Treatment3`, `Control vs Local Control`), 
+ ~ as.character(ifelse(
+    grepl("q", type),
+    paste0("[", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), "]"),
+    .x))))
+ 
+ 
+# final_table <- final_table %>%
+#   # Add brackets around numeric q-values in each cell
+#   mutate(across(everything(), ~ as.character(ifelse(
+#     grepl("q", type), 
+#     paste0("[", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), "]"), 
+#     .x)))) 
+
+
+final_table
+
+```
+
+
+
+
+```{R}
+# Replace the value underneath f_stat with p_value
+# final_table <- final_table %>%
+#   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+#   mutate(across(everything(), ~ ifelse(grepl("p", type), paste0("(", trimws(.x), ")"), .x)))  # Format p-values with parentheses
+
+# final_table <- final_table %>%
+#   mutate(across(starts_with("f_stat"), ~ ifelse(type == "p", as.character(p_value), as.character(.)))) %>%
+#   mutate(across(everything(), ~ ifelse(grepl("p", type),
+#                                       paste0("(", trimws(.x),
+#                                              ifelse(as.numeric(.x) <= 0.01, "**",
+#                                                     ifelse(as.numeric(.x) <= 0.05, "*", "")), ")"),
+#                                       .x))) %>%
+#  
+#  mutate(across(everything(), ~ as.character(ifelse(
+#     grepl("q", stat),  # If the stat column indicates q-values
+#     paste0("[", trimws(.x), "]"),  
+#     .x)))) %>%
+#   
+#    mutate(
+#     # Replace character "NaN" values with "NA" for all columns except variable and type
+#     across(-c(variable, type), ~ ifelse(. == "(NaNNA)", "(NA)", .))  # Check for character "NaN"
+#   )
+
+
+# joint_f_test_results <- joint_f_test_results %>%
+#   pivot_wider(names_from = treatment_comparison, values_from = c(f_statistic, p_value)) %>%
+#   rename_with(~ gsub(" ", "_", .), everything())  # Clean up column names
+# joint_f_test_results
+
+
+# Generate f_stats_row from joint_f_test_results
+# f_stats_row <- data.frame(
+#   variable = "F statistics of Joint F-test:"
+# ) %>%
+#   bind_cols(joint_f_test_results %>%
+#               select(starts_with("f_statistic")) %>%
+#               rename_with(~ gsub("f_statistic_", "", .)) %>%    # Remove the 'f_statistic_' prefix
+#               rename_with(~ gsub("_", " ", .))) %>%             # Remove the underscores
+#   mutate(across(everything(), as.character))  # Convert all to character
+# 
+# # Print f_stats_row to check
+# print(f_stats_row)
+# 
+# # Generate p_values_row from joint_f_test_results
+# p_values_row <- data.frame(
+#   variable = "P-value of Joint F-test:"
+# ) %>%
+#   bind_cols(joint_f_test_results %>%
+#               select(starts_with("p_value")) %>%
+#               rename_with(~ gsub("p_value_", "", .)) %>%  # Remove the 'p_value_' prefix
+#               rename_with(~ gsub("_", " ", .)) %>%       # Remove the underscores
+#               mutate(across(everything(), ~ paste0("(", ., ")")))) %>%  # Format p-values with parentheses
+#   mutate(across(everything(), as.character))  # Convert all to character
+# 
+# # Print p_values_row to check
+# print(p_values_row)
+# 
+# 
+# final_table <- final_table %>%
+#   bind_rows(f_stats_row, p_values_row %>% mutate(
+#     `Control vs Treatment3` = NA,  # Add missing column with NA
+#     type = NA,                     # Add missing 'type' column with NA
+#     `Control vs Treatment1` = NA,  # Add missing 'Control vs Treatment1' column with NA
+#     `Control vs Treatment2` = NA,  # Add missing 'Control vs Treatment2' column with NA
+#     `Control vs Local Control` = NA,  # Add missing 'Control vs Local Control' column with NA
+#     f_statistic = NA,
+#     p_value = NA
+#   ))
+
+# Print the updated final_table
+#print(final_table)
+
+```
+
+
+
+####Add survey questions and values 
+
+```{r}
+
+final_table <- final_table %>%
+  mutate(
+    variable = if_else(type == "p" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
+    control_mean = if_else(type == "p" & !is.na(type), "", control_mean),
+    type = if_else(type == "p" & !is.na(type), "", as.character(type)),  # Clear type when type == "(p)", leave other values unchanged
+    f_statistic = if_else(type == "q" & !is.na(type), "", f_statistic),
+    variable = if_else(type == "q" & !is.na(type), "", variable),  # Clear variable when type == "(p)" and type is not NA
+    type = if_else(type == "q" & !is.na(type), "", as.character(type))  # Clear type when type == "(p)", leave other values unchanged
+  
+  ) %>%
+  select(-p_value, -control_se)  # Remove the 'type' column after modification
+final_table
+
+
+final_table <- final_table %>%
+  mutate(across(everything(), 
+                ~ ifelse(. %in% c("[NaNNA]", "(NaNNA)"), NA, .)))
+
+# Print the modified final_table
+final_table
+
+final_table <- final_table %>%
+mutate(Question = case_when(
+    variable == "hhid_village" ~ "Village ID",
+    variable == "hhid" ~ "Household ID",
+    variable == "trained_hh" ~ "Trained household",
+    variable == "hh_age_h" ~ "Household head age",
+    variable == "hh_education_level_bin_h" ~ "Indicator for household head with secondary education or higher (1=Yes, 0=No)",
+    variable == "hh_education_skills_5_h" ~ "Indicator that household head is literate (1=Yes, 0=No)",
+    variable == "hh_gender_h" ~ "Household head gender (1=Male, 0=Female)",
+    variable == "hh_numero" ~ "Household size",
+    
+    variable == "hh_03_" ~ "Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) †",
+    variable == "hh_10_" ~ "Average weekly hours spent within 1 meter of surface water source, in the past 12 months.",
+    variable == "hh_12_6_" ~ "Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months. (1=Yes, 0=No)",
+    variable == "hh_16_" ~ "Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source).",
+    variable == "hh_15_2" ~ "Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)",
+    
+    variable == "hh_26_" ~ "Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †",
+    variable == "hh_27_" ~ "Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) †",
+    variable == "hh_29_01" ~ "Indicator for primary level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_02" ~ "Indicator for secondary middle level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_03" ~ "Indicator for secondary higher level education (1=Yes, 0=No, asked about children)",
+    variable == "hh_29_04" ~ "Indicator for upper secondary education (1=Yes, 0=No, asked about children)",
+    variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class for 2022/2023 (1=Yes, 0=No, asked about children)",
+    variable == "hh_37_" ~ "Indicator if missed >1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) †",
+    variable == "hh_38_" ~ "Number of attended school days in the past week (asked about children)",
+    
+    variable == "living_01_bin" ~ "Indicator for selected tap water as main drinking source (1=Yes, 0=No)",
+    variable == "game_A_total" ~ "Total paid for Game A (CFA)",
+    variable == "game_B_total" ~ "Total paid for Game B (CFA)",
+    
+    variable == "TLU" ~ "Tropical livestock units",
+    variable == "agri_6_15" ~ "Number of cultivated plots",
+    variable == "agri_6_32_bin" ~ "Indicator if used any organic fertilizer (1=Yes, 0=No)",
+    variable == "agri_6_36_bin" ~ "Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)",
+    variable == "total_land_ha" ~ "Total land cultivated (hectares)",
+    variable == "agri_6_34_comp_any" ~ "Used any compost on any parcel (1=Yes, 0=No) †",
+    
+    variable == "agri_income_01" ~ "Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †",
+    variable == "agri_income_05" ~ "Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture",
+    
+    variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia (1=Strongly agree/Agree) +",
+    variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia (1=Yes, 0=No) +",
+    variable == "beliefs_03_bin" ~ "Probability of a child contracting bilharzia (1=Yes, 0=No) +",
+    variable == "beliefs_04_bin" ~ "Agree: Village land should belong to community (1=Yes, 0=No) +",
+    variable == "beliefs_05_bin" ~ "Agree: Village water sources should belong to community (1=Yes, 0=No) +",
+    variable == "beliefs_06_bin" ~ "Agree: Right to products from own land (1=Yes, 0=No) +",
+    variable == "beliefs_07_bin" ~ "Agree: Right to products from community land worked on (1=Yes, 0=No) +",
+    variable == "beliefs_08_bin" ~ "Agree: Right to products from community water sources fished in (1=Yes, 0=No) +",
+    variable == "beliefs_09_bin" ~ "Agree: Right to products from community water sources harvested from (1=Yes, 0=No) +",
+    
+    variable == "health_5_3_bin" ~ "Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness)",
+    variable == "health_5_6_" ~ "Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †",
+    
+    variable == "num_water_access_points" ~ "Number of village water access points",
+    variable == "q_51" ~ "Distance to nearest healthcare center (km) [village level]",
+    variable == "target_village" ~ "Indicator if auction village (1=Yes, 0=No)",
+    
+    TRUE ~ variable  # Default case
+  ))
+
+  final_table  
+
+names(final_table)
+
+
+
+final_table <- final_table %>% 
+  select(Question, everything()) %>%
+  rename(Variable = variable,
+          `Control Mean` = control_mean,
+          `Private Treatment` = `Control vs Treatment1`,
+          `Public Treatment` = `Control vs Treatment2`,
+          `Public & Private Treatment` = `Control vs Treatment3`,
+          `Local Control` = `Control vs Local Control`,
+          `F-test` = f_statistic)
+
+final_table
+
+
+desired_column_order <- c(
+       "Control Mean",
+       "Local Control",
+       "Private Treatment",
+       "Public Treatment",
+       "Public & Private Treatment",
+       "F-test")
+
+        #   "Control vs Public Treatment",
+#=============================================================================
+# PAIR-WISE TEST NAMES HERE
+#=============================================================================
+# final_table <- final_table %>% 
+#   select(Question, everything()) %>%
+#   rename(Variable = variable,
+#          `Control vs Private Treatment` = `Control vs Treatment1`,
+#           `Control vs Public Treatment` = `Control vs Treatment2`,
+#           `Control vs Public & Private Treatment` = `Control vs Treatment3`,
+#           `Private Treatment vs Public Treatment` = `Treatment1 vs Treatment2`,
+#           `Private Treatment vs Public & Private Treatment` = `Treatment1 vs Treatment3`,
+#           `Public Treatment vs Public & Private Treatment` = `Treatment2 vs Treatment3`,
+#           `Local Control vs Public & Private Treatment` = `Treatment3 vs Local Control`,
+#           `Local Control vs Private Treatment` = `Treatment2 vs Local Control`,
+#           `Local Control vs Public Treatment` = `Treatment1 vs Local Control`,
+#           `F-test` = f_statistic)
+
+
+
+        # Define the desired column order
+        # desired_column_order <- c(
+        #   "Control vs Private Treatment",
+        #   "Control vs Public Treatment",
+        #   "Control vs Local Control",
+        #   "Control vs Public & Private Treatment",
+        #   "Local Control vs Public Treatment",
+        #   "Local Control vs Private Treatment",
+        #   "Local Control vs Public & Private Treatment",
+        #   "Private Treatment vs Public Treatment",
+        #   "Private Treatment vs Public & Private Treatment",
+        #   "Public Treatment vs Public & Private Treatment",
+        #   "F-test"
+        # )
+
+# Reorder the columns in final_table
+final_table <- final_table %>%
+  select(Question, Variable, all_of(desired_column_order))  # Ensure 'variable' stays the first column
+
+# Print the modified final_table
+print(final_table)
+
+final_table
+
+
+```
+
+###Output tables
+
+#####Make two tables, one with local control/without
+
+##########Main table - HTML output
+
+```{r}
+
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+
+final_table %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
+  footnote(
+ general = "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+    symbol = c(
+      "Binary variables were derived from Likert scale responses based on their distribution.",
+      "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+  ) %>%
+  save_kable("balance_tablev12.html")
+##balance_tablev11.html = without -9s
+
+
+# setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# knitr::kable(final_table, format = "html") %>% save_kable("balance_tablev3.html")
+
+```
+
+
+##########Main table - Excel output
+
+```{r}
+# Excel spreadsheet
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# Manually add footnotes as a single row
+footnotes <- data.frame(
+  Variable = "Footnotes:",
+  General = "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+  Bin_var = "+ Binary variables were created from Likert scale responses based on their distribution.",
+  Other = "† 'I Don't Know' responses (coded as 2) have been recoded as missing values."
+)
+
+# Ensure all columns are character type to avoid coercion issues
+final_table <- final_table %>%
+  mutate(across(everything(), as.character))
+
+# Bind footnotes to the summary table
+final_table_with_footnotes <- bind_rows(final_table, footnotes)
+
+# Save to final_table_with_footnotes
+write_xlsx(final_table_with_footnotes, "balance_tablev2.xlsx")
+
+```
+
+
+##########Subset table - HTML output
+
+```{r}
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+
+
+final_table_subset <- final_table  %>%
+  select(-starts_with("Local Control"), -`Control vs Local Control`
+         )
+
+final_table_subset %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
+  footnote(
+ general = "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+    symbol = c(
+      "Binary variables were derived from Likert scale responses based on their distribution.",
+      "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+  ) %>%
+  save_kable("_balance_table_subset.html")
+
+
+#write_xlsx(final_table_subset, "balance_table_subset.xlsx")
+
+
+```
+
+##########Subset table - Excel output
+
+```{r}
+# Excel spreadsheet
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# Manually add footnotes as a single row
+
+# Ensure all columns are character type to avoid coercion issues
+final_table_subset <- final_table_subset %>%
+  mutate(across(everything(), as.character))
+
+# Bind footnotes to the summary table
+table_subset_with_footnotes <- bind_rows(final_table_subset, footnotes)
+
+# Save to final_table_with_footnotes
+write_xlsx(table_subset_with_footnotes, "balance_table_Subset.xlsx")
+```
+
+##Compute joint f-test - test work
+
+
+#####latest
+
+
+#####keep - checks for missings 
+
+```{r}
+
+
+# Get total number of rows in the dataset
+total_rows <- nrow(joint_df)
+missing_counts <- colSums(is.na(joint_df))
+missing_counts
+total_rows
+# Compute missing percentages correctly
+missing_percents <- (missing_counts / total_rows) *100
+
+missing_percents
+
+missing_summary <- data.frame(Variable = names(missing_counts), 
+                              MissingCount = missing_counts, 
+                              MissingPercent = missing_percents)
+
+# Sort by highest percentage of missing data
+missing_summary <- missing_summary[order(-missing_summary$MissingPercent), ]
+print(missing_summary)
+
+
+
+view(joint_df)
+
+
+
+
+
+```
+
+
+
+
+```{r}
+# Load necessary packages
+# install.packages("nnet")  # If not already installed
+# library(nnet)
+
+#Check for collinearity
+
+# cor_matrix <- cor(joint_df[, vars_to_include], use = "pairwise.complete.obs")
+# print(cor_matrix)
+#Removed "agri_income_01" due to collinearity
+
+##Check for missings
+
+# Count missing values per column
+colSums(is.na(joint_df))
+
+# Percentage of missing values per column
+colMeans(is.na(joint_df)) * 100
+
+# Count rows with any missing values
+sum(!complete.cases(joint_df))
+
+# Percentage of rows with missing values
+mean(!complete.cases(joint_df)) * 100
+
+missing_counts <- colSums(is.na(joint_df))
+missing_counts
+missing_percents <- colMeans(is.na(joint_df)) * 100
+missing_percents
+# Combine into a summary table
+missing_summary <- data.frame(Variable = names(missing_counts), 
+                              MissingCount = missing_counts, 
+                              MissingPercent = missing_percents)
+
+# Sort by highest percentage of missing data
+missing_summary <- missing_summary[order(-missing_summary$MissingPercent), ]
+print(missing_summary)
+
+##add clustering at the village level 
+view(joint_df)
+```
+
+
+
+
+
+
+####get rid of
+
+```{R}
+joint_df <- na.omit(joint_df)  # Remove rows with missing values
+
+#Removed "agri_income_01" due to collinearity
+# Define formula
+vars_to_include <- c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", 
+                     "hh_gender_h", "hh_numero", "hh_03_", "hh_10_", "hh_12_6_", "hh_16_", 
+                     "hh_15_2", "hh_26_", "hh_29_01", "hh_29_02", "hh_29_03", "hh_29_04", 
+                     "hh_37_", "hh_38_", "living_01_bin", "game_A_total", "game_B_total", 
+                     "TLU", "agri_6_15", "agri_6_32_bin", "agri_6_36_bin", "total_land_ha", 
+                     "agri_6_34_comp_any", "agri_income_05", "beliefs_01_bin", 
+                     "beliefs_02_bin", "beliefs_03_bin", "beliefs_04_bin", "beliefs_05_bin", 
+                     "beliefs_06_bin", "beliefs_07_bin", "beliefs_08_bin", "beliefs_09_bin", 
+                     "health_5_3_bin", "health_5_6_", "num_water_access_points", "q_51")
+
+joint_df <- joint_df[complete.cases(joint_df[vars_for_model]), ]
+
+# Construct the formula dynamically
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
+
+# Fit the multinomial logistic regression model
+model <- multinom(formula, data = joint_df)
+
+# Display summary of the model
+summary(model)
+
+
+# Load necessary package
+#library(nnet)
+
+# Number of observations
+num_obs <- nrow(joint_df)
+
+# Log-likelihood
+log_lik <- logLik(model)
+
+# Degrees of freedom (number of predictors)
+df_model <- length(coef(model))
+df_model
+# LR Chi-Square (Likelihood Ratio Test Statistic)
+null_model <- multinom(treatment_group ~ 1, data = joint_df)  # Fit null model (intercept only)
+lr_chi2 <- 2 * (logLik(model) - logLik(null_model))  # Likelihood Ratio Test statistic
+
+# p-value for LR test
+p_value <- pchisq(as.numeric(lr_chi2), df = df_model, lower.tail = FALSE)
+
+# Pseudo R² (McFadden’s R²)
+pseudo_r2 <- 1 - (logLik(model) / logLik(null_model))
+
+# Print output in Stata-style format
+cat("Multinomial logistic regression\n")
+cat("Number of obs =", num_obs, "\n")
+cat("LR chi2(", df_model, ") =", round(as.numeric(lr_chi2), 2), "\n")
+cat("Prob > chi2 =", round(as.numeric(p_value), 4), "\n")
+cat("Log likelihood =", round(as.numeric(log_lik), 5), "\n")
+cat("Pseudo R2 =", round(as.numeric(pseudo_r2), 4), "\n")
+
+
+```
+
+
+
+
+
+#####keep - test 
+
+```{r}
+# Step 1: Calculate the percentage of missing values for agri_income_05
+missing_count <- sum(is.na(joint_df$agri_income_05))  # Count missing values
+missing_count
+total_count <- length(joint_df$agri_income_05)  # Total number of values
+total_count
+missing_percent <- (missing_count / total_count) * 100
+print(paste("Missing percentage for agri_income_05:", round(missing_percent, 2), "%"))
+missing_percent
+
+# Step 2: Create missingness dummy (1 if missing, 0 if not missing)
+joint_df$agri_income_05_missing <- as.integer(is.na(joint_df$agri_income_05))
+
+# Step 3: Check skewness of agri_income_05 manually
+values_without_na <- joint_df$agri_income_05[!is.na(joint_df$agri_income_05)]  # Remove NAs
+values_without_na
+# Calculate the mean and standard deviation
+mean_value <- sum(values_without_na) / length(values_without_na)
+mean_value
+sum_squared_diffs <- sum((values_without_na - mean_value)^2)
+sum_squared_diffs
+std_dev <- sqrt(sum_squared_diffs / (length(values_without_na) - 1))
+std_dev
+
+# Calculate skewness manually using the third moment
+third_moment <- sum((values_without_na - mean_value)^3) / length(values_without_na)
+third_moment
+skew_value <- third_moment / (std_dev^3)
+skew_value
+print(paste("Skewness of agri_income_05:", round(skew_value, 2)))
+
+# Step 4: Use the mean or median based on skewness
+impute_value <- sum(values_without_na) / length(values_without_na)  # Default to mean
+impute_value
+# If skewness is large, impute with the median (manual calculation)
+sorted_values <- sort(values_without_na)
+sorted_values
+
+mid_index <- floor(length(sorted_values) / 2)
+mid_index
+impute_value <- sorted_values[mid_index]  # Use median if skewness is high
+
+print(paste("Imputed missing agri_income_05 values using:", 
+            ifelse(abs(skew_value) < 0.5, "Mean", "Median")))
+
+# Step 5: Replace missing values with the imputed value
+joint_df$agri_income_05[is.na(joint_df$agri_income_05)] <- impute_value
+
+# Step 6: Print the imputed value used
+print(paste("Imputed value for missing data:", round(impute_value, 2)))
+
+```
+
+
+##Impute variables with >10% missings 
+###keep
+
+
+```{r}
+
+# agri_income_05	1433	68.89423077	
+# agri_6_15	agri_6_15	780	37.50000000	
+# hh_37_	hh_37_	440	21.15384615	
+# hh_38_	hh_38_	439	21.10576923	
+# hh_29_01	hh_29_01	423	20.33653846	
+# hh_29_02	hh_29_02	423	20.33653846	
+# hh_29_03	hh_29_03	423	20.33653846	
+# hh_29_04	hh_29_04	423	20.33653846	
+# hh_12_6_	hh_12_6_	206	9.90384615	
+# hh_16_	hh_16_	206	9.90384615	
+# hh_26_	hh_26_	125	6.00961538	
+# hh_age_h	hh_age_h	50	2.40384615	
+# hh_education_level_bin_h	hh_education_level_bin_h	50	2.40384615	
+# hh_education_skills_5_h	hh_education_skills_5_h	50	2.40384615	
+# hh_gender_h	hh_gender_h	50	2.40384615	
+# health_5_6_	health_5_6_
+
+
+# Define the variables to process
+# vars_to_impute <- c("agri_income_05", "agri_6_15", "hh_37_", "hh_38_", 
+#                     "hh_29_01", "hh_29_02", "hh_29_03", "hh_29_04", "hh_12_6_", "hh_16_", "hh_26_", "hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", "health_5_6_")
+
+vars_to_impute <- c("agri_income_05", "agri_6_15", "hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", "health_5_6_")
+
+# Loop over each variable and perform missingness check, skewness, and imputation
+for (var in vars_to_impute) {
+  
+  print(paste("Processing", var, "..."))
+  
+  # Step 1: Calculate the percentage of missing values
+  missing_count <- sum(is.na(joint_df[[var]]))  # Count missing values
+  total_count <- length(joint_df[[var]])  # Total number of values
+  missing_percent <- (missing_count / total_count) * 100
+  print(paste("Missing percentage for", var, ":", round(missing_percent, 2), "%"))
+  
+  # Step 2: Only create missingness dummy if missingness is greater than 10%
+  if (missing_percent > 10) {
+    joint_df[[paste0(var, "_missing")]] <- as.integer(is.na(joint_df[[var]]))
+  }
+  
+  # Step 3: Check skewness manually
+  values_without_na <- joint_df[[var]][!is.na(joint_df[[var]])]  # Remove NAs
+  
+  # Calculate the mean and standard deviation
+  mean_value <- sum(values_without_na) / length(values_without_na)
+  sum_squared_diffs <- sum((values_without_na - mean_value)^2)
+  std_dev <- sqrt(sum_squared_diffs / (length(values_without_na) - 1))
+  
+  # Calculate skewness manually using the third moment
+  third_moment <- sum((values_without_na - mean_value)^3) / length(values_without_na)
+  skew_value <- third_moment / (std_dev^3)
+  print(paste("Skewness of", var, ":", round(skew_value, 2)))
+  
+  # Step 4: Use the mean or median based on skewness
+  impute_value <- mean_value  # Default to mean
+  
+  # If skewness is large, impute with the median
+  sorted_values <- sort(values_without_na)
+  mid_index <- floor(length(sorted_values) / 2)
+  impute_value <- sorted_values[mid_index]  # Use median if highly skewed
+  
+  print(paste("Imputed missing", var, "values using:", 
+              ifelse(abs(skew_value) < 0.5, "Mean", "Median")))
+  
+  # Step 5: Replace missing values with the imputed value
+  joint_df[[var]][is.na(joint_df[[var]])] <- impute_value
+  
+  # Step 6: Print the imputed value used
+  print(paste("Imputed value for", var, ":", round(impute_value, 2)))
+}
+# =============== # final output # =============== #
+
+# Variable Name	Variable Label	Missing %	Skewness	Imputation Method	Imputed Value
+# agri_income_05	Amount received for agricultural work (FCFA)	68.89%	7.16	Median	150000
+# agri_6_15	Number of cultivated plots	37.5%	3.97	Median	1
+# hh_37_	Indicator if missed >1 consecutive week of school due to illness? (1=Yes, 0=No)	21.15%	0.95	Median	0
+# hh_38_	Number of attended school days in the past week (asked about children)	21.11%	-2.59	Median	5
+# hh_29_01	Indicator for primary level education (1=Yes, 0=No, asked about children)	20.34%	-0.93	Median	0.8
+# hh_29_02	Indicator for secondary middle level education (1=Yes, 0=No, asked about children)	20.34%	1.36	Median	0
+# hh_29_03	Indicator for secondary higher level education (1=Yes, 0=No, asked about children)	20.34%	5.24	Median	0
+# hh_29_04	Indicator for upper secondary education (1=Yes, 0=No, asked about children)	20.34%	19.24	Median	0
+# hh_12_6_	Indicator for those who harvested aquatic vegetation, among those near water source (1=Yes, 0=No)	9.9%	5.3	Median	0
+# hh_16_	Hours spent producing, purchasing, or applying fertilizer	9.9%	4.63	Median	0.3
+# hh_26_	Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children)	6.01%	-0.44	Mean	0.67
+# hh_age_h	Household head age	2.4%	0.05	Mean	54
+# hh_education_level_bin_h	Indicator for household head with secondary education or higher (1=Yes, 0=No)	2.4%	2.96	Median	0
+# hh_education_skills_5_h	Indicator that household head is literate (1=Yes, 0=No)	2.4%	1.43	Median	0
+# hh_gender_h	Household head gender (1=Male, 0=Female)	2.4%	-1.37	Median	1
+# health_5_6_	Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †	0.05%	1.94	Median	0
+
+####didn't include condition to create missing dummy if greater than 10% of missingness 
+
+
+# # Loop over each variable and perform missingness check, skewness, and imputation
+# for (var in vars_to_impute) {
+#   
+#   print(paste("Processing", var, "..."))
+#   
+#   # Step 1: Calculate the percentage of missing values
+#   missing_count <- sum(is.na(joint_df[[var]]))  # Count missing values
+#   total_count <- length(joint_df[[var]])  # Total number of values
+#   missing_percent <- (missing_count / total_count) * 100
+#   print(paste("Missing percentage for", var, ":", round(missing_percent, 2), "%"))
+#   
+#   # Step 2: Create missingness dummy (1 if missing, 0 if not missing)
+#   joint_df[[paste0(var, "_missing")]] <- as.integer(is.na(joint_df[[var]]))
+#   
+#   # Step 3: Check skewness manually
+#   values_without_na <- joint_df[[var]][!is.na(joint_df[[var]])]  # Remove NAs
+#   
+#   # Calculate the mean and standard deviation
+#   mean_value <- sum(values_without_na) / length(values_without_na)
+#   sum_squared_diffs <- sum((values_without_na - mean_value)^2)
+#   std_dev <- sqrt(sum_squared_diffs / (length(values_without_na) - 1))
+#   
+#   # Calculate skewness manually using the third moment
+#   third_moment <- sum((values_without_na - mean_value)^3) / length(values_without_na)
+#   skew_value <- third_moment / (std_dev^3)
+#   print(paste("Skewness of", var, ":", round(skew_value, 2)))
+#   
+#   # Step 4: Use the mean or median based on skewness
+#   impute_value <- mean_value  # Default to mean
+#   
+#   # If skewness is large, impute with the median
+#   sorted_values <- sort(values_without_na)
+#   mid_index <- floor(length(sorted_values) / 2)
+#   impute_value <- sorted_values[mid_index]  # Use median if highly skewed
+#   
+#   print(paste("Imputed missing", var, "values using:", 
+#               ifelse(abs(skew_value) < 0.5, "Mean", "Median")))
+#   
+#   # Step 5: Replace missing values with the imputed value
+#   joint_df[[var]][is.na(joint_df[[var]])] <- impute_value
+#   
+#   # Step 6: Print the imputed value used
+#   print(paste("Imputed value for", var, ":", round(impute_value, 2)))
+# }
+
+  # Step 7: drop rest of missings 
+# 
+# vars_to_include <- c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", 
+#                      "hh_gender_h", "hh_numero", "hh_03_", "hh_10_", "hh_12_6_", "hh_16_", 
+#                      "hh_15_2", "hh_26_", "hh_29_01", "hh_29_02", "hh_29_03", "hh_29_04", 
+#                      "hh_37_", "hh_38_", "living_01_bin", "game_A_total", "game_B_total", 
+#                      "TLU", "agri_6_15", "agri_6_32_bin", "agri_6_36_bin", "total_land_ha", 
+#                      "agri_6_34_comp_any", "agri_income_05", "beliefs_01_bin", 
+#                      "beliefs_02_bin", "beliefs_03_bin", "beliefs_04_bin", "beliefs_05_bin", 
+#                      "beliefs_06_bin", "beliefs_07_bin", "beliefs_08_bin", "beliefs_09_bin", 
+#                      "health_5_3_bin", "health_5_6_", "num_water_access_points", "q_51")
+
+#names(joint_df)
+
+#joint_df <- joint_df[complete.cases(joint_df[vars_to_include]), ]
+
+```
+
+
+
+
+
+
+
+####get rid of
+
+```{r}
+
+
+missing_percent <- mean(is.na(joint_df$agri_income_01)) * 100
+print(paste("Missing percentage for agri_income_01:", round(missing_percent, 2), "%"))
+
+
+
+          # gri_income_05	1426	68.55769231	
+          # agri_6_15		780	37.50000000	
+          # hh_37_	440	21.15384615	
+          # hh_38_		439	21.10576923	
+          # hh_29_01		423	20.33653846	
+          # hh_29_02		423	20.33653846	
+          # hh_29_03		423	20.33653846	
+          # hh_29_04	  423	20.33653846	
+          
+
+
+if (missing_percent > 10) {
+        # Create missingness dummy (1 = missing, 0 = not missing)
+        joint_df$agri_income_05_missing <- as.integer(is.na(joint_df$agri_income_05))
+        
+        # Check distribution symmetry
+        library(e1071)  # Load for skewness function
+        skew_value <- skewness(joint_df$agri_income_05, na.rm = TRUE)
+        
+        # If skewness is close to 0 (symmetric), use mean; otherwise, use median
+        if (abs(skew_value) < 0.5) {  # Threshold for symmetry
+          impute_value <- mean(joint_df$agri_income_05, na.rm = TRUE)
+        } else {
+          impute_value <- median(joint_df$agri_income_05, na.rm = TRUE)
+        }
+        
+          # Replace missing values with the imputed value
+        joint_df$agri_income_01[is.na(joint_df$agri_income_05)] <- impute_value
+        
+        print(paste("Imputed missing agri_income_05 values using:", 
+                    ifelse(abs(skew_value) < 0.5, "Mean", "Median")))
+} else {
+  print("Less than 10% missing, no imputation needed.")
+}
+
+
+
+if ("agri_income_05_missing" %in% colnames(joint_df)) {
+  vars_to_include <- c(vars_to_include, "agri_income_05_missing")
+}
+
+
+```
+
+
+###keep- regression model
+
+######latest
+
+```{r}
+
+library(nnet)        # For multinom()
+library(lmtest)      # For hypothesis testing
+library(sandwich)    # For robust variance estimation
+
+# Example dataset
+set.seed(123)
+balance_df <- data.frame(
+  treatment_group = factor(sample(1:3, 100, replace = TRUE)),  # Multinomial outcome
+  predictor1 = rnorm(100),
+  predictor2 = rnorm(100),
+  hhid_village = sample(1:20, 100, replace = TRUE)  # Clustering variable
+)
+
+# Fit multinomial logistic regression
+formula <- treatment_group ~ predictor1 + predictor2
+model <- multinom(formula, data = balance_df)
+
+# Function to compute clustered standard errors
+cluster_se_fn <- function(model, cluster) {
+  # Extract coefficients
+  coef_matrix <- coef(model)
+  
+  # Get number of observations and parameters
+  num_obs <- nrow(model.frame(model))
+  num_params <- length(coef_matrix)
+  
+  # Compute the meat of the sandwich estimator (score contributions)
+  X <- model.matrix(model)  # Design matrix
+  probs <- predict(model, type = "probs")  # Predicted probabilities
+  Y <- model.response(model.frame(model))  # True response variable
+  
+  # Convert Y to a matrix of 0s and 1s for multinomial classification
+  Y_mat <- model.matrix(~ Y - 1)
+  
+  # Compute score residuals
+  score_mat <- (Y_mat - probs) * X  # Contribution per observation
+  
+  # Aggregate score residuals by cluster
+  cluster_groups <- split(score_mat, cluster)
+  meat <- Reduce("+", lapply(cluster_groups, function(x) crossprod(colMeans(x))))
+  
+  # Compute sandwich variance estimator
+  bread <- solve(crossprod(X, probs * (1 - probs) * X))  # Inverse Fisher Information
+  clustered_vcov <- bread %*% meat %*% bread
+  
+  return(clustered_vcov)
+}
+
+# Compute clustered standard errors
+clustered_se <- cluster_se_fn(model, balance_df$hhid_village)
+
+# Display results with clustered SEs
+coeftest(model, vcov = clustered_se)
+
+
+
+```
+```{r}
+# Install from CRAN
+
+
+
+
+
+
+```
+
+
+```{r}
+
+
+vars_to_include <- c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", 
+                     "hh_gender_h", "hh_numero", "hh_03_", "hh_10_", "hh_12_6_", "hh_16_", 
+                     "hh_15_2", "hh_26_", "hh_29_01", "hh_29_02", "hh_29_03", "hh_29_04", 
+                     "hh_37_", "hh_38_", "living_01_bin", "game_A_total", "game_B_total", 
+                     "TLU", "agri_6_15", "agri_6_32_bin", "agri_6_36_bin", "total_land_ha", 
+                     "agri_6_34_comp_any", "agri_income_05", "beliefs_01_bin", 
+                     "beliefs_02_bin", "beliefs_03_bin", "beliefs_04_bin", "beliefs_05_bin", 
+                     "beliefs_06_bin", "beliefs_07_bin", "beliefs_08_bin", "beliefs_09_bin", 
+                     "health_5_3_bin", "health_5_6_", "num_water_access_points", "q_51")
+
+# Recreate formula and re-run model
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
+
+
+
+
+# Run multinomial logit regression
+model <- multinom(formula, data = ml_balance_df)
+
+# Clustered standard errors at the village level
+Cluster_model <- cluster.im.mlogit(model, balance_df, ~hhid_village)
+
+# Display summary with clustered SEs
+summary(Cluster_model)
+
+# Number of observations
+num_obs <- nrow(balance_df)
+
+# Log-likelihood
+log_lik <- logLik(Cluster_model)  # Extract log-likelihood from clustered model
+
+# Degrees of freedom (number of predictors)
+df_model <- length(coef(Cluster_model))
+
+# LR Chi-Square (Likelihood Ratio Test Statistic)
+null_model <- multinom(treatment_group ~ 1, data = balance_df)  # Fit null model (intercept only)
+lr_chi2 <- 2 * (logLik(Cluster_model) - logLik(null_model))  # LR test using clustered model
+
+# p-value for LR test
+p_value <- pchisq(as.numeric(lr_chi2), df = df_model, lower.tail = FALSE)
+
+# Pseudo R² (McFadden’s R²)
+pseudo_r2 <- 1 - (logLik(Cluster_model) / logLik(null_model))
+
+# Display results
+list(
+  num_obs = num_obs,
+  log_lik = log_lik,
+  df_model = df_model,
+  lr_chi2 = lr_chi2,
+  p_value = p_value,
+  pseudo_r2 = pseudo_r2
+)
+
+#view(balance_df)
+balance_df
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{R}
+        # Recreate formula and re-run model
+      formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
+      formula
+      # Run multinomial logit regression
+      model <- multinom(formula, data = joint_df)
+      
+      # Display summary
+      summary(model)
+      
+      # Number of observations
+      num_obs <- nrow(joint_df)
+      
+      # Log-likelihood
+      log_lik <- logLik(model)
+      
+      # Degrees of freedom (number of predictors)
+      df_model <- length(coef(model))
+      df_model
+      # LR Chi-Square (Likelihood Ratio Test Statistic)
+      null_model <- multinom(treatment_group ~ 1, data = joint_df)  # Fit null model (intercept only)
+      lr_chi2 <- 2 * (logLik(model) - logLik(null_model))  # Likelihood Ratio Test statistic
+      
+      # p-value for LR test
+      p_value <- pchisq(as.numeric(lr_chi2), df = df_model, lower.tail = FALSE)
+      
+      # Pseudo R² (McFadden’s R²)
+      pseudo_r2 <- 1 - (logLik(model) / logLik(null_model))
+      
+      # Print output in Stata-style format
+      cat("Multinomial logistic regression\n")
+      cat("Number of obs =", num_obs, "\n")
+      cat("LR chi2(", df_model, ") =", round(as.numeric(lr_chi2), 2), "\n")
+      cat("Prob > chi2 =", round(as.numeric(p_value), 4), "\n")
+      cat("Log likelihood =", round(as.numeric(log_lik), 5), "\n")
+      cat("Pseudo R2 =", round(as.numeric(pseudo_r2), 4), "\n")
+
+
+```
+
+
+
+
+
+#OUTPUT TABLE WITH JOINT F TEST
+
+
+```{r}
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+
+final_table %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
+  footnote(
+    general = c(
+      "LR chi2( 123 ) = ",
+      "Prob > chi2 = ",
+      "Number of obs = 1,928",
+      "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01)."
+    ),
+    symbol = c(
+      "Binary variables were derived from Likert scale responses based on their distribution.",
+      "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."
+    ),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+  ) %>%
+  save_kable("balance_tablev_jointf_4.html")
+##balance_tablev11.html = without -9s
+```
+
+
+#####excel output
+
+```{r}
+
+# Excel spreadsheet
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+
+# Define footnotes as a data frame
+footnotes <- data.frame(
+  Notes = c(
+    "LR chi2( 123 ) = 428.87",
+    "Prob > chi2 = 0.00",
+    "Number of obs = 1,928",
+    "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets.",
+    "Standard errors are clustered at the village level.",
+    "The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses.",
+    "P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
+    "+ Binary variables were derived from Likert scale responses based on their distribution.",
+    "† Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."
+  )
+)
+
+# Save final table and footnotes in the same Excel file
+write_xlsx(list(
+  "Baseline Balance Table" = final_table,
+  "Footnotes" = footnotes
+), "balance_tablev_jointf_3.xlsx")
+
+```
+
+##Compute joint f-test - test work
+
+
+
+
+
+
+####get rid of
+
+
+
+```{r}
+
+vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
+
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))  # Ensure no '- 1' in the formula
+formula
+# Fit the multinomial regression model
+model <- multinom(formula, data = joint_df)
+model
+# Extract the entire coefficient matrix (for all outcome categories and predictors)
+coef(model)
+coef_terms <- as.vector(coef(model))
+coef_terms
+# Extract the entire variance-covariance matrix
+vcov_terms <- vcov(model)
+vcov_terms
+# Run the Wald test for all coefficients
+wald_result <- wald.test(b = coef_terms, Sigma = vcov_terms, Terms = 1:length(coef_terms))  # Test all coefficients
+vif(model) 
+# Print the result
+print(wald_result)
+
+view(joint_df)
+
+```
+
+
+
+
+
+
+
+
+
+####get rid of
+
+
+```{r}
+# Define variables and model
+vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
+
+# Fit the multinomial regression model
+model <- multinom(formula, data = joint_df)
+
+# Extract coefficients for terms 4 and 5
+coef_terms <- as.vector(coef(model)[, c(4, 5)])
+
+# Extract the relevant submatrix from vcov(model)
+vcov_terms <- vcov(model)[c(4, 5), c(4, 5)]
+vcov_terms
+vcov(model)
+# Run the Wald test
+wald_result <- wald.test(b = as.vector(coef(model)), Sigma = vcov(model), Terms = c(4, 5))
+
+
+wald_result <- wald.test(b = as.vector(coef(model)), Sigma = vcov(model), Terms = c(1, 2))
+#wald_result <- wald.test(b = coef_terms, Sigma = vcov_terms, Terms = c(1, 2))
+
+# Print the result
+print(wald_result)
+```
+
+####get rid of
+
+```{r}
+# Load necessary library
+install.packages("aod")
+library(aod)
+
+
+vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
+# Create a formula for the regression (exclude the intercept with '- 1')
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + ")))
+formula
+# Fit the multinomial regression model
+model <- multinom(formula, data = joint_df)
+
+print(dim(coef(model)))  # Should match vcov()
+print(dim(vcov(model)))  # Should match coef()
+
+wald_result <- wald.test(b = as.vector(coef(model)), Sigma = vcov(model), Terms = c(4, 5))
+
+#wald_result <- wald.test(b = coef(model), Sigma = vcov(model), Terms = c(4, 5))
+
+print(wald_result)
+
+# Outcome variable (binary)
+y <- rbinom(n, 1, plogis(-1 + 0.5 * x1 + 0.8 * x2 - 0.3 * x3 + 0.6 * x4))
+
+# Combine variables into a dataframe
+data <- data.frame(y, x1, x2, x3, x4)
+
+# Fit logistic regression model
+model <- multinom(y ~ x1 + x2 + x3 + x4, data = data, family = "binomial")
+
+# Perform Wald test to determine if the coefficients of x3 and x4 
+wald_result <- wald.test(b = coef(model), Sigma = vcov(model), Terms = c(4, 5))
+
+# Print the result
+print(wald_result)
+
+```
+
+
+
+
+
+
+
+####get rid of
+
+
+
+```{r}
+
+# Try a model with a simpler set of predictors
+simplified_vars <- c("hh_age_h", "hh_education_level_bin_h", "hh_gender_h")  # Example subset of variables
+
+# Create a formula for the regression with fewer variables
+simplified_formula <- as.formula(paste("treatment_group ~", paste(simplified_vars, collapse = " + ")))
+
+# Fit the multinomial regression model with the simplified set of predictors
+model_simplified <- multinom(simplified_formula, data = joint_df)
+
+# View summary of the simplified model
+summary(model_simplified)
+
+# Create coefficient names for the Wald test
+# coefs_simplified <- c(paste0(simplified_vars, treatments))
+# Set up the vector of treatment levels (excluding 'Control' as it's the baseline)
+treatments <- c("Treatment1.", "Treatment2.", "Treatment3.")
+
+# Create coefficient names dynamically for the Wald test
+# We're using the variables to generate the coefficient names that represent each treatment arm
+coefs <- unlist(lapply(simplified_vars, function(var) {
+  paste0(treatments, var)  # Creating coefficient names for each variable by each treatment
+}))
+
+# Perform the Wald test
+joint_test_simplified <- linearHypothesis(model_simplified, coefs)
+
+# Print the results of the joint test
+print(joint_test_simplified)
+
+# Convert results to a data frame
+joint_test_df_simplified <- as.data.frame(joint_test_simplified)
+print(joint_test_df_simplified)
+
+
+
+
+
+
+
+
+```
+
+####get rid of
+
+```{r}
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+#library(nnet)
+# Generate the model formula dynamically using all columns except 'treatment_group'
+# Exclude 'treatment_group' and any other variable you don't want (e.g., 'hhid', 'target_village')
+# joint_df$treatment_group <- factor(joint_df$treatment_group, levels = c("Control", "Treatment1", "Treatment2", "Treatment3"))
+# joint_df$treatment_group <- relevel(joint_df$treatment_group, ref = "Control")
+
+
+
+vars_to_include <- setdiff(names(joint_df), c("treatment_group", "hhid", "hhid_village", "target_village", "trained_hh"))
+# Create a formula for the regression (exclude the intercept with '- 1')
+formula <- as.formula(paste("treatment_group ~", paste(vars_to_include, collapse = " + "), "- 1"))
+#formula <- as.formula(paste("treatment_group", paste(vars_to_include, collapse = " ")))
+formula
+# Fit the multinomial regression model
+ model <- multinom(formula, data = joint_df)
+model
+# # Extract coefficients from the multinom model
+# model_matrix <- summary(model)$coefficients
+# 
+# # Convert to a dataframe
+# model_df <- as.data.frame(model_matrix)
+# 
+# # Add coefficient names as a column
+# model_df <- tibble::rownames_to_column(model_df, var = "Variable")
+# 
+# # Print the first few rows
+# head(model_df)
+# 
+# 
+# model_df  %>%
+#  select(-starts_with("treatment_group"))
+# model_df
+
+#view(joint_df)
+
+  print(coefs <- as.vector(outer(c("Treatment1.", "Treatment2.", "Treatment3."), 
+                            c("hh_age_h", "hh_education_level_bin_h", "hh_education_skills_5_h", "hh_gender_h", 
+                     "hh_numero", "hh_03_", "hh_10_", "hh_12_6_", "hh_16_", "hh_15_2", "hh_26_", "hh_29_01", 
+                     "hh_29_02", "hh_29_03", "hh_29_04", "hh_37_", "hh_38_", "living_01_bin", "game_A_total", 
+                     "game_B_total", "TLU", "agri_6_15", "agri_6_32_bin", "agri_6_36_bin", "total_land_ha", 
+                     "agri_6_34_comp_any", "agri_income_01", "agri_income_05", "beliefs_01_bin", "beliefs_02_bin", 
+                     "beliefs_03_bin", "beliefs_04_bin", "beliefs_05_bin", "beliefs_06_bin", "beliefs_07_bin", 
+                     "beliefs_08_bin", "beliefs_09_bin", "health_5_3_bin", "health_5_6_", "num_water_access_points", 
+                     "q_51"),
+                            paste0)))
+
+# Perform the Wald test to check the joint significance of the variables (excluding intercept)
+joint_test <- linearHypothesis(model, coefs)
+
+# Print the results of the joint test
+print(joint_test)
+
+
+#==================================================================================
+
+# If you want the joint test result as a data frame for easier inspection:
+joint_test_df <- as.data.frame(joint_test)
+print(joint_test_df)
+
+joint_test_df <- data.frame(joint_test)
+joint_test_df
+# Create a kable table with kableExtra
+joint_test_html <- joint_test_df %>%
+  kable(format = "html", escape = FALSE, caption = "Joint Hypothesis Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+# Save the output to an HTML file
+file_name <- "joint_test_output.html"
+save_kable(joint_test_html, file = file_name)
+
+# Inform the user where the file has been saved
+cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
+
+```
+
+####get rid of
+```{r}
+if (require(nnet)){
+  print(m <- multinom(partic ~ hincome + children, data=Womenlf))
+  print(coefs <- as.vector(outer(c("not.work.", "parttime."), 
+                            c("hincome", "childrenpresent"),
+                            paste0)))
+  linearHypothesis(m, coefs) # ominbus Wald test
+}
+
+Womenlf
+```
+
+####get rid of
+```{r}
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+#library(nnet)
+#include each variable name here
+model <- multinom(value ~ group + variable, data = joint_df)
+model
+summary(model)
+
+#View(joint_long_data)
+# Create the coefficient names for linearHypothesis
+#coefs <- c("valueTreatment1.", "valueTreatment2.", "valueTreatment3.")
+
+# Set up the vector of treatment levels
+treatments <- c("Treatment1.", "Treatment2.", "Treatment3.")
+
+# Set up the vector of variables (just "value" here)
+variables <- c("value")
+
+# Create the coefficient names using outer to combine treatment levels and variables
+coefs <- as.vector(outer(treatments, variables, paste0))
+coefs
+model
+# Print the resulting coefficient names
+print(coefs)
+
+coefs
+# Install and load car package for linearHypothesis
+library(car)
+
+# Run the Wald test to check the joint significance of 'value' across the treatments
+joint_test <- linearHypothesis(model, coefs)
+
+# Print the results of the joint test
+print(joint_test)
+
+#join_f_vars <- setdiff(names(balance_df), c("hhid", "hhid_village", "treatment_group"))
+
+
+summary(model)
+# For Treatment1
+
+
+
+joint_test_df <- data.frame(joint_test)
+joint_test_df
+# Create a kable table with kableExtra
+joint_test_html <- joint_test_df %>%
+  kable(format = "html", escape = FALSE, caption = "Joint Hypothesis Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+# Save the output to an HTML file
+file_name <- "joint_test_output.html"
+save_kable(joint_test_html, file = file_name)
+
+# Inform the user where the file has been saved
+cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
+
+
+
+# # # Prepare data: create outcome variables (1 for treatment arm, 0 otherwise)
+# long_data$y_treatment1 <- ifelse(long_data$group == "Treatment1", 1, 0)
+# long_data$y_treatment2 <- ifelse(long_data$group == "Treatment2", 1, 0)
+# long_data$y_treatment3 <- ifelse(long_data$group == "Treatment3", 1, 0)
+# long_data$y_lc_control <- ifelse(long_data$group == "Local Control", 1, 0)
+# long_data$y_control <- ifelse(long_data$group == "Control", 1, 0)
+# view(long_data)
+# # Run multinomial logistic regression (with control as baseline)
+# model_f_test <- multinom(cbind(y_treatment1, y_treatment2, y_treatment3, y_lc_control, y_control) ~ value + variable, data = long_data)
+# 
+# # View model_f_test summary
+# summary(model_f_test)
+# model_summary <- summary(model_f_test)
+# # Perform likelihood ratio tests for the joint null hypothesis
+# lr_test <- lrtest(model_f_test)
+# lr_test
+# summary(lr_test)
+# model_summary
+# # Extract coefficients and p-values
+# #model_summary <- summary(model_f_test)$coefficients
+# model_p_values <- model_summary$coefficients[, 4]  # p-values are typically in the 4th column of the coefficients matrix
+# 
+# q_values <- p.adjust(model_p_values, method = "fdr")
+# 
+# # Combine results into a tidy table
+# f_test_results <- tibble(
+#   variable = rownames(model_summary$coefficients),
+#   coef_treatment1 = model_summary$coefficients[, 1],  # Coefficients for Treatment1
+#   coef_treatment2 = model_summary$coefficients[, 2],  # Coefficients for Treatment2
+#   coef_treatment3 = model_summary$coefficients[, 3],  # Coefficients for Treatment3
+#   coef_control = model_summary$coefficients[, 4],     # Coefficients for Control
+#   p_values = model_p_values,
+#   q_values = q_values
+# )  %>%
+#   select(-q_values)
+# 
+# 
+
+
+
+
+```
+####get rid of
+```{r}
+
+# Remove rows with NA values in predictors to ensure both models use the same dataset
+long_data_filtered <- long_data %>%
+  filter(!is.na(value) & !is.na(variable))
+
+long_data_filtered
+
+# Convert group to factor and ensure "Control" is the reference category
+long_data_filtered$group <- factor(long_data_filtered$group, levels = c("Control", "Local Control", "Treatment1", "Treatment2", "Treatment3"))
+
+# Fit the full model (including predictors)
+full_model <- multinom(group ~ value + variable, data = long_data_filtered)
+full_model
+# Fit the null model (only intercept)
+null_model <- multinom(group ~ 1, data = long_data_filtered)
+null_model
+# Perform the likelihood ratio test (LRT)
+lrt_result <- lrtest(full_model, null_model)
+
+# Print LRT result
+print(lrt_result)
+
+
+
+
+lrt_result_df <- data.frame(lrt_result)
+lrt_result_df
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Data_Analysis/Balance_Tables")
+# Create a kable table with kableExtra
+f_test_results_html <- lrt_result_df %>%
+  mutate(across(where(is.numeric), as.character)) %>%  # Ensure numbers remain as they are
+  kable(format = "html", escape = FALSE, caption = "Likelihood Ratio Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+
+# Save the output to an HTML file
+file_name <- "LRT_results_df.html"
+save_kable(f_test_results_html, file = file_name)
+
+# Inform the user where the file has been saved
+cat("The joint test results have been saved to the balance tables file in the output folder.", file_name)
+```
+
+
+
+
+
+
+
+
+

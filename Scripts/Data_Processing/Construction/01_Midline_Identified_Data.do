@@ -34,6 +34,14 @@ keep hhid hh_head_name_complet  // Keep only HHID and Village ID
 duplicates drop hhid, force  // Keep one entry per household
 gen baseline = 1  // Mark as a baseline household
 
+* Correction for 132A that should be 153A
+foreach var of varlist * {
+    capture confirm string variable `var'
+    if !_rc {
+        replace `var' = subinstr(`var', "132A", "153A", .)
+    }
+}
+
 save "$baselineids\DISES_Complete_Baseline_HHID_List.dta", replace
 
 *** Import midline data & Mark Attrition
@@ -46,6 +54,14 @@ gen attritted = 0  // Default is not attritted
 duplicates drop hhid, force  // Keep one entry per household
 drop if missing(hhid)
 replace attritted = 1 if (consent == 0 | consent == 2)  // Mark attritted if no consent
+
+* Correction for 132A that should be 153A
+foreach var of varlist * {
+    capture confirm string variable `var'
+    if !_rc {
+        replace `var' = subinstr(`var', "132A", "153A", .)
+    }
+}
 
 merge 1:1 hhid using "$baselineids\DISES_Complete_Baseline_HHID_List.dta"
 keep if _merge == 3  // Keep only households present in both datasets

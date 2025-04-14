@@ -33,11 +33,11 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 *^*^* Define project-specific paths
 global data "$master\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
 global crdes_data "${master}\Data_Management\Data\_CRDES_CleanData"
-global eco_data "${master}\Data_Management\Data\_Partner_RawData\Ecological_Data\Baseline"
+global eco_data "${master}\Data_Management\Data\_Partner_CleanData\Ecological_Data"
 global output "${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
+global asset "${master}\Data_Management\Output\Analysis\Balance_Tables"
 
 *global output "$master\Data_Management\_Partner_CleanData\Parasitological_Analysis_Data\Analysis_Data"
-
 
 *<><<><><>><><<><><>>
 * LOAD IN DATA
@@ -62,20 +62,22 @@ use "$data\01_prepped_inf_matches_df.dta", clear
 
 	merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Agriculture.dta" // ag data
 		drop _merge
-	 
+		
 	merge m:1 hhid_village using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Community.dta" // community data
 		drop _merge 
 		
+	merge 1:1 hhid using "${asset}\PCA_asset_index_var.dta" // asset index var
+		drop _merge	 
+		
 	merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta" // ecological data 
-		drop _merge 
+		drop _merge
 
-
-
-	keep hhid hh_age* hh_gender*  ///
-		hh_26* ///
+ 	keep hhid hh_age* hh_gender*  ///
+		hh_15_2* hh_26* ///
 		living_01  ///
-		health_5_3_* health_5_5* health_5_9* ///
+		health_5_3_* health_5_5* health_5_8* health_5_9* ///
 		q_23 q_24 ///
+		asset_index asset_index_std /// 
 		Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
 
 *^*^* keep only scored data 

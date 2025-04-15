@@ -298,13 +298,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 	drop _merge
 	
 	
-/*
-			*** WILL DELETE LATER - WRONG VILLAGE CODE ***
-		
-		replace hhid_village = "153A" if hhid_village == "132A"
-		replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
-*/
-	
+
 *<><<><><>><><<><><>> 
 * RESHAPE THE DATA 
 *<><<><><>><><<><><>>
@@ -917,14 +911,14 @@ save `balance_table_ata'
 
 		* Initialize hh_complete variable
 
-		gen hh_resp = 0  
-		gen hh_relation_with_1 = hh_relation_with_ == 1
+			gen hh_resp = 0  
+			gen hh_relation_with_1 = hh_relation_with_ == 1
+			
+			bysort hhid (hh_relation_with_): replace hh_resp = 1 if hh_relation_with_ != 1 & !missing(hh_relation_with_) & resp_index_ == 1 ///
+		& sum(hh_relation_with_ == 1) == 0
 		
-		bysort hhid (hh_relation_with_): replace hh_resp = 1 if hh_relation_with_ != 1 & !missing(hh_relation_with_) & resp_index_ == 1 ///
-    & sum(hh_relation_with_ == 1) == 0
-	
 
-		gen hh_complete = hh_relation_with_1 + hh_resp
+			gen hh_complete = hh_relation_with_1 + hh_resp
 
 
 
@@ -1189,7 +1183,7 @@ save `balance_table_ata'
 * RUN MULTILOGIT REGRESSION
 *<><<><><>><><<><><>>
 
-
+/*
 
 		use "${dataOutput}\baseline_balance_tables_data_PAP.dta", clear 
 

@@ -254,6 +254,9 @@ rename hhid pull_hhid_
 
 drop _merge_status
 
+* Collapse to keep only the maximum value of each info_eleve_* for each unique individual
+collapse (max) info_eleve_2_ info_eleve_3_ info_eleve_7_, by(pull_individ_)
+
 reshape wide fu_mem_id_ pull_hhid_village_ pull_hhid_ pull_individ_ ///
     pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ ///
     pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ ///

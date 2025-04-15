@@ -4633,6 +4633,34 @@ foreach var of varlist * {
     }
 }
 
+replace hh_49 = 1 if hh_global_id == "120A01"
+replace hh_49 = 1 if hh_global_id == "120A02"
+replace hh_49 = 1 if hh_global_id == "120A04"
+replace hh_49 = 1 if hh_global_id == "120A05"
+replace hh_49 = 1 if hh_global_id == "120A06"
+replace hh_49 = 1 if hh_global_id == "120A07"
+replace hh_49 = 1 if hh_global_id == "120A08"
+replace hh_49 = 1 if hh_global_id == "120A10"
+replace hh_49 = 1 if hh_global_id == "120A11"
+replace hh_49 = 1 if hh_global_id == "120A14"
+replace hh_49 = 1 if hh_global_id == "120A15"
+replace hh_49 = 1 if hh_global_id == "120A16"
+replace hh_49 = 1 if hh_global_id == "120A17"
+replace hh_49 = 1 if hh_global_id == "120A18"
+replace hh_49 = 1 if hh_global_id == "120A19"
+replace hh_49 = 1 if hh_global_id == "120A20"
+replace hh_49 = 1 if hh_global_id == "130A01"
+replace hh_49 = 1 if hh_global_id == "130A09"
+replace hh_49 = 1 if hh_global_id == "130A10"
+replace hh_49 = 1 if hh_global_id == "130A11"
+replace hh_49 = 1 if hh_global_id == "130A12"
+replace hh_49 = 1 if hh_global_id == "130A15"
+replace hh_49 = 1 if hh_global_id == "130A17"
+replace hh_49 = 1 if hh_global_id == "130A18"
+replace hh_49 = 1 if hh_global_id == "130A19"
+
+
+
 // TAKE THIS XXX away once you are ready to save the actual corrections
 // ENSURE ALL DATES ARE CORRECT
 xxx

@@ -25,6 +25,8 @@ global baselineids "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Ident
 global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
 global corrected "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Midline"
 global clean "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
+global consent "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified\DISES_Midline_Complete_PII.dta"
+
 
 ************************ Household Data **************************************
 *** Import baseline data 
@@ -228,10 +230,33 @@ save "$clean\DISES_Complete_Midline_SchoolPrincipal", replace
 
 restore
 
-preserve
-
 keep submissiondate starttime endtime deviceid devicephonenum username device_info duration caseid today record_text village_select village_select_o hhid_village region departement commune village grappe schoolmosqueclinic grappe_int sup sup_txt sup_name consent_obtain consent_notes start_survey date time geo_loclatitude geo_loclongitude geo_localtitude geo_locaccuracy respondent_other_role school_name hhid_village region departement commune grappe* sup* consent* respondent* start_survey date time geo_loc* hh_size_load school_repeat_count fu_mem_id_* pull_hhid_village_* pull_hhid_* pull_individ_* pull_hh_* pull_baselineniveau_* pull_family_members_* pull_temp_* info_eleve_* instanceid instancename formdef_version key
 
+tostring pull_baselineniveau_*, replace
+
+reshape long fu_mem_id_ pull_hhid_village_ pull_hhid_ pull_individ_ ///
+    pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ ///
+    pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ ///
+    pull_baselineniveau_ pull_family_members_ pull_temp_ ///
+    pull_fu_mem_id_ info_eleve_2_ info_eleve_3_ info_eleve_7_, ///
+    i(key school_name) j(id)
+
+drop if missing(pull_individ_)
+
+rename pull_hhid_ hhid
+
+* keep only those observations who consent was achieved at midline in the household data
+merge m:1 hhid using "$consent", keepusing(hh_49) keep(master match) generate(_merge_status)
+
+drop if missing(hh_49) | hh_49 == 0
+
+rename hhid pull_hhid_
+
+reshape wide fu_mem_id_ pull_hhid_village_ pull_hhid_ pull_individ_ ///
+    pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ ///
+    pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ ///
+    pull_baselineniveau_ pull_family_members_ pull_temp_ ///
+    pull_fu_mem_id_ info_eleve_2_ info_eleve_3_ info_eleve_7_, ///
+    i(key school_name) j(id)
+
 save "$clean\DISES_Complete_Midline_SchoolAttendance", replace
-
-

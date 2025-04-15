@@ -252,6 +252,8 @@ drop if hh_49 == 0 | _merge_status == 1
 
 rename hhid pull_hhid_
 
+drop _merge_status
+
 reshape wide fu_mem_id_ pull_hhid_village_ pull_hhid_ pull_individ_ ///
     pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ ///
     pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ ///

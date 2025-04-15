@@ -248,7 +248,7 @@ rename pull_hhid_ hhid
 * keep only those observations who consent was achieved at midline in the household data
 merge m:1 hhid using "$consent", keepusing(hh_49) keep(master match) generate(_merge_status)
 
-drop if missing(hh_49) | hh_49 == 0
+drop if hh_49 == 0 | _merge_status == 1
 
 rename hhid pull_hhid_
 

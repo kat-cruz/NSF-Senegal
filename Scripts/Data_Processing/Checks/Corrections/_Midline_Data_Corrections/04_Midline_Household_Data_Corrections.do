@@ -4633,6 +4633,33 @@ foreach var of varlist * {
     }
 }
 
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:1ddffda6-e7cc-4161-a527-3b6dd851a76c"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+replace hh_49 = 1 if key == "uuid:6d6e1d45-a1ce-4900-82cc-d785a4350935"
+
+
 // TAKE THIS XXX away once you are ready to save the actual corrections
 // ENSURE ALL DATES ARE CORRECT
 xxx

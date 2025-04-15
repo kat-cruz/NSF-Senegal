@@ -50,8 +50,15 @@ global schoolattendance "$survey\Complete_Midline_SchoolAttendance"
 * Income Data Summary
 **************************************************
 use "$household", clear
-
+tab hh_49
 sum hh_49
+
+tab attend_training
+sum attend_training if attend_training < 2
+tab who_attended_training
+sum who_attended_training if who_attended_training < 2
+tab heard_training
+sum heard_training if heard_training < 2
 
 drop hh_12_a_o*
 
@@ -567,6 +574,27 @@ sum schistosomiasis_treatment_minist
 * School Attendance Data Summary
 **************************************************
 use "$schoolattendance", clear
+
+*  unique identifier by combining hhid_village with school name or other identifier
+* identify duplicates of hhid_village
+duplicates tag hhid_village, gen(dup_tag)
+
+*sequence number within each hhid_village group
+bysort hhid_village: gen seq_num = _n
+
+* combined ID
+gen hhid_village_school = hhid_village + "-" + string(seq_num)
+
+* reshape using this unique identifier
+reshape long info_eleve_2_ info_eleve_3_ info_eleve_7_, ///
+    i(hhid_village_school) j(id)
+
+* missing observations if needed
+drop if missing(info_eleve_2_) & missing(info_eleve_3_) & missing(info_eleve_7_)
+
+sum info_eleve_2_
+tab info_eleve_3_
+sum info_eleve_7_
 
 **************************************************
 * End of Script

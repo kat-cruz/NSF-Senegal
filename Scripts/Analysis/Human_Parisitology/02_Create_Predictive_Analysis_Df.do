@@ -102,7 +102,11 @@ destring health_5_3_*, replace
 	gen str individual_id_crdes = hhid + str_id
 	format individual_id_crdes %15s
 
+merge m:m individual_id_crdes using "${paras}\01_prepped_inf_matches_df.dta", ///
+    keep(master match) ///
+    nogenerate
 
+	use "${paras}\01_prepped_inf_matches_df.dta", clear
 	
 *<><<><><>><><<><><>>	
 * BEGIN DATA CLEANING/PROCESSING

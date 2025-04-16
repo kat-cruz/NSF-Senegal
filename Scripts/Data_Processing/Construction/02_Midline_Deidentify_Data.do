@@ -196,7 +196,16 @@ save "$data_deidentified\Complete_Midline_SchoolPrincipal", replace
 *** import complete school principal data
 use "$data_identified\DISES_Complete_Midline_SchoolAttendance", clear 
 
-* Keep only relevant variables
-keep hhid_village info_eleve_* hh_49
+reshape long fu_mem_id_ pull_hhid_village_ pull_hhid_ pull_individ_ ///
+    pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ ///
+    pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ ///
+    pull_baselineniveau_ pull_family_members_ pull_temp_ ///
+    pull_fu_mem_id_ info_eleve_2_ info_eleve_3_ info_eleve_7_, ///
+    i(key school_name hhid_village) j(id)
+
+collapse (max) info_eleve_2_ info_eleve_3_ info_eleve_7_, by(pull_individ_ hhid_village)
+
+drop if missing(pull_individ_)
+keep info_eleve_2_ info_eleve_3_ info_eleve_7_ hhid_village
 
 save "$data_deidentified\Complete_Midline_SchoolAttendance", replace 

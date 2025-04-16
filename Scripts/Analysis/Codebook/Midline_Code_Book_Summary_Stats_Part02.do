@@ -531,6 +531,7 @@ tab passing_2024_total_6_1
 sum passing_2024_total_6_1 if passing_2024_total_6_1 > -9
 tab passing_2024_total_6_2
 sum passing_2024_total_6_2 if passing_2024_total_6_2 > -9
+sum passing_2024_female*
 tab passing_2024_female_1_1
 sum passing_2024_female_1_1 if passing_2024_female_1_1 > -9
 tab passing_2024_female_1_2
@@ -574,23 +575,6 @@ sum schistosomiasis_treatment_minist
 * School Attendance Data Summary
 **************************************************
 use "$schoolattendance", clear
-
-*  unique identifier by combining hhid_village with school name or other identifier
-* identify duplicates of hhid_village
-duplicates tag hhid_village, gen(dup_tag)
-
-*sequence number within each hhid_village group
-bysort hhid_village: gen seq_num = _n
-
-* combined ID
-gen hhid_village_school = hhid_village + "-" + string(seq_num)
-
-* reshape using this unique identifier
-reshape long info_eleve_2_ info_eleve_3_ info_eleve_7_, ///
-    i(hhid_village_school) j(id)
-
-* missing observations if needed
-drop if missing(info_eleve_2_) & missing(info_eleve_3_) & missing(info_eleve_7_)
 
 sum info_eleve_2_
 tab info_eleve_3_

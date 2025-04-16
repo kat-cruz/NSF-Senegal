@@ -12,38 +12,37 @@
 * INITIATE SCRIPT
 *<><<><><>><><<><><>>
 		
-clear all
-set mem 100m
-set maxvar 30000
-set matsize 11000
-set more off
+	clear all
+	set mem 100m
+	set maxvar 30000
+	set matsize 11000
+	set more off
 
 *<><<><><>><><<><><>>
 * SET FILE PATHS
 *<><<><><>><><<><><>>
 
 *^*^* Set base Box path for each user
-if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
-if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
-if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
-if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
-if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
+	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
+	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
+	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+	if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 
 *^*^* Define project-specific paths
-global data "$master\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
-global crdes_data "${master}\Data_Management\Data\_CRDES_CleanData"
-global eco_data "${master}\Data_Management\Data\_Partner_CleanData\Ecological_Data"
-global output "${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
-global asset "${master}\Data_Management\Output\Analysis\Balance_Tables"
-global paras"${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
+	global data "$master\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
+	global crdes_data "${master}\Data_Management\Data\_CRDES_CleanData"
+	global eco_data "${master}\Data_Management\Data\_Partner_CleanData\Ecological_Data"
+	global output "${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
+	global asset "${master}\Data_Management\Output\Analysis\Balance_Tables"
+	global paras"${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
 
 *global output "$master\Data_Management\_Partner_CleanData\Parasitological_Analysis_Data\Analysis_Data"
 
 *<><<><><>><><<><><>>
 * LOAD IN DATA
 *<><<><><>><><<><><>>
-use "${paras}\01_prepped_inf_matches_df.dta", clear
 
 	use "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Health.dta", clear // health data 
 
@@ -59,12 +58,6 @@ use "${paras}\01_prepped_inf_matches_df.dta", clear
 	merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Agriculture.dta" // ag data
 		drop _merge
 	
-/*
-	merge m:1 hhid using "${paras}\01_prepped_inf_matches_df.dta" // infection data
-		drop _merge
-*/
-		
-		
 	merge m:1 hhid_village using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Community.dta" // community data
 		drop _merge 
 		
@@ -85,12 +78,14 @@ use "${paras}\01_prepped_inf_matches_df.dta", clear
 		Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
 
 
-destring health_5_3_*, replace 
+tostring health_5_3_*, replace 
+
+drop health_5_3_o*
 
 *variables removed: hh_age hh_gender living_01 living_02 living_03 living_04
 
 * Reshape long with hhid and id
-	reshape long health_5_5_ health_5_8_ health_5_9 /// 	
+	reshape long health_5_3_ health_5_5_ health_5_8_ health_5_9_ /// 	
 	health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_99_ ///
 	hh_15_2_ hh_10_ hh_12_6_ hh_37_ hh_26_ hh_age_ hh_gender_, ///
 		i(hhid) j(id)
@@ -101,8 +96,66 @@ destring health_5_3_*, replace
 	tostring id, gen(str_id) format("%02.0f")
 	gen str individual_id_crdes = hhid + str_id
 	format individual_id_crdes %15s
+	
+	  *^*^* Save as a temporary file
+			tempfile temp_features_reshaped
+				save `temp_features_reshaped'
 
-merge m:m individual_id_crdes using "${paras}\01_prepped_inf_matches_df.dta", ///
+	
+	use "${paras}\01_prepped_inf_matches_df.dta", clear
+	rename _merge merge_ 
+
+merge m:1 individual_id_crdes using `temp_features_reshaped'
+
+
+
+*<><<><><>><><<><><>>
+* BEGIN DATA CLEANING/PROCESSING
+*<><<><><>><><<><><>>
+
+
+
+*^*^* remove 2s from yes/no questions 
+
+	foreach var in hh_26_ hh_37_ health_5_5_ health_5_6_ health_5_8_ health_5_9_ ///
+ {
+		replace `var' = .a if `var' == 2
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+hh_gender_resp hh_gender_ hh_age_resp hh_age_ hh_37_ hh_26_ hh_15_2_ hh_15_29 hh_15_28 hh_15_27 hh_15_26 hh_15_25 hh_15_24 hh_15_23 hh_15_22 hh_15_21 hh_15_20 hh_15_2 hh_12_6_ hh_10_ health_5_9_ health_5_8_ health_5_5_ health_5_3_9_ health_5_3_99_ health_5_3_8_ health_5_3_7_ health_5_3_6_ health_5_3_5_ schisto_indicator q_24 q_23 living_01 health_5_3_4_ health_5_3_3_ health_5_3_2_ health_5_3_1_ health_5_3_14_ health_5_3_13_ health_5_3_12_ health_5_3_11_ health_5_3_10_ health_5_3_ data_source beliefs_03 beliefs_02 beliefs_01
+
+
+, ///
     keep(master match) ///
     nogenerate
 

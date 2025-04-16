@@ -254,9 +254,6 @@ rename hhid pull_hhid_
 
 drop _merge_status
 
-* Collapse to keep only the maximum value of each info_eleve_* for each unique individual
-collapse (max) info_eleve_2_ info_eleve_3_ info_eleve_7_, by(submissiondate starttime endtime deviceid devicephonenum username device_info duration caseid today record_text village_select village_select_o hhid_village region departement commune village grappe schoolmosqueclinic grappe_int sup sup_txt sup_name consent_obtain consent_notes start_survey date time geo_loclatitude geo_loclongitude geo_localtitude geo_locaccuracy respondent_other_role school_name hhid_village region departement commune grappe* sup* consent* respondent* start_survey date time geo_loc* hh_size_load school_repeat_count fu_mem_id_* pull_hhid_village_* pull_hhid_* pull_individ_* pull_hh_* pull_baselineniveau_* pull_family_members_* pull_temp_* pull_fu_mem_id_ instanceid instancename formdef_version hh_49 key id)
-
 reshape wide fu_mem_id_ pull_hhid_village_ pull_hhid_ pull_individ_ ///
     pull_hh_first_name__ pull_hh_name__ pull_hh_full_name_calc__ ///
     pull_hh_age_ pull_hh_gender_ pull_hh_head_name_complet_ ///

@@ -3149,7 +3149,7 @@ replace legumineuses_05_1 = 350 if key == "uuid:c69f2cf6-9a54-4da7-bf19-742730f9
 replace hh_education_level_7 = 3 if key == "uuid:ce4348d4-f8dc-4f45-859b-f7fb9e9c8222"
 replace hh_education_level_5 = 3 if key == "uuid:749d6e2c-6917-439f-8e0a-ac743dee1e1d"
 replace hh_education_level_5 = 3 if key == "uuid:140ccd1f-98cc-4f31-ae6e-948f6b7c88c8"
-replace hh_education_level_5 = 5 if key == "uuid:4b9d032f-e2ac-4e4f-b7f2-bad5b9917eaf"
+replace hh_education_level_5 = 99 if key == "uuid:4b9d032f-e2ac-4e4f-b7f2-bad5b9917eaf"
 replace hh_education_level_4 = 3 if key == "uuid:4b9d032f-e2ac-4e4f-b7f2-bad5b9917eaf"
 replace hh_education_level_3 = 2 if key == "uuid:1d771bb9-ca40-400d-aeb9-182485e92589"
 replace hh_education_level_1 = 4 if key == "uuid:83d16bd0-281f-4b48-9619-8e53f666105d"
@@ -3190,7 +3190,7 @@ replace hh_phone = 775645965 if key == "uuid:7a2ce175-761d-4e57-a6f4-d95e1e8734b
 replace hh_phone = 770352867 if key == "uuid:f52bbf3d-5e16-427d-b9d4-7746957440c9"
 replace hh_phone = 782705821 if key == "uuid:981d55fa-1a2e-47e6-8ffb-d707ae9519a4"
 replace hh_phone = 783222370 if key == "uuid:83139d1d-2f8e-4508-a16f-ab293c21e60e"
-replace hh_education_level_5 = -9 if key == "uuid:83daaf4c-5cd4-4774-9364-769d8a3d97e4"
+replace hh_education_level_5 = 99 if key == "uuid:83daaf4c-5cd4-4774-9364-769d8a3d97e4"
 replace hh_education_level_4 = 1 if key == "uuid:6d1c58cb-27ce-4ac2-81ec-cf85b2c2c772"
 replace hh_education_level_4 = 2 if key == "uuid:c2a63575-25c7-4189-90a2-68a5f7140b9e"
 replace age_3 = 95 if key == "uuid:274749b0-85ce-4907-97b2-f15fae16e9bb"
@@ -4658,6 +4658,10 @@ replace hh_49 = 1 if hh_global_id == "130A15"
 replace hh_49 = 1 if hh_global_id == "130A17"
 replace hh_49 = 1 if hh_global_id == "130A18"
 replace hh_49 = 1 if hh_global_id == "130A19"
+
+replace age_11 = -9 if key == "uuid:e4d9ab46-b30f-4d93-a47b-9b0e1c367d58"
+
+replace hh_41_2 = -9 if hh_41_2 == -6
 
 
 

@@ -62,9 +62,14 @@ sum heard_training if heard_training < 2
 
 drop hh_12_a_o*
 
-keep hh_education_level* hhid_village hhid hh_12_a* hh_15* hh_27* hh_28* hh_29* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*
+sum final_list_confirm
 
-reshape long hh_education_level_ hh_12_a_ hh_15_ hh_27_ hh_28_ hh_29_ hh_35_ hh_36_ hh_37_ hh_38_ hh_39_ hh_40_ hh_41_ hh_42_ hh_43_ hh_44_ hh_45_ hh_46_ hh_47_a_ hh_47_b_ hh_47_c_ hh_47_d_ hh_47_e_ hh_47_f_ hh_47_g_ hh_48_ hh_50_ hh_51_, i(hhid_village hhid) j(individual)
+keep hh_age* hh_education_level* hhid_village hhid hh_12_a* hh_15* hh_27* hh_28* hh_29* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*
+
+reshape long hh_age_ hh_education_level_ hh_12_a_ hh_15_ hh_27_ hh_28_ hh_29_ hh_35_ hh_36_ hh_37_ hh_38_ hh_39_ hh_40_ hh_41_ hh_42_ hh_43_ hh_44_ hh_45_ hh_46_ hh_47_a_ hh_47_b_ hh_47_c_ hh_47_d_ hh_47_e_ hh_47_f_ hh_47_g_ hh_48_ hh_50_ hh_51_, i(hhid_village hhid) j(individual)
+
+tab hh_age_
+sum hh_age_ if hh_age_ > -9
 
 tab hh_education_level_
 
@@ -257,7 +262,7 @@ tab agri_income_35
 tab agri_income_40
 sum agri_income_40 if agri_income_40 < 2
 
-
+reshape agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ 
 **************************************************
 * Standard of Living Data Summary
 **************************************************

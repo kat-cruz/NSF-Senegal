@@ -69,9 +69,9 @@
 		
 		
 	 	keep hhid hh_age* hh_gender*  ///
-		hh_15_2* hh_10_* hh_12_6_* hh_37* hh_26* ///
+		hh_10_* hh_12_6_* hh_15_* hh_26* hh_32* hh_37* ///
 		living_01  ///
-		health_5_3_* health_5_5* health_5_8* health_5_9* ///
+		health_5_2* health_5_3_* health_5_5* health_5_8* health_5_9* ///
 		beliefs_01* beliefs_02* beliefs_03* ///
 		q_23 q_24 ///
 		asset_index asset_index_std /// 
@@ -80,14 +80,14 @@
 
 tostring health_5_3_*, replace 
 
-drop health_5_3_o*
+drop health_5_3_o* hh_15_o*
 
 *variables removed: hh_age hh_gender living_01 living_02 living_03 living_04
 
 * Reshape long with hhid and id
-	reshape long health_5_3_ health_5_5_ health_5_8_ health_5_9_ /// 	
+	reshape long health_5_2_ health_5_3_ health_5_5_ health_5_8_ health_5_9_ /// 	
 	health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_99_ ///
-	hh_15_2_ hh_10_ hh_12_6_ hh_37_ hh_26_ hh_age_ hh_gender_, ///
+	 hh_15_ hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_ hh_age_ hh_gender_, ///
 		i(hhid) j(id)
 	
 	
@@ -105,51 +105,249 @@ drop health_5_3_o*
 	use "${paras}\01_prepped_inf_matches_df.dta", clear
 	rename _merge merge_ 
 
-merge m:1 individual_id_crdes using `temp_features_reshaped'
+	merge m:1 individual_id_crdes using `temp_features_reshaped'
 
+		keep if _merge == 3
 
+			drop sex_epls_ucad
 
 *<><<><><>><><<><><>>
 * BEGIN DATA CLEANING/PROCESSING
 *<><<><><>><><<><><>>
 
+*^*^* Initial look at data - check missings for each var
 
 
+	foreach var in Humanwatercontact Biomph Cerratophyllummassg health_5_3_99_ health_5_3_1_-health_5_3_14_ /// 
+	{
+	
+	destring `var', replace 
+	
+}
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+
+*^*^* Variables found to have missings 
+		
+		* hh_15_: 211
+		* Humanwatercontact: 3
+		* q_24: 19
+		* hh_37_: 36
+		* hh_26_: 6
+		* hh_12_6_: 101
+		* health_5_3_1_ - health_5_3_14_: 93
+		* sh_kk_2: 210
+		* sh_kk_1: 206
+		* sex_crdes: 11
+		* age_crdes: 3
+		
+
+** replace 2s for variables that have option "I don't know" 
+	*1 Yes
+	*0 No
+	*2 Don't know / Don't answer
+	
+*^*^* Fill out logical missings 
+
+** hh_12_ 
+** Skip pattern: ${hh_10} > 0
+	
+	replace hh_12_6_ = 0 if hh_10_ == 0
+
+** hh_10
+** Skip pattern: ${hh_10} > 0 and selected(${hh_12}, "6")	
+	
+	replace hh_15_ = 0 if hh_10_ == 0 
+	replace hh_15_ = 0 if hh_12_6_ == 0	
+** hh_37_
+** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
+	
+	replace hh_32_ = 0 if hh_26_ == 0	
+	replace hh_37_ = 0 if hh_32_ == 0	
+	
+** 	health_5_3_ 
+
+	* 1. Malaria
+	* 2.bilharzia
+	* 3. Diarrhea
+	* 4. Injury
+	* 5. Dental issues
+	* 6. Skin issues
+	* 7. Eye issues
+	* 8 Throat issues
+	* 9. Stomach ache
+	* 10. Fatigue
+	* 12.STI
+	* 13.Trachoma
+	* 14.Onchocerciasis
+	* 15 Lymphatic filariasis
+	* 99.Other (to be specfied)
+
+** 	Skip pattern: ${health_5_2} = 1
+
+
+	foreach var in health_5_3_99_ ///
+              health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ ///
+              health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ ///
+              health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ ///
+              health_5_3_13_ health_5_3_14_ {
+    replace `var' = 0 if health_5_2_ == 0
+}
+
+	
+** sh_kk_1 & sh_kk_2 - verify this is ok as these may be genuine missings 
+	
+	rename sh_kk_2 sh_kk_2_string
+	gen sh_kk_2 = "0"
+	replace sh_kk_2 = "1" if !missing(sh_kk_2_string)
+
+	rename sh_kk_1 sh_kk_1_string
+	gen sh_kk_1 = "0"
+	replace sh_kk_1 = "1" if !missing(sh_kk_1_string)
+
+    destring sh_kk_1, replace 
+	destring sh_kk_2, replace 
+
+**will likely drop later
+
+** q_24
+** Skip pattern: q_23 == 0
+
+	replace q_24 = 0 if q_23 == 0
+	
 *^*^* remove 2s from yes/no questions 
 
-	foreach var in hh_26_ hh_37_ health_5_5_ health_5_6_ health_5_8_ health_5_9_ ///
+	foreach var in hh_26_ hh_37_ health_5_5_  health_5_8_ health_5_9_ ///
  {
 		replace `var' = .a if `var' == 2
 	}
 
 
 
+*^*^* replace -9s with NAs for variables that contain them
 
 
+* Loop through all variables in the dataset
+
+foreach var of varlist _all {
+    * Check if the variable is numeric (ignoring strings)
+    capture confirm numeric variable `var'
+    if !_rc {  // If the variable is numeric
+        * Count if -9 exists in the numeric variable
+        count if `var' == -9
+        if r(N) > 0 {
+            display "`var' contains -9"
+        }
+    }
+}
+
+*^*^*  Recode hh_gender_ (change 2 to 0, leave others unchanged)
+		recode hh_gender_ (2=0)
 
 
+*<><<><><>><><<><><>>
+* BEGIN VARIABLE CREATION
+*<><<><><>><><<><><>>
 
 
+** living_01_bin
+
+	** main source of drinking water supply
+		** 1 = Interior tap
+		** 2 = Public tap
+		** 3 = Neighbor's tap
+		** 4 = Protected well
+		** 7 = Tanker truck service
+		** 8 = Water vendor
 
 
+		gen living_01_bin = 0
+			replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 | living_01 == 4 | living_01 == 7 | living_01 == 8
 
 
+**  beliefs_01	10.1 How likely is it that you will contract schistosomiasis in the next 12 months?
+** 	beliefs_02	10.2 How likely is it that a member of your household will contract schistosomiasis in the next 12 months? 
+**		(If there is already a household member affected by schistosomiasis, ask the question for all unaffected individuals)
+** beliefs_03	10.3 How likely is it that a randomly chosen child in your village, between the ages of 5 and 14, will contract schistosomiasis in the next 12 months?
+
+   ** choose a cutoff (e.g., above median)
+	foreach var of varlist beliefs_01 - beliefs_03 {
+		tab `var'  // Look at percentiles
+		}
+
+** create a Binary Indicator
+		*If most responses are ≤2 (Agree/Strongly Agree) → use beliefs_var <= 2 as the binary indicator.
+		*If responses are more evenly spread, consider using ≤3 (including Neutral).
+		*If disagreement dominates, use beliefs_var >= 4 instead.
+		
+		gen beliefs_01_bin = (beliefs_01 <= 2)  // 55.92% responded 1 or 2
+		gen beliefs_02_bin = (beliefs_02 <= 2)  // 64.45% responded 1 or 2
+		gen beliefs_03_bin = (beliefs_03 <= 2)  // 80.09% responded 1 or 2
 
 
+** Create summarized variables with parasitological data
+
+***  covert variables from string to numeric *** 
+		* written by MJD *
+		destring fu_p1 fu_p2 p1_kato1_k1_pg p1_kato2_k2_peg p2_kato1_k1_epg p2_kato2_k2_epg, replace force 
+
+		*** count infection of s. haematobium *** 
+		gen sh_inf = 0 
+		replace sh_inf = 1 if fu_p1 > 0 & fu_p1 != .
+		replace sh_inf = 1 if fu_p2 > 0 & fu_p2 != . 
+
+		gen sm_inf = 0 
+		replace sm_inf = 1 if p1_kato1_k1_pg > 0 & p1_kato1_k1_pg != . 
+		replace sm_inf = 1 if p1_kato2_k2_peg > 0 & p1_kato2_k2_peg != . 
+		replace sm_inf = 1 if p2_kato1_k1_epg > 0 & p2_kato1_k1_epg != . 
+		replace sm_inf = 1 if p2_kato2_k2_epg > 0 & p2_kato2_k2_epg != . 
+
+		*** summarize infection results by village *** 
+		bysort village_id: sum sh_inf sm_inf
+		  
+		*** summarize infection results overall ***
+		sum sh_inf sm_inf  
+		
+		
+		
+save "${data}\02_child_infection_analysis_df.dta", replace		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 
 
 hh_gender_resp hh_gender_ hh_age_resp hh_age_ hh_37_ hh_26_ hh_15_2_ hh_15_29 hh_15_28 hh_15_27 hh_15_26 hh_15_25 hh_15_24 hh_15_23 hh_15_22 hh_15_21 hh_15_20 hh_15_2 hh_12_6_ hh_10_ health_5_9_ health_5_8_ health_5_5_ health_5_3_9_ health_5_3_99_ health_5_3_8_ health_5_3_7_ health_5_3_6_ health_5_3_5_ schisto_indicator q_24 q_23 living_01 health_5_3_4_ health_5_3_3_ health_5_3_2_ health_5_3_1_ health_5_3_14_ health_5_3_13_ health_5_3_12_ health_5_3_11_ health_5_3_10_ health_5_3_ data_source beliefs_03 beliefs_02 beliefs_01
@@ -161,6 +359,7 @@ hh_gender_resp hh_gender_ hh_age_resp hh_age_ hh_37_ hh_26_ hh_15_2_ hh_15_29 hh
 
 	use "${paras}\01_prepped_inf_matches_df.dta", clear
 	
+*/
 *<><<><><>><><<><><>>	
 * BEGIN DATA CLEANING/PROCESSING
 *<><<><><>><><<><><>>	

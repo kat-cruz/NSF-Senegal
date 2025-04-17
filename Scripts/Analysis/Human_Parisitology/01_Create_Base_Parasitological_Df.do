@@ -62,8 +62,8 @@
 
 
 ***** Global folders *****
-	global raw_data  "${partner_raw}\UCAD_Data\Baseline"
-	global clean_data  "${partner_clean}\Child_Matches"
+	global raw_data  "${partner_raw}\Parasitological_Data"
+	global clean_data  "${partner_clean}\Parasitological_Data\Child_Matches"
 	global output "${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
 
 ***Version Control:
@@ -72,12 +72,10 @@ global date = strofreal(date(c(current_date),"DMY"), "%tdYYNNDD")
 	clear
 	
 *<><<><><>><><<><><>>	
-* LOAD IN RAW UCAD DATA
+* LOAD IN RAW UCAD/EPLS PARASITOLOGICAL DATA
 *<><<><><>><><<><><>>	
 
-import excel "${raw_data}\DISES UCAD paristological data.xlsx", sheet("Sheet1") firstrow
-
-
+import excel "${raw_data}\UCAD & EPLS parasitological data.xlsx", sheet("Sheet1") firstrow
 
 * Clean leading/trailing spaces from identificant
 	replace identificant = strtrim(identificant)
@@ -253,6 +251,7 @@ import excel "${raw_data}\DISES UCAD paristological data.xlsx", sheet("Sheet1") 
 	rename identificant epls_ucad_id
 
 		order village_id village_name hhid_crdes individual_id_crdes match_score sex_crdes age_crdes sex_epls_ucad age_epls_ucad epls_ucad_result epls_or_ucad epls_ucad_id sex_hp age_hp fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_pg pq_kato2_omega p1_kato2_k2_peg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 pzq_1 pzq_2 data_source _merge
+		
 
 
 		save "${output}\01_prepped_inf_matches_df.dta", replace

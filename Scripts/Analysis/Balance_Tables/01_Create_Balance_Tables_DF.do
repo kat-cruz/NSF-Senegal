@@ -382,6 +382,12 @@ foreach var of varlist _all {
 		
 		replace agri_6_15 = 0 if agri_6_14 == 0
 		
+
+*<><<><><>><><<><><>>
+* BEGIN VARIABLE CREATION
+*<><<><><>><><<><><>>
+
+
 	***CHILD MODULE*****************************************************
 	
 		egen child_in_home = max(hh_age_ >= 4 & hh_age_ <= 18), by(hhid)
@@ -529,10 +535,6 @@ foreach var of varlist _all {
 
 		* agri_income_05, hh_11_ hh_12_ hh_13_ hh_14_ hh_16_ are all conditional variables 
 
-
-*<><<><><>><><<><><>>
-* BEGIN VARIABLE CREATION
-*<><<><><>><><<><><>>
 
 * Creating binary variables for hh_education_level
 /*

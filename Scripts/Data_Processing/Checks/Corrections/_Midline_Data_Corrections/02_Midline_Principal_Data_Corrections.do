@@ -1846,6 +1846,12 @@ foreach var of varlist * {
     }
 }
 
+foreach var of varlist * {
+    capture confirm numeric variable `var'
+    if !_rc {
+        recode `var' (-999 = -9), test
+    }
+}
 
 // TAKE THIS XXX away once you are ready to save the actual corrections
 // MAKE SURE ALL DATES ARE CORRECTED

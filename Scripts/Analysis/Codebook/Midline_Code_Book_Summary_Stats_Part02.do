@@ -262,7 +262,9 @@ tab agri_income_35
 tab agri_income_40
 sum agri_income_40 if agri_income_40 < 2
 
-reshape agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ agri_income_46_1_ 
+reshape long productindex_ agri_income_46_1_ agri_income_46_2_ agri_income_46_3_ agri_income_46_4_, i(hhid) j(indicator)
+
+sum agri_income_46_1_ agri_income_46_2_ agri_income_46_3_ agri_income_46_4_ if productindex_ == 1
 **************************************************
 * Standard of Living Data Summary
 **************************************************

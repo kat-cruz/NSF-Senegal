@@ -464,6 +464,10 @@ tab respondent_gender
 sum respondent_age director_experience_general director_experience_specific
 tab respondent_age
 sum respondent_age if respondent_age > -9
+tab director_experience_general
+sum director_experience_general if director_experience_general > -9
+tab director_experience_specific
+sum director_experience_specific if director_experience_specific > -9
 tab school_water_main
 sum school_distance_river
 sum school_children_water_collection

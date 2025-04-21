@@ -67,3 +67,17 @@ sum agri_income_14_o
 reshape long productindex_ agri_income_46_1_ agri_income_46_2_ agri_income_46_3_ agri_income_46_4_, i(hhid) j(indicator)
 
 sum agri_income_46_1_ agri_income_46_2_ agri_income_46_3_ agri_income_46_4_ if productindex_ == 1
+
+**************************************************
+* Import baseline coping in the lean season
+**************************************************
+use "$lean", clear
+tab food02 
+tab food03
+tab food05
+tab food06
+tab food07 
+tab food08 
+tab food09 
+tab food11 
+tab food12

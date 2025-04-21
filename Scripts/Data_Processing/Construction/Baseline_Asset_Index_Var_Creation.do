@@ -229,7 +229,7 @@
 		replace TLU = TLU + (0.2) if species_7 == 1  // Pigs
 		replace TLU = TLU + (0.01) if species_8 == 1 // Poultry
 
-* List the final TLU variable
+** List the final TLU variable
 	list hhid TLU
 
 ** Create rooms per member variable
@@ -243,47 +243,49 @@
 		replace agri_6_23_bin = 1 if `var' == 1  
 	}
 
-
-* Check data summary
+** Check data summary
 	summarize list_actifs_* ///
 	living_01_bin living_02_bin living_05_bin living_06_bin ///
 	agri_6_5_bin agri_6_23_bin ///
 	TLU rooms_per_member 
 
 
-* Standardize continuous variables before PCA
+** Standardize continuous variables before PCA
 	foreach var in rooms_per_member TLU {
 		egen z_`var' = std(`var')  // Create z-score versions
 	}
 
-** The correlation matrix standardizes the data, making comparisons between these variables possible, and prevents highly correlated variables (such as the binary ones) from distorting the PCA results.
+** The correlation matrix standardizes the data, making comparisons between these variables possible, 
+** and prevents highly correlated variables (such as the binary ones) from distorting the PCA results.
+	 
 	pca list_actifs_* ///
 	living_01_bin living_02_bin living_05_bin living_06_bin ///
 	agri_6_5_bin agri_6_23_bin ///
 	z_TLU z_rooms_per_member 
 
-*removed living_04_bin because it had 0 variance 
+** removed living_04_bin because it had 0 variance 
 
-* Display variance explained by each component
+** Display variance explained by each component
 	screeplot, ytitle("Proportion of Variance Explained") 
 
 
-**   PC1 (the first principal component) is typically used as the asset index because it explains the most variation in the data and is often interpreted as a measure of wealth or socioeconomic status in the context of PCA.
+**   PC1 (the first principal component) is typically used as the asset index because it explains the most 
+** 	 variation in the data and is often interpreted as a measure of wealth or socioeconomic status in the context of PCA.
 
-* Extract the first principal component (PC1) as the asset index
+** Extract the first principal component (PC1) as the asset index
 	predict asset_index if e(sample), score
 
-* Normalize the asset index for better interpretability
+** Normalize the asset index for better interpretability
 	egen asset_index_std = std(asset_index)
 
-* Display results
+** Display results
 	list list_actifs_* ///
 	living_01_bin living_02_bin living_04_bin living_05_bin living_06_bin ///
 	agri_6_5_bin agri_6_23_bin ///
 	z_rooms_per_member z_TLU ///
 	 if _n <= 10, sep(0)
 	  
-
+*^*^* Save data frame 
 
 preserve 
 

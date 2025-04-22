@@ -1,7 +1,7 @@
 *** Data cleaning for shadow wage estimation *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: April 21, 2025 ***
+*** File Last Updated On: April 22, 2025 ***
 
 clear all 
 
@@ -93,7 +93,7 @@ gen feed_hours_7days_pc = chore_hours / members
 *** save cleaned main household roster data set ***
 save "$auctions\main_hh_baseline.dta", replace 
   
-*** clean hh_12 (12 month recall) on water time use data *** 
+*** clean hh_13 (12 month recall) on water time use data *** 
 
 *** import household roster data *** 
 use "$data\Complete_Baseline_Household_Roster", clear   
@@ -121,16 +121,124 @@ forvalues i = 1/55 {
 	rename hh_13_`i'_1 hh_131_`i'	
 }
 
-*** reshape to activity level ***
+*** reshape to individual level ***
 reshape long hh_12index1_ hh_131_ hh_12index2_ hh_132_ hh_12index3_ hh_133_ hh_12index4_ hh_134_ hh_12index5_ hh_135_ hh_12index6_ hh_136_ hh_12index7_ hh_137_, i(hhid) j(person)
 
 *** drop extra people *** 
 drop if hh_12index1_ == . & hh_131_ == . 
 
 *** rename variables to get to activity level data *** 
-forvalues i = 1/55{
-    rename hh_12index1_ hh_12_index_1 
-	rename hh_131_ hh_13_1 
+forvalues i = 1/7{
+    rename hh_12index`i'_ hh_12_index_`i' 
+	rename hh_13`i'_ hh_13_`i' 
 }
+
+*** reshape to person level *** 
+reshape long hh_12_index_ hh_13_, i(hhid person) j(activity)
+
+drop if hh_12_index == . & hh_13_ == . 
+
 *** calculate total household hours spent doing agriculture tasks in the water *** 
-collapse  
+egen fetch_water_hh_12mo_act = total(hh_13_) if hh_12_index_ == 1, by(hhid)
+replace fetch_water_hh_12mo_act = 0 if fetch_water_hh_12mo_act == . 
+
+egen water_livestock_12mo_act = total(hh_13_) if hh_12_index_ == 2, by(hhid)
+replace water_livestock_12mo_act = 0 if water_livestock_12mo_act == . 
+
+egen fetch_water_ag_12mo_act = total(hh_13_) if hh_12_index_ == 3, by(hhid)
+replace fetch_water_ag_12mo_act = 0 if fetch_water_ag_12mo_act == . 
+
+egen wash_clothes_12mo_act = total(hh_13_) if hh_12_index_ == 4, by(hhid)
+replace wash_clothes_12mo_act = 0 if wash_clothes_12mo_act == . 
+
+egen dishes_12mo_act = total(hh_13_) if hh_12_index_ == 5, by(hhid)
+replace dishes_12mo_act = 0 if dishes_12mo_act == .
+
+egen harvest_veg_12mo_act = total(hh_13_) if hh_12_index_ == 6, by(hhid)
+replace harvest_veg_12mo_act = 0 if harvest_veg_12mo_act == .  
+
+egen swim_12mo_act = total(hh_13_) if hh_12_index_ == 7, by(hhid)
+replace swim_12mo_act = 0 if swim_12mo_act == . 
+
+egen play_12mo_act = total(hh_13_) if hh_12_index_ == 8, by(hhid)
+replace play_12mo_act = 0 if play_12mo_act == . 
+
+collapse (max) fetch_water_hh_12mo_act water_livestock_12mo_act fetch_water_ag_12mo_act wash_clothes_12mo_act dishes_12mo_act harvest_veg_12mo_act swim_12mo_act play_12mo_act, by(hhid)
+
+*** save dataset *** 
+save "$auctions\water_time_12month.dta", replace 
+
+*** clean hh_21 (7 day recall) on water time use data *** 
+
+*** import household roster data *** 
+use "$data\Complete_Baseline_Household_Roster", clear   
+
+*** keep 7 day recall time in water data *** 
+keep hhid hh_20index* hh_21_*
+
+drop hh_21_sum_* hh_21_o_*
+
+*** change indexs to have last number be person *** 
+forvalues i = 1/55 {
+    rename hh_20index_`i'_7 hh_20index7_`i'
+	rename hh_21_`i'_7 hh_217_`i'
+	rename hh_20index_`i'_6 hh_20index6_`i'
+	rename hh_21_`i'_6 hh_216_`i'
+	rename hh_20index_`i'_5 hh_20index5_`i'
+	rename hh_21_`i'_5 hh_215_`i'
+	rename hh_20index_`i'_4 hh_20index4_`i'
+	rename hh_21_`i'_4 hh_214_`i'
+	rename hh_20index_`i'_3 hh_20index3_`i'
+	rename hh_21_`i'_3 hh_213_`i'
+	rename hh_20index_`i'_2 hh_20index2_`i'
+	rename hh_21_`i'_2 hh_212_`i'
+	rename hh_20index_`i'_1 hh_20index1_`i'
+	rename hh_21_`i'_1 hh_211_`i'	
+}
+
+*** reshape to individual level ***
+reshape long hh_20index1_ hh_211_ hh_20index2_ hh_212_ hh_20index3_ hh_213_ hh_20index4_ hh_214_ hh_20index5_ hh_215_ hh_20index6_ hh_216_ hh_20index7_ hh_217_, i(hhid) j(person)
+
+*** drop extra people *** 
+drop if hh_20index1_ == . & hh_211_ == . 
+
+*** rename variables to get to activity level data *** 
+forvalues i = 1/7{
+    rename hh_20index`i'_ hh_20_index_`i' 
+	rename hh_21`i'_ hh_21_`i' 
+}
+
+*** reshape to person level *** 
+reshape long hh_20_index_ hh_21_, i(hhid person) j(activity)
+
+drop if hh_20_index == . & hh_21_ == . 
+
+*** calculate total household hours spent doing agriculture tasks in the water *** 
+egen fetch_water_hh_7d_act = total(hh_21_) if hh_20_index_ == 1, by(hhid)
+replace fetch_water_hh_7d_act = 0 if fetch_water_hh_7d_act == . 
+
+egen water_livestock_7d_act = total(hh_21_) if hh_20_index_ == 2, by(hhid)
+replace water_livestock_7d_act = 0 if water_livestock_7d_act == . 
+
+egen fetch_water_ag_7d_act = total(hh_21_) if hh_20_index_ == 3, by(hhid)
+replace fetch_water_ag_7d_act = 0 if fetch_water_ag_7d_act == . 
+
+egen wash_clothes_7d_act = total(hh_21_) if hh_20_index_ == 4, by(hhid)
+replace wash_clothes_7d_act = 0 if wash_clothes_7d_act == . 
+
+egen dishes_7d_act = total(hh_21_) if hh_20_index_ == 5, by(hhid)
+replace dishes_7d_act = 0 if dishes_7d_act == .
+
+egen harvest_veg_7d_act = total(hh_21_) if hh_20_index_ == 6, by(hhid)
+replace harvest_veg_7d_act = 0 if harvest_veg_7d_act == .  
+
+egen swim_7d_act = total(hh_21_) if hh_20_index_ == 7, by(hhid)
+replace swim_7d_act = 0 if swim_7d_act == . 
+
+egen play_7d_act = total(hh_21_) if hh_20_index_ == 8, by(hhid)
+replace play_7d_act = 0 if play_7d_act == . 
+
+collapse (max) fetch_water_hh_7d_act water_livestock_7d_act fetch_water_ag_7d_act wash_clothes_7d_act dishes_7d_act harvest_veg_7d_act swim_7d_act play_7d_act, by(hhid)
+
+*** save dataset *** 
+save "$auctions\water_time_7days.dta", replace 

@@ -132,7 +132,6 @@ replace school_name = "ECOLE PRIMAIRE KASACK NORD" if key == "433515e7-f57f-4968
 //replace passing_2024_total_1_2 = "Le nouveau directeur n'a pas le régistre de l'année derniére" if key == "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5"
 replace school_distance_river = 150 if key == "uuid:1503ab7c-6da3-4662-b96d-7236229cf1d5"
 replace enrollment_2024_total_6_1 = 50 if key == "uuid:ebcbdc95-60c1-422f-8f04-1d3e6476fd06"
-replace grade_loop_2 = 47 if key == "uuid:ebcbdc95-60c1-422f-8f04-1d3e6476fd06"
 replace school_distance_river = 100 if key == "uuid:ebcbdc95-60c1-422f-8f04-1d3e6476fd06"
 replace school_distance_river = 25 if key == "uuid:226708c5-70ec-4239-a011-7fed43bd24af"
 replace school_distance_river = 100 if key == "uuid:b1671839-a3f7-4208-ade7-be102852852a"
@@ -1852,6 +1851,10 @@ foreach var of varlist * {
         recode `var' (-999 = -9), test
     }
 }
+
+* Correction for director_experience_general, director_experience_specific
+replace director_experience_general = -9 if director_experience_general == 2024
+replace director_experience_specific = -9 if director_experience_specific == 2024
 
 // TAKE THIS XXX away once you are ready to save the actual corrections
 // MAKE SURE ALL DATES ARE CORRECTED

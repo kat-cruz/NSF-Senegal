@@ -24,6 +24,7 @@ else if "`c(username)'"=="Kateri" {
 *** additional file paths ***
 global data "$master\Data\_CRDES_CleanData\Baseline\Deidentified"
 global auctions "$master\Output\Analysis\Auctions_Shadow_Wages"
+global midline "$master\Data\_CRDES_CleanData\Midline\Deidentified"
 
 *** clean variables to use in shadow wage estimation *** 
 *** clean basic household roster data *** 
@@ -242,3 +243,218 @@ collapse (max) fetch_water_hh_7d_act water_livestock_7d_act fetch_water_ag_7d_ac
 
 *** save dataset *** 
 save "$auctions\water_time_7days.dta", replace 
+
+*** import agricultural plot level data *** 
+use "$data\Complete_Baseline_Agriculture", clear   
+
+*** keep key variables to reshape to the plot level *** 
+keep hhid agri_6_18_* agri_6_20_* agri_6_21_* agri_6_22_* agri_6_30_* agri_6_31_* agri_6_34_comp_* agri_6_34_* agri_6_35_* agri_6_36_* agri_6_37_* agri_6_38_a_* agri_6_38_a_code_* agri_6_39_a_* agri_6_39_a_code_* agri_6_40_a_* agri_6_40_a_code_* agri_6_41_a_* agri_6_41_a_code_*   
+
+forvalue i = 1/11 {
+	tostring agri_6_20_o_`i', replace 
+	tostring agri_6_31_o_`i', replace
+	tostring agri_6_38_a_code_o_`i', replace
+	tostring agri_6_39_a_code_o_`i', replace
+	tostring agri_6_40_a_code_o_`i', replace
+	tostring agri_6_41_a_code_o_`i', replace
+}
+ 
+*** reshape data to long, plot level data ***
+reshape long agri_6_18_ agri_6_20_ agri_6_20_o_ agri_6_21_ agri_6_22_ agri_6_30_ agri_6_31_ agri_6_31_o_ agri_6_34_comp_ agri_6_34_ agri_6_35_ agri_6_36_ agri_6_37_ agri_6_38_a_ agri_6_38_a_code_ agri_6_38_a_code_o_ agri_6_39_a_ agri_6_39_a_code_ agri_6_39_a_code_o_ agri_6_40_a_ agri_6_40_a_code_ agri_6_40_a_code_o_ agri_6_41_a_ agri_6_41_a_code_ agri_6_41_a_code_o_, i(hhid) j(plot)
+
+drop if agri_6_18_ == . 
+
+*** create single unit variables for land, application amounts  *** 
+gen plot_size_ha = agri_6_21_ 
+replace plot_size_ha = agri_6_21_ / 1000 if agri_6_22_ == 2 
+
+gen urea_kgs = agri_6_38_a_ 
+replace urea_kgs = agri_6_38_a_ * 1000 if agri_6_38_a_code_ == 2 
+replace urea_kgs = agri_6_38_a_ * 50 if agri_6_38_a_code_ == 3 
+replace urea_kgs = . if agri_6_38_a_code_ == 99 
+
+gen phosphate_kgs = agri_6_39_a_ 
+replace phosphate_kgs = agri_6_39_a_ * 1000 if agri_6_39_a_code_ == 2 
+replace phosphate_kgs = agri_6_39_a_ * 50 if agri_6_39_a_code_ == 3 
+
+gen npk_kgs = agri_6_40_a_ 
+replace npk_kgs = agri_6_40_a_ * 1000 if agri_6_40_a_code_ == 2 
+replace npk_kgs = agri_6_40_a_ * 50 if agri_6_40_a_code_ == 3 
+replace npk_kgs = . if agri_6_40_a_code_ == 99 
+
+gen other_kgs = agri_6_41_a_ 
+replace other_kgs = agri_6_41_a_ * 1000 if agri_6_41_a_code_ == 2 
+replace other_kgs = agri_6_41_a_ * 50 if agri_6_41_a_code_ == 3 
+replace other_kgs = . if agri_6_41_a_code_ == 99 
+
+*** get rid of don't knows *** 
+replace agri_6_30_ = . if agri_6_30_ == 2
+replace agri_6_34_comp_ = . if agri_6_34_comp_ == 2
+replace agri_6_34_ = . if agri_6_34_ == 2
+replace agri_6_36_ = . if agri_6_36_ == 2
+
+*** create indicator variables for crop types ***
+gen collective_manage = (agri_6_18_ == 2) 
+gen rice = (agri_6_20_ == 1)
+gen maize = (agri_6_20_ == 2)
+gen millet = (agri_6_20_ == 3)
+gen sorghum = (agri_6_20_ == 4)
+gen cowpea = (agri_6_20_ == 5)
+gen cassava = (agri_6_20_ == 6)
+gen sweetpotato = (agri_6_20_ == 7)
+gen potato = (agri_6_20_ == 8)
+gen yam = (agri_6_20_ == 9)
+gen taro = (agri_6_20_ == 10)
+gen tomato = (agri_6_20_ == 11)
+gen carrot = (agri_6_20_ == 12)
+gen onion = (agri_6_20_ == 13)
+gen cucumber = (agri_6_20_ == 14)
+gen pepper = (agri_6_20_ == 15)
+replace pepper = 1 if agri_6_20_o == "PIMENT"
+replace pepper = 1 if agri_6_20_o == "PIMENTS"
+replace pepper = 1 if agri_6_20_o == "Piment"
+gen peanut = (agri_6_20_ == 16)
+replace peanut = 1 if agri_6_20_o == "ARACHIDES"
+gen bean = (agri_6_20_ == 17)
+gen pea = (agri_6_20_ == 18)
+gen other = (agri_6_20_ == 99)
+replace other = 0 if agri_6_20_o == "ARACHIDES"
+replace other = 0 if agri_6_20_o == "PIMENT"
+replace other = 0 if agri_6_20_o == "PIMENTS"
+replace other = 0 if agri_6_20_o == "Piment"
+
+gen manure_direct_parking = (agri_6_31_ == 1)
+gen manure_indirect_parking = (agri_6_31_ == 2)
+gen manure_purchase = (agri_6_31_ == 3)
+gen manure_other_source = (agri_6_31_ == 99)
+
+*** save clean plot level data *** 
+save "$auctions\plot_level_ag.dta", replace 
+
+*** clean agriculture equipment data *** 
+
+*** import agricultural plot level data *** 
+use "$data\Complete_Baseline_Agriculture", clear   
+
+*** keep variables related to agricultural equipment *** 
+keep hhid agriindex_* _agri_number_* 
+
+*** reshape to long *** 
+reshape long agriindex_ _agri_number_ , i(hhid) j(equip)
+
+drop if agriindex_ == . & _agri_number_ == . 
+
+*** create count of each equipment type at the household level *** 
+gen plow = _agri_number_ if agriindex_ == 1 
+gen harrow = _agri_number_ if agriindex_ == 2  
+gen draftanimals = _agri_number_ if agriindex_ == 3  
+gen cart = _agri_number_ if agriindex_ == 4 
+gen tractor = _agri_number_ if agriindex_ == 5 
+gen sprayer = _agri_number_ if agriindex_ == 6 
+gen motorpumps = _agri_number_ if agriindex_ == 7 
+gen hoes = _agri_number_ if agriindex_ == 8 
+gen ridger = _agri_number_ if agriindex_ == 9 
+gen sickle = _agri_number_ if agriindex_ == 10 
+gen seeder = _agri_number_ if agriindex_ == 11 
+gen kadiandou = _agri_number_ if agriindex_ == 12 
+gen fanting = _agri_number_ if agriindex_ == 13 
+gen other = _agri_number_ if agriindex_ == 14 
+
+collapse plow harrow draftanimals cart tractor sprayer motorpumps hoes ridger sickle seeder kadiandou fanting other, by(hhid)
+ 
+replace plow = 0 if plow == .
+replace harrow = 0 if harrow == .
+replace draftanimals = 0 if draftanimals == .
+replace cart = 0 if cart == . 
+replace tractor = 0 if tractor == . 
+replace sprayer = 0 if sprayer == . 
+replace motorpumps = 0 if motorpumps == . 
+replace hoes = 0 if hoes == . 
+replace ridger = 0 if ridger == . 
+replace sickle = 0 if sickle == . 
+replace seeder = 0 if seeder == . 
+replace kadiandou = 0 if kadiandou == . 
+replace fanting = 0 if fanting == . 
+replace other = 0 if other == . 
+ 
+save "$auction\assets.dta", replace 
+ 
+*** clean non-standard unit data on compost use *** 
+
+*** import agricultural plot level data *** 
+use "$data\Complete_Baseline_Agriculture", clear   
+
+keep hhid agri_6_32_* agri_6_33_*
+
+reshape long agri_6_32_ agri_6_33_ agri_6_33_o_ , i(hhid) j(plot)
+
+drop if agri_6_32_ == . & agri_6_33_ == . & agri_6_33_o_ == . 
+
+*** extract off village ID to pull in non-standard unit measures *** 
+gen hhid_village = substr(hhid, 1, 4)
+
+*** merge in non-standard unit measures ***
+merge m:1 hhid_village using "$midline\Complete_Midline_Community.dta"
+
+drop if _merge == 2 
+
+drop _merge 
+
+*** calculate manure use in kgs *** 
+gen manure_kgs = agri_6_32_ 
+replace manure_kgs = agri_6_32 * unit_convert_1 if agri_6_33_ == 2 
+replace manure_kgs = agri_6_32 * unit_convert_2 if agri_6_33_ == 3 
+
+keep hhid plot manure_kgs 
+
+save "$auctions\manure_use.dta", replace 
+
+*** clean number of plots data *** 
+
+*** import agricultural plot level data *** 
+use "$data\Complete_Baseline_Agriculture", clear   
+
+keep hhid agri_6_14 agri_6_15
+
+save "$auctions\number_of_plots.dta", clear 
+
+*** clean production data *** 
+use "$data\Complete_Baseline_Production.dta", clear   
+
+rename cereals_01_1 rice_hectares 
+replace rice_hectares = 0 if cereals_consumption_1 == 0 
+replace rice_hectares = . if rice_hectares == -9 
+
+rename cereals_02_1 rice_prod 
+replace rice_prod = 0 if cereals_consumption_1 == 0 
+replace rice_prod = . if rice_prod == -9
+
+gen maize_hectares = cereals_01_2 
+replace maize_hectares = 0 if cereals_consumption_2 == 0
+replace maize_hectares = . if cerealsposition_2 == 3
+replace maize_hectares = . if maize_hectares == -9 
+
+gen maize_prod = cereals_02_2 
+replace maize_prod = 0 if cereals_consumption_2 == 0 
+replace maize_prod = . if cerealsposition_2 == 3 
+replace maize_prod = . if maize_prod == -9 
+
+gen millet_hectares = cereals_01_3 
+replace millet_hectares = 0 if cereals_consumption_3 == 0
+replace millet_hectares = cereals_01_2 if cerealsposition_2 == 3
+replace millet_hectares = . if millet_hectares == -9 
+
+gen millet_prod = cereals_02_3 
+replace millet_prod = 0 if cereals_consumption_3 == 0 
+replace millet_prod = cereals_02_2 if cerealsposition_2 == 3 
+replace millet_prod = . if millet_prod == -9
+
+gen sorghum_hectares = cereals_01_4 
+replace sorghum_hectares = 0 if cereals_consumption_4 == 0
+replace sorghum_hectares = . if cerealsposition_3 == 4
+replace sorghum_hectares = . if sorghum_hectares == -9 
+
+gen sorghum_prod = cereals_02_2 
+replace sorghum_prod = 0 if cereals_consumption_2 == 0 
+replace sorghum_prod = . if cerealsposition_2 == 3 
+replace maize_prod = . if maize_prod == -9  

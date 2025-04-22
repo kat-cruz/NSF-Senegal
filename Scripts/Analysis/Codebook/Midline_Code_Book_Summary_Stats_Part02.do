@@ -52,7 +52,6 @@ global schoolattendance "$survey\Complete_Midline_SchoolAttendance"
 use "$household", clear
 tab hh_49
 sum hh_49
-
 tab attend_training
 sum attend_training if attend_training < 2
 tab who_attended_training
@@ -64,9 +63,15 @@ drop hh_12_a_o*
 
 sum final_list_confirm
 
-keep hh_age* hh_education_level* hhid_village hhid hh_12_a* hh_15* hh_27* hh_28* hh_29* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*
+keep add_new* still_member* still_member_whynot* hh_age* hh_education_level* hhid_village hhid hh_12_a* hh_15* hh_27* hh_28* hh_29* hh_35* hh_36* hh_37* hh_38* hh_39* hh_40* hh_41* hh_42* hh_43* hh_44* hh_45* hh_46* hh_47* hh_48* hh_49* hh_50* hh_51* hh_52*
 
-reshape long hh_age_ hh_education_level_ hh_12_a_ hh_15_ hh_27_ hh_28_ hh_29_ hh_35_ hh_36_ hh_37_ hh_38_ hh_39_ hh_40_ hh_41_ hh_42_ hh_43_ hh_44_ hh_45_ hh_46_ hh_47_a_ hh_47_b_ hh_47_c_ hh_47_d_ hh_47_e_ hh_47_f_ hh_47_g_ hh_48_ hh_50_ hh_51_, i(hhid_village hhid) j(individual)
+reshape long add_new_ still_member_ still_member_whynot_ hh_age_ hh_education_level_ hh_12_a_ hh_15_ hh_27_ hh_28_ hh_29_ hh_35_ hh_36_ hh_37_ hh_38_ hh_39_ hh_40_ hh_41_ hh_42_ hh_43_ hh_44_ hh_45_ hh_46_ hh_47_a_ hh_47_b_ hh_47_c_ hh_47_d_ hh_47_e_ hh_47_f_ hh_47_g_ hh_48_ hh_50_ hh_51_, i(hhid_village hhid) j(individual)
+
+tab add_new_
+sum add_new_ if add_new_ < 2
+tab still_member_
+sum still_member_ if still_member_ < 2
+tab still_member_whynot_
 
 tab hh_age_
 sum hh_age_ if hh_age_ > -9

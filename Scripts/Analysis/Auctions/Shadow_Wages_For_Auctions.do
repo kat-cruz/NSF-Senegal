@@ -101,7 +101,7 @@ use "$data\Complete_Baseline_Household_Roster", clear
 *** keep 12 month recall time in water data *** 
 keep hhid hh_12index* hh_13_*
 
-drop hh_13_sum_*
+drop hh_13_sum_* hh_13_o_*
 
 *** change indexs to have last number be person *** 
 forvalues i = 1/55 {
@@ -122,5 +122,15 @@ forvalues i = 1/55 {
 }
 
 *** reshape to activity level ***
-reshape long hh_12index1_ hh_131_ hh_12index2_ hh_132_ hh_12index3_ hh_133_ hh_12index4_ hh_134_ hh_12index5_ hh_135_ hh_12index6_ hh_136_ hh_12index7_ hh_137_, i(hhid) j(activity)
-*** clean 
+reshape long hh_12index1_ hh_131_ hh_12index2_ hh_132_ hh_12index3_ hh_133_ hh_12index4_ hh_134_ hh_12index5_ hh_135_ hh_12index6_ hh_136_ hh_12index7_ hh_137_, i(hhid) j(person)
+
+*** drop extra people *** 
+drop if hh_12index1_ == . & hh_131_ == . 
+
+*** rename variables to get to activity level data *** 
+forvalues i = 1/55{
+    rename hh_12index1_ hh_12_index_1 
+	rename hh_131_ hh_13_1 
+}
+*** calculate total household hours spent doing agriculture tasks in the water *** 
+collapse  

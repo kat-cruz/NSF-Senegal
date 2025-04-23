@@ -1,0 +1,50 @@
+*==============================================================================
+* written by: Kateri Mouawad
+* Created: February 2025
+* Updates recorded in GitHub
+
+
+* <><<><><>> Read Me  <><<><><>>
+
+					*** This .do file processes: 
+												*All_Villages.dta
+												*Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx
+												*DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx
+												*All_Individual_IDs_Complete.dta
+					*** This .do file outputs:
+
+
+*<><<><><>><><<><><>>
+* INITIATE SCRIPT
+*<><<><><>><><<><><>>
+		
+	clear all
+	set mem 100m
+	set maxvar 30000
+	set matsize 11000
+	set more off
+
+*<><<><><>><><<><><>>
+* SET FILE PATHS
+*<><<><><>><><<><><>>
+
+*^*^* Set base Box path for each user
+
+	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
+	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
+	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+	if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
+
+
+*^*^* Define project-specific paths
+
+	global id "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline\UCAD_EPLS_IDs"
+	global id_mid  "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
+	
+	global cleandata_ucad_base "$master\Data_Management\Data\_Partner_CleanData\UCAD_Data\Baseline"
+	global cleandata_ucad_mid "$master\Data_Management\Data\_Partner_CleanData\UCAD_Data\Midline"
+	global output_ucad "$master\Data_Management\Data\_Partner_CleanData\Child_Matches\UCAD_Child_Matches\Midline_Rematches"
+
+	global cleandata_epls_base "$master\Data_Management\Data\_Partner_CleanData\EPLS_Data\Baseline"
+	global cleandata_epls_mid "$master\Data_Management\Data\_Partner_CleanData\EPLS_Data\Midline"

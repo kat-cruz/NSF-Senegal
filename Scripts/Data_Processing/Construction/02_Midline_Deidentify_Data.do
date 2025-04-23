@@ -39,7 +39,7 @@ use "$data_identified\DISES_Midline_Complete_PII", clear
 
 *** drop identifiying and empty variables *** 
 *** keep only household roster data *** 
-keep start_hh_composition _household_roster_count hh* attend_training who_attended_training heard_training end_hh_composition final_list_confirm
+keep start_hh_composition _household_roster_count hh* attend_training who_attended_training heard_training add_new* still_member* still_member_whynot* end_hh_composition final_list_confirm
 
 drop hh_phone hh_head_name_complet hh_name_complet_resp hh_region hh_department hh_commune hh_district hh_arrondissement hh_village hh_gpslatitude hh_gpslongitude hh_gpsaltitude hh_gpsaccuracy
 

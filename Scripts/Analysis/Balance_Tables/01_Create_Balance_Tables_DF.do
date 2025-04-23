@@ -36,7 +36,7 @@
 	* Step 7) Save as .csv so we can create the tables in R in the Balance_tables.rmd
 
 *<><<><><>><><<><><>>
-* INITIATE SCRIPT
+**#  INITIATE SCRIPT
 *<><<><><>><><<><><>>
 	
 clear all
@@ -49,7 +49,7 @@ set more off
 **check list of villge IDs and hhids to spot non-updated ID
 
 *<><<><><>><><<><><>>
-* SET FILE PATHS
+**#  SET FILE PATHS
 *<><<><><>><><<><><>>
 
 *^*^* Set base Box path for each user
@@ -75,7 +75,7 @@ global latexOutput "$git_path\Latex_Output\Balance_Tables"
 
 
 *<><<><><>><><<><><>>
-* LOAD IN DATA
+**#  LOAD IN DATA
 *<><<><><>><><<><><>>
 
 use "$data\Complete_Baseline_Household_Roster.dta", clear 
@@ -106,7 +106,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 
 		
 *<><<><><>><><<><><>>
-* BEGIN DATA CLEANING/PROCESSING
+**#  BEGIN DATA CLEANING/PROCESSING
 *<><<><><>><><<><><>>		
 		
 
@@ -301,7 +301,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 	
 
 *<><<><><>><><<><><>> 
-* RESHAPE THE DATA 
+**#  RESHAPE THE DATA 
 *<><<><><>><><<><><>>
 
 		
@@ -321,7 +321,7 @@ tab village_third
 
 
 *<><<><><>><><<><><>>
-* REPLACE MISSINGS 
+**# REPLACE MISSINGS 
 *<><<><><>><><<><><>>
 
 
@@ -385,7 +385,7 @@ foreach var of varlist _all {
 		
 
 *<><<><><>><><<><><>>
-* BEGIN VARIABLE CREATION
+**# BEGIN VARIABLE CREATION
 *<><<><><>><><<><><>>
 
 
@@ -886,7 +886,7 @@ save `balance_table_ata'
 		
 
 *<><<><><>><><<><><>> 
-* REORDER THE VARIABLES & COLLAPSE AT HOUSEHOLD LEVEL
+**#  REORDER THE VARIABLES & COLLAPSE AT HOUSEHOLD LEVEL
 *<><<><><>><><<><><>>
 
 * drop empty/useless variables 
@@ -1132,7 +1132,7 @@ save `balance_table_ata'
 
 			
 *<><<><><>><><<><><>> 
-* SAVE THE FINAL DATASET 
+**#  SAVE THE FINAL DATASET 
 *<><<><><>><><<><><>>
 
 		*save "${dataOutput}\baseline_balance_tables_data.dta", replace

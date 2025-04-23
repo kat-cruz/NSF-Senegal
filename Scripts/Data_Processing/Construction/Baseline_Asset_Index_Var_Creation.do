@@ -262,8 +262,8 @@
 pca list_actifs_* ///
     living_01_bin living_02_bin living_05_bin living_06_bin ///
     agri_6_5_bin agri_6_23_bin ///
-    z_TLU z_rooms_per_member
-r 
+    z_TLU z_rooms_per_member, components(1)
+
 
 ** removed living_04_bin because it had 0 variance 
 

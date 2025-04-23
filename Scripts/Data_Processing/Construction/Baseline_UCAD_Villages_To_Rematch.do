@@ -114,65 +114,6 @@ restore
 
 
 
-*<><<><><>><><<><><>>
-* FILTER MIDLINE UCAD DF FOR Geuo
-*<><<><><>><><<><><>>
-
-
-
-	use "$cleandata_ucad_base\geuo_033A_baseline_df.dta", clear
-
-			merge m:m identifiant using "$cleandata_ucad_mid\geuo_033A_midline_df.dta"
-
-* keep new children
-
-		keep if _merge != 3
-		keep initiales identifiant sexe
-		
-		
-		export excel "${output_ucad}/UCAD_IDS_Geuo_033A_Midline.xlsx", firstrow(variables) sheet("Geuo (033A)")  
-
-*<><<><><>><><<><><>>
-* FILTER CRDES MILDINE DATA 
-*<><<><><>><><<><><>>
-
-
-use "$id_mid\All_Individual_IDs_Complete.dta", clear
-
-keep if hhid_village == "033A"
-
-		rename hh_relation_with_o_ other_relation
-		rename hh_relation_with_ hh_relation_with
-		tostring  hh_relation_with, gen(hh_relation)
-
-		replace hh_relation = "Head of household (himself)" if hh_relation_with == 1
-		replace hh_relation = "Spouse of head ofhousehold" if hh_relation_with == 2
-		replace hh_relation = "Son/daughter of the home" if hh_relation_with == 3
-		replace hh_relation = "Spouse of the son/daughterof the head of the family" if hh_relation_with == 4
-		replace hh_relation = "Grandson/granddaughter of the head of the family" if hh_relation_with == 5
-		replace hh_relation = "Father/Mother of the HH" if hh_relation_with == 6
-		replace hh_relation = "Father/Mother of the spouse of the head of the family" if hh_relation_with == 7
-		replace hh_relation = "Brother/sister of the head ofthe family" if hh_relation_with == 8
-		replace hh_relation = "Brother/sister of the HH's spouse" if hh_relation_with == 9
-		replace hh_relation = "Adopted child" if hh_relation_with == 10
-		replace hh_relation = "House help" if hh_relation_with == 11
-		replace hh_relation = "Other person related to the head of the family" if hh_relation_with == 12
-		replace hh_relation = "Other person not related to the head of the family" if hh_relation_with == 13
-		replace hh_relation = "Niece/Nephew" if hh_relation_with == 14
-		
-		
-		gen UCAD_age = ""
-		gen UCAD_ID = ""
-		gen MATCH = ""
-		gen Unique = ""
-		gen SCORE = ""
-		gen Notes = ""
-		
-	keep hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation hhid individ UCAD_ID MATCH Unique SCORE Notes
-		order  hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation  hhid individ UCAD_ID MATCH Unique SCORE Notes
-
-	export excel using "$output_ucad\CRDES_Geuo_033A_Midline.xlsx", firstrow(variables) sheet("Geuo (033A)")  
-
 
 	
 	

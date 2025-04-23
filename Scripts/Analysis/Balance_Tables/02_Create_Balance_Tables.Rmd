@@ -87,7 +87,7 @@ summary_df <- balance_df_raw %>%
       group %in% c("1A", "1B") ~ "Treatment1",
       group %in% c("2A", "2B") ~ "Treatment2",
       group %in% c("3A", "3B") ~ "Treatment3",
-      group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control"
+      #group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control"
     )
   ) %>% select(-group)
 
@@ -111,7 +111,7 @@ balance_df <- balance_df_raw %>%
       group %in% c("0A", "0B") ~ "Control",
       group %in% c("1A", "1B") ~ "Treatment1",
       group %in% c("2A", "2B") ~ "Treatment2",
-       group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # Moved to the top
+       #group %in% c("1A", "1B", "2A", "2B", "3A", "3B") & trained_hh == 0 ~ "Local Control",  # Moved to the top
       group %in% c("3A", "3B") ~ "Treatment3"
     )
   ) %>% select(-group, -trained_hh)
@@ -268,7 +268,55 @@ summary_table_complete
 #%>%   filter(variable != "target_village")
 ```
 
-####Export summary table to HTML
+####export summary table to HTML
+
+##### subset for presentation
+
+```{r}
+ 
+	#hh_age_h 	hh_numero 	agri_6_15 agri_6_36_bin agri_6_34_comp_any beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin
+ 
+
+var_rows <- which(summary_table_complete$Variable %in% c("trained_hh", "hh_age_h", "hh_numero", 
+                 "total_land_ha", "hh_03_", "hh_10_", 
+                 "hh_26_"))
+
+# Keep those rows and the two following rows
+keep_rows <- sort(unique(c(var_rows, var_rows + 1, var_rows + 2)))
+
+# Filter the data to keep only those rows
+summary_table_subset <- summary_table_complete %>% slice(keep_rows) %>% 
+    select(-Question)
+
+summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "trained_hh"] <- "Trained Household"
+summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_age_h"] <- "Household Head Age"
+summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_numero"] <- "Household Size"
+summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "total_land_ha"] <- "Total Land"
+summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_03_"] <- "Worked in Agriculture"
+summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_10_"] <- "Hours Near Water"
+summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_26_"] <- "Child Enrolled"
+
+summary_table_subset
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+#Create table with footnotes using kableExtra
+summary_table_subset %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics Subset") %>%
+  footnote(
+general = "Table reports mean values, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.",
+symbol = c(
+  "Binary variables were created from Likert scale responses based on their distribution.",
+  "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+  ) %>%
+  save_kable("baseline_balance_summary_subset.html")
+
+
+
+
+```
+
+
+
 
 ```{r}
 
@@ -283,13 +331,13 @@ symbol = c(
   "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("baseline_summary_statsV7.html")
+  save_kable("baseline_balance_summary_statsV8.html")
 
 #my_quarto_project/reports/baseline_summary_statsV5.html
 
 ```
 
-####Export summary table to Excel
+####export summary table to Excel
 
 ```{r}
 # Excel spreadsheet
@@ -316,6 +364,14 @@ write_xlsx(summary_table_with_footnotes, "baseline_summary_statsV7.xlsx")
 
 
 
+
+
+
+
+
+
+
+#BALANCE TABLE SECTION
 
 ## Create function for regression coefficients
 
@@ -483,7 +539,8 @@ balance_tablev4
   
 balance_tablev6 <- balance_tablev5 %>%
   # Format p-values with parentheses and add significance stars
-  mutate(across(c(`treatment_groupLocal Control`, `treatment_groupTreatment1`, `treatment_groupTreatment2`, `treatment_groupTreatment3`), 
+  # removed `treatment_groupLocal Control`, as we're not including local control anymore
+  mutate(across(c(`treatment_groupTreatment1`, `treatment_groupTreatment2`, `treatment_groupTreatment3`), 
     ~ as.character(ifelse(
       grepl("p", type), 
       paste0("(", trimws(.), ifelse(as.numeric(.) <= 0.01, "**", ifelse(as.numeric(.) <= 0.05, "*", "")), ")"), 
@@ -494,7 +551,7 @@ balance_tablev6 <- balance_tablev5 %>%
  
 balance_tablev7 <- balance_tablev6 %>%
   # Add brackets around numeric q-values in each cell
- mutate(across(c(`treatment_groupLocal Control`, `treatment_groupTreatment1`, `treatment_groupTreatment2`, `treatment_groupTreatment3`), 
+ mutate(across(c(`treatment_groupTreatment1`, `treatment_groupTreatment2`, `treatment_groupTreatment3`), 
  ~ as.character(ifelse(
     grepl("q", type),
     paste0("[", trimws(.x), ifelse(as.numeric(.x) <= 0.01, "**", ifelse(as.numeric(.x) <= 0.05, "*", "")), "]"),
@@ -616,7 +673,7 @@ balance_tablev11 <- balance_tablev10 %>%
     N = N,  # Keep N as is
     `F-test` = f_statistic,
     Type = type,  # Optional: keep or drop depending on usage
-    `Local Control` = `treatment_groupLocal Control`,
+   # `Local Control` = `treatment_groupLocal Control`,
     `Private Treatment` = `treatment_groupTreatment1`,
     `Public Treatment` = `treatment_groupTreatment2`,
     `Public & Private Treatment` = `treatment_groupTreatment3`,
@@ -625,13 +682,12 @@ balance_tablev11 <- balance_tablev10 %>%
   )
 balance_tablev11
 
-# final_table
-# 
-# 
+
+
 desired_column_order <- c(
        "N",
        "Control Mean",
-       "Local Control",
+      # "Local Control",
        "Private Treatment",
        "Public Treatment",
        "Public & Private Treatment",
@@ -648,10 +704,67 @@ final_table <- balance_tablev11 %>%
 
 
 ```
+#OUTPUT TABLE 
+
+#### table subset
+
+```{r}
+
+# Identify the row numbers where the variable names appear
+var_rows <- which(final_table$Variable %in% c("hh_age_h", "hh_numero", "agri_6_15", "agri_6_36_bin", 
+                                       "agri_6_34_comp_any", "beliefs_04_bin", "beliefs_05_bin", 
+                                       "beliefs_06_bin", "beliefs_07_bin", "beliefs_08_bin", 
+                                       "beliefs_09_bin"))
 
 
 
-#OUTPUT TABLE WITH JOINT F TEST
+# Keep those rows and the two following rows
+keep_rows <- sort(unique(c(var_rows, var_rows + 1, var_rows + 2)))
+
+# Filter the data to keep only those rows
+final_table_subset <- final_table %>% slice(keep_rows)  %>% 
+  select(-Question)
+
+final_table_subset
+
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "hh_numero"] <- "HH size"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "agri_6_15"] <- "# plots"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "agri_6_36_bin"] <- "Used chem fert"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "agri_6_34_comp_any"] <- "Used compost"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_04_bin"] <- "Land = community"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_05_bin"] <- "Water = community"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_06_bin"] <- "Right: own land"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_07_bin"] <- "Right: comm land"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_08_bin"] <- "Right: fish water"
+final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_09_bin"] <- "Right: harvest water"
+
+
+
+
+setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+
+final_table_subset %>%
+  kable(format = "html", escape = FALSE, caption = "Baseline Balance Table Subset") %>%
+  footnote(
+    general = c(
+      "LR chi2( 123 ) = ",
+      "Prob > chi2 = ",
+      "Number of obs = 1,928",
+      "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01)."
+    ),
+    symbol = c(
+      "Binary variables were derived from Likert scale responses based on their distribution.",
+      "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."
+    ),
+    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+  ) %>%
+  save_kable("balance_table_subset.html")
+##balance_tablev11.html = without -9s
+```
+
+
+
+##html output
 
 
 ```{r}
@@ -672,7 +785,7 @@ final_table %>%
     ),
     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
   ) %>%
-  save_kable("balance_tablev_jointf_6.html")
+  save_kable("balance_table_v7.html")
 ##balance_tablev11.html = without -9s
 ```
 

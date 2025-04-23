@@ -258,7 +258,8 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 
 
 
-* Reshape long with hhid and id
+* Loop over first index to correct for reshape 
+
 	forval i = 1/7 {
 		* Loop over the second index (1 to 55)
 		forval j = 1/55 {
@@ -272,7 +273,7 @@ use "$data\Complete_Baseline_Household_Roster.dta", clear
 	}
 
 
-* Reshape long with hhid and id
+* Loop over first index to correct for reshape 
 	forval i = 1/7 {
 		* Loop over the second index (1 to 55)
 		forval j = 1/55 {

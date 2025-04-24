@@ -1,0 +1,30 @@
+/* styles.css */
+
+/* Adjust the body and content to be wider */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+main.content {
+  max-width: 100%;  /* This allows content to take up full width */
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.container {
+  max-width: 100%;
+}
+
+.panel-tabset {
+  max-width: 100%;
+}
+
+/* If you want to change the width of the iframe as well */
+iframe {
+  width: 150%; /* Make iframe wider */
+  height: 600px; /* Fixed height for iframe */
+  border: none;
+}

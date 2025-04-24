@@ -1,0 +1,27 @@
+---
+title: "Embedded Reports"
+format:
+  html:
+    css: styles.css
+editor: visual
+---
+
+# NSF-Senegal Project
+## Balance Table & Summary Statistics
+
+Below are the baseline reports. All variales and their descriptions are in the variable description tab. 
+
+::: {.panel-tabset}
+
+### Balance Table
+
+<iframe src="balance_table_v7.html" width="155%" height="600px" style="border:none; max-width: 100%;"></iframe>
+
+
+---
+
+### Summary Statistics
+
+<iframe src="baseline_balance_summary_statsV8.html" width="155%" height="600px" style="border:none; max-width: 100%;"></iframe>
+
+:::

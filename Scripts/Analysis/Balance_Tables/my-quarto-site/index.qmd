@@ -1,0 +1,5 @@
+---
+title: "Project Dashboard"
+---
+
+Welcome to the team dashboard! Use the menu to explore project-specific reports.

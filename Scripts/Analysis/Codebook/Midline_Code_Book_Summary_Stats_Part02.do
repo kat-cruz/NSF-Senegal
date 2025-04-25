@@ -10,6 +10,7 @@
 * specifically the ones that the R file with "_01" suffix do not compute
 						
 *** Procedure: ***
+* run by section as you update codebook for appropriate variables
 
 capture log close
 clear all

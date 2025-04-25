@@ -6,7 +6,8 @@
 **************************************************
 
 *** This Do File PROCESSES: DISES_Baseline_Complete_PII.dta ***
-*** This Do File CREATES: ***
+*** This Do File CREATES: summarary statistics to input into codebook***
+* specifically the ones that the R file with "_01" suffix do not compute
 						
 *** Procedure: ***
 

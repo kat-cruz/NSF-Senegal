@@ -1,0 +1,50 @@
+---
+title: "Baseline Table"
+format: html
+---
+
+## Table Output
+
+
+## Results {.panel-tabset}
+
+
+::: {.panel-tabset}
+
+### Balance Table
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Define a vector of required packages
+packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
+              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
+              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "quarto")
+
+
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages
+lapply(packages, library, character.only = TRUE)
+
+
+# Load the saved data frame
+final_table <- readRDS("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/final_table.rds")
+
+# Display the table with conditional row highlighting where Question is not empty
+ knitr::kable(final_table, format = "html", caption = "Baseline Balance Table") %>%
+   kableExtra::row_spec(which(final_table$Question != ""), background = "#f2f2f2")
+ 
+ 
+
+```
+
+### Tables
+
+```{r}
+head(mtcars)
+```
+
+
+:::

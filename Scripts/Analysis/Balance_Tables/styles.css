@@ -28,3 +28,22 @@ iframe {
   height: 600px; /* Fixed height for iframe */
   border: none;
 }
+
+.sticky-header-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.sticky-header-table th, .sticky-header-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.sticky-header-table th {
+  position: sticky;
+  top: 0;
+  background-color: #f9f9f9;
+  z-index: 2;
+}

@@ -7,7 +7,6 @@ output: html_document
 
 #INITIATE SCRIPT
 
-```{r}
 # Define a vector of required packages
 packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
               "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
@@ -21,11 +20,11 @@ if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
 lapply(packages, library, character.only = TRUE)
 
 
-```
+
 
 ### Define file paths and load data 
 
-```{r}
+
 
 # Define the file paths
 proj_paths <- list(
@@ -56,11 +55,11 @@ file_path_asset_index_df <- file.path(proj$p1, "PCA_asset_index_var.dta")
 asset_df_raw <- read_dta(file_path_asset_index_df)
 asset_df_raw
 
-```
 
 
 
-```{r}
+
+
 
 
 
@@ -118,14 +117,14 @@ balance_df <- balance_df_raw %>%
 balance_df
 
 
-```
+
 
 
 ##Compute summary stats
 
 
 
-```{r}
+
 
 
 compute_summary_stats <- function(df) {
@@ -155,10 +154,10 @@ summary_table1 <- compute_summary_stats(long_data_sum)
 # View output
 print(summary_table1)
 
-```
+
 
 ###Clean up summary table
-```{R}
+
 
 summary_table2 <- summary_table1 %>%
   
@@ -189,11 +188,11 @@ mutate(
 
 summary_table2
 
-```
+
 
 ###Bring in survey questions and values
 
-```{r}
+
 
 
 summary_table3 <- summary_table2 %>%
@@ -266,101 +265,101 @@ summary_table_complete <- summary_table3 %>% select(Question, everything()) %>%
          `Private and Public Treatment` = Treatment3)
 summary_table_complete
 #%>%   filter(variable != "target_village")
-```
+
 
 ####export summary table to HTML
 
 ##### subset for presentation
 
-```{r}
+
  
 	#hh_age_h 	hh_numero 	agri_6_15 agri_6_36_bin agri_6_34_comp_any beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin beliefs_09_bin
  
-
-var_rows <- which(summary_table_complete$Variable %in% c("trained_hh", "hh_age_h", "hh_numero", 
-                 "total_land_ha", "hh_03_", "hh_10_", 
-                 "hh_26_"))
-
-# Keep those rows and the two following rows
-keep_rows <- sort(unique(c(var_rows, var_rows + 1, var_rows + 2)))
-
-# Filter the data to keep only those rows
-summary_table_subset <- summary_table_complete %>% slice(keep_rows) %>% 
-    select(-Question)
-
-summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "trained_hh"] <- "Trained Household"
-summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_age_h"] <- "Household Head Age"
-summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_numero"] <- "Household Size"
-summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "total_land_ha"] <- "Total Land"
-summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_03_"] <- "Worked in Agriculture"
-summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_10_"] <- "Hours Near Water"
-summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_26_"] <- "Child Enrolled"
-
-summary_table_subset
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
-#Create table with footnotes using kableExtra
-summary_table_subset %>%
-  kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics Subset") %>%
-  footnote(
-general = "Table reports mean values, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.",
-symbol = c(
-  "Binary variables were created from Likert scale responses based on their distribution.",
-  "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
-    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
-  ) %>%
-  save_kable("baseline_balance_summary_subset.html")
-
-
-
-
-```
+# 
+# var_rows <- which(summary_table_complete$Variable %in% c("trained_hh", "hh_age_h", "hh_numero", 
+#                  "total_land_ha", "hh_03_", "hh_10_", 
+#                  "hh_26_"))
+# 
+# # Keep those rows and the two following rows
+# keep_rows <- sort(unique(c(var_rows, var_rows + 1, var_rows + 2)))
+# 
+# # Filter the data to keep only those rows
+# summary_table_subset <- summary_table_complete %>% slice(keep_rows) %>% 
+#     select(-Question)
+# 
+# summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "trained_hh"] <- "Trained Household"
+# summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_age_h"] <- "Household Head Age"
+# summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_numero"] <- "Household Size"
+# summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "total_land_ha"] <- "Total Land"
+# summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_03_"] <- "Worked in Agriculture"
+# summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_10_"] <- "Hours Near Water"
+# summary_table_subset$Variable[var_rows & summary_table_subset$Variable == "hh_26_"] <- "Child Enrolled"
+# 
+# summary_table_subset
+# setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+# #Create table with footnotes using kableExtra
+# summary_table_subset %>%
+#   kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics Subset") %>%
+#   footnote(
+# general = "Table reports mean values, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.",
+# symbol = c(
+#   "Binary variables were created from Likert scale responses based on their distribution.",
+#   "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
+#     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+#   ) %>%
+#   save_kable("baseline_balance_summary_subset.html")
+# 
+# 
 
 
 
 
-```{r}
 
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
-#Create table with footnotes using kableExtra
-summary_table_complete %>%
-  kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics") %>%
-  footnote(
-general = "Table reports mean values, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.",
-symbol = c(
-  "Binary variables were created from Likert scale responses based on their distribution.",
-  "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
-    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
-  ) %>%
-  save_kable("baseline_balance_summary_statsV8.html")
 
-#my_quarto_project/reports/baseline_summary_statsV5.html
 
-```
+
+# 
+# setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+# #Create table with footnotes using kableExtra
+# summary_table_complete %>%
+#   kable(format = "html", escape = FALSE, caption = "Baseline Summary Statistics") %>%
+#   footnote(
+# general = "Table reports mean values, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.",
+# symbol = c(
+#   "Binary variables were created from Likert scale responses based on their distribution.",
+#   "'I Don't Know' responses (coded as 2) have been recoded as missing values."),
+#     symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
+#   ) %>%
+#   save_kable("baseline_balance_summary_statsV8.html")
+# 
+# #my_quarto_project/reports/baseline_summary_statsV5.html
+# 
+
 
 ####export summary table to Excel
 
-```{r}
+
 # Excel spreadsheet
-setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
-# Manually add footnotes as a single row
-footnotes <- data.frame(
-  Variable = "Footnotes:",
-  Mean = "Table reports mean values, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.",
-  SD = "+ Binary variables were created from Likert scale responses based on their distribution.",
-  Other = "† 'I Don't Know' responses (coded as 2) have been recoded as missing values."
-)
+# setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
+# # Manually add footnotes as a single row
+# footnotes <- data.frame(
+#   Variable = "Footnotes:",
+#   Mean = "Table reports mean values, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.",
+#   SD = "+ Binary variables were created from Likert scale responses based on their distribution.",
+#   Other = "† 'I Don't Know' responses (coded as 2) have been recoded as missing values."
+# )
+# 
+# # Ensure all columns are character type to avoid coercion issues
+# summary_table_complete <- summary_table_complete %>%
+#   mutate(across(everything(), as.character))
+# 
+# # Bind footnotes to the summary table
+# summary_table_with_footnotes <- bind_rows(summary_table_complete, footnotes)
+# 
+# # Save to Excel
+# write_xlsx(summary_table_with_footnotes, "baseline_summary_statsV7.xlsx")
+# 
 
-# Ensure all columns are character type to avoid coercion issues
-summary_table_complete <- summary_table_complete %>%
-  mutate(across(everything(), as.character))
-
-# Bind footnotes to the summary table
-summary_table_with_footnotes <- bind_rows(summary_table_complete, footnotes)
-
-# Save to Excel
-write_xlsx(summary_table_with_footnotes, "baseline_summary_statsV7.xlsx")
-
-```
 
 
 
@@ -378,7 +377,7 @@ write_xlsx(summary_table_with_footnotes, "baseline_summary_statsV7.xlsx")
 
 
 
-```{r}
+
 
 run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
   results_list <- list()
@@ -459,11 +458,11 @@ run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) 
 # Print the combined results
 print(regression_results)
 
-```
+
 
 #### compute FDR adjusted p-values
 
-```{r}
+
 compute_fdr_qvalues <- function(regression_results) {
 
   # Apply Benjamini-Hochberg correction to regression p-values
@@ -478,11 +477,11 @@ regression_results_qvals <- compute_fdr_qvalues(regression_results)
 
 # Print results
 print(regression_results_qvals)
-```
+
 
 #### create complete balance table
 
-```{r}
+
 
 subtable <- regression_results_qvals %>%
   select(variable, control_mean, control_se) #%>%
@@ -560,17 +559,17 @@ balance_tablev7 <- balance_tablev6 %>%
 
 balance_tablev7
 
-```
-```{r}
+
+
 balance_tablev7
 
 balance_tablev8
-```
+
 
 
 ####Add survey questions and values 
 
-```{r}
+
 
 balance_tablev8 <- balance_tablev7 %>%
   mutate(
@@ -711,219 +710,12 @@ final_table <- balance_tablev11 %>%
  print(final_table)
 
 
-
-
-```
-#OUTPUT TABLE 
-
-#### table subset
-
-```{r}
-
-# Identify the row numbers where the variable names appear
-var_rows <- which(final_table$Variable %in% c("hh_age_h", "hh_numero", "agri_6_15", "agri_6_36_bin", 
-                                       "agri_6_34_comp_any", "beliefs_04_bin", "beliefs_05_bin", 
-                                       "beliefs_06_bin", "beliefs_07_bin", "beliefs_08_bin", 
-                                       "beliefs_09_bin"))
-
-
-
-# Keep those rows and the two following rows
-keep_rows <- sort(unique(c(var_rows, var_rows + 1, var_rows + 2)))
-
-# Filter the data to keep only those rows
-final_table_subset <- final_table %>% slice(keep_rows)  %>% 
-  select(-Question)
-
-final_table_subset
-
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "hh_numero"] <- "HH size"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "agri_6_15"] <- "# plots"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "agri_6_36_bin"] <- "Used chem fert"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "agri_6_34_comp_any"] <- "Used compost"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_04_bin"] <- "Land = community"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_05_bin"] <- "Water = community"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_06_bin"] <- "Right: own land"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_07_bin"] <- "Right: comm land"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_08_bin"] <- "Right: fish water"
-final_table_subset$Variable[var_rows & final_table_subset$Variable == "beliefs_09_bin"] <- "Right: harvest water"
-
-
-
-
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
-
-final_table_subset %>%
-  kable(format = "html", escape = FALSE, caption = "Baseline Balance Table Subset") %>%
-  footnote(
-    general = c(
-      "LR chi2( 123 ) = ",
-      "Prob > chi2 = ",
-      "Number of obs = 1,928",
-      "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01)."
-    ),
-    symbol = c(
-      "Binary variables were derived from Likert scale responses based on their distribution.",
-      "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."
-    ),
-    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
-  ) %>%
-  save_kable("balance_table_subset.html")
-##balance_tablev11.html = without -9s
-```
-
-
-
-##html output
-
-
-```{r}
-#setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
-
-#setwd("C:Users/km978/Downloads/SenegalGIT/NSF-Senegal/Scripts/Analysis/Balance_Tables")
-
-
-final_table %>%
-  kable(format = "html", escape = FALSE, caption = "Baseline Balance Table") %>%
-  footnote(
-    general = c(
-      "LR chi2( 123 ) = ",
-      "Prob > chi2 = ",
-      "Number of obs = 1,928",
-      "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets. Standard errors are clustered at the village level. The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses. P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01)."
-    ),
-    symbol = c(
-      "Binary variables were derived from Likert scale responses based on their distribution.",
-      "Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."
-    ),
-    symbol_manual = c("+", "†")  # Manually set symbols instead of default numbering
-  ) 
-#%>%
- # save_kable("balance_table_v8.html")
-##balance_tablev11.html = without -9s
-```
-
-#####excel output
-
-```{r}
-
-# Excel spreadsheet
-setwd("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
-
-# Define footnotes as a data frame
-footnotes <- data.frame(
-  Notes = c(
-    "LR chi2( 123 ) = ",
-    "Prob > chi2 = ",
-    "Number of obs = 1,928",
-    "Reported statistics are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets.",
-    "Standard errors are clustered at the village level.",
-    "The means for the Control group are presented in the 'Control Mean' column, with standard errors in parentheses.",
-    "P-values indicate statistical significance: * denotes significance at the 5% level (p ≤ 0.05), and ** denotes significance at the 1% level (p ≤ 0.01).",
-    "+ Binary variables were derived from Likert scale responses based on their distribution.",
-    "† Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values."
-  )
-)
-
-# Save final table and footnotes in the same Excel file
-write_xlsx(list(
-  "Baseline Balance Table" = final_table,
-  "Footnotes" = footnotes
-), "balance_tablev_jointf_6.xlsx")
-
-```
+final_table
 
 
 
 
 
-
-#Asset index summary
-
-
-
-
-```{r}
-setwd("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables")
-
-
-# Example summary stats (assuming asset_df_raw is your dataframe)
-summary_stats <- asset_df_raw %>%
-  summarise(
-    asset_index_mean = mean(asset_index, na.rm = TRUE),
-    asset_index_sd = sd(asset_index, na.rm = TRUE),
-    asset_index_min = min(asset_index, na.rm = TRUE),
-    asset_index_max = max(asset_index, na.rm = TRUE),
-    
-    asset_index_std_mean = mean(asset_index_std, na.rm = TRUE),
-    asset_index_std_sd = sd(asset_index_std, na.rm = TRUE),
-    asset_index_std_min = min(asset_index_std, na.rm = TRUE),
-    asset_index_std_max = max(asset_index_std, na.rm = TRUE)
-  )
-
-# Description of how the index was created (included in the note)
-index_description <- "
-<p style='font-family: Arial, sans-serif;'><strong><u>Note on Asset Index Creation:</u></strong><br><br>
-<b>Summary of Variable Creation & Analysis:</b><br>
-<b>Variable Creation:</b><br>
-<ul>
-  <li><strong>Living Condition Variables:</strong> Binary variables were created for the following:</li>
-  <ul>
-    <li><strong>Water Source (living_01):</strong> Indoor tap, Public tap, or Neighbor's tap (coded as 1).</li>
-    <li><strong>Water Treatment (living_02):</strong> Household water treated (1 for Yes).</li>
-    <li><strong>Toilet Type (living_04):</strong> Flush toilet with sewer or septic tank (coded as 1).</li>
-    <li><strong>Cooking Fuel (living_05):</strong> Gas, Electricity, Petrol/oil/ethanol, Animal waste/dung, or Solar (coded as 1).</li>
-    <li><strong>Lighting (living_06):</strong> Electric generator or Solar (coded as 1).</li>
-  </ul>
-  <li><strong>Asset Index Creation:</strong> A Total Livestock Unit (TLU) variable was created based on the type and number of livestock species (Cattle, Sheep, Goats, etc.).</li>
-  <li><strong>Ownership and Agricultural Activities:</strong> Binary variables were created for household ownership of dwelling (agri_6_5_bin) and certain agricultural activities (agri_6_23_bin).</li>
-  <li><strong>Data Standardization:</strong> Continuous variables TLU and rooms per member were standardized using z-scores.</li>
-  <li><strong>Principal Component Analysis (PCA):</strong> PCA was performed on the binary living conditions variables, the asset-related variables, and standardized continuous variables (TLU and rooms_per_member). The first principal component (PC1) was extracted as the asset index, representing household wealth or socioeconomic status.</li>
-  <li><strong>Normalization:</strong> The asset index (asset_index) was standardized (z-score transformation) to create the variable asset_index_std.</li>
-</ul>
-<b>Final Variables:</b><br>
-<ul>
-  <li>living_01_bin, living_02_bin, living_05_bin, living_06_bin, agri_6_5_bin, agri_6_23_bin, TLU, rooms_per_member, asset_index, asset_index_std</li>
-</ul>
-</p>
-"
-
-# Combine summary statistics into a table
-output_table <- tibble(
-  Variable = c("Asset Index", "Asset Index Standardized"),
-  Mean = c(summary_stats$asset_index_mean, summary_stats$asset_index_std_mean),
-  SD = c(summary_stats$asset_index_sd, summary_stats$asset_index_std_sd),
-  Min = c(summary_stats$asset_index_min, summary_stats$asset_index_std_min),
-  Max = c(summary_stats$asset_index_max, summary_stats$asset_index_std_max)
-)
-
-# Create HTML output with table and note (in standard font)
-html_output <- kable(output_table, "html", caption = "Summary Statistics for Asset Index Variables") %>%
-  kable_styling() %>%
-  add_header_above(c("Variable Summary" = 5)) %>%
-  row_spec(0, bold = TRUE)
-
-# Combine the description and the table for the HTML output
-html_content <- paste0(
-  "<html><head><style>body {font-family: Arial, sans-serif;}</style></head><body>", 
-  as.character(html_output), 
-  "<br>", 
-  index_description,
-  "</body></html>"
-)
-
-# Specify the file to save the HTML output
-output_file <- "asset_index_summary_results_with_notes.html"
-
-# Write the combined content (note + table) to the HTML file
-writeLines(html_content, output_file)
-
-# Check output
-cat("HTML file has been created: ", output_file)
-
-
-
-```
 
 
 

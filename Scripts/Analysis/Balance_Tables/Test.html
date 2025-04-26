@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Baseline Table</title>
+<title>Baseline Balance Table</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,41 +19,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -85,7 +50,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Baseline Table</h1>
+<h1 class="title">Baseline Balance Table</h1>
 </div>
 
 
@@ -102,1447 +67,2734 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="table-output" class="level2">
-<h2 class="anchored" data-anchor-id="table-output">Table Output</h2>
+<section id="last-updated-april-2025" class="level2">
+<h2 class="anchored" data-anchor-id="last-updated-april-2025">Last updated: April 2025</h2>
 </section>
 <section id="results" class="level2 panel-tabset">
 <h2 class="panel-tabset anchored" data-anchor-id="results">Results</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Balance Table</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Tables</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Variable Descriptions</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Balance Table</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Summary Statistics</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[[1]]
- [1] "clusterSEs" "plm"        "Formula"    "AER"        "survival"  
- [6] "sandwich"   "lmtest"     "zoo"        "car"        "carData"   
-[11] "stats"      "graphics"   "grDevices"  "utils"      "datasets"  
-[16] "methods"    "base"      
-
-[[2]]
- [1] "mlogit"     "dfidx"      "clusterSEs" "plm"        "Formula"   
- [6] "AER"        "survival"   "sandwich"   "lmtest"     "zoo"       
-[11] "car"        "carData"    "stats"      "graphics"   "grDevices" 
-[16] "utils"      "datasets"   "methods"    "base"      
-
-[[3]]
- [1] "writexl"    "mlogit"     "dfidx"      "clusterSEs" "plm"       
- [6] "Formula"    "AER"        "survival"   "sandwich"   "lmtest"    
-[11] "zoo"        "car"        "carData"    "stats"      "graphics"  
-[16] "grDevices"  "utils"      "datasets"   "methods"    "base"      
-
-[[4]]
- [1] "dplyr"      "writexl"    "mlogit"     "dfidx"      "clusterSEs"
- [6] "plm"        "Formula"    "AER"        "survival"   "sandwich"  
-[11] "lmtest"     "zoo"        "car"        "carData"    "stats"     
-[16] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
-[21] "base"      
-
-[[5]]
- [1] "readr"      "dplyr"      "writexl"    "mlogit"     "dfidx"     
- [6] "clusterSEs" "plm"        "Formula"    "AER"        "survival"  
-[11] "sandwich"   "lmtest"     "zoo"        "car"        "carData"   
-[16] "stats"      "graphics"   "grDevices"  "utils"      "datasets"  
-[21] "methods"    "base"      
-
-[[6]]
- [1] "tidyr"      "readr"      "dplyr"      "writexl"    "mlogit"    
- [6] "dfidx"      "clusterSEs" "plm"        "Formula"    "AER"       
-[11] "survival"   "sandwich"   "lmtest"     "zoo"        "car"       
-[16] "carData"    "stats"      "graphics"   "grDevices"  "utils"     
-[21] "datasets"   "methods"    "base"      
-
-[[7]]
- [1] "haven"      "tidyr"      "readr"      "dplyr"      "writexl"   
- [6] "mlogit"     "dfidx"      "clusterSEs" "plm"        "Formula"   
-[11] "AER"        "survival"   "sandwich"   "lmtest"     "zoo"       
-[16] "car"        "carData"    "stats"      "graphics"   "grDevices" 
-[21] "utils"      "datasets"   "methods"    "base"      
-
-[[8]]
- [1] "data.table" "haven"      "tidyr"      "readr"      "dplyr"     
- [6] "writexl"    "mlogit"     "dfidx"      "clusterSEs" "plm"       
-[11] "Formula"    "AER"        "survival"   "sandwich"   "lmtest"    
-[16] "zoo"        "car"        "carData"    "stats"      "graphics"  
-[21] "grDevices"  "utils"      "datasets"   "methods"    "base"      
-
-[[9]]
- [1] "lubridate"  "forcats"    "stringr"    "purrr"      "tibble"    
- [6] "ggplot2"    "tidyverse"  "data.table" "haven"      "tidyr"     
-[11] "readr"      "dplyr"      "writexl"    "mlogit"     "dfidx"     
-[16] "clusterSEs" "plm"        "Formula"    "AER"        "survival"  
-[21] "sandwich"   "lmtest"     "zoo"        "car"        "carData"   
-[26] "stats"      "graphics"   "grDevices"  "utils"      "datasets"  
-[31] "methods"    "base"      
-
-[[10]]
- [1] "estimatr"   "lubridate"  "forcats"    "stringr"    "purrr"     
- [6] "tibble"     "ggplot2"    "tidyverse"  "data.table" "haven"     
-[11] "tidyr"      "readr"      "dplyr"      "writexl"    "mlogit"    
-[16] "dfidx"      "clusterSEs" "plm"        "Formula"    "AER"       
-[21] "survival"   "sandwich"   "lmtest"     "zoo"        "car"       
-[26] "carData"    "stats"      "graphics"   "grDevices"  "utils"     
-[31] "datasets"   "methods"    "base"      
-
-[[11]]
- [1] "broom"      "estimatr"   "lubridate"  "forcats"    "stringr"   
- [6] "purrr"      "tibble"     "ggplot2"    "tidyverse"  "data.table"
-[11] "haven"      "tidyr"      "readr"      "dplyr"      "writexl"   
-[16] "mlogit"     "dfidx"      "clusterSEs" "plm"        "Formula"   
-[21] "AER"        "survival"   "sandwich"   "lmtest"     "zoo"       
-[26] "car"        "carData"    "stats"      "graphics"   "grDevices" 
-[31] "utils"      "datasets"   "methods"    "base"      
-
-[[12]]
- [1] "kableExtra" "broom"      "estimatr"   "lubridate"  "forcats"   
- [6] "stringr"    "purrr"      "tibble"     "ggplot2"    "tidyverse" 
-[11] "data.table" "haven"      "tidyr"      "readr"      "dplyr"     
-[16] "writexl"    "mlogit"     "dfidx"      "clusterSEs" "plm"       
-[21] "Formula"    "AER"        "survival"   "sandwich"   "lmtest"    
-[26] "zoo"        "car"        "carData"    "stats"      "graphics"  
-[31] "grDevices"  "utils"      "datasets"   "methods"    "base"      
-
-[[13]]
- [1] "kableExtra" "broom"      "estimatr"   "lubridate"  "forcats"   
- [6] "stringr"    "purrr"      "tibble"     "ggplot2"    "tidyverse" 
-[11] "data.table" "haven"      "tidyr"      "readr"      "dplyr"     
-[16] "writexl"    "mlogit"     "dfidx"      "clusterSEs" "plm"       
-[21] "Formula"    "AER"        "survival"   "sandwich"   "lmtest"    
-[26] "zoo"        "car"        "carData"    "stats"      "graphics"  
-[31] "grDevices"  "utils"      "datasets"   "methods"    "base"      
-
-[[14]]
- [1] "kableExtra" "broom"      "estimatr"   "lubridate"  "forcats"   
- [6] "stringr"    "purrr"      "tibble"     "ggplot2"    "tidyverse" 
-[11] "data.table" "haven"      "tidyr"      "readr"      "dplyr"     
-[16] "writexl"    "mlogit"     "dfidx"      "clusterSEs" "plm"       
-[21] "Formula"    "AER"        "survival"   "sandwich"   "lmtest"    
-[26] "zoo"        "car"        "carData"    "stats"      "graphics"  
-[31] "grDevices"  "utils"      "datasets"   "methods"    "base"      
-
-[[15]]
- [1] "kableExtra" "broom"      "estimatr"   "lubridate"  "forcats"   
- [6] "stringr"    "purrr"      "tibble"     "ggplot2"    "tidyverse" 
-[11] "data.table" "haven"      "tidyr"      "readr"      "dplyr"     
-[16] "writexl"    "mlogit"     "dfidx"      "clusterSEs" "plm"       
-[21] "Formula"    "AER"        "survival"   "sandwich"   "lmtest"    
-[26] "zoo"        "car"        "carData"    "stats"      "graphics"  
-[31] "grDevices"  "utils"      "datasets"   "methods"    "base"      
-
-[[16]]
- [1] "nnet"       "kableExtra" "broom"      "estimatr"   "lubridate" 
- [6] "forcats"    "stringr"    "purrr"      "tibble"     "ggplot2"   
-[11] "tidyverse"  "data.table" "haven"      "tidyr"      "readr"     
-[16] "dplyr"      "writexl"    "mlogit"     "dfidx"      "clusterSEs"
-[21] "plm"        "Formula"    "AER"        "survival"   "sandwich"  
-[26] "lmtest"     "zoo"        "car"        "carData"    "stats"     
-[31] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
-[36] "base"      
-
-[[17]]
- [1] "nnet"       "kableExtra" "broom"      "estimatr"   "lubridate" 
- [6] "forcats"    "stringr"    "purrr"      "tibble"     "ggplot2"   
-[11] "tidyverse"  "data.table" "haven"      "tidyr"      "readr"     
-[16] "dplyr"      "writexl"    "mlogit"     "dfidx"      "clusterSEs"
-[21] "plm"        "Formula"    "AER"        "survival"   "sandwich"  
-[26] "lmtest"     "zoo"        "car"        "carData"    "stats"     
-[31] "graphics"   "grDevices"  "utils"      "datasets"   "methods"   
-[36] "base"      
-
-[[18]]
- [1] "aod"        "nnet"       "kableExtra" "broom"      "estimatr"  
- [6] "lubridate"  "forcats"    "stringr"    "purrr"      "tibble"    
-[11] "ggplot2"    "tidyverse"  "data.table" "haven"      "tidyr"     
-[16] "readr"      "dplyr"      "writexl"    "mlogit"     "dfidx"     
-[21] "clusterSEs" "plm"        "Formula"    "AER"        "survival"  
-[26] "sandwich"   "lmtest"     "zoo"        "car"        "carData"   
-[31] "stats"      "graphics"   "grDevices"  "utils"      "datasets"  
-[36] "methods"    "base"      
-
-[[19]]
- [1] "clubSandwich" "aod"          "nnet"         "kableExtra"   "broom"       
- [6] "estimatr"     "lubridate"    "forcats"      "stringr"      "purrr"       
-[11] "tibble"       "ggplot2"      "tidyverse"    "data.table"   "haven"       
-[16] "tidyr"        "readr"        "dplyr"        "writexl"      "mlogit"      
-[21] "dfidx"        "clusterSEs"   "plm"          "Formula"      "AER"         
-[26] "survival"     "sandwich"     "lmtest"       "zoo"          "car"         
-[31] "carData"      "stats"        "graphics"     "grDevices"    "utils"       
-[36] "datasets"     "methods"      "base"        
-
-[[20]]
- [1] "quarto"       "clubSandwich" "aod"          "nnet"         "kableExtra"  
- [6] "broom"        "estimatr"     "lubridate"    "forcats"      "stringr"     
-[11] "purrr"        "tibble"       "ggplot2"      "tidyverse"    "data.table"  
-[16] "haven"        "tidyr"        "readr"        "dplyr"        "writexl"     
-[21] "mlogit"       "dfidx"        "clusterSEs"   "plm"          "Formula"     
-[26] "AER"          "survival"     "sandwich"     "lmtest"       "zoo"         
-[31] "car"          "carData"      "stats"        "graphics"     "grDevices"   
-[36] "utils"        "datasets"     "methods"      "base"        </code></pre>
-</div>
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Baseline Balance Table</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Question</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">N</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Control Mean</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Private Treatment</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Public Treatment</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Public &amp; Private Treatment</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">F-test</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Household head age</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_age_h</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2077</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">55.22</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-1.75</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-1.24</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-1.69</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.66</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.96)</td>
-<td style="text-align: left;">(0.21)</td>
-<td style="text-align: left;">(0.43)</td>
-<td style="text-align: left;">(0.26)</td>
-<td style="text-align: left;">(0.57)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.59]</td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for household head with secondary education or higher (1=Yes, 0=No)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_education_level _bin_h</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2077</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.06</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.68</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.01)</td>
-<td style="text-align: left;">(0.09)</td>
-<td style="text-align: left;">(0.08)</td>
-<td style="text-align: left;">(0.09)</td>
-<td style="text-align: left;">(0.17)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator that household head is literate (1=Yes, 0=No)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_education_ skills_5_h</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2077</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.19</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.05</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.15</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.02)</td>
-<td style="text-align: left;">(0.82)</td>
-<td style="text-align: left;">(0.27)</td>
-<td style="text-align: left;">(0.21)</td>
-<td style="text-align: left;">(0.33)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;">[0.59]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Household head gender (1=Male, 0=Female)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_gender_h</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2077</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.85</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.08</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.16</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.06</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">4.12</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.02)</td>
-<td style="text-align: left;">(0.03*)</td>
-<td style="text-align: left;">(0**)</td>
-<td style="text-align: left;">(0.1)</td>
-<td style="text-align: left;">(0.01)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.41]</td>
-<td style="text-align: left;">[0**]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Household size</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_numero</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">8.93</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.98</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-1.17</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.53</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">4.11</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.26)</td>
-<td style="text-align: left;">(0.01**)</td>
-<td style="text-align: left;">(0**)</td>
-<td style="text-align: left;">(0.16)</td>
-<td style="text-align: left;">(0.01)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.15]</td>
-<td style="text-align: left;">[0**]</td>
-<td style="text-align: left;">[0.55]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) †</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_03_</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.2</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.32</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.02)</td>
-<td style="text-align: left;">(0.52)</td>
-<td style="text-align: left;">(0.86)</td>
-<td style="text-align: left;">(0.82)</td>
-<td style="text-align: left;">(0.81)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.76]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Average weekly hours spent within 1 meter of surface water source, in the past 12 months.</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_10_</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">7.31</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.4</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.98</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.63</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.62</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.61)</td>
-<td style="text-align: left;">(0.62)</td>
-<td style="text-align: left;">(0.19)</td>
-<td style="text-align: left;">(0.4)</td>
-<td style="text-align: left;">(0.60)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.84]</td>
-<td style="text-align: left;">[0.59]</td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months. (1=Yes, 0=No)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_12_6_</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.83</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.01)</td>
-<td style="text-align: left;">(0.15)</td>
-<td style="text-align: left;">(0.15)</td>
-<td style="text-align: left;">(0.24)</td>
-<td style="text-align: left;">(0.48)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.54]</td>
-<td style="text-align: left;">[0.54]</td>
-<td style="text-align: left;">[0.64]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source).</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_16_</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.81</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.15</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.14</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.19</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.64</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.11)</td>
-<td style="text-align: left;">(0.29)</td>
-<td style="text-align: left;">(0.39)</td>
-<td style="text-align: left;">(0.18)</td>
-<td style="text-align: left;">(0.59)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;">[0.58]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_26_</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1955</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.61</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.8</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.03)</td>
-<td style="text-align: left;">(0.5)</td>
-<td style="text-align: left;">(0.73)</td>
-<td style="text-align: left;">(0.36)</td>
-<td style="text-align: left;">(0.49)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.75]</td>
-<td style="text-align: left;">[0.91]</td>
-<td style="text-align: left;">[0.67]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for primary level education (1=Yes, 0=No, asked about children)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_29_01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1955</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.43</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.81</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.02)</td>
-<td style="text-align: left;">(0.25)</td>
-<td style="text-align: left;">(0.59)</td>
-<td style="text-align: left;">(0.71)</td>
-<td style="text-align: left;">(0.49)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.64]</td>
-<td style="text-align: left;">[0.82]</td>
-<td style="text-align: left;">[0.9]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for secondary middle level education (1=Yes, 0=No, asked about children)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_29_02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1955</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.12</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.81</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.01)</td>
-<td style="text-align: left;">(0.76)</td>
-<td style="text-align: left;">(0.3)</td>
-<td style="text-align: left;">(0.15)</td>
-<td style="text-align: left;">(0.49)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.93]</td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;">[0.54]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for secondary higher level education (1=Yes, 0=No, asked about children)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_29_03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1955</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.36</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.01)</td>
-<td style="text-align: left;">(0.94)</td>
-<td style="text-align: left;">(0.43)</td>
-<td style="text-align: left;">(0.84)</td>
-<td style="text-align: left;">(0.78)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.96]</td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for upper secondary education (1=Yes, 0=No, asked about children)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_29_04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1955</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.03</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.00)</td>
-<td style="text-align: left;">(0.92)</td>
-<td style="text-align: left;">(0.16)</td>
-<td style="text-align: left;">(0.32)</td>
-<td style="text-align: left;">(0.38)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.96]</td>
-<td style="text-align: left;">[0.55]</td>
-<td style="text-align: left;">[0.66]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator if missed &gt;1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) †</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_37_</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1955</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.15</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.42</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.01)</td>
-<td style="text-align: left;">(0.72)</td>
-<td style="text-align: left;">(0.42)</td>
-<td style="text-align: left;">(0.35)</td>
-<td style="text-align: left;">(0.74)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.9]</td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;">[0.67]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Number of attended school days in the past week (asked about children)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">hh_38_</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1955</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">3.12</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.16</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.11</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.15</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.66</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.14)</td>
-<td style="text-align: left;">(0.43)</td>
-<td style="text-align: left;">(0.67)</td>
-<td style="text-align: left;">(0.5)</td>
-<td style="text-align: left;">(0.57)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;">[0.87]</td>
-<td style="text-align: left;">[0.75]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for selected tap water as main drinking source (1=Yes, 0=No)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">living_01_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.88</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.05</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.22</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.05)</td>
-<td style="text-align: left;">(0.75)</td>
-<td style="text-align: left;">(0.44)</td>
-<td style="text-align: left;">(0.56)</td>
-<td style="text-align: left;">(0.88)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.92]</td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;">[0.78]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Total paid for Game A (CFA)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">game_A_total</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">407.92</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-20.7</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">5.83</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">30.83</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.3</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(16.78)</td>
-<td style="text-align: left;">(0.37)</td>
-<td style="text-align: left;">(0.86)</td>
-<td style="text-align: left;">(0.25)</td>
-<td style="text-align: left;">(0.27)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.68]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.64]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Total paid for Game B (CFA)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">game_B_total</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">408.21</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-17.14</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">4.96</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">24.98</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.98</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(15.14)</td>
-<td style="text-align: left;">(0.43)</td>
-<td style="text-align: left;">(0.85)</td>
-<td style="text-align: left;">(0.31)</td>
-<td style="text-align: left;">(0.40)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Tropical livestock units</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">TLU</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.62</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.11</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.05)</td>
-<td style="text-align: left;">(0.99)</td>
-<td style="text-align: left;">(0.72)</td>
-<td style="text-align: left;">(0.64)</td>
-<td style="text-align: left;">(0.96)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[1]</td>
-<td style="text-align: left;">[0.9]</td>
-<td style="text-align: left;">[0.86]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Number of cultivated plots</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">agri_6_15</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2067</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.18</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.27</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.3</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">3.63</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.08)</td>
-<td style="text-align: left;">(0.07)</td>
-<td style="text-align: left;">(0.01**)</td>
-<td style="text-align: left;">(0**)</td>
-<td style="text-align: left;">(0.01)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0.15]</td>
-<td style="text-align: left;">[0**]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator if used any organic fertilizer (1=Yes, 0=No)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">agri_6_32_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2.04</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.00)</td>
-<td style="text-align: left;">(0.24)</td>
-<td style="text-align: left;">(0.31)</td>
-<td style="text-align: left;">(0.55)</td>
-<td style="text-align: left;">(0.11)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.64]</td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;">[0.78]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">agri_6_36_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.41</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.06</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.07</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.07</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.42</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.03)</td>
-<td style="text-align: left;">(0.12)</td>
-<td style="text-align: left;">(0.11)</td>
-<td style="text-align: left;">(0.11)</td>
-<td style="text-align: left;">(0.24)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.53]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Total land cultivated (hectares)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">total_land_ha</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">4.25</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.66</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.12</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.56</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.42</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.40)</td>
-<td style="text-align: left;">(0.29)</td>
-<td style="text-align: left;">(0.9)</td>
-<td style="text-align: left;">(0.6)</td>
-<td style="text-align: left;">(0.74)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;">[0.96]</td>
-<td style="text-align: left;">[0.82]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Used any compost on any parcel (1=Yes, 0=No) †</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">agri_6_34_ comp_any</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.45</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.06</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.07</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.08</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.3</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.03)</td>
-<td style="text-align: left;">(0.2)</td>
-<td style="text-align: left;">(0.15)</td>
-<td style="text-align: left;">(0.08)</td>
-<td style="text-align: left;">(0.27)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.59]</td>
-<td style="text-align: left;">[0.54]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">agri_income_01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2076</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.27</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.06</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.07</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.03</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.03)</td>
-<td style="text-align: left;">(0.38)</td>
-<td style="text-align: left;">(0.14)</td>
-<td style="text-align: left;">(0.15)</td>
-<td style="text-align: left;">(0.38)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.68]</td>
-<td style="text-align: left;">[0.54]</td>
-<td style="text-align: left;">[0.54]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">agri_income_05</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2069</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">75176.78</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">72559.25</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">75265.61</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">107972.1</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">4.33</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(13712.43)</td>
-<td style="text-align: left;">(0.05*)</td>
-<td style="text-align: left;">(0.07)</td>
-<td style="text-align: left;">(0**)</td>
-<td style="text-align: left;">(0.00)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0**]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Probability of contracting bilharzia (1=Strongly agree/Agree) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_01_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.6</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.05</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.61</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.02)</td>
-<td style="text-align: left;">(0.65)</td>
-<td style="text-align: left;">(0.3)</td>
-<td style="text-align: left;">(0.81)</td>
-<td style="text-align: left;">(0.61)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.86]</td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Probability of household member contracting bilharzia (1=Yes, 0=No) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_02_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.65</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.06</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.53</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.03)</td>
-<td style="text-align: left;">(0.42)</td>
-<td style="text-align: left;">(0.18)</td>
-<td style="text-align: left;">(0.36)</td>
-<td style="text-align: left;">(0.20)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.69]</td>
-<td style="text-align: left;">[0.58]</td>
-<td style="text-align: left;">[0.67]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Probability of a child contracting bilharzia (1=Yes, 0=No) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_03_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.75</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.07</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.98</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.03)</td>
-<td style="text-align: left;">(0.38)</td>
-<td style="text-align: left;">(0.86)</td>
-<td style="text-align: left;">(0.04*)</td>
-<td style="text-align: left;">(0.12)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.68]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.49]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Agree: Village land should belong to community (1=Yes, 0=No) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_04_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.88</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2.13</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.02)</td>
-<td style="text-align: left;">(0.93)</td>
-<td style="text-align: left;">(0.07)</td>
-<td style="text-align: left;">(0.1)</td>
-<td style="text-align: left;">(0.10)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.96]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Agree: Village water sources should belong to community (1=Yes, 0=No) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_05_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.92</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.99</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.02)</td>
-<td style="text-align: left;">(0.8)</td>
-<td style="text-align: left;">(0.34)</td>
-<td style="text-align: left;">(0.08)</td>
-<td style="text-align: left;">(0.11)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.67]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Agree: Right to products from own land (1=Yes, 0=No) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_06_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.93</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.06</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2.8</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.01)</td>
-<td style="text-align: left;">(0.08)</td>
-<td style="text-align: left;">(0.5)</td>
-<td style="text-align: left;">(0.01**)</td>
-<td style="text-align: left;">(0.04)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0.75]</td>
-<td style="text-align: left;">[0.15]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Agree: Right to products from community land worked on (1=Yes, 0=No) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_07_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.66</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.05</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.03</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.72</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.03)</td>
-<td style="text-align: left;">(0.29)</td>
-<td style="text-align: left;">(0.86)</td>
-<td style="text-align: left;">(0.51)</td>
-<td style="text-align: left;">(0.54)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.76]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Agree: Right to products from community water sources fished in (1=Yes, 0=No) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_08_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.83</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.48</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.02)</td>
-<td style="text-align: left;">(0.54)</td>
-<td style="text-align: left;">(0.46)</td>
-<td style="text-align: left;">(1)</td>
-<td style="text-align: left;">(0.69)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.78]</td>
-<td style="text-align: left;">[0.72]</td>
-<td style="text-align: left;">[1]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Agree: Right to products from community water sources harvested from (1=Yes, 0=No) +</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">beliefs_09_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.75</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.05</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.48</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.01)</td>
-<td style="text-align: left;">(0.12)</td>
-<td style="text-align: left;">(0.93)</td>
-<td style="text-align: left;">(0.11)</td>
-<td style="text-align: left;">(0.22)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.53]</td>
-<td style="text-align: left;">[0.96]</td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">health_5_3_bin</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.01</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.46</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.00)</td>
-<td style="text-align: left;">(0.92)</td>
-<td style="text-align: left;">(0.97)</td>
-<td style="text-align: left;">(0.35)</td>
-<td style="text-align: left;">(0.71)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.96]</td>
-<td style="text-align: left;">[0.99]</td>
-<td style="text-align: left;">[0.67]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">health_5_6_</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2079</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.13</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.02</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.56</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.01)</td>
-<td style="text-align: left;">(0.84)</td>
-<td style="text-align: left;">(0.36)</td>
-<td style="text-align: left;">(0.28)</td>
-<td style="text-align: left;">(0.64)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.67]</td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Number of village water access points</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">num_water _access_points</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2.73</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.12</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.08</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">-0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.07</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.20)</td>
-<td style="text-align: left;">(0.67)</td>
-<td style="text-align: left;">(0.79)</td>
-<td style="text-align: left;">(0.89)</td>
-<td style="text-align: left;">(0.98)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.87]</td>
-<td style="text-align: left;">[0.94]</td>
-<td style="text-align: left;">[0.96]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Distance to nearest healthcare center (km) [village level]</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">q_51</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.62</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">3.58</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.25</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.97</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2.67</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.47)</td>
-<td style="text-align: left;">(0.01**)</td>
-<td style="text-align: left;">(0.21)</td>
-<td style="text-align: left;">(0.21)</td>
-<td style="text-align: left;">(0.05)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.15]</td>
-<td style="text-align: left;">[0.59]</td>
-<td style="text-align: left;">[0.59]</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">Indicator if auction village (1=Yes, 0=No)</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">target_village</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">2080</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.15</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.04</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">0.08</td>
-<td style="text-align: left; background-color: rgba(242, 242, 242, 255) !important;">1.2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">(0.04)</td>
-<td style="text-align: left;">(0.08)</td>
-<td style="text-align: left;">(0.55)</td>
-<td style="text-align: left;">(0.3)</td>
-<td style="text-align: left;">(0.31)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">[0.52]</td>
-<td style="text-align: left;">[0.78]</td>
-<td style="text-align: left;">[0.65]</td>
-<td style="text-align: left;"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<table style="width:100%; font-size: 14px;">
+<tbody><tr>
+<th>
+Variable
+</th>
+<th>
+Description
+</th>
+</tr>
+<tr>
+<td>
+hhid_village
+</td>
+<td>
+Village ID
+</td>
+</tr>
+<tr>
+<td>
+hhid
+</td>
+<td>
+Household ID
+</td>
+</tr>
+<tr>
+<td>
+trained_hh
+</td>
+<td>
+Trained household
+</td>
+</tr>
+<tr>
+<td>
+hh_age_h
+</td>
+<td>
+Household head age
+</td>
+</tr>
+<tr>
+<td>
+hh_education_level_bin_h
+</td>
+<td>
+Indicator for household head with secondary education or higher (1=Yes, 0=No)
+</td>
+</tr>
+<tr>
+<td>
+hh_education_skills_5_h
+</td>
+<td>
+Indicator that household head is literate (1=Yes, 0=No)
+</td>
+</tr>
+<tr>
+<td>
+hh_gender_h
+</td>
+<td>
+Household head gender (1=Male, 0=Female)
+</td>
+</tr>
+<tr>
+<td>
+hh_numero
+</td>
+<td>
+Household size
+</td>
+</tr>
+<tr>
+<td>
+hh_03_
+</td>
+<td>
+Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) †
+</td>
+</tr>
+<tr>
+<td>
+hh_10_
+</td>
+<td>
+Average weekly hours spent within 1 meter of surface water source, in the past 12 months
+</td>
+</tr>
+<tr>
+<td>
+hh_12_6_
+</td>
+<td>
+Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months (1=Yes, 0=No)
+</td>
+</tr>
+<tr>
+<td>
+hh_16_
+</td>
+<td>
+Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source)
+</td>
+</tr>
+<tr>
+<td>
+hh_15_2
+</td>
+<td>
+Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)
+</td>
+</tr>
+<tr>
+<td>
+hh_26_
+</td>
+<td>
+Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †
+</td>
+</tr>
+<tr>
+<td>
+hh_27_
+</td>
+<td>
+Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) †
+</td>
+</tr>
+<tr>
+<td>
+hh_29_01
+</td>
+<td>
+Indicator for primary level education (1=Yes, 0=No, asked about children)
+</td>
+</tr>
+<tr>
+<td>
+hh_29_02
+</td>
+<td>
+Indicator for secondary middle level education (1=Yes, 0=No, asked about children)
+</td>
+</tr>
+<tr>
+<td>
+hh_29_03
+</td>
+<td>
+Indicator for secondary higher level education (1=Yes, 0=No, asked about children)
+</td>
+</tr>
+<tr>
+<td>
+hh_29_04
+</td>
+<td>
+Indicator for upper secondary education (1=Yes, 0=No, asked about children)
+</td>
+</tr>
+<tr>
+<td>
+hh_31_bin
+</td>
+<td>
+Indicator if student completed studies or moved to next class for 2022/2023 (1=Yes, 0=No, asked about children)
+</td>
+</tr>
+<tr>
+<td>
+hh_37_
+</td>
+<td>
+Indicator if missed &gt;1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) †
+</td>
+</tr>
+<tr>
+<td>
+hh_38_
+</td>
+<td>
+Number of attended school days in the past week (asked about children)
+</td>
+</tr>
+<tr>
+<td>
+living_01_bin
+</td>
+<td>
+Indicator for selected tap water as main drinking source (1=Yes, 0=No)
+</td>
+</tr>
+<tr>
+<td>
+game_A_total
+</td>
+<td>
+Total paid for Game A (CFA)
+</td>
+</tr>
+<tr>
+<td>
+game_B_total
+</td>
+<td>
+Total paid for Game B (CFA)
+</td>
+</tr>
+<tr>
+<td>
+TLU
+</td>
+<td>
+Tropical livestock units
+</td>
+</tr>
+<tr>
+<td>
+agri_6_15
+</td>
+<td>
+Number of cultivated plots
+</td>
+</tr>
+<tr>
+<td>
+agri_6_32_bin
+</td>
+<td>
+Indicator if used any organic fertilizer (1=Yes, 0=No)
+</td>
+</tr>
+<tr>
+<td>
+agri_6_36_bin
+</td>
+<td>
+Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)
+</td>
+</tr>
+<tr>
+<td>
+total_land_ha
+</td>
+<td>
+Total land cultivated (hectares)
+</td>
+</tr>
+<tr>
+<td>
+agri_6_34_comp_any
+</td>
+<td>
+Used any compost on any parcel (1=Yes, 0=No) †
+</td>
+</tr>
+<tr>
+<td>
+agri_income_01
+</td>
+<td>
+Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †
+</td>
+</tr>
+<tr>
+<td>
+agri_income_05
+</td>
+<td>
+Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture
+</td>
+</tr>
+<tr>
+<td>
+beliefs_01_bin
+</td>
+<td>
+Probability of contracting bilharzia (1=Strongly agree/Agree) +
+</td>
+</tr>
+<tr>
+<td>
+beliefs_02_bin
+</td>
+<td>
+Probability of household member contracting bilharzia (1=Yes, 0=No) +
+</td>
+</tr>
+<tr>
+<td>
+beliefs_03_bin
+</td>
+<td>
+Probability of a child contracting bilharzia (1=Yes, 0=No) +
+</td>
+</tr>
+<tr>
+<td>
+beliefs_04_bin
+</td>
+<td>
+Agree: Village land should belong to community (1=Yes, 0=No) +
+</td>
+</tr>
+<tr>
+<td>
+beliefs_05_bin
+</td>
+<td>
+Agree: Village water sources should belong to community (1=Yes, 0=No) +
+</td>
+</tr>
+<tr>
+<td>
+beliefs_06_bin
+</td>
+<td>
+Agree: Right to products from own land (1=Yes, 0=No) +
+</td>
+</tr>
+<tr>
+<td>
+beliefs_07_bin
+</td>
+<td>
+Agree: Right to products from community land worked on (1=Yes, 0=No) +
+</td>
+</tr>
+<tr>
+<td>
+beliefs_08_bin
+</td>
+<td>
+Agree: Right to products from community water sources fished in (1=Yes, 0=No) +
+</td>
+</tr>
+<tr>
+<td>
+beliefs_09_bin
+</td>
+<td>
+Agree: Right to products from community water sources harvested from (1=Yes, 0=No) +
+</td>
+</tr>
+<tr>
+<td>
+health_5_3_bin
+</td>
+<td>
+Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness)
+</td>
+</tr>
+<tr>
+<td>
+health_5_6_
+</td>
+<td>
+Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †
+</td>
+</tr>
+<tr>
+<td>
+num_water_access_points
+</td>
+<td>
+Number of village water access points
+</td>
+</tr>
+<tr>
+<td>
+q_51
+</td>
+<td>
+Distance to nearest healthcare center (km) [village level]
+</td>
+</tr>
+<tr>
+<td>
+target_village
+</td>
+<td>
+Indicator if auction village (1=Yes, 0=No)
+</td>
+</tr>
+</tbody></table>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<section id="notes" class="level2">
+<h2 class="anchored" data-anchor-id="notes">Notes</h2>
+<ul>
+<li><strong>Reported statistics</strong> are regression coefficients, with p-values in parentheses and false discovery rate (FDR)-adjusted q-values in brackets.</li>
+<li><strong>Standard errors</strong> are clustered at the village level.</li>
+<li><strong>Means for the Control group</strong> are presented in the “Control Mean” column, with standard errors in parentheses.</li>
+<li><strong>P-values</strong> indicate statistical significance:
+<ul>
+<li><ul>
+<li>denotes significance at the 5% level (p ≤ 0.05)</li>
+</ul></li>
+<li>** denotes significance at the 1% level (p ≤ 0.01)</li>
+</ul></li>
+<li>+ Binary variables were derived from Likert scale responses based on their distribution.</li>
+<li>† Responses marked as ‘I Don’t Know’ (coded as 2) have been recoded as missing values.</li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                   mpg cyl disp  hp drat    wt  qsec vs am gear carb
-Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
-Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
-Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
-Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
-Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
-Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
+<div class="cell-output-display">
+<table>
+<caption>Baseline Balance Table</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Question </th>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:left;"> N </th>
+   <th style="text-align:left;"> Control Mean </th>
+   <th style="text-align:left;"> Private Treatment </th>
+   <th style="text-align:left;"> Public Treatment </th>
+   <th style="text-align:left;"> Public &amp; Private Treatment </th>
+   <th style="text-align:left;"> F-test </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Household head age </td>
+   <td style="text-align:left;"> hh_age_h </td>
+   <td style="text-align:left;"> 2077 </td>
+   <td style="text-align:left;"> 55.22 </td>
+   <td style="text-align:left;"> -1.75 </td>
+   <td style="text-align:left;"> -1.24 </td>
+   <td style="text-align:left;"> -1.69 </td>
+   <td style="text-align:left;"> 0.66 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.96) </td>
+   <td style="text-align:left;"> (0.21) </td>
+   <td style="text-align:left;"> (0.43) </td>
+   <td style="text-align:left;"> (0.26) </td>
+   <td style="text-align:left;"> (0.57) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.59] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.69] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.65] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for household head with secondary education or higher (1=Yes, 0=No) </td>
+   <td style="text-align:left;"> hh_education_level _bin_h </td>
+   <td style="text-align:left;"> 2077 </td>
+   <td style="text-align:left;"> 0.06 </td>
+   <td style="text-align:left;"> 0.03 </td>
+   <td style="text-align:left;"> 0.03 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 1.68 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.09) </td>
+   <td style="text-align:left;"> (0.08) </td>
+   <td style="text-align:left;"> (0.09) </td>
+   <td style="text-align:left;"> (0.17) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.52] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.52] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.52] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator that household head is literate (1=Yes, 0=No) </td>
+   <td style="text-align:left;"> hh_education_ skills_5_h </td>
+   <td style="text-align:left;"> 2077 </td>
+   <td style="text-align:left;"> 0.19 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> 0.05 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 1.15 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.82) </td>
+   <td style="text-align:left;"> (0.27) </td>
+   <td style="text-align:left;"> (0.21) </td>
+   <td style="text-align:left;"> (0.33) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.94] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.65] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.59] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Household head gender (1=Male, 0=Female) </td>
+   <td style="text-align:left;"> hh_gender_h </td>
+   <td style="text-align:left;"> 2077 </td>
+   <td style="text-align:left;"> 0.85 </td>
+   <td style="text-align:left;"> -0.08 </td>
+   <td style="text-align:left;"> -0.16 </td>
+   <td style="text-align:left;"> -0.06 </td>
+   <td style="text-align:left;"> 4.12 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.03*) </td>
+   <td style="text-align:left;"> (0**) </td>
+   <td style="text-align:left;"> (0.1) </td>
+   <td style="text-align:left;"> (0.01) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.41] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0**] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.52] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Household size </td>
+   <td style="text-align:left;"> hh_numero </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 8.93 </td>
+   <td style="text-align:left;"> -0.98 </td>
+   <td style="text-align:left;"> -1.17 </td>
+   <td style="text-align:left;"> -0.53 </td>
+   <td style="text-align:left;"> 4.11 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.26) </td>
+   <td style="text-align:left;"> (0.01**) </td>
+   <td style="text-align:left;"> (0**) </td>
+   <td style="text-align:left;"> (0.16) </td>
+   <td style="text-align:left;"> (0.01) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.15] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0**] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.55] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) † </td>
+   <td style="text-align:left;"> hh_03_ </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.2 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> 0.32 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.52) </td>
+   <td style="text-align:left;"> (0.86) </td>
+   <td style="text-align:left;"> (0.82) </td>
+   <td style="text-align:left;"> (0.81) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.76] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.94] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.94] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Average weekly hours spent within 1 meter of surface water source, in the past 12 months. </td>
+   <td style="text-align:left;"> hh_10_ </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 7.31 </td>
+   <td style="text-align:left;"> -0.4 </td>
+   <td style="text-align:left;"> -0.98 </td>
+   <td style="text-align:left;"> -0.63 </td>
+   <td style="text-align:left;"> 0.62 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.61) </td>
+   <td style="text-align:left;"> (0.62) </td>
+   <td style="text-align:left;"> (0.19) </td>
+   <td style="text-align:left;"> (0.4) </td>
+   <td style="text-align:left;"> (0.60) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.84] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.59] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.69] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months. (1=Yes, 0=No) </td>
+   <td style="text-align:left;"> hh_12_6_ </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> 0.83 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.15) </td>
+   <td style="text-align:left;"> (0.15) </td>
+   <td style="text-align:left;"> (0.24) </td>
+   <td style="text-align:left;"> (0.48) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.54] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.54] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.64] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source). </td>
+   <td style="text-align:left;"> hh_16_ </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.81 </td>
+   <td style="text-align:left;"> -0.15 </td>
+   <td style="text-align:left;"> -0.14 </td>
+   <td style="text-align:left;"> -0.19 </td>
+   <td style="text-align:left;"> 0.64 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.11) </td>
+   <td style="text-align:left;"> (0.29) </td>
+   <td style="text-align:left;"> (0.39) </td>
+   <td style="text-align:left;"> (0.18) </td>
+   <td style="text-align:left;"> (0.59) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.65] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.69] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.58] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) † </td>
+   <td style="text-align:left;"> hh_26_ </td>
+   <td style="text-align:left;"> 1955 </td>
+   <td style="text-align:left;"> 0.61 </td>
+   <td style="text-align:left;"> -0.02 </td>
+   <td style="text-align:left;"> -0.02 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 0.8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.03) </td>
+   <td style="text-align:left;"> (0.5) </td>
+   <td style="text-align:left;"> (0.73) </td>
+   <td style="text-align:left;"> (0.36) </td>
+   <td style="text-align:left;"> (0.49) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.75] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.91] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.67] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for primary level education (1=Yes, 0=No, asked about children) </td>
+   <td style="text-align:left;"> hh_29_01 </td>
+   <td style="text-align:left;"> 1955 </td>
+   <td style="text-align:left;"> 0.43 </td>
+   <td style="text-align:left;"> -0.03 </td>
+   <td style="text-align:left;"> -0.02 </td>
+   <td style="text-align:left;"> 0.01 </td>
+   <td style="text-align:left;"> 0.81 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.25) </td>
+   <td style="text-align:left;"> (0.59) </td>
+   <td style="text-align:left;"> (0.71) </td>
+   <td style="text-align:left;"> (0.49) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.64] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.82] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.9] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for secondary middle level education (1=Yes, 0=No, asked about children) </td>
+   <td style="text-align:left;"> hh_29_02 </td>
+   <td style="text-align:left;"> 1955 </td>
+   <td style="text-align:left;"> 0.12 </td>
+   <td style="text-align:left;"> 0.01 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> 0.03 </td>
+   <td style="text-align:left;"> 0.81 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.76) </td>
+   <td style="text-align:left;"> (0.3) </td>
+   <td style="text-align:left;"> (0.15) </td>
+   <td style="text-align:left;"> (0.49) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.93] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.65] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.54] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for secondary higher level education (1=Yes, 0=No, asked about children) </td>
+   <td style="text-align:left;"> hh_29_03 </td>
+   <td style="text-align:left;"> 1955 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.36 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.94) </td>
+   <td style="text-align:left;"> (0.43) </td>
+   <td style="text-align:left;"> (0.84) </td>
+   <td style="text-align:left;"> (0.78) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.96] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.69] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.94] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for upper secondary education (1=Yes, 0=No, asked about children) </td>
+   <td style="text-align:left;"> hh_29_04 </td>
+   <td style="text-align:left;"> 1955 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 1.03 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.00) </td>
+   <td style="text-align:left;"> (0.92) </td>
+   <td style="text-align:left;"> (0.16) </td>
+   <td style="text-align:left;"> (0.32) </td>
+   <td style="text-align:left;"> (0.38) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.96] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.55] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.66] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator if missed &gt;1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) † </td>
+   <td style="text-align:left;"> hh_37_ </td>
+   <td style="text-align:left;"> 1955 </td>
+   <td style="text-align:left;"> 0.15 </td>
+   <td style="text-align:left;"> 0.01 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> 0.03 </td>
+   <td style="text-align:left;"> 0.42 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.72) </td>
+   <td style="text-align:left;"> (0.42) </td>
+   <td style="text-align:left;"> (0.35) </td>
+   <td style="text-align:left;"> (0.74) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.9] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.69] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.67] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Number of attended school days in the past week (asked about children) </td>
+   <td style="text-align:left;"> hh_38_ </td>
+   <td style="text-align:left;"> 1955 </td>
+   <td style="text-align:left;"> 3.12 </td>
+   <td style="text-align:left;"> -0.16 </td>
+   <td style="text-align:left;"> -0.11 </td>
+   <td style="text-align:left;"> 0.15 </td>
+   <td style="text-align:left;"> 0.66 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.14) </td>
+   <td style="text-align:left;"> (0.43) </td>
+   <td style="text-align:left;"> (0.67) </td>
+   <td style="text-align:left;"> (0.5) </td>
+   <td style="text-align:left;"> (0.57) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.69] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.87] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.75] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for selected tap water as main drinking source (1=Yes, 0=No) </td>
+   <td style="text-align:left;"> living_01_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.88 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> 0.05 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 0.22 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.05) </td>
+   <td style="text-align:left;"> (0.75) </td>
+   <td style="text-align:left;"> (0.44) </td>
+   <td style="text-align:left;"> (0.56) </td>
+   <td style="text-align:left;"> (0.88) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.92] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.69] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.78] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Total paid for Game A (CFA) </td>
+   <td style="text-align:left;"> game_A_total </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 407.92 </td>
+   <td style="text-align:left;"> -20.7 </td>
+   <td style="text-align:left;"> 5.83 </td>
+   <td style="text-align:left;"> 30.83 </td>
+   <td style="text-align:left;"> 1.3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (16.78) </td>
+   <td style="text-align:left;"> (0.37) </td>
+   <td style="text-align:left;"> (0.86) </td>
+   <td style="text-align:left;"> (0.25) </td>
+   <td style="text-align:left;"> (0.27) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.68] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.94] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.64] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Total paid for Game B (CFA) </td>
+   <td style="text-align:left;"> game_B_total </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 408.21 </td>
+   <td style="text-align:left;"> -17.14 </td>
+   <td style="text-align:left;"> 4.96 </td>
+   <td style="text-align:left;"> 24.98 </td>
+   <td style="text-align:left;"> 0.98 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (15.14) </td>
+   <td style="text-align:left;"> (0.43) </td>
+   <td style="text-align:left;"> (0.85) </td>
+   <td style="text-align:left;"> (0.31) </td>
+   <td style="text-align:left;"> (0.40) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.69] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.94] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.65] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Tropical livestock units </td>
+   <td style="text-align:left;"> TLU </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.62 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> -0.03 </td>
+   <td style="text-align:left;"> -0.04 </td>
+   <td style="text-align:left;"> 0.11 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.05) </td>
+   <td style="text-align:left;"> (0.99) </td>
+   <td style="text-align:left;"> (0.72) </td>
+   <td style="text-align:left;"> (0.64) </td>
+   <td style="text-align:left;"> (0.96) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [1] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.9] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> [0.86] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Number of cultivated plots </td>
+   <td style="text-align:left;"> agri_6_15 </td>
+   <td style="text-align:left;"> 2067 </td>
+   <td style="text-align:left;"> 1.03 </td>
+   <td style="text-align:left;"> -0.18 </td>
+   <td style="text-align:left;"> -0.27 </td>
+   <td style="text-align:left;"> -0.3 </td>
+   <td style="text-align:left;"> 3.63 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.08) </td>
+   <td style="text-align:left;"> (0.07) </td>
+   <td style="text-align:left;"> (0.01**) </td>
+   <td style="text-align:left;"> (0**) </td>
+   <td style="text-align:left;"> (0.01) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;"> [0.15] </td>
+   <td style="text-align:left;"> [0**] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator if used any organic fertilizer (1=Yes, 0=No) </td>
+   <td style="text-align:left;"> agri_6_32_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.01 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 2.04 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.00) </td>
+   <td style="text-align:left;"> (0.24) </td>
+   <td style="text-align:left;"> (0.31) </td>
+   <td style="text-align:left;"> (0.55) </td>
+   <td style="text-align:left;"> (0.11) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.64] </td>
+   <td style="text-align:left;"> [0.65] </td>
+   <td style="text-align:left;"> [0.78] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No) </td>
+   <td style="text-align:left;"> agri_6_36_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.41 </td>
+   <td style="text-align:left;"> -0.06 </td>
+   <td style="text-align:left;"> -0.07 </td>
+   <td style="text-align:left;"> -0.07 </td>
+   <td style="text-align:left;"> 1.42 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.03) </td>
+   <td style="text-align:left;"> (0.12) </td>
+   <td style="text-align:left;"> (0.11) </td>
+   <td style="text-align:left;"> (0.11) </td>
+   <td style="text-align:left;"> (0.24) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.53] </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Total land cultivated (hectares) </td>
+   <td style="text-align:left;"> total_land_ha </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 4.25 </td>
+   <td style="text-align:left;"> -0.66 </td>
+   <td style="text-align:left;"> -0.12 </td>
+   <td style="text-align:left;"> -0.56 </td>
+   <td style="text-align:left;"> 0.42 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.40) </td>
+   <td style="text-align:left;"> (0.29) </td>
+   <td style="text-align:left;"> (0.9) </td>
+   <td style="text-align:left;"> (0.6) </td>
+   <td style="text-align:left;"> (0.74) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.65] </td>
+   <td style="text-align:left;"> [0.96] </td>
+   <td style="text-align:left;"> [0.82] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Used any compost on any parcel (1=Yes, 0=No) † </td>
+   <td style="text-align:left;"> agri_6_34_ comp_any </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.45 </td>
+   <td style="text-align:left;"> -0.06 </td>
+   <td style="text-align:left;"> -0.07 </td>
+   <td style="text-align:left;"> -0.08 </td>
+   <td style="text-align:left;"> 1.3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.03) </td>
+   <td style="text-align:left;"> (0.2) </td>
+   <td style="text-align:left;"> (0.15) </td>
+   <td style="text-align:left;"> (0.08) </td>
+   <td style="text-align:left;"> (0.27) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.59] </td>
+   <td style="text-align:left;"> [0.54] </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) † </td>
+   <td style="text-align:left;"> agri_income_01 </td>
+   <td style="text-align:left;"> 2076 </td>
+   <td style="text-align:left;"> 0.27 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 0.06 </td>
+   <td style="text-align:left;"> 0.07 </td>
+   <td style="text-align:left;"> 1.03 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.03) </td>
+   <td style="text-align:left;"> (0.38) </td>
+   <td style="text-align:left;"> (0.14) </td>
+   <td style="text-align:left;"> (0.15) </td>
+   <td style="text-align:left;"> (0.38) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.68] </td>
+   <td style="text-align:left;"> [0.54] </td>
+   <td style="text-align:left;"> [0.54] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture </td>
+   <td style="text-align:left;"> agri_income_05 </td>
+   <td style="text-align:left;"> 2069 </td>
+   <td style="text-align:left;"> 75176.78 </td>
+   <td style="text-align:left;"> 72559.25 </td>
+   <td style="text-align:left;"> 75265.61 </td>
+   <td style="text-align:left;"> 107972.1 </td>
+   <td style="text-align:left;"> 4.33 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (13712.43) </td>
+   <td style="text-align:left;"> (0.05*) </td>
+   <td style="text-align:left;"> (0.07) </td>
+   <td style="text-align:left;"> (0**) </td>
+   <td style="text-align:left;"> (0.00) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;"> [0**] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Probability of contracting bilharzia (1=Strongly agree/Agree) + </td>
+   <td style="text-align:left;"> beliefs_01_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.6 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> -0.05 </td>
+   <td style="text-align:left;"> 0.01 </td>
+   <td style="text-align:left;"> 0.61 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.65) </td>
+   <td style="text-align:left;"> (0.3) </td>
+   <td style="text-align:left;"> (0.81) </td>
+   <td style="text-align:left;"> (0.61) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.86] </td>
+   <td style="text-align:left;"> [0.65] </td>
+   <td style="text-align:left;"> [0.94] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Probability of household member contracting bilharzia (1=Yes, 0=No) + </td>
+   <td style="text-align:left;"> beliefs_02_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.65 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> -0.06 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 1.53 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.03) </td>
+   <td style="text-align:left;"> (0.42) </td>
+   <td style="text-align:left;"> (0.18) </td>
+   <td style="text-align:left;"> (0.36) </td>
+   <td style="text-align:left;"> (0.20) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.69] </td>
+   <td style="text-align:left;"> [0.58] </td>
+   <td style="text-align:left;"> [0.67] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Probability of a child contracting bilharzia (1=Yes, 0=No) + </td>
+   <td style="text-align:left;"> beliefs_03_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.75 </td>
+   <td style="text-align:left;"> 0.03 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> 0.07 </td>
+   <td style="text-align:left;"> 1.98 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.03) </td>
+   <td style="text-align:left;"> (0.38) </td>
+   <td style="text-align:left;"> (0.86) </td>
+   <td style="text-align:left;"> (0.04*) </td>
+   <td style="text-align:left;"> (0.12) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.68] </td>
+   <td style="text-align:left;"> [0.94] </td>
+   <td style="text-align:left;"> [0.49] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Agree: Village land should belong to community (1=Yes, 0=No) + </td>
+   <td style="text-align:left;"> beliefs_04_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.88 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> -0.04 </td>
+   <td style="text-align:left;"> -0.04 </td>
+   <td style="text-align:left;"> 2.13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.93) </td>
+   <td style="text-align:left;"> (0.07) </td>
+   <td style="text-align:left;"> (0.1) </td>
+   <td style="text-align:left;"> (0.10) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.96] </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Agree: Village water sources should belong to community (1=Yes, 0=No) + </td>
+   <td style="text-align:left;"> beliefs_05_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.92 </td>
+   <td style="text-align:left;"> 0.01 </td>
+   <td style="text-align:left;"> -0.02 </td>
+   <td style="text-align:left;"> -0.04 </td>
+   <td style="text-align:left;"> 1.99 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.8) </td>
+   <td style="text-align:left;"> (0.34) </td>
+   <td style="text-align:left;"> (0.08) </td>
+   <td style="text-align:left;"> (0.11) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.94] </td>
+   <td style="text-align:left;"> [0.67] </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Agree: Right to products from own land (1=Yes, 0=No) + </td>
+   <td style="text-align:left;"> beliefs_06_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.93 </td>
+   <td style="text-align:left;"> -0.04 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> -0.06 </td>
+   <td style="text-align:left;"> 2.8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.08) </td>
+   <td style="text-align:left;"> (0.5) </td>
+   <td style="text-align:left;"> (0.01**) </td>
+   <td style="text-align:left;"> (0.04) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;"> [0.75] </td>
+   <td style="text-align:left;"> [0.15] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Agree: Right to products from community land worked on (1=Yes, 0=No) + </td>
+   <td style="text-align:left;"> beliefs_07_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.66 </td>
+   <td style="text-align:left;"> 0.05 </td>
+   <td style="text-align:left;"> -0.01 </td>
+   <td style="text-align:left;"> 0.03 </td>
+   <td style="text-align:left;"> 0.72 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.03) </td>
+   <td style="text-align:left;"> (0.29) </td>
+   <td style="text-align:left;"> (0.86) </td>
+   <td style="text-align:left;"> (0.51) </td>
+   <td style="text-align:left;"> (0.54) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.65] </td>
+   <td style="text-align:left;"> [0.94] </td>
+   <td style="text-align:left;"> [0.76] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Agree: Right to products from community water sources fished in (1=Yes, 0=No) + </td>
+   <td style="text-align:left;"> beliefs_08_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.83 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> -0.02 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.48 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.54) </td>
+   <td style="text-align:left;"> (0.46) </td>
+   <td style="text-align:left;"> (1) </td>
+   <td style="text-align:left;"> (0.69) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.78] </td>
+   <td style="text-align:left;"> [0.72] </td>
+   <td style="text-align:left;"> [1] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Agree: Right to products from community water sources harvested from (1=Yes, 0=No) + </td>
+   <td style="text-align:left;"> beliefs_09_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.75 </td>
+   <td style="text-align:left;"> 0.05 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 1.48 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.12) </td>
+   <td style="text-align:left;"> (0.93) </td>
+   <td style="text-align:left;"> (0.11) </td>
+   <td style="text-align:left;"> (0.22) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.53] </td>
+   <td style="text-align:left;"> [0.96] </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness) </td>
+   <td style="text-align:left;"> health_5_3_bin </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.01 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.46 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.00) </td>
+   <td style="text-align:left;"> (0.92) </td>
+   <td style="text-align:left;"> (0.97) </td>
+   <td style="text-align:left;"> (0.35) </td>
+   <td style="text-align:left;"> (0.71) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.96] </td>
+   <td style="text-align:left;"> [0.99] </td>
+   <td style="text-align:left;"> [0.67] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) † </td>
+   <td style="text-align:left;"> health_5_6_ </td>
+   <td style="text-align:left;"> 2079 </td>
+   <td style="text-align:left;"> 0.13 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> 0.02 </td>
+   <td style="text-align:left;"> 0.56 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.84) </td>
+   <td style="text-align:left;"> (0.36) </td>
+   <td style="text-align:left;"> (0.28) </td>
+   <td style="text-align:left;"> (0.64) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.94] </td>
+   <td style="text-align:left;"> [0.67] </td>
+   <td style="text-align:left;"> [0.65] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Number of village water access points </td>
+   <td style="text-align:left;"> num_water _access_points </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 2.73 </td>
+   <td style="text-align:left;"> -0.12 </td>
+   <td style="text-align:left;"> -0.08 </td>
+   <td style="text-align:left;"> -0.04 </td>
+   <td style="text-align:left;"> 0.07 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.20) </td>
+   <td style="text-align:left;"> (0.67) </td>
+   <td style="text-align:left;"> (0.79) </td>
+   <td style="text-align:left;"> (0.89) </td>
+   <td style="text-align:left;"> (0.98) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.87] </td>
+   <td style="text-align:left;"> [0.94] </td>
+   <td style="text-align:left;"> [0.96] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Distance to nearest healthcare center (km) [village level] </td>
+   <td style="text-align:left;"> q_51 </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 1.62 </td>
+   <td style="text-align:left;"> 3.58 </td>
+   <td style="text-align:left;"> 1.25 </td>
+   <td style="text-align:left;"> 1.97 </td>
+   <td style="text-align:left;"> 2.67 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.47) </td>
+   <td style="text-align:left;"> (0.01**) </td>
+   <td style="text-align:left;"> (0.21) </td>
+   <td style="text-align:left;"> (0.21) </td>
+   <td style="text-align:left;"> (0.05) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.15] </td>
+   <td style="text-align:left;"> [0.59] </td>
+   <td style="text-align:left;"> [0.59] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Indicator if auction village (1=Yes, 0=No) </td>
+   <td style="text-align:left;"> target_village </td>
+   <td style="text-align:left;"> 2080 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 0.15 </td>
+   <td style="text-align:left;"> 0.04 </td>
+   <td style="text-align:left;"> 0.08 </td>
+   <td style="text-align:left;"> 1.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.04) </td>
+   <td style="text-align:left;"> (0.08) </td>
+   <td style="text-align:left;"> (0.55) </td>
+   <td style="text-align:left;"> (0.3) </td>
+   <td style="text-align:left;"> (0.31) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> [0.52] </td>
+   <td style="text-align:left;"> [0.78] </td>
+   <td style="text-align:left;"> [0.65] </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+</tbody>
+</table>
+
 </div>
 </div>
+</section>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<section id="notes-1" class="level2">
+<h2 class="anchored" data-anchor-id="notes-1">Notes</h2>
+<ul>
+<li><strong>Table reports mean values</strong>, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.</li>
+<li>+ Binary variables were derived from Likert scale responses based on their distribution.</li>
+<li>† Responses marked as ‘I Don’t Know’ (coded as 2) have been recoded as missing values.</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover" style="margin-left: auto; margin-right: auto;">
+<caption>Baseline Summary Statistics</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Question </th>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:left;"> Control </th>
+   <th style="text-align:left;"> Private Treatment </th>
+   <th style="text-align:left;"> Public Treatment </th>
+   <th style="text-align:left;"> Private and Public Treatment </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Trained household </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> trained_hh </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.50 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.52 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.53 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.00) </td>
+   <td style="text-align:left;"> (0.50) </td>
+   <td style="text-align:left;"> (0.50) </td>
+   <td style="text-align:left;"> (0.50) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Household head age </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_age_h </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 55.22 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 53.47 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 53.98 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 53.53 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (13.27) </td>
+   <td style="text-align:left;"> (12.86) </td>
+   <td style="text-align:left;"> (13.07) </td>
+   <td style="text-align:left;"> (13.60) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 518.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 519.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for household head with secondary education or higher (1=Yes, 0=No) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_education_level_bin_h </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.06 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.10 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.09 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.24) </td>
+   <td style="text-align:left;"> (0.29) </td>
+   <td style="text-align:left;"> (0.29) </td>
+   <td style="text-align:left;"> (0.30) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 518.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 519.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator that household head is literate (1=Yes, 0=No) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_education_skills_5_h </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.19 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.18 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.23 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.23 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.39) </td>
+   <td style="text-align:left;"> (0.38) </td>
+   <td style="text-align:left;"> (0.42) </td>
+   <td style="text-align:left;"> (0.42) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 518.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 519.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Household head gender (1=Male, 0=Female) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_gender_h </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.85 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.76 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.69 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.79 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.36) </td>
+   <td style="text-align:left;"> (0.42) </td>
+   <td style="text-align:left;"> (0.46) </td>
+   <td style="text-align:left;"> (0.41) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 518.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 519.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Household size </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_numero </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 8.93 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 7.95 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 7.76 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 8.40 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (3.76) </td>
+   <td style="text-align:left;"> (3.87) </td>
+   <td style="text-align:left;"> (3.26) </td>
+   <td style="text-align:left;"> (3.97) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) † </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_03_ </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.20 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.22 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.20 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.19 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.21) </td>
+   <td style="text-align:left;"> (0.23) </td>
+   <td style="text-align:left;"> (0.22) </td>
+   <td style="text-align:left;"> (0.22) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Average weekly hours spent within 1 meter of surface water source, in the past 12 months. </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_10_ </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 7.31 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 6.92 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 6.33 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 6.68 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (7.90) </td>
+   <td style="text-align:left;"> (8.25) </td>
+   <td style="text-align:left;"> (7.62) </td>
+   <td style="text-align:left;"> (7.67) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months. (1=Yes, 0=No) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_12_6_ </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.02 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.02 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.07) </td>
+   <td style="text-align:left;"> (0.06) </td>
+   <td style="text-align:left;"> (0.05) </td>
+   <td style="text-align:left;"> (0.06) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source). </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_16_ </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.81 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.66 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.66 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.61 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (1.85) </td>
+   <td style="text-align:left;"> (1.49) </td>
+   <td style="text-align:left;"> (1.41) </td>
+   <td style="text-align:left;"> (1.19) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_15_2 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.00) </td>
+   <td style="text-align:left;"> (0.00) </td>
+   <td style="text-align:left;"> (0.00) </td>
+   <td style="text-align:left;"> (0.00) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) † </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_26_ </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.61 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.58 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.59 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.64 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.34) </td>
+   <td style="text-align:left;"> (0.35) </td>
+   <td style="text-align:left;"> (0.36) </td>
+   <td style="text-align:left;"> (0.35) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 489.00 </td>
+   <td style="text-align:left;"> 491.00 </td>
+   <td style="text-align:left;"> 485.00 </td>
+   <td style="text-align:left;"> 490.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for primary level education (1=Yes, 0=No, asked about children) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_29_01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.43 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.40 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.41 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.44 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.32) </td>
+   <td style="text-align:left;"> (0.32) </td>
+   <td style="text-align:left;"> (0.33) </td>
+   <td style="text-align:left;"> (0.34) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 489.00 </td>
+   <td style="text-align:left;"> 491.00 </td>
+   <td style="text-align:left;"> 485.00 </td>
+   <td style="text-align:left;"> 490.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for secondary middle level education (1=Yes, 0=No, asked about children) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_29_02 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.12 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.13 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.14 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.15 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.22) </td>
+   <td style="text-align:left;"> (0.23) </td>
+   <td style="text-align:left;"> (0.24) </td>
+   <td style="text-align:left;"> (0.24) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 489.00 </td>
+   <td style="text-align:left;"> 491.00 </td>
+   <td style="text-align:left;"> 485.00 </td>
+   <td style="text-align:left;"> 490.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for secondary higher level education (1=Yes, 0=No, asked about children) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_29_03 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.02 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.02 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.02 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.02 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.11) </td>
+   <td style="text-align:left;"> (0.10) </td>
+   <td style="text-align:left;"> (0.10) </td>
+   <td style="text-align:left;"> (0.10) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 489.00 </td>
+   <td style="text-align:left;"> 491.00 </td>
+   <td style="text-align:left;"> 485.00 </td>
+   <td style="text-align:left;"> 490.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for upper secondary education (1=Yes, 0=No, asked about children) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_29_04 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.05) </td>
+   <td style="text-align:left;"> (0.05) </td>
+   <td style="text-align:left;"> (0.01) </td>
+   <td style="text-align:left;"> (0.02) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 489.00 </td>
+   <td style="text-align:left;"> 491.00 </td>
+   <td style="text-align:left;"> 485.00 </td>
+   <td style="text-align:left;"> 490.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator if missed &gt;1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) † </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_37_ </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.15 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.16 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.18 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.18 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.28) </td>
+   <td style="text-align:left;"> (0.28) </td>
+   <td style="text-align:left;"> (0.29) </td>
+   <td style="text-align:left;"> (0.31) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 489.00 </td>
+   <td style="text-align:left;"> 491.00 </td>
+   <td style="text-align:left;"> 485.00 </td>
+   <td style="text-align:left;"> 490.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Number of attended school days in the past week (asked about children) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> hh_38_ </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 3.12 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 2.95 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 3.01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 3.27 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (1.85) </td>
+   <td style="text-align:left;"> (1.89) </td>
+   <td style="text-align:left;"> (1.97) </td>
+   <td style="text-align:left;"> (1.94) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 489.00 </td>
+   <td style="text-align:left;"> 491.00 </td>
+   <td style="text-align:left;"> 485.00 </td>
+   <td style="text-align:left;"> 490.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for selected tap water as main drinking source (1=Yes, 0=No) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> living_01_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.88 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.90 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.93 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.92 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.32) </td>
+   <td style="text-align:left;"> (0.30) </td>
+   <td style="text-align:left;"> (0.26) </td>
+   <td style="text-align:left;"> (0.27) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Total paid for Game A (CFA) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> game_A_total </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 407.92 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 387.23 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 413.75 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 438.75 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (266.87) </td>
+   <td style="text-align:left;"> (265.88) </td>
+   <td style="text-align:left;"> (487.42) </td>
+   <td style="text-align:left;"> (286.89) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Total paid for Game B (CFA) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> game_B_total </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 408.21 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 391.07 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 413.17 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 433.19 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (250.84) </td>
+   <td style="text-align:left;"> (250.54) </td>
+   <td style="text-align:left;"> (251.13) </td>
+   <td style="text-align:left;"> (265.69) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Tropical livestock units </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> TLU </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.62 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.62 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.58 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.58 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.71) </td>
+   <td style="text-align:left;"> (0.73) </td>
+   <td style="text-align:left;"> (0.72) </td>
+   <td style="text-align:left;"> (0.70) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Number of cultivated plots </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> agri_6_15 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 1.03 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.85 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.76 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.73 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (1.15) </td>
+   <td style="text-align:left;"> (0.88) </td>
+   <td style="text-align:left;"> (0.84) </td>
+   <td style="text-align:left;"> (0.78) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 518.00 </td>
+   <td style="text-align:left;"> 512.00 </td>
+   <td style="text-align:left;"> 519.00 </td>
+   <td style="text-align:left;"> 518.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator if used any organic fertilizer (1=Yes, 0=No) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> agri_6_32_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.04) </td>
+   <td style="text-align:left;"> (0.09) </td>
+   <td style="text-align:left;"> (0.00) </td>
+   <td style="text-align:left;"> (0.06) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> agri_6_36_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.41 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.35 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.34 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.35 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.49) </td>
+   <td style="text-align:left;"> (0.48) </td>
+   <td style="text-align:left;"> (0.48) </td>
+   <td style="text-align:left;"> (0.48) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Total land cultivated (hectares) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> total_land_ha </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 4.25 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 3.60 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 4.14 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 3.69 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (6.93) </td>
+   <td style="text-align:left;"> (10.34) </td>
+   <td style="text-align:left;"> (20.15) </td>
+   <td style="text-align:left;"> (22.59) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Used any compost on any parcel (1=Yes, 0=No) † </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> agri_6_34_comp_any </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.45 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.39 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.38 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.37 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.50) </td>
+   <td style="text-align:left;"> (0.49) </td>
+   <td style="text-align:left;"> (0.49) </td>
+   <td style="text-align:left;"> (0.48) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) † </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> agri_income_01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.27 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.32 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.33 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.34 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.45) </td>
+   <td style="text-align:left;"> (0.47) </td>
+   <td style="text-align:left;"> (0.47) </td>
+   <td style="text-align:left;"> (0.48) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 518.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 519.00 </td>
+   <td style="text-align:left;"> 519.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> agri_income_05 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 75176.78 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 147736.03 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 150442.39 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 183148.88 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (303912.63) </td>
+   <td style="text-align:left;"> (538537.30) </td>
+   <td style="text-align:left;"> (759037.35) </td>
+   <td style="text-align:left;"> (626597.59) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 515.00 </td>
+   <td style="text-align:left;"> 519.00 </td>
+   <td style="text-align:left;"> 517.00 </td>
+   <td style="text-align:left;"> 518.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Probability of contracting bilharzia (1=Strongly agree/Agree) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_01_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.60 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.62 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.55 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.61 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.49) </td>
+   <td style="text-align:left;"> (0.49) </td>
+   <td style="text-align:left;"> (0.50) </td>
+   <td style="text-align:left;"> (0.49) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Probability of household member contracting bilharzia (1=Yes, 0=No) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_02_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.65 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.69 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.59 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.69 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.48) </td>
+   <td style="text-align:left;"> (0.46) </td>
+   <td style="text-align:left;"> (0.49) </td>
+   <td style="text-align:left;"> (0.46) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Probability of a child contracting bilharzia (1=Yes, 0=No) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_03_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.75 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.78 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.74 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.81 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.44) </td>
+   <td style="text-align:left;"> (0.41) </td>
+   <td style="text-align:left;"> (0.44) </td>
+   <td style="text-align:left;"> (0.39) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Agree: Village land should belong to community (1=Yes, 0=No) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_04_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.88 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.88 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.83 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.83 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.33) </td>
+   <td style="text-align:left;"> (0.33) </td>
+   <td style="text-align:left;"> (0.37) </td>
+   <td style="text-align:left;"> (0.38) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Agree: Village water sources should belong to community (1=Yes, 0=No) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_05_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.92 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.92 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.89 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.88 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.27) </td>
+   <td style="text-align:left;"> (0.26) </td>
+   <td style="text-align:left;"> (0.31) </td>
+   <td style="text-align:left;"> (0.33) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Agree: Right to products from own land (1=Yes, 0=No) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_06_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.93 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.90 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.92 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.88 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.25) </td>
+   <td style="text-align:left;"> (0.30) </td>
+   <td style="text-align:left;"> (0.27) </td>
+   <td style="text-align:left;"> (0.33) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Agree: Right to products from community land worked on (1=Yes, 0=No) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_07_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.66 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.71 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.65 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.69 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.47) </td>
+   <td style="text-align:left;"> (0.46) </td>
+   <td style="text-align:left;"> (0.48) </td>
+   <td style="text-align:left;"> (0.46) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Agree: Right to products from community water sources fished in (1=Yes, 0=No) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_08_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.83 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.85 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.82 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.83 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.37) </td>
+   <td style="text-align:left;"> (0.36) </td>
+   <td style="text-align:left;"> (0.39) </td>
+   <td style="text-align:left;"> (0.37) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Agree: Right to products from community water sources harvested from (1=Yes, 0=No) + </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> beliefs_09_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.75 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.80 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.75 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.79 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.43) </td>
+   <td style="text-align:left;"> (0.40) </td>
+   <td style="text-align:left;"> (0.43) </td>
+   <td style="text-align:left;"> (0.41) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> health_5_3_bin </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.01 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.02 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.02) </td>
+   <td style="text-align:left;"> (0.03) </td>
+   <td style="text-align:left;"> (0.03) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) † </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> health_5_6_ </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.13 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.14 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.15 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.15 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.22) </td>
+   <td style="text-align:left;"> (0.24) </td>
+   <td style="text-align:left;"> (0.25) </td>
+   <td style="text-align:left;"> (0.26) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 519.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Number of village water access points </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> num_water_access_points </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 2.73 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 2.62 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 2.65 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 2.69 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (1.02) </td>
+   <td style="text-align:left;"> (0.92) </td>
+   <td style="text-align:left;"> (1.04) </td>
+   <td style="text-align:left;"> (0.91) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Distance to nearest healthcare center (km) [village level] </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> q_51 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 1.62 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 5.20 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 2.87 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 3.58 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (2.39) </td>
+   <td style="text-align:left;"> (6.75) </td>
+   <td style="text-align:left;"> (4.48) </td>
+   <td style="text-align:left;"> (7.56) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> Indicator if auction village (1=Yes, 0=No) </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> target_village </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.04 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.19 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.08 </td>
+   <td style="text-align:left;background-color: rgba(242, 242, 242, 255) !important;"> 0.12 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> (0.19) </td>
+   <td style="text-align:left;"> (0.39) </td>
+   <td style="text-align:left;"> (0.27) </td>
+   <td style="text-align:left;"> (0.32) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+   <td style="text-align:left;"> 520.00 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
 </div>
 </div>
 </div>

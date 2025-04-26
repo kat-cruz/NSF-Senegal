@@ -265,6 +265,9 @@ summary_table_complete <- summary_table3 %>% select(Question, everything()) %>%
 summary_table_complete
 #%>%   filter(variable != "target_village")
 
+# Save final_table as an RDS file
+saveRDS(summary_table_complete, file = "C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/summary_table.rds")
+write.csv(summary_table_complete, file = "C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/summary_table.csv", row.names = TRUE)
 
 
 run_all_regressions <- function(data, treatment_col, village_col, vars_to_test) {
@@ -617,7 +620,7 @@ final_table <- balance_tablev11 %>%
  # 
  # Save final_table as an RDS file
  saveRDS(final_table, file = "C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/final_table.rds")
-
+ write.csv(final_table, file = "C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/final_table.csv", row.names = TRUE)
 
  view(final_table)
  

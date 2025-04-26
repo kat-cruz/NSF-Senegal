@@ -7,6 +7,8 @@ format:
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Define packages
 packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
               "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
               "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "quarto")
@@ -15,8 +17,10 @@ packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr",
 new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
 if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
 
-# Load the required packages without printing any output
+# Load the required packages silently
 invisible(lapply(packages, library, character.only = TRUE))
+
+
 ```
 
 
@@ -42,19 +46,19 @@ invisible(lapply(packages, library, character.only = TRUE))
   <tr><td>hh_education_skills_5_h</td><td>Indicator that household head is literate (1=Yes, 0=No)</td></tr>
   <tr><td>hh_gender_h</td><td>Household head gender (1=Male, 0=Female)</td></tr>
   <tr><td>hh_numero</td><td>Household size</td></tr>
-  <tr><td>hh_03_</td><td>Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) †</td></tr>
+  <tr><td>hh_03_</td><td>Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) â </td></tr>
   <tr><td>hh_10_</td><td>Average weekly hours spent within 1 meter of surface water source, in the past 12 months</td></tr>
   <tr><td>hh_12_6_</td><td>Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months (1=Yes, 0=No)</td></tr>
   <tr><td>hh_16_</td><td>Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source)</td></tr>
   <tr><td>hh_15_2</td><td>Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)</td></tr>
-  <tr><td>hh_26_</td><td>Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †</td></tr>
-  <tr><td>hh_27_</td><td>Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) †</td></tr>
+  <tr><td>hh_26_</td><td>Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) â </td></tr>
+  <tr><td>hh_27_</td><td>Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) â </td></tr>
   <tr><td>hh_29_01</td><td>Indicator for primary level education (1=Yes, 0=No, asked about children)</td></tr>
   <tr><td>hh_29_02</td><td>Indicator for secondary middle level education (1=Yes, 0=No, asked about children)</td></tr>
   <tr><td>hh_29_03</td><td>Indicator for secondary higher level education (1=Yes, 0=No, asked about children)</td></tr>
   <tr><td>hh_29_04</td><td>Indicator for upper secondary education (1=Yes, 0=No, asked about children)</td></tr>
   <tr><td>hh_31_bin</td><td>Indicator if student completed studies or moved to next class for 2022/2023 (1=Yes, 0=No, asked about children)</td></tr>
-  <tr><td>hh_37_</td><td>Indicator if missed >1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) †</td></tr>
+  <tr><td>hh_37_</td><td>Indicator if missed >1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) â </td></tr>
   <tr><td>hh_38_</td><td>Number of attended school days in the past week (asked about children)</td></tr>
   <tr><td>living_01_bin</td><td>Indicator for selected tap water as main drinking source (1=Yes, 0=No)</td></tr>
   <tr><td>game_A_total</td><td>Total paid for Game A (CFA)</td></tr>
@@ -64,8 +68,8 @@ invisible(lapply(packages, library, character.only = TRUE))
   <tr><td>agri_6_32_bin</td><td>Indicator if used any organic fertilizer (1=Yes, 0=No)</td></tr>
   <tr><td>agri_6_36_bin</td><td>Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)</td></tr>
   <tr><td>total_land_ha</td><td>Total land cultivated (hectares)</td></tr>
-  <tr><td>agri_6_34_comp_any</td><td>Used any compost on any parcel (1=Yes, 0=No) †</td></tr>
-  <tr><td>agri_income_01</td><td>Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †</td></tr>
+  <tr><td>agri_6_34_comp_any</td><td>Used any compost on any parcel (1=Yes, 0=No) â </td></tr>
+  <tr><td>agri_income_01</td><td>Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) â </td></tr>
   <tr><td>agri_income_05</td><td>Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture</td></tr>
   <tr><td>beliefs_01_bin</td><td>Probability of contracting bilharzia (1=Strongly agree/Agree) +</td></tr>
   <tr><td>beliefs_02_bin</td><td>Probability of household member contracting bilharzia (1=Yes, 0=No) +</td></tr>
@@ -77,7 +81,7 @@ invisible(lapply(packages, library, character.only = TRUE))
   <tr><td>beliefs_08_bin</td><td>Agree: Right to products from community water sources fished in (1=Yes, 0=No) +</td></tr>
   <tr><td>beliefs_09_bin</td><td>Agree: Right to products from community water sources harvested from (1=Yes, 0=No) +</td></tr>
   <tr><td>health_5_3_bin</td><td>Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness)</td></tr>
-  <tr><td>health_5_6_</td><td>Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †</td></tr>
+  <tr><td>health_5_6_</td><td>Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) â </td></tr>
   <tr><td>num_water_access_points</td><td>Number of village water access points</td></tr>
   <tr><td>q_51</td><td>Distance to nearest healthcare center (km) [village level]</td></tr>
   <tr><td>target_village</td><td>Indicator if auction village (1=Yes, 0=No)</td></tr>
@@ -93,10 +97,10 @@ invisible(lapply(packages, library, character.only = TRUE))
 - **Standard errors** are clustered at the village level.
 - **Means for the Control group** are presented in the "Control Mean" column, with standard errors in parentheses.
 - **P-values** indicate statistical significance:
-  - * denotes significance at the 5% level (p ≤ 0.05)
-  - ** denotes significance at the 1% level (p ≤ 0.01)
+  - * denotes significance at the 5% level (p â¤ 0.05)
+  - ** denotes significance at the 1% level (p â¤ 0.01)
 - \+ Binary variables were derived from Likert scale responses based on their distribution.
-- † Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values.
+- â  Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values.
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -107,12 +111,26 @@ invisible(lapply(packages, library, character.only = TRUE))
 
 
 # Load the saved data frame
-final_table <- readRDS("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/final_table.rds")
+final_table <- readRDS("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/final_table.rds")
 
 # final_table <- read.csv("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/final_table.csv")
 
 view(final_table)
 
+
+# 
+# highlight_rows <- seq(3, nrow(final_table), by = 3)
+# 
+# kableExtra::kable(final_table, format = "html", caption = "Baseline Balance Table") %>%
+#   kableExtra::kable_styling(bootstrap_options = c("hover")) %>%
+#   purrr::reduce(highlight_rows, .init = ., .f = function(kable_out, row_index) {
+#     kableExtra::row_spec(kable_out, row_index, background = "#f2f2f2")
+#   })
+
+
+
+# 
+# 
 # Display the table with manually specified third rows highlighted
 knitr::kable(final_table, format = "html", caption = "Baseline Balance Table") %>%
 #  kableExtra::kable_styling(bootstrap_options = c("hover")) %>%
@@ -135,7 +153,17 @@ knitr::kable(final_table, format = "html", caption = "Baseline Balance Table") %
   kableExtra::row_spec(51, background = "#f2f2f2") %>%
   kableExtra::row_spec(54, background = "#f2f2f2") %>%
   kableExtra::row_spec(57, background = "#f2f2f2") %>%
-  kableExtra::row_spec(60, background = "#f2f2f2")
+  kableExtra::row_spec(60, background = "#f2f2f2") %>%
+  kableExtra::row_spec(63, background = "#f2f2f2") %>%
+  kableExtra::row_spec(66, background = "#f2f2f2") %>%
+  kableExtra::row_spec(69, background = "#f2f2f2") %>%
+  kableExtra::row_spec(72, background = "#f2f2f2") %>%
+  kableExtra::row_spec(75, background = "#f2f2f2") %>%
+  kableExtra::row_spec(78, background = "#f2f2f2") %>%
+  kableExtra::row_spec(81, background = "#f2f2f2") %>%
+  kableExtra::row_spec(84, background = "#f2f2f2") %>%
+  kableExtra::row_spec(87, background = "#f2f2f2") %>%
+  kableExtra::row_spec(90, background = "#f2f2f2")
 
 
 ```
@@ -146,12 +174,12 @@ knitr::kable(final_table, format = "html", caption = "Baseline Balance Table") %
 
 - **Table reports mean values**, with standard deviations shown in parentheses below each mean, and the number of observations listed beneath the standard deviations by treatment arm.
 - \+ Binary variables were derived from Likert scale responses based on their distribution.
-- † Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values.
+- â  Responses marked as 'I Don't Know' (coded as 2) have been recoded as missing values.
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Load the saved data frame
-summary_table <- readRDS("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/summary_table.rds")
+summary_table <- readRDS("C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/summary_table.rds")
 
 # summary_table <- read.csv("C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Balance_Tables/summary_table.csv")
 
@@ -166,5 +194,3 @@ knitr::kable(summary_table, format = "html", caption = "Baseline Summary Statist
 
 
 :::
-
-

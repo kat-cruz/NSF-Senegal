@@ -1,0 +1,95 @@
+---
+title: "Parasitological_Predictive_Analysis"
+author: "Kateri Mouawad"
+date: "2025-02-21"
+output: html_document
+---
+
+#BEGIN HERE - load packages
+
+
+
+```{r}
+
+packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
+              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
+              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "quarto")
+
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages without printing any output
+invisible(lapply(packages, library, character.only = TRUE))
+
+
+```
+
+
+## Define paths and load data 
+
+```{r}
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data_Management/Output/Analysis/Human_Parasitology/Analysis_Data"
+  ))
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data_Management/Output/Analysis/Human_Parasitology/Analysis_Data"
+  ))
+}
+
+
+file_path_infection_df <- file.path(proj$p1, "02_child_infection_analysis_df.dta")
+infection_df <- read_dta(file_path_infection_df)
+
+infection_df
+
+```
+
+
+# compute summary stats 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

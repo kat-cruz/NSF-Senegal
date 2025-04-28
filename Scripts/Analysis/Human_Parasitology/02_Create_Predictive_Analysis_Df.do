@@ -9,7 +9,7 @@
 
 
 *<><<><><>><><<><><>>
-* INITIATE SCRIPT
+**# INITIATE SCRIPT
 *<><<><><>><><<><><>>
 		
 	clear all
@@ -31,17 +31,17 @@
 
 
 *^*^* Define project-specific paths
-	global data "$master\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
+	global data "$master\Data_Management\Output\Analysis\Human_Parasitology\Analysis_Data"
 	global crdes_data "${master}\Data_Management\Data\_CRDES_CleanData"
 	global eco_data "${master}\Data_Management\Data\_Partner_CleanData\Ecological_Data"
-	global output "${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
-	global asset "${master}\Data_Management\Output\Analysis\Balance_Tables"
-	global paras"${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
+	global output "${master}\Data_Management\Output\Analysis\Human_Parasitology\Analysis_Data"
+	global asset "${master}\Data_Management\Output\Data_Processing\Construction"
+	global paras"${master}\Data_Management\Output\Analysis\Human_Parasitology\Analysis_Data"
 
 *global output "$master\Data_Management\_Partner_CleanData\Parasitological_Analysis_Data\Analysis_Data"
 
 *<><<><><>><><<><><>>
-* LOAD IN DATA
+**# LOAD IN DATA
 *<><<><><>><><<><><>>
 
 	use "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Health.dta", clear // health data 
@@ -112,7 +112,7 @@ drop health_5_3_o* hh_15_o*
 			drop sex_epls_ucad
 
 *<><<><><>><><<><><>>
-* BEGIN DATA CLEANING/PROCESSING
+**# BEGIN DATA CLEANING/PROCESSING
 *<><<><><>><><<><><>>
 
 *^*^* Initial look at data - check missings for each var
@@ -249,7 +249,7 @@ foreach var of varlist _all {
 
 
 *<><<><><>><><<><><>>
-* BEGIN VARIABLE CREATION
+**# BEGIN VARIABLE CREATION
 *<><<><><>><><<><><>>
 
 
@@ -311,8 +311,30 @@ foreach var of varlist _all {
 		*** summarize infection results overall ***
 		sum sh_inf sm_inf  
 		
+**# Save final output		
+		
+*** drop uneeded variables
+
+drop sex_crdes age_crdes age_epls_ucad sex_hp age_hp N merge_ str_id epls_ucad_result Notes id data_source ///
+living_01 beliefs_01 beliefs_02 beliefs_03 
+		 
+order village_id village_name hhid hhid_crdes individual_id_crdes match_score  epls_or_ucad epls_ucad_id 
+hh_12_6_ hh_26_ hh_32_ hh_37_ hh_age_ hh_gender_ hh_age_resp hh_gender_resp 
+health_5_2_ health_5_3_ health_5_5_ health_5_8_ health_5_9_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_99_ hh_15_ hh_10_
+
+
+living_01_bin beliefs_01_bin beliefs_02_bin beliefs_03_bin
+
+q_23 q_24 
+ 
+ asset_index asset_index_std
+ 
+Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator _merge sh_kk_2 sh_kk_1   sh_inf sm_inf
 		
 		
+fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_pg pq_kato2_omega p1_kato2_k2_peg sh_kk_1_string p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2_string pzq_1 pzq_2 
+
+
 save "${data}\02_child_infection_analysis_df.dta", replace		
 		
 		
@@ -659,7 +681,7 @@ save "${output}\base_child_infection_dataframe.dta", replace
 
 
 
-save "${data}\child_infection_dataframe_analysis.dta", replace
+*save "${data}\child_infection_dataframe_analysis.dta", replace
 
 
 

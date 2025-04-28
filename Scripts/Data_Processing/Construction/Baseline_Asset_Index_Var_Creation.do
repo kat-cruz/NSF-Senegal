@@ -65,7 +65,7 @@
 	global data "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
 
   *^*^* Output folders 
-	global dataOutput "${master}\Data_Management\Output\Analysis\Balance_Tables" 
+	global dataOutput "${master}\Data_Management\Output\Data_Processing\Construction" 
 	global latexOutput "$git_path\Latex_Output\Balance_Tables"
 	
   *^*^*  Bring in data 

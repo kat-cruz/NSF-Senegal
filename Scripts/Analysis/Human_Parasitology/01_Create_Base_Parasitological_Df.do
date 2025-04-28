@@ -64,7 +64,7 @@
 ***** Global folders *****
 	global raw_data  "${partner_raw}\Parasitological_Data"
 	global clean_data  "${partner_clean}\Parasitological_Data\Child_Matches"
-	global output "${master}\Data_Management\Output\Analysis\Parasitological_Analysis_Data\Analysis_Data"
+	global output "${master}\Data_Management\Output\Analysis\Human_Parasitology\Analysis_Data"
 
 ***Version Control:
 

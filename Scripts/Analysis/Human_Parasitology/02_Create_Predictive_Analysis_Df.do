@@ -1,4 +1,6 @@
 *==============================================================================
+* Program: parasitological data frame analysis construction 
+* =============================================================================
 
 * written by: Kateri Mouawad
 * Created: February 2025
@@ -6,6 +8,22 @@
 
 
 * <><<><><>> Read Me  <><<><><>>
+
+** This file processes: 
+
+	* Complete_Baseline_Health.dta
+	* Complete_Baseline_Household_Roster.dta
+	* Complete_Baseline_Standard_Of_Living.dta
+	* Complete_Baseline_Beliefs.dta
+	* Complete_Baseline_Agriculture.dta
+	* Complete_Baseline_Community.dta
+	* PCA_asset_index_var.dta
+	* DISES_baseline_ecological data.dta
+	* 01_prepped_inf_matches_df.dta
+	
+** This .do file outputs:
+
+	* 02_child_infection_analysis_df.dta
 
 
 *<><<><><>><><<><><>>
@@ -162,6 +180,20 @@ drop health_5_3_o* hh_15_o*
 	
 	replace hh_15_ = 0 if hh_10_ == 0 
 	replace hh_15_ = 0 if hh_12_6_ == 0	
+	
+	
+
+	*How did he use aquatic vegetation?
+* Creating binary variables for hh_15
+		foreach x in 1 2 3 4 5 99 {
+			gen hh_15_`x' = hh_15_ == `x'
+			replace hh_15_`x' = 0 if missing(hh_15_)
+		}
+
+
+
+	
+	
 ** hh_37_
 ** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
 	
@@ -310,33 +342,99 @@ foreach var of varlist _all {
 		  
 		*** summarize infection results overall ***
 		sum sh_inf sm_inf  
-		
+	
+	
+*** Calculate egg counts
+	
+
+	gen sh_egg_count = cond(fu_p1 > 0, fu_p1, fu_p2)
+
+	gen p1_avg = (p1_kato1_k1_pg + p1_kato2_k2_peg) / 2
+	gen p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2
+
+	gen sm_egg_count = cond(p1_avg > 0, p1_avg, p2_avg)
+
+* Create total egg count
+	gen total_egg = sm_egg_count + sh_egg_count
+	
+	
+
 **# Save final output		
 		
 *** drop uneeded variables
 
-drop sex_crdes age_crdes age_epls_ucad sex_hp age_hp N merge_ str_id epls_ucad_result Notes id data_source ///
-living_01 beliefs_01 beliefs_02 beliefs_03 
-		 
-order village_id village_name hhid hhid_crdes individual_id_crdes match_score  epls_or_ucad epls_ucad_id 
-hh_12_6_ hh_26_ hh_32_ hh_37_ hh_age_ hh_gender_ hh_age_resp hh_gender_resp 
-health_5_2_ health_5_3_ health_5_5_ health_5_8_ health_5_9_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_ health_5_3_13_ health_5_3_14_ health_5_3_99_ hh_15_ hh_10_
+
+		keep  village_id village_name hhid individual_id_crdes match_score epls_or_ucad epls_ucad_id ///
+			hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_ hh_age_ hh_gender_ hh_age_resp hh_gender_resp  ///
+			health_5_2 health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ health_5_5 health_5_8 health_5_9 ///
+			living_01_bin beliefs_01_bin beliefs_02_bin beliefs_03_bin ///
+			q_23 q_24 /// 
+			asset_index asset_index_std ///
+			Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator ///
+			sh_inf sm_inf sh_egg_count sm_egg_count total_egg 
 
 
-living_01_bin beliefs_01_bin beliefs_02_bin beliefs_03_bin
+	 
+		order village_id village_name hhid individual_id_crdes match_score epls_or_ucad epls_ucad_id ///
+			hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_ hh_age_ hh_gender_ hh_age_resp hh_gender_resp  ///
+			health_5_2 health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ health_5_5 health_5_8 health_5_9 ///
+			living_01_bin beliefs_01_bin beliefs_02_bin beliefs_03_bin ///
+			q_23 q_24 /// 
+			asset_index asset_index_std ///
+			Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator ///
+			sh_inf sm_inf sh_egg_count sm_egg_count total_egg 
 
-q_23 q_24 
- 
- asset_index asset_index_std
- 
-Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator _merge sh_kk_2 sh_kk_1   sh_inf sm_inf
+			
+	
+	*** label variables:
+	
+			label variable village_id "Village ID"
+			label variable village_name "Village name"
+			
+			label variable hh_age_ "Individual's age"
+			label variable hh_gender_ "Individual's gender"
+			label variable hh_age_resp "Household respondent's age"
+			label variable hh_gender_resp "Household respondent's gender"
+
+			label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
+			label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
+			label variable hh_32 "Attends school during the 2023/2024 academic year"
+			label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 0=No, asked to children)"
+			
+
+			label variable health_5_2 "Fell ill in the last 12 months (skip 5.4 if no)"
+			label variable health_5_3_1 "Suffered from Malaria"
+			label variable health_5_3_2 "Suffered from Bilharzia"
+			label variable health_5_3_3 "Suffered from Diarrhea"
+			label variable health_5_3_6 "Suffered from Skin issues"
+			label variable health_5_3_9 "Suffered from Stomach ache"
+			label variable health_5_5 "Received medication for schistosomiasis treatment in last 12 months"
+			label variable health_5_8 "Had blood in urine in the last 12 months"
+			label variable health_5_9 "Had blood in stool in the last 12 months"
+
+
+	
+			label variable living_01_bin "Indicator for selected tap water as main source of drinking water"
+			label variable beliefs_01_bin "Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+			label variable beliefs_02_bin "Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+			label variable beliefs_03_bin "Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+			label variable hh_12_6_ "Harvest aquatic vegetation"
+			
+			label variable schisto_indicator "Indicator for presence of schistosomiasis infection"
+			label variable sh_inf "Indicator for Schistosoma haematobium infection"
+			label variable sm_inf "Indicator for Schistosoma mansoni infection"
+			label variable sh_egg_count "Egg count for Schistosoma haematobium"
+			label variable sm_egg_count "Egg count for Schistosoma mansoni"
+			label variable total_egg "Total schistosome egg count"
+
 		
-		
-fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_pg pq_kato2_omega p1_kato2_k2_peg sh_kk_1_string p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2_string pzq_1 pzq_2 
+			label variable q_23 "Access to running drinking water for drinking (1 = Yes, 0 = No)"
+			label variable q_24 "Presence of tap water system if running water is available (1 = Yes, 0 = No)"
 
-
-save "${data}\02_child_infection_analysis_df.dta", replace		
 		
+
+				save "${data}\02_child_infection_analysis_df.dta", replace		
+						
 		
 		
 		
@@ -460,6 +558,8 @@ forval i = 1/7 {
 }
 */
 
+/*
+
 drop hh_13_7_ hh_13_6_ hh_13_5_ hh_13_4_ hh_13_3_ hh_13_2_ hh_13_1_ 
 drop hh_12index_7_ hh_12index_6_ hh_12index_5_ hh_12index_4_ hh_12index_3_ hh_12index_2_ hh_12index_1_
 
@@ -543,6 +643,7 @@ order   village_id village_name individual_id_crdes hhid_crdes epls_ucad_id matc
 save "${output}\base_child_infection_dataframe.dta", replace
 
 
+*/
 
 
 
@@ -562,9 +663,7 @@ save "${output}\base_child_infection_dataframe.dta", replace
 
 
 
-
-
-
+/*
 
 	* Creating binary variables for hh_29
 	foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
@@ -598,20 +697,7 @@ save "${output}\base_child_infection_dataframe.dta", replace
 		replace `var' = .a if `var' == 2
 	}
 
-
-*<><<><><>><><<><><>> 
-* Calculate egg counts
-*<><<><><>><><<><><>>	
-
-	gen sh_egg_count = cond(fu_p1 > 0, fu_p1, fu_p2)
-
-	gen p1_avg = (p1_kato1_k1_pg + p1_kato2_k2_peg) / 2
-	gen p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2
-
-	gen sm_egg_count = cond(p1_avg > 0, p1_avg, p2_avg)
-
-* Create total egg count
-	gen total_egg = sm_egg_count + sh_egg_count
+*/
 
 
 *<><<><><>><><<><><>>	

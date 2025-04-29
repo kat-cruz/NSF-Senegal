@@ -71,6 +71,7 @@ global index "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentif
 
 *^*^* Data folders 
 global dataOutput "${master}\Data_Management\Output\Analysis\Balance_Tables" 
+global asset "${master}\Data_Management\Output\Data_Processing\Construction"
 global latexOutput "$git_path\Latex_Output\Balance_Tables"
 
 
@@ -881,7 +882,7 @@ save `balance_table_ata'
 		save"$dataOutput\PCA_asset_index_var.dta", replace 
 */
 	 	  
-		merge m:m hhid using "$dataOutput\PCA_asset_index_var.dta"
+		merge m:m hhid using "$asset\PCA_asset_index_var.dta"
 		
 		
 

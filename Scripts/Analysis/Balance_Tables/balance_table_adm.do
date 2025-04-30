@@ -489,32 +489,52 @@ replace health_5_6_ = 0 if missing(health_5_6_)
 ***************
 * num_water_access_points
 ***************
-* Create binary indicators for each water source type
-		gen interior_tap = living_01 == 1
-		gen public_tap = living_01 == 2
-		gen neighbor_tap = living_01 == 3
-		gen protected_well = living_01 == 4
-		gen unprotected_well = living_01 == 5
-		gen drill_hole = living_01 == 6
-		gen tanker_service = living_01 == 7
-		gen water_seller = living_01 == 8
-		gen natural_source = living_01 == 9
-		gen stream = living_01 == 10
-		gen other_water = living_01 == 99
+* generate binary indicators for each water source
+gen interior_tap = living_01 == 1
+gen public_tap = living_01 == 2
+gen neighbor_tap = living_01 == 3
+gen protected_well = living_01 == 4
+gen unprotected_well = living_01 == 5
+gen drill_hole = living_01 == 6
+gen tanker_service = living_01 == 7
+gen water_seller = living_01 == 8
+gen natural_source = living_01 == 9
+gen stream = living_01 == 10
+gen other_water = living_01 == 99
 
-gen num_water_access_points = interior_tap + public_tap + neighbor_tap + ///
-    protected_well + unprotected_well + drill_hole + tanker_service + ///
-    water_seller + natural_source + stream + other_water
-	
+* for each village, get max usage of each type (i.e., whether any HH uses it)
+egen v_interior_tap      = max(interior_tap),      by(hhid_village)
+egen v_public_tap        = max(public_tap),        by(hhid_village)
+egen v_neighbor_tap      = max(neighbor_tap),      by(hhid_village)
+egen v_protected_well    = max(protected_well),    by(hhid_village)
+egen v_unprotected_well  = max(unprotected_well),  by(hhid_village)
+egen v_drill_hole        = max(drill_hole),        by(hhid_village)
+egen v_tanker_service    = max(tanker_service),    by(hhid_village)
+egen v_water_seller      = max(water_seller),      by(hhid_village)
+egen v_natural_source    = max(natural_source),    by(hhid_village)
+egen v_stream            = max(stream),            by(hhid_village)
+egen v_other_water       = max(other_water),       by(hhid_village)
+
+* sum across all water types to get total number of unique sources used in village
+gen num_water_access_points = v_interior_tap + v_public_tap + v_neighbor_tap + ///
+    v_protected_well + v_unprotected_well + v_drill_hole + v_tanker_service + ///
+    v_water_seller + v_natural_source + v_stream + v_other_water
 	
 ************
 * q_51
 ************
 * q_51
 
-************
+********
+* target_village
+******
+gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B") | ///
+                     inlist(hhid_village, "123B", "153A", "121A", "131A", "141A") | ///
+                     hhid_village == "142A"
+					 
+**********************************
 * balance tables
-*********
+*******************************
 
 * extract treatment arm and stratum
 gen byte treatment_arm = real(substr(hhid_village, 3, 1))
@@ -578,6 +598,7 @@ label var health_5_3_bin "Diagnosed Malaria"
 label var health_5_6_ "Diagnosed Schistosomiasis"
 label var living_01_bin "Improved Living Conditions"
 label var num_water_access_points "Number of Water Access Points"
+label var target_village "Village in Doruska et. Al. Auction Experiment"
 
 * Define the full list of variables for the main balance table
 local balance_vars hh_age_h hh_education_level_bin_h hh_education_skills_5_h ///
@@ -586,7 +607,7 @@ local balance_vars hh_age_h hh_education_level_bin_h hh_education_skills_5_h ///
     TLU agri_6_15 agri_6_32_bin agri_6_36_bin total_land_ha agri_6_34_comp_any ///
     agri_income_01 agri_income_05 beliefs_01_bin beliefs_02_bin beliefs_03_bin ///
     beliefs_04_bin beliefs_05_bin beliefs_06_bin beliefs_07_bin beliefs_08_bin ///
-    beliefs_09_bin health_5_3_bin health_5_6_ living_01_bin num_water_access_points
+    beliefs_09_bin health_5_3_bin health_5_6_ living_01_bin num_water_access_points target_village
 
 * Create matrices to store results
 matrix define Coefs = J(4, 1, .)

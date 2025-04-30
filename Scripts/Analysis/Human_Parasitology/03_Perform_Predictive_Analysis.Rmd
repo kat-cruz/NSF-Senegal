@@ -59,6 +59,35 @@ infection_df
 
 # compute summary stats 
 
+```{r}
+
+
+summary_stats <- function(data, exclude = NULL) {
+  # Remove excluded columns
+  if (!is.null(exclude)) {
+    data <- data[ , !(names(data) %in% exclude)]
+  }
+
+  # Keep only numeric columns
+  data_numeric <- data[ , sapply(data, is.numeric)]
+
+  # Compute summary statistics, rounding Mean and SD
+  summary_df <- data.frame(
+    Variable = names(data_numeric),
+    N = sapply(data_numeric, function(x) sum(!is.na(x))),
+    Mean = round(sapply(data_numeric, function(x) mean(x, na.rm = TRUE)), 2),
+    SD = round(sapply(data_numeric, function(x) sd(x, na.rm = TRUE)), 2),
+    row.names = NULL
+  )
+
+  return(summary_df)
+}
+
+
+summary_stats(infection_df, exclude = c("village_id", "village_name", "hhid", "individual_id_crde", "match_score", "epls_or_ucad", "epls_ucad_id"))
+
+
+```
 
 
 

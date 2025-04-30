@@ -1,0 +1,212 @@
+---
+project:
+  type: website
+
+website:
+  title: "My Project Site"
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+
+format:
+  html:
+    theme: default
+    toc: true
+---
+
+
+# BEGIN HERE - load packages
+
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
+              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
+              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "quarto")
+
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages without printing any output
+invisible(lapply(packages, library, character.only = TRUE))
+
+
+```
+
+
+## Define paths and load data 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Define the file paths
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Check if the Kateri path exists and resolve the project path accordingly
+if (file.exists(proj_paths$projects)) {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$projects,
+    p1 = "<projects>/Data_Management/Output/Analysis/Human_Parasitology/Analysis_Data"
+  ))
+} else {
+  proj <- kwb.utils::resolve(list(
+    projects = proj_paths$alternative_projects,
+    p1 = "<projects>/Data_Management/Output/Analysis/Human_Parasitology/Analysis_Data"
+  ))
+}
+
+
+file_path_infection_df <- file.path(proj$p1, "02_child_infection_analysis_df.dta")
+infection_df <- read_dta(file_path_infection_df)
+
+#infection_df
+
+```
+
+
+
+
+## Results {.panel-tabset}
+
+
+::: {.panel-tabset}
+
+
+
+### Variable Descriptions
+
+## Notes:
+Here are the finalized variables we agreed on in the Google doc. However, if I'm missing anything or should add/remove something, please do let me know.
+
+<table style="width:100%; font-size: 14px;">
+  <tr><th>Variable</th><th>Description</th></tr>
+  <tr><td>village_id</td><td>Village ID</td></tr>
+  <tr><td>village_name</td><td>Village name</td></tr>
+  <tr><td>hh_age_</td><td>Individual's age</td></tr>
+  <tr><td>hh_gender_</td><td>Individual's gender</td></tr>
+  <tr><td>hh_age_resp</td><td>Household respondent's age</td></tr>
+  <tr><td>hh_gender_resp</td><td>Household respondent's gender</td></tr>
+  <tr><td>hh_10_</td><td>Hours per week spent within 1 meter of surface water source</td></tr>
+  <tr><td>hh_26_</td><td>Currently enrolled in formal school? (1=Yes, 2=No)</td></tr>
+  <tr><td>hh_32_</td><td>Attends school during the 2023/2024 academic year</td></tr>
+  <tr><td>hh_37_</td><td>Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 0=No)</td></tr>
+  <tr><td>health_5_2_</td><td>Fell ill in the last 12 months (skip 5.4 if no)</td></tr>
+  <tr><td>health_5_3_1_</td><td>Suffered from Malaria</td></tr>
+  <tr><td>health_5_3_2_</td><td>Suffered from Bilharzia</td></tr>
+  <tr><td>health_5_3_3_</td><td>Suffered from Diarrhea</td></tr>
+  <tr><td>health_5_3_6_</td><td>Suffered from Skin issues</td></tr>
+  <tr><td>health_5_3_9_</td><td>Suffered from Stomach ache</td></tr>
+  <tr><td>health_5_5</td><td>Received medication for schistosomiasis treatment in last 12 months</td></tr>
+  <tr><td>health_5_8</td><td>Had blood in urine in the last 12 months</td></tr>
+  <tr><td>health_5_9</td><td>Had blood in stool in the last 12 months</td></tr>
+  <tr><td>living_01_bin</td><td>Indicator for selected tap water as main source of drinking water</td></tr>
+  <tr><td>beliefs_01_bin</td><td>Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)</td></tr>
+  <tr><td>beliefs_02_bin</td><td>Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)</td></tr>
+  <tr><td>beliefs_03_bin</td><td>Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)</td></tr>
+  <tr><td>hh_12_6_</td><td>Harvest aquatic vegetation</td></tr>
+  <tr><td>schisto_indicator</td><td>Indicator for presence of schistosomiasis infection</td></tr>
+  <tr><td>sh_inf</td><td>Indicator for Schistosoma haematobium infection</td></tr>
+  <tr><td>sm_inf</td><td>Indicator for Schistosoma mansoni infection</td></tr>
+  <tr><td>sh_egg_count</td><td>Egg count for Schistosoma haematobium</td></tr>
+  <tr><td>sm_egg_count</td><td>Egg count for Schistosoma mansoni</td></tr>
+  <tr><td>total_egg</td><td>Total schistosome egg count</td></tr>
+  <tr><td>q_23</td><td>Access to running drinking water for drinking (1 = Yes, 0 = No)</td></tr>
+  <tr><td>q_24</td><td>Presence of tap water system if running water is available (1 = Yes, 0 = No)</td></tr>
+</table>
+
+
+### Compute summary stats 
+## Notes
+
+Looks like we have some missings. Will check through the processed data to make sure I'm not missing something. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+summary_stats <- function(data, exclude = NULL) {
+  # Remove excluded columns
+  if (!is.null(exclude)) {
+    data <- data[ , !(names(data) %in% exclude)]
+  }
+
+  # Keep only numeric columns
+  data_numeric <- data[ , sapply(data, is.numeric)]
+
+  # Compute summary statistics, rounding Mean and SD
+  summary_df <- data.frame(
+    variable = names(data_numeric),
+    N = sapply(data_numeric, function(x) sum(!is.na(x))),
+    Mean = round(sapply(data_numeric, function(x) mean(x, na.rm = TRUE)), 2),
+    SD = round(sapply(data_numeric, function(x) sd(x, na.rm = TRUE)), 2),
+    row.names = NULL
+  )
+
+  return(summary_df)
+}
+
+
+summary_stats_1 <- summary_stats(infection_df, exclude = c("village_id", "village_name", "hhid", "individual_id_crde", "match_score", "epls_or_ucad", "epls_ucad_id"))
+
+
+summary_stats_2 <- summary_stats_1 %>%
+  mutate(Question = case_when(
+    variable == "village_id" ~ "Village ID",
+    variable == "village_name" ~ "Village name",
+    
+    variable == "hh_age_" ~ "Individual's age",
+    variable == "hh_gender_" ~ "Individual's gender",
+    variable == "hh_age_resp" ~ "Household respondent's age",
+    variable == "hh_gender_resp" ~ "Household respondent's gender",
+
+    variable == "hh_10_" ~ "Hours per week spent within 1 meter of surface water source",
+    variable == "hh_26_" ~ "Currently enrolled in formal school? (1=Yes, 2=No)",
+    variable == "hh_32_" ~ "Attends school during the 2023/2024 academic year",
+    variable == "hh_37_" ~ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 0=No)",
+
+    variable == "health_5_2_" ~ "Fell ill in the last 12 months (skip 5.4 if no)",
+    variable == "health_5_3_1_" ~ "Suffered from Malaria",
+    variable == "health_5_3_2_" ~ "Suffered from Bilharzia",
+    variable == "health_5_3_3_" ~ "Suffered from Diarrhea",
+    variable == "health_5_3_6_" ~ "Suffered from Skin issues",
+    variable == "health_5_3_9_" ~ "Suffered from Stomach ache",
+    variable == "health_5_5" ~ "Received medication for schistosomiasis treatment in last 12 months",
+    variable == "health_5_8" ~ "Had blood in urine in the last 12 months",
+    variable == "health_5_9" ~ "Had blood in stool in the last 12 months",
+
+    variable == "living_01_bin" ~ "Indicator for selected tap water as main source of drinking water",
+    variable == "beliefs_01_bin" ~ "Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)",
+    variable == "beliefs_02_bin" ~ "Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)",
+    variable == "beliefs_03_bin" ~ "Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)",
+    variable == "hh_12_6_" ~ "Harvest aquatic vegetation",
+
+    variable == "schisto_indicator" ~ "Indicator for presence of schistosomiasis infection",
+    variable == "sh_inf" ~ "Indicator for Schistosoma haematobium infection",
+    variable == "sm_inf" ~ "Indicator for Schistosoma mansoni infection",
+    variable == "sh_egg_count" ~ "Egg count for Schistosoma haematobium",
+    variable == "sm_egg_count" ~ "Egg count for Schistosoma mansoni",
+    variable == "total_egg" ~ "Total schistosome egg count",
+
+    variable == "q_23" ~ "Access to running drinking water for drinking (1 = Yes, 0 = No)",
+    variable == "q_24" ~ "Presence of tap water system if running water is available (1 = Yes, 0 = No)",
+
+     TRUE ~ variable 
+  ))
+
+summary_stats_3 <- summary_stats_2 %>%
+  select(Question, everything())
+
+
+summary_stats_3 %>%
+  mutate(across(where(is.numeric), round, 2)) %>%
+  kable(format = "html", table.attr = 'style="width:100%; font-size:14px;"')
+
+
+```
+
+
+:::
+

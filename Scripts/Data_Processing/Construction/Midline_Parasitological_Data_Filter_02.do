@@ -15,7 +15,7 @@
 
 
 *<><<><><>><><<><><>>
-* INITIATE SCRIPT
+**# INITIATE SCRIPT
 *<><<><><>><><<><><>>
 		
 	clear all
@@ -25,7 +25,7 @@
 	set more off
 
 *<><<><><>><><<><><>>
-* SET FILE PATHS
+**# SET FILE PATHS
 *<><<><><>><><<><><>>
 
 *^*^* Set base Box path for each user
@@ -56,7 +56,7 @@
 	global rawdata_epls_mid "$master\Data_Management\Data\_Partner_RawData\Parasitological_Data\EPLS\Midline"
 	global rawdata_epls_base "$master\Data_Management\Data\_Partner_RawData\Parasitological_Data\EPLS_Data\Baseline"
 
-
+**## Geuo
 *^*^**^*^**^*^**^*^**^*^**^*^* Village Geuo *^*^**^*^**^*^**^*^**^*^**^*^*
 
 
@@ -71,11 +71,6 @@
 		
 		
 		export excel "${output_ucad}/UCAD_IDS_Geuo_033A_Midline.xlsx", firstrow(variables) sheet("Geuo (033A)")  
-
-*<><<><><>><><<><><>>
-* FILTER CRDES MILDINE DATA 
-*<><<><><>><><<><><>>
-
 
 use "$id_mid\All_Individual_IDs_Complete.dta", clear
 
@@ -128,7 +123,7 @@ keep if hhid_village == "033A"
 		export excel "${output_ucad}/UCAD_IDS_Geuo_033A_Midline.xlsx", firstrow(variables) sheet("Geuo (033A)")  
 
 
-		
+**## Dodel		
 *^*^**^*^**^*^**^*^**^*^**^*^* Village Dodel *^*^**^*^**^*^**^*^**^*^**^*^*
 
 
@@ -140,9 +135,9 @@ keep if hhid_village == "033A"
 
 		keep if _merge != 3
 		keep initiales identifiant sexe
+	* No new obsevations 
 		
-		
-		export excel "${output_ucad}/UCAD_IDS_dodel_072B_Midline.xlsx", firstrow(variables) sheet("Dodel (072B)")  
+		*export excel "${output_ucad}/UCAD_IDS_dodel_072B_Midline.xlsx", firstrow(variables) sheet("Dodel (072B)")  
 
 *^*^* bring in CRDES midline data
 
@@ -180,8 +175,169 @@ keep if hhid_village == "072B"
 	keep hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation hhid individ UCAD_ID MATCH Unique SCORE Notes
 		order  hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation  hhid individ UCAD_ID MATCH Unique SCORE Notes
 
-	export excel using "$output_ucad\CRDES_Dodel_072B_Midline.xlsx", firstrow(variables) sheet("Dodel (072B)")  
+	*export excel using "$output_ucad\CRDES_Dodel_072B_Midline.xlsx", firstrow(variables) sheet("Dodel (072B)")  
 
+**## Diabobe
+	*^*^**^*^**^*^**^*^**^*^**^*^* Village Diabobe *^*^**^*^**^*^**^*^**^*^**^*^*
+
+
+/*
+	use "$cleandata_ucad_base\diabobe_030B_baseline_df.dta", clear
+
+			merge m:m identifiant using "$cleandata_ucad_mid\diabobe_030B_midline_df.dta"
+* keep new children
+
+		keep if _merge != 3
+		keep initiales identifiant sexe
+		
+		
+		export excel "${output_ucad}/UCAD_IDS_Diabobe_030B_Midline.xlsx", firstrow(variables) sheet("Diabobe (030B)")  
+
+*^*^* bring in CRDES midline data
+
+	use "$id_mid\All_Individual_IDs_Complete.dta", clear
+
+keep if hhid_village == "030B"
+
+		rename hh_relation_with_o_ other_relation
+		rename hh_relation_with_ hh_relation_with
+		tostring  hh_relation_with, gen(hh_relation)
+
+		replace hh_relation = "Head of household (himself)" if hh_relation_with == 1
+		replace hh_relation = "Spouse of head ofhousehold" if hh_relation_with == 2
+		replace hh_relation = "Son/daughter of the home" if hh_relation_with == 3
+		replace hh_relation = "Spouse of the son/daughterof the head of the family" if hh_relation_with == 4
+		replace hh_relation = "Grandson/granddaughter of the head of the family" if hh_relation_with == 5
+		replace hh_relation = "Father/Mother of the HH" if hh_relation_with == 6
+		replace hh_relation = "Father/Mother of the spouse of the head of the family" if hh_relation_with == 7
+		replace hh_relation = "Brother/sister of the head ofthe family" if hh_relation_with == 8
+		replace hh_relation = "Brother/sister of the HH's spouse" if hh_relation_with == 9
+		replace hh_relation = "Adopted child" if hh_relation_with == 10
+		replace hh_relation = "House help" if hh_relation_with == 11
+		replace hh_relation = "Other person related to the head of the family" if hh_relation_with == 12
+		replace hh_relation = "Other person not related to the head of the family" if hh_relation_with == 13
+		replace hh_relation = "Niece/Nephew" if hh_relation_with == 14
+		
+		
+		gen UCAD_age = ""
+		gen UCAD_ID = ""
+		gen MATCH = ""
+		gen Unique = ""
+		gen SCORE = ""
+		gen Notes = ""
+		
+	keep hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation hhid individ UCAD_ID MATCH Unique SCORE Notes
+		order  hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation  hhid individ UCAD_ID MATCH Unique SCORE Notes
+
+	export excel using "$output_ucad\CRDES_Diabobe_030B_Midline.xlsx", firstrow(variables) sheet("Diabobe (030B)")  
+*/
+
+
+**## Ndiayene Pendao
+	*^*^**^*^**^*^**^*^**^*^**^*^* Village Ndiayene Pendao *^*^**^*^**^*^**^*^**^*^**^*^*
+
+
+
+	use "$cleandata_ucad_base\ndiayene_pendao_020B_baseline_df.dta", clear
+
+			merge m:m identifiant using "$cleandata_ucad_mid\ndiayene_pendao_020B_midline_df.dta"
+* keep new children
+
+		keep if _merge != 3
+		keep initiales identifiant sexe
+		
+		
+		export excel "${output_ucad}/UCAD_IDS_Ndiayene_Pendao_020B_Midline.xlsx", firstrow(variables) sheet("Ndiayene Pendao (020B)")  
+
+*^*^* bring in CRDES midline data
+
+	use "$id_mid\All_Individual_IDs_Complete.dta", clear
+
+keep if hhid_village == "020B"
+
+		rename hh_relation_with_o_ other_relation
+		rename hh_relation_with_ hh_relation_with
+		tostring  hh_relation_with, gen(hh_relation)
+
+		replace hh_relation = "Head of household (himself)" if hh_relation_with == 1
+		replace hh_relation = "Spouse of head ofhousehold" if hh_relation_with == 2
+		replace hh_relation = "Son/daughter of the home" if hh_relation_with == 3
+		replace hh_relation = "Spouse of the son/daughterof the head of the family" if hh_relation_with == 4
+		replace hh_relation = "Grandson/granddaughter of the head of the family" if hh_relation_with == 5
+		replace hh_relation = "Father/Mother of the HH" if hh_relation_with == 6
+		replace hh_relation = "Father/Mother of the spouse of the head of the family" if hh_relation_with == 7
+		replace hh_relation = "Brother/sister of the head ofthe family" if hh_relation_with == 8
+		replace hh_relation = "Brother/sister of the HH's spouse" if hh_relation_with == 9
+		replace hh_relation = "Adopted child" if hh_relation_with == 10
+		replace hh_relation = "House help" if hh_relation_with == 11
+		replace hh_relation = "Other person related to the head of the family" if hh_relation_with == 12
+		replace hh_relation = "Other person not related to the head of the family" if hh_relation_with == 13
+		replace hh_relation = "Niece/Nephew" if hh_relation_with == 14
+		
+		
+		gen UCAD_age = ""
+		gen UCAD_ID = ""
+		gen MATCH = ""
+		gen Unique = ""
+		gen SCORE = ""
+		gen Notes = ""
+		
+	keep hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation hhid individ UCAD_ID MATCH Unique SCORE Notes
+		order  hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation  hhid individ UCAD_ID MATCH Unique SCORE Notes
+
+	export excel using "$output_ucad\CRDES_Ndiayene_Pendao_020B_Midline.xlsx", firstrow(variables) sheet("Ndiayene Pendao (020B)")  
 	
+**## Thiangaye
+	*^*^**^*^**^*^**^*^**^*^**^*^* Village Thiangaye *^*^**^*^**^*^**^*^**^*^**^*^*
 	
+
+
+	use "$cleandata_ucad_base\thiangaye_021B_baseline_df.dta", clear
+
+			merge m:m identifiant using "$cleandata_ucad_mid\thiangaye_021B_midline_df.dta"
+* keep new children
+
+		keep if _merge != 3
+		keep initiales identifiant sexe
+		
+		
+		export excel "${output_ucad}/UCAD_IDS_Thiangaye_021B_Midline.xlsx", firstrow(variables) sheet("Thiangaye (021B)")  
+
+*^*^* bring in CRDES midline data
+
+	use "$id_mid\All_Individual_IDs_Complete.dta", clear
+
+keep if hhid_village == "021B"
+
+		rename hh_relation_with_o_ other_relation
+		rename hh_relation_with_ hh_relation_with
+		tostring  hh_relation_with, gen(hh_relation)
+
+		replace hh_relation = "Head of household (himself)" if hh_relation_with == 1
+		replace hh_relation = "Spouse of head ofhousehold" if hh_relation_with == 2
+		replace hh_relation = "Son/daughter of the home" if hh_relation_with == 3
+		replace hh_relation = "Spouse of the son/daughterof the head of the family" if hh_relation_with == 4
+		replace hh_relation = "Grandson/granddaughter of the head of the family" if hh_relation_with == 5
+		replace hh_relation = "Father/Mother of the HH" if hh_relation_with == 6
+		replace hh_relation = "Father/Mother of the spouse of the head of the family" if hh_relation_with == 7
+		replace hh_relation = "Brother/sister of the head ofthe family" if hh_relation_with == 8
+		replace hh_relation = "Brother/sister of the HH's spouse" if hh_relation_with == 9
+		replace hh_relation = "Adopted child" if hh_relation_with == 10
+		replace hh_relation = "House help" if hh_relation_with == 11
+		replace hh_relation = "Other person related to the head of the family" if hh_relation_with == 12
+		replace hh_relation = "Other person not related to the head of the family" if hh_relation_with == 13
+		replace hh_relation = "Niece/Nephew" if hh_relation_with == 14
+		
+		
+		gen UCAD_age = ""
+		gen UCAD_ID = ""
+		gen MATCH = ""
+		gen Unique = ""
+		gen SCORE = ""
+		gen Notes = ""
+		
+	keep hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation hhid individ UCAD_ID MATCH Unique SCORE Notes
+		order  hhid_village hh_head_name_complet hh_age_resp hh_gender_resp hh_full_name_calc_ hh_gender_ hh_age_  UCAD_age hh_relation  hhid individ UCAD_ID MATCH Unique SCORE Notes
+
+	export excel using "$output_ucad\CRDES_Thiangaye_021B_Midline.xlsx", firstrow(variables) sheet("Thiangaye (021B)")	
 	

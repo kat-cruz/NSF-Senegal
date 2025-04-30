@@ -21,7 +21,7 @@
 	* PCA_asset_index_var.dta
 	
  ** This file outputs:
- 
+	* baseline_balance_tables_data_PAP.dta
  
 * <><<><><>> Read Me  <><<><><>>
 
@@ -476,11 +476,32 @@ foreach var of varlist _all {
 			
 			*replace hh_29_04 = 0 if hh_29_ != 14 & hh_29_ != . 
 
-	***TIME USE VARIABLES***
+	**## TIME USE VARIABLES***
 	
-			foreach var in hh_12_6_ hh_16_  {
-		replace `var' = 0 if hh_10_ == 0
-	}
+	** Fill in logic missings with 0s for variables dependent on hh_10
+	
+/* 
+		foreach var in hh_11_ hh_14_ hh_15_ hh_16_  {
+				replace `var' = 0 if hh_10_ == 0
+		}
+		
+*/ 
+
+	foreach var in hh_11_ hh_14_  hh_16_  {
+				replace `var' = 0 if hh_10_ == 0
+		}
+		
+
+
+	* Loop through hh_12_1_ to hh_12_8_
+		forval i = 1/8 {
+			replace hh_12_`i'_ = 0 if hh_10_ == 0
+		}
+
+	* Loop through hh_13_1_ to hh_13_8_
+		forval i = 1/7 {
+			replace hh_13_`i'_ = 0 if hh_10_ == 0
+		}
 
 
 	  *^*^* filter variable 
@@ -495,9 +516,6 @@ foreach var of varlist _all {
 	   **drop unecessary variables
 		drop hh_13_7_ hh_13_6_ hh_13_5_ hh_13_4_ hh_13_3_ hh_13_2_ hh_13_1_ 
 		drop hh_12index_7_ hh_12index_6_ hh_12index_5_ hh_12index_4_ hh_12index_3_ hh_12index_2_ hh_12index_1_
-		
-	
-	
 		
 		
 		* hh_14 relevance: ${hh_10} > 0 and selected(${hh_12}, "6")
@@ -575,20 +593,32 @@ foreach x in 0 1 2 3 4 99 {
 
 	** source(s) of surface water?
 	* Creating binary variables for hh_11
+	
+
 			foreach x in 1 2 3 4 99 {
 				gen hh_11_`x' = hh_11_ == `x'
-				replace hh_11_`x' = 0 if missing(hh_11_)
+				*replace hh_11_`x' = 0 if missing(hh_11_)
 			}
 
+			
+** How did they use the quatic vegetation?
+** ${hh_10} > 0 and selected(${hh_12}, "6")
+
+			*replace hh_15_ = 0 if hh_12_6_ == 0
+			
 	*How did he use aquatic vegetation?
 	* Creating binary variables for hh_15
+/* 
 			foreach x in 1 2 3 4 5 99 {
-				gen hh_15_`x' = hh_15_ == `x'
+				gen hh_15_`x' =  hh_15_ == `x', missing otherwise 
 				replace hh_15_`x' = 0 if missing(hh_15_)
 			}
-
-
-
+			
+*/
+				foreach x in 1 2 3 4 5 99 {
+					gen hh_15_`x' = .
+					replace hh_15_`x' = 1 if hh_15_ == `x'
+				}
 
 /*
 foreach x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {

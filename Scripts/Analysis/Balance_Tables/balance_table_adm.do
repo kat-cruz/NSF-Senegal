@@ -35,7 +35,7 @@ global balance "$master\Data_Management\Output\Analysis\Balance_Tables\baseline_
 global treatment "$master\Data_Management\Data\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 global asset_index "$master\Data_Management\Output\Data_Processing\Construction\PCA_asset_index_var.dta"
 global respondent_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\respondent_index.dta"
-global balance_tables "C:\Users\admmi\Box\NSF Senegal\Data_Management\Output\Analysis\Balance_Tables"
+global balance_tables "$master\Data_Management\Output\Analysis\Balance_Tables"
 
 global baseline_agriculture "$baseline\Complete_Baseline_Agriculture.dta"
 global baseline_beliefs "$baseline\Complete_Baseline_Beliefs.dta"
@@ -51,21 +51,6 @@ global baseline_production "$baseline\Complete_Baseline_Production.dta"
 global baseline_standard "$baseline\Complete_Baseline_Standard_Of_Living.dta"
 global baseline_community "$baseline\Complete_Baseline_Community.dta"
 global baseline_games "$baseline\Complete_Baseline_Public_Goods_Game"
-
-global midline_agriculture "$midline\Complete_Midline_Agriculture.dta"
-global midline_beliefs "$midline\Complete_Midline_Beliefs.dta"
-global midline_community "$midline\Complete_Midline_Community.dta"
-global midline_enumerator "$midline\Complete_Midline_Enumerator_Observations.dta"
-global midline_geographies "$midline\Complete_Midline_Geographies.dta"
-global midline_health "$midline\Complete_Midline_Health.dta"
-global midline_household "$midline\Complete_Midline_Household_Roster.dta"
-global midline_income "$midline\Complete_Midline_Income.dta"
-global midline_knowledge "$midline\Complete_Midline_Knowledge.dta"
-global midline_lean "$midline\Complete_Midline_Lean_Season.dta"
-global midline_production "$midline\Complete_Midline_Production.dta"
-global midline_standard "$midline\Complete_Midline_Standard_Of_Living.dta"
-global midline_community "$baseline\Complete_Midline_Community.dta"
-
 
 **************************************************
 * controls and treatment data

@@ -34,6 +34,9 @@ global midline "$master\Data_Management\Data\_CRDES_CleanData\Midline\Deidentifi
 global balance "$master\Data_Management\Output\Analysis\Balance_Tables\baseline_balance_tables_data_PAP.dta"
 global treatment "$master\Data_Management\Data\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 global asset_index "$master\Data_Management\Output\Data_Processing\Construction\PCA_asset_index_var.dta"
+global respondent_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\respondent_index.dta"
+global balance_tables "$master\Data_Management\Output\Analysis\Balance_Tables"
+global locations "$master\Data_Management\Data\Location_Data\hhsurvey_villages.csv"
 
 global baseline_agriculture "$baseline\Complete_Baseline_Agriculture.dta"
 global baseline_beliefs "$baseline\Complete_Baseline_Beliefs.dta"
@@ -47,6 +50,8 @@ global baseline_knowledge "$baseline\Complete_Baseline_Knowledge.dta"
 global baseline_lean "$baseline\Complete_Baseline_Lean_Season.dta"
 global baseline_production "$baseline\Complete_Baseline_Production.dta"
 global baseline_standard "$baseline\Complete_Baseline_Standard_Of_Living.dta"
+global baseline_community "$baseline\Complete_Baseline_Community.dta"
+global baseline_games "$baseline\Complete_Baseline_Public_Goods_Game"
 
 global midline_agriculture "$midline\Complete_Midline_Agriculture.dta"
 global midline_beliefs "$midline\Complete_Midline_Beliefs.dta"
@@ -60,13 +65,22 @@ global midline_knowledge "$midline\Complete_Midline_Knowledge.dta"
 global midline_lean "$midline\Complete_Midline_Lean_Season.dta"
 global midline_production "$midline\Complete_Midline_Production.dta"
 global midline_standard "$midline\Complete_Midline_Standard_Of_Living.dta"
+global midline_community "$baseline\Complete_Midline_Community.dta"
 
 **************************************************
 * controls and treatment data
 **************************************************
+use "$baseline_household", clear
 
-* load balance table data with controls
-use "$balance", clear
+* merge all together needed for balance tables
+merge 1:1 hhid using "$baseline_health", nogen
+merge 1:1 hhid using "$baseline_agriculture", nogen
+merge 1:1 hhid using "$baseline_income", nogen
+merge 1:1 hhid using "$baseline_standard", nogen
+merge 1:1 hhid using "$baseline_games", nogen
+merge 1:1 hhid using "$baseline_enumerator", nogen
+merge 1:1 hhid using "$baseline_beliefs", nogen	
+merge m:1 hhid_village using "$baseline_community", nogen
 
 * control variables:
 * - q_51: distance to nearest health clinic (village-level)
@@ -77,65 +91,233 @@ use "$balance", clear
 * - hh_gender_h: household head's sex
 * - hh_education_skills_5_h: household head's literacy status
 
-* store balance data in a temporary file
-tempfile balance_data
-save `balance_data', replace
+* Create hh_numero (household size assumed to already exist)
+* If not defined yet:
+* egen hh_numero = rownonmiss(hh_age_*)  // example based on age vars
 
-* load asset index data and merge with balance data
+* Piped water access indicator
+gen living_01_bin = inlist(living_01, 1, 2, 3)
+
+***************
+* num_water_access_points (village-level)
+***************
+gen interior_tap = living_01 == 1
+gen public_tap = living_01 == 2
+gen neighbor_tap = living_01 == 3
+gen protected_well = living_01 == 4
+gen unprotected_well = living_01 == 5
+gen drill_hole = living_01 == 6
+gen tanker_service = living_01 == 7
+gen water_seller = living_01 == 8
+gen natural_source = living_01 == 9
+gen stream = living_01 == 10
+gen other_water = living_01 == 99
+
+egen v_interior_tap      = max(interior_tap),      by(hhid_village)
+egen v_public_tap        = max(public_tap),        by(hhid_village)
+egen v_neighbor_tap      = max(neighbor_tap),      by(hhid_village)
+egen v_protected_well    = max(protected_well),    by(hhid_village)
+egen v_unprotected_well  = max(unprotected_well),  by(hhid_village)
+egen v_drill_hole        = max(drill_hole),        by(hhid_village)
+egen v_tanker_service    = max(tanker_service),    by(hhid_village)
+egen v_water_seller      = max(water_seller),      by(hhid_village)
+egen v_natural_source    = max(natural_source),    by(hhid_village)
+egen v_stream            = max(stream),            by(hhid_village)
+egen v_other_water       = max(other_water),       by(hhid_village)
+
+gen num_water_access_points = v_interior_tap + v_public_tap + v_neighbor_tap + ///
+    v_protected_well + v_unprotected_well + v_drill_hole + v_tanker_service + ///
+    v_water_seller + v_natural_source + v_stream + v_other_water
+
+***************
+* Household head controls
+***************
+* Bring in respondent index to help ID head
+merge 1:1 hhid using "$respondent_index", nogen
+
+gen hh_head_index = .
+forvalues i = 1/55 {
+    replace hh_head_index = `i' if hh_relation_with_`i' == 1
+}
+replace hh_head_index = resp_index if missing(hh_head_index) & !missing(resp_index)
+
+* Fallback: use match by age/gender if still missing
+forvalues i = 1/55 {
+    replace hh_head_index = `i' if missing(hh_head_index) ///
+        & hh_age_resp == hh_age_`i' & hh_gender_resp == hh_gender_`i'
+}
+
+* Age of head
+gen hh_age_h = .
+forvalues i = 1/55 {
+    replace hh_age_h = hh_age_`i' if hh_head_index == `i'
+}
+
+* Gender of head (1 = male, 0 = female)
+gen hh_gender_h = .
+forvalues i = 1/55 {
+    replace hh_gender_h = 1 if hh_head_index == `i' & hh_gender_`i' == 1
+    replace hh_gender_h = 0 if hh_head_index == `i' & hh_gender_`i' == 2
+}
+
+* Literacy of head
+gen hh_education_skills_5_h = 0
+forvalues i = 1/55 {
+    replace hh_education_skills_5_h = 1 if hh_head_index == `i' & hh_education_skills_5_`i' == 1
+}
+
+
+gen auction_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B") | ///
+                     inlist(hhid_village, "123B", "153A", "121A", "131A", "141A") | ///
+                     hhid_village == "142A"
+					 
+keep hhid hhid_village hh_age_h hh_education_skills_5_h hh_gender_h hh_numero living_01_bin num_water_access_points auction_village
+
+
+tempfile control_data
+save `control_data', replace
+
+**************************************************
+* MERGE IN ASSET INDEX *
+**************************************************
 use "$asset_index", clear
-sum asset_index asset_index_std
 tempfile asset_data
 save `asset_data', replace
 
-* merge balance data with asset index
-use `balance_data', clear
+use `control_data', clear
 merge 1:1 hhid using `asset_data', keep(master match) nogen
 
-* store combined data in a temporary file
 tempfile combined_data
 save `combined_data', replace
 
-* load treatment data, collapse to household level
+**************************************************
+* MERGE IN TREATMENT DATA *
+**************************************************
 use "$treatment", clear
-
-* correction for 132A that should be 153A
 foreach var of varlist * {
     capture confirm string variable `var'
     if !_rc {
         replace `var' = subinstr(`var', "132A", "153A", .)
     }
 }
-
+* collapse to treated household
 collapse (max) trained_hh, by(hhid)
 tempfile treatment_data
 save `treatment_data', replace
 
-* merge treatment data with combined data
 use `combined_data', clear
 merge 1:1 hhid using `treatment_data', keep(master match) nogen
-
-* balance data has some observations with household id's that must not have been dropped
 drop if missing(hhid_village)
 
-* extract treatment arm and stratum
+* gen treatment arm
 gen byte treatment_arm = real(substr(hhid_village, 3, 1))
 label define treatlbl 0 "Control" 1 "Arm A - Public Health" 2 "Arm B - Private Benefits" 3 "Arm C - Both Messages"
 label values treatment_arm treatlbl
 
+* gen stratum
 gen stratum = substr(hhid_village, 4, 1)
 
-* define global macros for control variables to use in regressions
+* global controls
 global controls q_51 num_water_access_points hh_numero living_01_bin asset_index_std hh_age_h i.hh_gender_h i.hh_education_skills_5_h
-
-* villages in Doruka et al. actions experiment
-* 122A, 123A, 121B, 131B, 120B 123B, 153A, 121A, 131A, 141A, 142A 
-rename target_village auctions_experiment
-
-* 
 
 tempfile combined_data
 save `combined_data', replace
 
+
+*******************************
+* DISTANCE VECTOR
+*******************************
+******************************* 
+* DISTANCE VECTOR
+******************************* 
+import delimited "$locations", clear
+foreach var of varlist * {
+    capture confirm string variable `var'
+    if !_rc {
+        replace `var' = subinstr(`var', "132A", "153A", .)
+    }
+}
+drop if hhid_village == "115U" | hhid_village == "116U" | hhid_village == "117U" | ///
+       hhid_village == "119U" | hhid_village == "118U" | hhid_village == "125U" | ///
+       hhid_village == "126U" | hhid_village == "124U" | hhid_village == "120U" | ///
+       hhid_village == "127U" | hhid_village == "128U" | hhid_village == "129U"
+
+* Generate treatment arm variable
+gen byte treatment_arm = real(substr(hhid_village, 3, 1))
+label define treatlbl 0 "Control" 1 "Arm A - Public Health" 2 "Arm B - Private Benefits" 3 "Arm C - Both Messages"
+label values treatment_arm treatlbl
+
+* Keep only one observation per village to create village-level dataset
+duplicates report hhid_village
+duplicates drop hhid_village, force
+
+* Convert GPS coordinates to radians for distance calculation
+gen lat_rad = (gps_collectlatitude) * _pi/180
+gen lon_rad = (gps_collectlongitude) * _pi/180
+
+* Create variables to store distances to nearest village in each treatment arm
+gen dist_control = .
+gen dist_armA = .
+gen dist_armB = .
+gen dist_armC = .
+
+* Calculate distances between all villages
+local earth_radius = 6371 // Earth radius in kilometers
+tempfile villages
+save `villages'
+
+* Loop through each village
+forvalues i = 1/`=_N' {
+    local village_id = hhid_village[`i']
+    local lat1 = lat_rad[`i']
+    local lon1 = lon_rad[`i']
+    local treat_i = treatment_arm[`i']
+    
+    * Load the villages data again to compare with current village
+    use `villages', clear
+    
+    * Calculate distance to each other village using the Haversine formula
+    gen double h = sin((lat_rad - `lat1')/2)^2 + cos(`lat1') * cos(lat_rad) * sin((lon_rad - `lon1')/2)^2
+    gen double dist_km = 2 * `earth_radius' * asin(sqrt(h))
+    
+    * Convert to walking time (assuming 5 km/hour walking speed)
+    gen double dist_minutes = (dist_km / 5) * 60
+    
+    * For each treatment arm, find the minimum distance to a village in that arm
+    foreach arm in 0 1 2 3 {
+        if `treat_i' == `arm' {
+            * If current village is in this arm, distance is 0
+            local min_dist_`arm' = 0
+        }
+        else {
+            * Find minimum distance to a village in this arm
+            sum dist_minutes if treatment_arm == `arm', meanonly
+            if r(N) > 0 {
+                local min_dist_`arm' = r(min)
+            }
+            else {
+                local min_dist_`arm' = .
+            }
+        }
+    }
+    
+    * Load the file again to update the distance values for the current village
+    use `villages', clear
+    replace dist_control = `min_dist_0' if _n == `i'
+    replace dist_armA = `min_dist_1' if _n == `i'
+    replace dist_armB = `min_dist_2' if _n == `i'
+    replace dist_armC = `min_dist_3' if _n == `i'
+    save `villages', replace
+}
+
+* Create the final distance vector
+gen distance_vector = ""
+replace distance_vector = "[" + string(dist_control, "%9.2f") + ", " + ///
+                          string(dist_armA, "%9.2f") + ", " + ///
+                          string(dist_armB, "%9.2f") + ", " + ///
+                          string(dist_armC, "%9.2f") + "]"
+						  
+			
 **************************************************
 * 1.1.1, 1.1.2, 1.1.3
 **************************************************

@@ -1,7 +1,7 @@
 *** Data cleaning for shadow wage estimation *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: April 22, 2025 ***
+*** File Last Updated On: May 1, 2025 ***
 
 clear all 
 
@@ -100,7 +100,7 @@ save "$auctions\main_hh_baseline.dta", replace
 use "$data\Complete_Baseline_Household_Roster", clear   
 
 *** keep 12 month recall time in water data *** 
-keep hhid hh_12index* hh_13_*
+keep hhid hh_10* hh_12index* hh_13_*
 
 drop hh_13_sum_* hh_13_o_*
 
@@ -123,10 +123,10 @@ forvalues i = 1/55 {
 }
 
 *** reshape to individual level ***
-reshape long hh_12index1_ hh_131_ hh_12index2_ hh_132_ hh_12index3_ hh_133_ hh_12index4_ hh_134_ hh_12index5_ hh_135_ hh_12index6_ hh_136_ hh_12index7_ hh_137_, i(hhid) j(person)
+reshape long hh_10_ hh_12index1_ hh_131_ hh_12index2_ hh_132_ hh_12index3_ hh_133_ hh_12index4_ hh_134_ hh_12index5_ hh_135_ hh_12index6_ hh_136_ hh_12index7_ hh_137_, i(hhid) j(person)
 
 *** drop extra people *** 
-drop if hh_12index1_ == . & hh_131_ == . 
+drop if hh_10_ == . 
 
 *** rename variables to get to activity level data *** 
 forvalues i = 1/7{
@@ -136,6 +136,8 @@ forvalues i = 1/7{
 
 *** reshape to person level *** 
 reshape long hh_12_index_ hh_13_, i(hhid person) j(activity)
+
+replace hh_13_ = 0 if hh_10_ == 0 
 
 drop if hh_12_index == . & hh_13_ == . 
 
@@ -175,7 +177,7 @@ save "$auctions\water_time_12month.dta", replace
 use "$data\Complete_Baseline_Household_Roster", clear   
 
 *** keep 7 day recall time in water data *** 
-keep hhid hh_20index* hh_21_*
+keep hhid hh_18* hh_20index* hh_21_*
 
 drop hh_21_sum_* hh_21_o_*
 
@@ -198,10 +200,10 @@ forvalues i = 1/55 {
 }
 
 *** reshape to individual level ***
-reshape long hh_20index1_ hh_211_ hh_20index2_ hh_212_ hh_20index3_ hh_213_ hh_20index4_ hh_214_ hh_20index5_ hh_215_ hh_20index6_ hh_216_ hh_20index7_ hh_217_, i(hhid) j(person)
+reshape long hh_18_ hh_20index1_ hh_211_ hh_20index2_ hh_212_ hh_20index3_ hh_213_ hh_20index4_ hh_214_ hh_20index5_ hh_215_ hh_20index6_ hh_216_ hh_20index7_ hh_217_, i(hhid) j(person)
 
 *** drop extra people *** 
-drop if hh_20index1_ == . & hh_211_ == . 
+drop if hh_18_ == . 
 
 *** rename variables to get to activity level data *** 
 forvalues i = 1/7{
@@ -211,6 +213,8 @@ forvalues i = 1/7{
 
 *** reshape to person level *** 
 reshape long hh_20_index_ hh_21_, i(hhid person) j(activity)
+
+replace hh_21_ = 0 if hh_18_ == 0 
 
 drop if hh_20_index == . & hh_21_ == . 
 
@@ -377,7 +381,7 @@ replace kadiandou = 0 if kadiandou == .
 replace fanting = 0 if fanting == . 
 replace other = 0 if other == . 
  
-save "$auction\assets.dta", replace 
+save "$auctions\assets.dta", replace 
  
 *** clean non-standard unit data on compost use *** 
 
@@ -416,7 +420,11 @@ use "$data\Complete_Baseline_Agriculture", clear
 
 keep hhid agri_6_14 agri_6_15
 
-save "$auctions\number_of_plots.dta", clear 
+replace agri_6_14 = . if agri_6_14 == 2 
+
+replace agri_6_15 = 0 if agri_6_14 == 0
+
+save "$auctions\number_of_plots.dta", replace  
 
 *** clean production data *** 
 use "$data\Complete_Baseline_Production.dta", clear   
@@ -458,3 +466,279 @@ gen sorghum_prod = cereals_02_2
 replace sorghum_prod = 0 if cereals_consumption_2 == 0 
 replace sorghum_prod = . if cerealsposition_2 == 3 
 replace maize_prod = . if maize_prod == -9  
+
+rename farines_01_1 cassava_hectares 
+replace cassava_hectares = 0 if farine_tubercules_consumption_1 == 0 
+replace cassava_hectares = . if cassava_hectares == -9 
+
+rename farines_02_1 cassava_prod 
+replace cassava_prod = 0 if farine_tubercules_consumption_1 == 0 
+replace cassava_prod = . if cassava_prod == -9
+
+rename farines_01_2 sweetpotato_hectares 
+replace sweetpotato_hectares = 0 if farine_tubercules_consumption_2 == 0 
+replace sweetpotato_hectares = . if sweetpotato_hectares == -9 
+
+rename farines_02_2 sweetpotato_prod 
+replace sweetpotato_prod = 0 if farine_tubercules_consumption_2 == 0 
+replace sweetpotato_prod = . if sweetpotato_prod == -9
+
+rename farines_01_3 potato_hectares 
+replace potato_hectares = 0 if farine_tubercules_consumption_3 == 0 
+replace potato_hectares = . if potato_hectares == -9 
+
+rename farines_02_3 potato_prod 
+replace potato_prod = 0 if farine_tubercules_consumption_3 == 0 
+replace potato_prod = . if potato_prod == -9
+
+rename farines_01_4 yam_hectares 
+replace yam_hectares = 0 if farine_tubercules_consumption_4 == 0 
+replace yam_hectares = . if yam_hectares == -9 
+
+rename farines_02_4 yam_prod 
+replace yam_prod = 0 if farine_tubercules_consumption_4 == 0 
+replace yam_prod = . if yam_prod == -9
+
+rename farines_01_5 taro_hectares 
+replace taro_hectares = 0 if farine_tubercules_consumption_5 == 0 
+replace taro_hectares = . if taro_hectares == -9 
+
+rename farines_02_5 taro_prod 
+replace taro_prod = 0 if farine_tubercules_consumption_5 == 0 
+replace taro_prod = . if taro_prod == -9
+
+rename legumes_01_1 tomato_hectares 
+replace tomato_hectares = 0 if legumes_consumption_1 == 0 
+replace tomato_hectares = . if tomato_hectares == -9 
+
+rename legumes_02_1 tomato_prod 
+replace tomato_prod = 0 if legumes_consumption_1 == 0 
+replace tomato_prod = . if tomato_prod == -9
+
+rename legumes_01_2 carrot_hectares 
+replace carrot_hectares = 0 if legumes_consumption_2 == 0 
+replace carrot_hectares = . if carrot_hectares == -9 
+
+rename legumes_02_2 carrot_prod 
+replace carrot_prod = 0 if legumes_consumption_2 == 0 
+replace carrot_prod = . if carrot_prod == -9
+
+rename legumes_01_3 onion_hectares 
+replace onion_hectares = 0 if legumes_consumption_3 == 0 
+replace onion_hectares = . if onion_hectares == -9 
+
+rename legumes_02_3 onion_prod 
+replace onion_prod = 0 if legumes_consumption_3 == 0 
+replace onion_prod = . if onion_prod == -9
+
+rename legumes_01_4 cucumber_hectares 
+replace cucumber_hectares = 0 if legumes_consumption_4 == 0 
+replace cucumber_hectares = . if cucumber_hectares == -9 
+
+rename legumes_02_4 cucumber_prod 
+replace cucumber_prod = 0 if legumes_consumption_4 == 0 
+replace cucumber_prod = . if cucumber_prod == -9
+
+rename legumes_01_5 pepper_hectares 
+replace pepper_hectares = 0 if legumes_consumption_5 == 0 
+replace pepper_hectares = . if pepper_hectares == -9 
+
+rename legumes_02_5 pepper_prod 
+replace pepper_prod = 0 if legumes_consumption_5 == 0 
+replace pepper_prod = . if pepper_prod == -9
+
+rename legumineuses_01_1 peanut_hectares 
+replace peanut_hectares = 0 if legumineuses_consumption_1 == 0 
+replace peanut_hectares = . if peanut_hectares == -9 
+
+rename legumineuses_02_1 peanut_prod 
+replace peanut_prod = 0 if legumineuses_consumption_1 == 0 
+replace peanut_prod = . if peanut_prod == -9
+
+rename legumineuses_01_2 bean_hectares 
+replace bean_hectares = 0 if legumineuses_consumption_2 == 0 
+replace bean_hectares = . if bean_hectares == -9 
+
+rename legumineuses_02_2 bean_prod 
+replace bean_prod = 0 if legumineuses_consumption_2 == 0 
+replace bean_prod = . if bean_prod == -9
+
+rename legumineuses_01_3 pea_hectares 
+replace pea_hectares = 0 if legumineuses_consumption_3 == 0 
+replace pea_hectares = . if pea_hectares == -9 
+
+rename legumineuses_02_3 pea_prod 
+replace pea_prod = 0 if legumineuses_consumption_3 == 0 
+replace pea_prod = . if pea_prod == -9
+
+rename legumineuses_01_4 lentil_hectares 
+replace lentil_hectares = 0 if legumineuses_consumption_4 == 0 
+replace lentil_hectares = . if lentil_hectares == -9 
+
+rename legumineuses_02_4 lentil_prod 
+replace lentil_prod = 0 if legumineuses_consumption_4 == 0 
+replace lentil_prod = . if lentil_prod == -9
+
+keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod
+
+save "$auctions\production.dta", replace 
+
+*** import income module data *** 
+use "$data\Complete_Baseline_Income.dta", clear  
+
+*** clean household level income data *** 
+keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
+
+replace agri_income_01 = . if agri_income_01 == 2 
+
+*** filter to max 12 months, 52 weeks, 365 days for work days ***
+replace agri_income_03 = 365 if agri_income_03 > 365 & agri_income_04 == 1
+replace agri_income_03 = 52 if agri_income_03 > 52 & agri_income_04 == 2
+replace agri_income_03 = 12 if agri_income_03 > 12 & agri_income_04 == 3
+
+gen work_days = agri_income_03 if agri_income_04 == 1 
+replace work_days = agri_income_03 * 5 if agri_income_04 == 2 
+replace work_days = agri_income_03 * 5 * 4 if agri_income_04 == 3 
+
+replace agri_income_05 = . if agri_income_05 == -9 
+replace agri_income_06 = . if agri_income_06 == -9
+
+gen daily_wage = (agri_income_05 - agri_income_06) / work_days 
+
+replace agri_income_15 = . if agri_income_15 == -2 
+
+replace agri_income_16 = 0 if agri_income_15 == 0 
+
+save "$auctions\income.dta", replace 
+
+*** merge together entire household dataset *** 
+use "$auctions\main_hh_baseline.dta", clear 
+
+merge 1:1 hhid using "$auctions\water_time_12month.dta" 
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\water_time_7days.dta"
+
+replace fetch_water_hh_7d_act = 0 if _merge == 1 
+replace water_livestock_7d_act = 0 if _merge == 1 
+replace fetch_water_ag_7d_act = 0 if _merge == 1 
+replace wash_clothes_7d_act = 0 if _merge == 1 
+replace dishes_7d_act = 0 if _merge == 1 
+replace harvest_veg_7d_act = 0 if _merge == 1 
+replace swim_7d_act = 0 if _merge == 1
+replace play_7d_act = 0 if _merge == 1
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\assets.dta"
+
+replace plow = 0 if _merge == 1
+replace harrow = 0 if _merge == 1
+replace draftanimals = 0 if _merge == 1
+replace cart = 0 if _merge == 1 
+replace tractor = 0 if _merge == 1 
+replace sprayer = 0 if _merge == 1 
+replace motorpumps = 0 if _merge == 1 
+replace hoes = 0 if _merge == 1 
+replace ridger = 0 if _merge == 1 
+replace sickle = 0 if _merge == 1 
+replace seeder = 0 if _merge == 1 
+replace kadiandou = 0 if _merge == 1 
+replace fanting = 0 if _merge == 1 
+replace other = 0 if _merge == 1 
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\number_of_plots.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\production.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\income.dta"
+
+drop _merge 
+
+*** bring in community price data *** 
+gen hhid_village = substr(hhid, 1, 4)
+
+merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
+
+drop _merge 
+
+*** clean price data *** 
+rename q63_1 urea_price 
+rename q63_2 manure_price
+rename q63_3 rice_price
+rename q63_4 corn_price
+rename q63_5 millet_price
+rename q63_6 sorghum_price
+rename q63_7 cowpea_price
+rename q63_8 tomato_price
+rename q63_9 onion_price
+rename q63_10 peanut_price
+
+replace manure_price = . if manure_price == -9
+replace corn_price = . if corn_price == -9
+replace millet_price = . if millet_price == -9
+replace sorghum_price = . if sorghum_price == -9
+replace cowpea_price = . if cowpea_price == -9
+replace tomato_price = . if tomato_price == -9
+replace onion_price = . if peanut_price == -9
+
+egen med_manure_price = median(manure_price)
+replace manure_price = med_manure_price if manure_price == . 
+egen med_corn_price = median(corn_price)
+replace corn_price = med_corn_price if corn_price == . 
+egen med_millet_price = median(millet_price)
+replace millet_price = med_millet_price if millet_price == . 
+egen med_sorghum_price = median(sorghum_price)
+replace sorghum_price = med_sorghum_price if sorghum_price == .
+egen med_cowpea_price = median(cowpea_price)
+replace cowpea_price = med_cowpea_price if cowpea_price == .
+egen med_tomato_price = median(tomato_price)
+replace tomato_price = med_tomato_price if tomato_price == .   
+egen med_onion_price = median(onion_price)
+replace onion_price = med_onion_price if onion_price == . 
+
+*** create value of output variable *** 
+gen value_rice_prod = rice_prod * rice_price 
+gen value_corn_prod = maize_prod * corn_price
+gen value_millet_prod = millet_prod * millet_price 
+gen value_sorghum_prod = sorghum_prod * sorghum_price 
+gen value_cowpea_prod = bean_prod * cowpea_price
+gen value_tomato_prod = tomato_prod * tomato_price
+gen value_onion_prod = onion_prod * onion_price 
+gen value_peanut_prod = peanut_prod * peanut_price
+
+egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod)
+egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares bean_hectares tomato_hectares onion_hectares peanut_hectares)
+
+egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer motorpumps hoes ridger sickle seeder kadiandou fanting other)
+
+*** label variables for production summary stats *** 
+label variable total_value_production "Total Value of Production"
+label variable total_production_hectares "Hectares in Production"
+label variable chore_hours "Family Hours Spent on Chores (7 days)"
+label variable water_hours "Family Hours Spent Fetching Water (7 days)"
+label variable ag_hours "Family Hours Spent on Ag (7 days)"
+label variable planting_hours "Family Hours Spent on Planting (7 days)"
+label variable growth_hours "Family Hours Spent on Ag Peak Growth (7 days)"
+label variable harvest_hours "Family Hours Spent on Harvest (7 days)"
+label variable tradehh_hours "Family Hours Spent on Working in the Home (7 days)"
+label variable tradeoutside_hours "Family Hours Spent on Working Outside the Home (7 days)"
+label variable fertilizer_hours_7days "Family Hours Spent on Fertilizer (7 days)"
+label variable number_equipment "Total Number of Pieces of Ag Equipment"
+label variable agri_6_14 "Cultivate Land (1 = Yes)"
+label variable agri_6_15 "Number of Plots"
+label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
+label variable daily_wage "Daily Wage for Paid Work (FCFA)"
+label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
+label variable agri_income_16 "Number of Hired Laborers"
+
+estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days agri_income_15 agri_income_16 number_equipment agri_income_01 daily_wage
+
+esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace

@@ -13,31 +13,12 @@ execute:
 
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
-              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
-              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "quarto")
-
-# Install any missing packages
-new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
-if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
-
-# Load the required packages without printing any output
-invisible(lapply(packages, library, character.only = TRUE))
-
-
-```
-
-
-
 ## Last updated: April 2025
 
 ## Results {.panel-tabset}
 
 
 ::: {.panel-tabset}
-
 
 
 ### Variable Descriptions

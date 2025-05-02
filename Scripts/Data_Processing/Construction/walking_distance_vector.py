@@ -4,6 +4,8 @@ import googlemaps
 import numpy as np
 import time
 from geopy.distance import geodesic
+from concurrent.futures import ThreadPoolExecutor
+from itertools import product
 
 # Define the locations file path
 locations = os.path.join(r"C:\Users\admmi\Box\NSF Senegal", "Data_Management", "Data", "Location_Data", "hhsurvey_villages.csv")
@@ -30,98 +32,88 @@ print(f"Rows after dropping missing GPS: {len(df)}")
 API_KEY = "AIzaSyCpbyvfcGuwV08UKbLZ1xHG-3ZHo953UOM"
 gmaps = googlemaps.Client(key=API_KEY)
 
-# Create distance columns for each treatment arm
-for arm in range(0, 4):  # Treatment arms 0, 1, 2, 3
-    df[f'distance_to_arm_{arm}'] = float('inf')
-
-# Function to calculate walking distance using Google Maps API
-def get_walking_distance(origin, destination):
+def calculate_straight_line_distance(coord1, coord2):
+    """Calculate walking time based on straight-line distance with winding factor"""
     try:
-        # Add minimal delay to avoid hitting API limits
-        time.sleep(0.1)
-        
+        km_distance = geodesic(coord1, coord2).kilometers
+        winding_factor = 1.4  # Paths are typically 40% longer than straight line
+        walking_time = km_distance * winding_factor * 12  # 12 min/km adjusted walking speed
+        return walking_time
+    except Exception as e:
+        print(f"Error calculating straight-line distance: {e}")
+        return float('inf')
+
+def get_walking_distance(params):
+    """Calculate distance between two villages with fallback to straight-line"""
+    coords_i, coords_j, village_i, village_j = params
+    origin = f"{coords_i[0]},{coords_i[1]}"
+    destination = f"{coords_j[0]},{coords_j[1]}"
+    
+    try:
+        time.sleep(0.1)  # Rate limiting
         result = gmaps.distance_matrix(
             origins=[origin],
             destinations=[destination],
             mode="walking"
         )
         
-        # Check if a valid route was found
-        if result['rows'][0]['elements'][0]['status'] != "OK":
-            return float('inf')
+        if result['rows'][0]['elements'][0]['status'] == "OK":
+            return village_i, village_j, result['rows'][0]['elements'][0]['duration']['value'] / 60
+        else:
+            return village_i, village_j, calculate_straight_line_distance(coords_i, coords_j)
             
-        walking_time = result['rows'][0]['elements'][0]['duration']['value'] / 60  # Convert seconds to minutes
-        return walking_time
     except Exception as e:
-        print(f"Error calculating distance between {origin} and {destination}: {e}")
-        return float('inf')
+        print(f"Using straight-line distance for {village_i} to {village_j}: {e}")
+        return village_i, village_j, calculate_straight_line_distance(coords_i, coords_j)
 
-# Function to calculate straight-line distance as a fallback
-def calculate_straight_line_distance(coord1, coord2):
-    try:
-        return geodesic(coord1, coord2).kilometers * 12  # Approx. 12 minutes per km walking
-    except Exception as e:
-        print(f"Error calculating straight-line distance: {e}")
-        return float('inf')
+# Initialize distance columns
+for arm in range(4):
+    df[f'distance_to_arm_{arm}'] = float('inf')
 
-# For each village, set its own treatment arm distance to 0
+# Set own treatment arm distances to 0
 for index, row in df.iterrows():
-    current_arm = row['treatment']
+    current_arm = int(row['treatment'])
     df.at[index, f'distance_to_arm_{current_arm}'] = 0
 
-# Process each village
-print("Calculating distances between villages of different treatment arms...")
-total_villages = len(df)
-processed = 0
-
+# Prepare village pairs for parallel processing
+village_pairs = []
 for i, row_i in df.iterrows():
     village_i = row_i['hhid_village']
-    arm_i = row_i['treatment']
+    arm_i = int(row_i['treatment'])
     coords_i = (row_i['gps_collectlatitude'], row_i['gps_collectlongitude'])
     
-    # Skip if this village already has distances for all arms
-    if all(row_i[f'distance_to_arm_{arm}'] < float('inf') for arm in range(0, 4)):
-        continue
-    
-    # Print progress update (only for every 5 villages)
-    processed += 1
-    if processed % 5 == 0 or processed == 1 or processed == total_villages:
-        print(f"Processing village {processed}/{total_villages} ({village_i}, Arm {arm_i})...")
-    
-    # Find the closest village from each other treatment arm
-    for arm_j in range(0, 4):
-        # Skip own treatment arm (already set to 0)
+    for arm_j in range(4):
         if arm_j == arm_i:
             continue
             
-        # Skip if we already have a distance for this arm
-        if row_i[f'distance_to_arm_{arm_j}'] < float('inf'):
-            continue
-        
-        # Get all villages from the current arm to compare
         villages_in_arm_j = df[df['treatment'] == arm_j]
-        
-        min_distance = float('inf')
-        closest_village = None
-        
-        # Find the closest village from arm_j
-        for j, row_j in villages_in_arm_j.iterrows():
+        for _, row_j in villages_in_arm_j.iterrows():
             village_j = row_j['hhid_village']
             coords_j = (row_j['gps_collectlatitude'], row_j['gps_collectlongitude'])
-            
-            # Try to calculate walking time
-            walking_time = get_walking_distance(f"{coords_i[0]},{coords_i[1]}", f"{coords_j[0]},{coords_j[1]}")
-            
-            # If walking time is inf, fallback to straight-line distance
-            if walking_time == float('inf'):
-                walking_time = calculate_straight_line_distance(coords_i, coords_j)
-            
-            if walking_time < min_distance:
-                min_distance = walking_time
-                closest_village = village_j
-        
-        # Update the distance to this arm
-        df.at[i, f'distance_to_arm_{arm_j}'] = min_distance
+            village_pairs.append((coords_i, coords_j, village_i, village_j))
+
+# Calculate distances in parallel
+print("\nCalculating distances between villages...")
+results = []
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = [executor.submit(get_walking_distance, params) for params in village_pairs]
+    total = len(futures)
+    
+    for i, future in enumerate(futures, 1):
+        result = future.result()
+        results.append(result)
+        if i % 10 == 0 or i == total:
+            print(f"Progress: {i}/{total} pairs processed")
+
+# Update distances in DataFrame
+for village_i, village_j, distance in results:
+    row_i = df[df['hhid_village'] == village_i].iloc[0]
+    row_j = df[df['hhid_village'] == village_j].iloc[0]
+    arm_j = int(row_j['treatment'])
+    
+    current_distance = df.loc[df['hhid_village'] == village_i, f'distance_to_arm_{arm_j}'].iloc[0]
+    if distance < current_distance:
+        df.loc[df['hhid_village'] == village_i, f'distance_to_arm_{arm_j}'] = distance
 
 # Create the four-element distance vector for each village
 df['distance_vector'] = df.apply(
@@ -141,3 +133,8 @@ df['distance_vector_str'] = df['distance_vector'].apply(str)
 output_path = os.path.join(r"C:\Users\admmi\Box\NSF Senegal", "Data_Management", "Data", "Location_Data", "walking_distance_vector.csv")
 df.to_csv(output_path, index=False)
 print(f"\nDistance matrix saved to: {output_path}")
+
+# Print summary of results
+print("\nSummary of distance vectors:")
+for i, row in df.iterrows():
+    print(f"Village {row['hhid_village']} (Arm {int(row['treatment'])}): {row['distance_vector']}")

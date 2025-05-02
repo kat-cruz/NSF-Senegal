@@ -125,13 +125,10 @@ df['distance_vector'] = df.apply(
 # Convert distance vectors to strings for CSV storage
 df['distance_vector_str'] = df['distance_vector'].apply(str)
 
-# Save the result
-output_path = os.path.join(r"C:\Users\admmi\Box\NSF Senegal", "Data_Management", "Data", "Location_Data", "walking_distance_matrix.csv")
-df.to_csv(output_path, index=False)
-print(f"\nDistance matrix saved to: {output_path}")
-
 # Create a simplified version with just the essential columns
 simplified_df = df[['hhid_village', 'treatment', 'distance_to_arm_0', 'distance_to_arm_1', 'distance_to_arm_2', 'distance_to_arm_3', 'distance_vector_str']]
-simplified_output_path = os.path.join(r"C:\Users\admmi\Box\NSF Senegal", "Data_Management", "Data", "Location_Data", "walking_distance_simplified.csv")
+
+# Save the simplified version as walking_distance_vector.csv
+simplified_output_path = os.path.join(r"C:\Users\admmi\Box\NSF Senegal", "Data_Management", "Data", "Location_Data", "walking_distance_vector.csv")
 simplified_df.to_csv(simplified_output_path, index=False)
-print(f"Simplified distance matrix saved to: {simplified_output_path}")
+print(f"Simplified distance vector saved to: {simplified_output_path}")

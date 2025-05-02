@@ -1,5 +1,5 @@
 **************************************************
-* DISES Baseline to Midline Specifications *
+* DISES Baseline to Baseline Specifications *
 * File Created By: Alexander Mills *
 * File Last Updated By: Alexander Mills *
 * Updates Tracked on Git *
@@ -16,6 +16,7 @@ set mem 100m
 set maxvar 30000
 set matsize 11000
 set more off
+version 14.1
 
 **************************************************
 * SET FILE PATHS
@@ -35,7 +36,8 @@ global treatment "$master\Data_Management\Data\_CRDES_CleanData\Treatment\Identi
 global asset_index "$master\Data_Management\Output\Data_Processing\Construction\PCA_asset_index_var.dta"
 global hh_head_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\household_head_index.dta"
 global balance_tables "$master\Data_Management\Output\Analysis\Balance_Tables"
-global locations "$master\Data_Management\Data\Location_Data\hhsurvey_villages.csv"
+global location_data "$master\Data_Management\Data\Location_Data\hhsurvey_villages.csv"
+global walking_distance_vector "$master\Data_Management\Data\Location_Data\walking_distance_simplified.csv"
 
 global baseline_agriculture "$baseline\Complete_Baseline_Agriculture.dta"
 global baseline_beliefs "$baseline\Complete_Baseline_Beliefs.dta"
@@ -108,18 +110,6 @@ gen living_01_bin = inlist(living_01, 1, 2, 3)
 * Bring in respondent index to help ID head
 merge 1:1 hhid using "$hh_head_index", nogen
 
-gen hh_head_index = .
-forvalues i = 1/55 {
-    replace hh_head_index = `i' if hh_relation_with_`i' == 1
-}
-replace hh_head_index = resp_index if missing(hh_head_index) & !missing(resp_index)
-
-* Fallback: use match by age/gender if still missing
-forvalues i = 1/55 {
-    replace hh_head_index = `i' if missing(hh_head_index) ///
-        & hh_age_resp == hh_age_`i' & hh_gender_resp == hh_gender_`i'
-}
-
 * Age of head
 gen hh_age_h = .
 forvalues i = 1/55 {
@@ -144,7 +134,8 @@ gen auction_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B
                      inlist(hhid_village, "123B", "153A", "121A", "131A", "141A") | ///
                      hhid_village == "142A"
 					 
-keep hhid hhid_village hh_age_h hh_education_skills_5_h hh_gender_h hh_numero living_01_bin num_water_access_points auction_village
+* still need to construct (num_water_access_points)
+keep hhid hhid_village hh_age_h hh_education_skills_5_h hh_gender_h hh_numero living_01_bin auction_village
 
 
 tempfile control_data
@@ -190,8 +181,8 @@ label values treatment_arm treatlbl
 * gen stratum
 gen stratum = substr(hhid_village, 4, 1)
 
-* global controls
-global controls q_51 num_water_access_points hh_numero living_01_bin asset_index_std hh_age_h i.hh_gender_h i.hh_education_skills_5_h
+* global controls (need to construct num_water_access_points)
+global controls q_51 hh_numero living_01_bin asset_index_std hh_age_h i.hh_gender_h i.hh_education_skills_5_h
 
 tempfile combined_data
 save `combined_data', replace
@@ -200,7 +191,14 @@ save `combined_data', replace
 *******************************
 * DISTANCE VECTOR
 *******************************
+import delimited "$walking_distance_vector", clear
+tempfile distance_vector
+save `distance_vector', replace
 
+use `combined_data', clear
+merge m:1 hhid_village using `distance_vector', keep(master match) nogen
+
+save `combined_data', replace
 			
 **************************************************
 * 1.1.1, 1.1.2, 1.1.3
@@ -242,9 +240,8 @@ keep hhid hhid_village midline_AVR
 tempfile midline_avr_data
 save `midline_avr_data', replace
 
-**************************************************
 * merge everything together
-**************************************************
+
 * start with the combined dataset from before
 use `combined_data', clear
 

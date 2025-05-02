@@ -3,6 +3,7 @@ import os
 import googlemaps
 import numpy as np
 import time
+from geopy.distance import geodesic
 
 # Define the locations file path
 locations = os.path.join(r"C:\Users\admmi\Box\NSF Senegal", "Data_Management", "Data", "Location_Data", "hhsurvey_villages.csv")
@@ -16,7 +17,7 @@ villages_to_drop = [
     "115U", "116U", "117U", "119U", "118U", "125U",
     "126U", "124U", "120U", "127U", "128U", "129U"
 ]
-    
+
 # Drop specified villages
 df = df[~df['hhid_village'].isin(villages_to_drop)]
 print(f"Rows after dropping specified villages: {len(df)}")
@@ -52,8 +53,15 @@ def get_walking_distance(origin, destination):
         walking_time = result['rows'][0]['elements'][0]['duration']['value'] / 60  # Convert seconds to minutes
         return walking_time
     except Exception as e:
-        # Keep error messages minimal, just report an error occurred for which coordinates
-        print(f"Error calculating distance between {origin} and {destination}")
+        print(f"Error calculating distance between {origin} and {destination}: {e}")
+        return float('inf')
+
+# Function to calculate straight-line distance as a fallback
+def calculate_straight_line_distance(coord1, coord2):
+    try:
+        return geodesic(coord1, coord2).kilometers * 12  # Approx. 12 minutes per km walking
+    except Exception as e:
+        print(f"Error calculating straight-line distance: {e}")
         return float('inf')
 
 # For each village, set its own treatment arm distance to 0
@@ -69,7 +77,7 @@ processed = 0
 for i, row_i in df.iterrows():
     village_i = row_i['hhid_village']
     arm_i = row_i['treatment']
-    coords_i = f"{row_i['gps_collectlatitude']},{row_i['gps_collectlongitude']}"
+    coords_i = (row_i['gps_collectlatitude'], row_i['gps_collectlongitude'])
     
     # Skip if this village already has distances for all arms
     if all(row_i[f'distance_to_arm_{arm}'] < float('inf') for arm in range(0, 4)):
@@ -99,10 +107,14 @@ for i, row_i in df.iterrows():
         # Find the closest village from arm_j
         for j, row_j in villages_in_arm_j.iterrows():
             village_j = row_j['hhid_village']
-            coords_j = f"{row_j['gps_collectlatitude']},{row_j['gps_collectlongitude']}"
+            coords_j = (row_j['gps_collectlatitude'], row_j['gps_collectlongitude'])
             
-            # Calculate walking time
-            walking_time = get_walking_distance(coords_i, coords_j)
+            # Try to calculate walking time
+            walking_time = get_walking_distance(f"{coords_i[0]},{coords_i[1]}", f"{coords_j[0]},{coords_j[1]}")
+            
+            # If walking time is inf, fallback to straight-line distance
+            if walking_time == float('inf'):
+                walking_time = calculate_straight_line_distance(coords_i, coords_j)
             
             if walking_time < min_distance:
                 min_distance = walking_time

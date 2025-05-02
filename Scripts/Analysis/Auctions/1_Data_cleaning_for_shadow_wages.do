@@ -1565,3 +1565,15 @@ label variable other_kgs "Other Chemical Fertilizer Used on Plot (kgs)"
 estpost sum collective_manage rice maize millet sorghum cowpea cassava sweetpotato potato yam taro tomato carrot onion cucumber pepper peanut bean pea other plot_size_ha agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ urea_kgs phosphate_kgs npk_kgs other_kgs
 
 esttab using "$auctions\plot_level_sum_stats_midline.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+
+*** create histogram of number of plots at baseline and midline *** 
+use "$auctions\number_of_plots.dta", clear 
+
+gen year = 2024 
+
+append using "$auctions\number_of_plots_midline.dta" 
+
+replace year = 2025 if year == . 
+
+twoway (histogram agri_6_15 if year == 2024, color(gray%50) width(0.5)) (histogram agri_6_15 if year == 2025, fcolor(none) lcolor(red) width(0.5)), legend(order(1 "Baseline" 2 "Midline") cols(2) position(6)) xtitle("Number of Plots")
+graph export "$auctions\hist_number_of_plots.eps", as(eps) replace

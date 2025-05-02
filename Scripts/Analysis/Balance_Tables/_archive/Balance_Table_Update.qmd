@@ -14,66 +14,66 @@ Below are the baseline reports. All variables and their descriptions are in the 
 
 ::: panel-tabset
 
----
+------------------------------------------------------------------------
 
 ### Variable Selection
 
-<<table class="sticky-header-table">
-  <tr><th>Variable</th><th>Description</th></tr>
-  <tr><td>hhid_village</td><td>Village ID</td></tr>
-  <tr><td>hhid</td><td>Household ID</td></tr>
-  <tr><td>trained_hh</td><td>Trained household</td></tr>
-  <tr><td>hh_age_h</td><td>Household head age</td></tr>
-  <tr><td>hh_education_level_bin_h</td><td>Indicator for household head with secondary education or higher (1=Yes, 0=No)</td></tr>
-  <tr><td>hh_education_skills_5_h</td><td>Indicator that household head is literate (1=Yes, 0=No)</td></tr>
-  <tr><td>hh_gender_h</td><td>Household head gender (1=Male, 0=Female)</td></tr>
-  <tr><td>hh_numero</td><td>Household size</td></tr>
-  <tr><td>hh_03_</td><td>Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) †</td></tr>
-  <tr><td>hh_10_</td><td>Average weekly hours spent within 1 meter of surface water source, in the past 12 months</td></tr>
-  <tr><td>hh_12_6_</td><td>Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months (1=Yes, 0=No)</td></tr>
-  <tr><td>hh_16_</td><td>Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source)</td></tr>
-  <tr><td>hh_15_2</td><td>Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No)</td></tr>
-  <tr><td>hh_26_</td><td>Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) †</td></tr>
-  <tr><td>hh_27_</td><td>Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) †</td></tr>
-  <tr><td>hh_29_01</td><td>Indicator for primary level education (1=Yes, 0=No, asked about children)</td></tr>
-  <tr><td>hh_29_02</td><td>Indicator for secondary middle level education (1=Yes, 0=No, asked about children)</td></tr>
-  <tr><td>hh_29_03</td><td>Indicator for secondary higher level education (1=Yes, 0=No, asked about children)</td></tr>
-  <tr><td>hh_29_04</td><td>Indicator for upper secondary education (1=Yes, 0=No, asked about children)</td></tr>
-  <tr><td>hh_31_bin</td><td>Indicator if student completed studies or moved to next class for 2022/2023 (1=Yes, 0=No, asked about children)</td></tr>
-  <tr><td>hh_37_</td><td>Indicator if missed >1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) †</td></tr>
-  <tr><td>hh_38_</td><td>Number of attended school days in the past week (asked about children)</td></tr>
-  <tr><td>living_01_bin</td><td>Indicator for selected tap water as main drinking source (1=Yes, 0=No)</td></tr>
-  <tr><td>game_A_total</td><td>Total paid for Game A (CFA)</td></tr>
-  <tr><td>game_B_total</td><td>Total paid for Game B (CFA)</td></tr>
-  <tr><td>TLU</td><td>Tropical livestock units</td></tr>
-  <tr><td>agri_6_15</td><td>Number of cultivated plots</td></tr>
-  <tr><td>agri_6_32_bin</td><td>Indicator if used any organic fertilizer (1=Yes, 0=No)</td></tr>
-  <tr><td>agri_6_36_bin</td><td>Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No)</td></tr>
-  <tr><td>total_land_ha</td><td>Total land cultivated (hectares)</td></tr>
-  <tr><td>agri_6_34_comp_any</td><td>Used any compost on any parcel (1=Yes, 0=No) †</td></tr>
-  <tr><td>agri_income_01</td><td>Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) †</td></tr>
-  <tr><td>agri_income_05</td><td>Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture</td></tr>
-  <tr><td>beliefs_01_bin</td><td>Probability of contracting bilharzia (1=Strongly agree/Agree) +</td></tr>
-  <tr><td>beliefs_02_bin</td><td>Probability of household member contracting bilharzia (1=Yes, 0=No) +</td></tr>
-  <tr><td>beliefs_03_bin</td><td>Probability of a child contracting bilharzia (1=Yes, 0=No) +</td></tr>
-  <tr><td>beliefs_04_bin</td><td>Agree: Village land should belong to community (1=Yes, 0=No) +</td></tr>
-  <tr><td>beliefs_05_bin</td><td>Agree: Village water sources should belong to community (1=Yes, 0=No) +</td></tr>
-  <tr><td>beliefs_06_bin</td><td>Agree: Right to products from own land (1=Yes, 0=No) +</td></tr>
-  <tr><td>beliefs_07_bin</td><td>Agree: Right to products from community land worked on (1=Yes, 0=No) +</td></tr>
-  <tr><td>beliefs_08_bin</td><td>Agree: Right to products from community water sources fished in (1=Yes, 0=No) +</td></tr>
-  <tr><td>beliefs_09_bin</td><td>Agree: Right to products from community water sources harvested from (1=Yes, 0=No) +</td></tr>
-  <tr><td>health_5_3_bin</td><td>Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness)</td></tr>
-  <tr><td>health_5_6_</td><td>Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) †</td></tr>
-  <tr><td>num_water_access_points</td><td>Number of village water access points</td></tr>
-  <tr><td>q_51</td><td>Distance to nearest healthcare center (km) [village level]</td></tr>
-  <tr><td>target_village</td><td>Indicator if auction village (1=Yes, 0=No)</td></tr>
-</table>
+\<
 
+| Variable | Description |
+|----|----|
+| hhid_village | Village ID |
+| hhid | Household ID |
+| trained_hh | Trained household |
+| hh_age_h | Household head age |
+| hh_education_level_bin_h | Indicator for household head with secondary education or higher (1=Yes, 0=No) |
+| hh_education_skills_5_h | Indicator that household head is literate (1=Yes, 0=No) |
+| hh_gender_h | Household head gender (1=Male, 0=Female) |
+| hh_numero | Household size |
+| hh_03\\\_ | Indicator for those who worked in domestic agricultural activities in the past 12 months (1=Yes, 0=No) † |
+| hh_10\\\_ | Average weekly hours spent within 1 meter of surface water source, in the past 12 months |
+| hh_12_6\\\_ | Indicator for those who harvested aquatic vegetation, among those who spent time near a water source in the past 12 months (1=Yes, 0=No) |
+| hh_16\\\_ | Average weekly hours spent producing, purchasing, or applying fertilizer in the past 12 months (among those near a water source) |
+| hh_15_2 | Indicator for making fertilizer (compost) among those who spent time near a water source (1=Yes, 0=No) |
+| hh_26\\\_ | Indicator if currently enrolled in formal school (1=Yes, 0=No, asked about children) † |
+| hh_27\\\_ | Indicator if attended non-formal school or training? (1=Yes, 0=No, asked about children) † |
+| hh_29_01 | Indicator for primary level education (1=Yes, 0=No, asked about children) |
+| hh_29_02 | Indicator for secondary middle level education (1=Yes, 0=No, asked about children) |
+| hh_29_03 | Indicator for secondary higher level education (1=Yes, 0=No, asked about children) |
+| hh_29_04 | Indicator for upper secondary education (1=Yes, 0=No, asked about children) |
+| hh_31_bin | Indicator if student completed studies or moved to next class for 2022/2023 (1=Yes, 0=No, asked about children) |
+| hh_37\\\_ | Indicator if missed \\\>1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) † |
+| hh_38\\\_ | Number of attended school days in the past week (asked about children) |
+| living_01_bin | Indicator for selected tap water as main drinking source (1=Yes, 0=No) |
+| game_A_total | Total paid for Game A (CFA) |
+| game_B_total | Total paid for Game B (CFA) |
+| TLU | Tropical livestock units |
+| agri_6_15 | Number of cultivated plots |
+| agri_6_32_bin | Indicator if used any organic fertilizer (1=Yes, 0=No) |
+| agri_6_36_bin | Indicator if used any inorganic/chemical fertilizer (1=Yes, 0=No) |
+| total_land_ha | Total land cultivated (hectares) |
+| agri_6_34_comp_any | Used any compost on any parcel (1=Yes, 0=No) † |
+| agri_income_01 | Indicator if engaged in paid agricultural work in last 12 months (1=Yes, 0=No) † |
+| agri_income_05 | Amount received for agricultural work (FCFA), among those who responded yes to working in agriculture |
+| beliefs_01_bin | Probability of contracting bilharzia (1=Strongly agree/Agree) + |
+| beliefs_02_bin | Probability of household member contracting bilharzia (1=Yes, 0=No) + |
+| beliefs_03_bin | Probability of a child contracting bilharzia (1=Yes, 0=No) + |
+| beliefs_04_bin | Agree: Village land should belong to community (1=Yes, 0=No) + |
+| beliefs_05_bin | Agree: Village water sources should belong to community (1=Yes, 0=No) + |
+| beliefs_06_bin | Agree: Right to products from own land (1=Yes, 0=No) + |
+| beliefs_07_bin | Agree: Right to products from community land worked on (1=Yes, 0=No) + |
+| beliefs_08_bin | Agree: Right to products from community water sources fished in (1=Yes, 0=No) + |
+| beliefs_09_bin | Agree: Right to products from community water sources harvested from (1=Yes, 0=No) + |
+| health_5_3_bin | Indicator for bilharzia or diarrhea in the past 12 months (1=Yes, 0=No, among those reporting illness) |
+| health_5_6\\\_ | Indicator for Diagnosed with schistosomiasis (1=Yes, 0=No) † |
+| num_water_access_points | Number of village water access points |
+| q_51 | Distance to nearest healthcare center (km) \\\[village level\\\] |
+| target_village | Indicator if auction village (1=Yes, 0=No) |
 
 ### Balance Table
 
 <iframe src="balance_table_v8.html" width="155%" height="600px" style="border:none; max-width: 100%;">
-  
+
 </iframe>
 
 ------------------------------------------------------------------------
@@ -83,6 +83,4 @@ Below are the baseline reports. All variables and their descriptions are in the 
 <iframe src="baseline_balance_summary_statsV8.html" width="155%" height="600px" style="border:none; max-width: 100%;">
 
 </iframe>
-
-
 :::

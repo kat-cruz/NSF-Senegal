@@ -208,7 +208,9 @@ restore
 **#  SELECT VARIABLES AND SAVE FILE 
 *<><<><><>><><<><><>>
 
+		keep if hh_head == 1
 *^*^* rename the inedex var for clarity 
+		
 
 		rename individual hh_head_index 	
 		

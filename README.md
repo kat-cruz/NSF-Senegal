@@ -22,17 +22,17 @@ We organize our scripts in the following parts:
 ### 📊 `Analysis`  
 This folder contains scripts for data analysis, summarization, and manipulation with the intention of interpreting the results. Currently, the following subfolders are stored here:  
 * `Balance_Tables`
-  *  Contains scripts used to build the balance table data frame and output the summary stats and the balance table. 
+  *  Contains scripts used to build the balance table data frame and output the summary stats and the balance table. To recreate the table, run the scripts in the numerical order in which they were labeled (so first run 01_, 02_, and so on). 
 * `Human_Parasitology`
-  * Contains scritps used to construct the base data frame of child infections and ID matching across the housheold and community survey data, create the dataframe used for analysis, and the scripts used to run the analysese. 
+  * Contains scripts used to construct the base data frame of child infections and ID matching across the household and community survey data, create the dataframe used for analysis, and the scripts used to run the analysese. 
 * `Codebook`
-  * Contains scripts to output summary stats for baseline and midline data. No actual outputs are produced from these scripts since we copy and paste the results in a Word document, unfortunetly. 
+  * Contains scripts to output summary stats for baseline and midline data. No actual outputs are produced from these scripts since we copy and paste the results in a Word document, unfortunately. 
 * `Winsorization`
   * Contains scripts that windsorize variables for the codebook. Similar to above, no actual outputs are produced from this script. 
    
 ### 🔄 `Data_Processing`
 
-This folder contains scripts for data validation, processing, and preperation to ensure the datasets are clean and ready for analysis. The following subfolders are included:
+This folder contains scripts for data validation, processing, and preparation to ensure the datasets are clean and ready for analysis. The following subfolders are included:
 * 🔍 `Checks` 
   * `Baseline`
   * `Midline`
@@ -49,5 +49,5 @@ This folder contains scripts for data validation, processing, and preperation to
    * Contains scripts that create new variables, data frames, and merged data for the purpose of analysing, deidentifying, and processing data for analytical use. 
   
 * 🪪 `ID_Creation` 
-   * Contain scripts that create vilage IDs, household IDs, and individual IDs.
+   * Contain scripts that create village IDs, household IDs, and individual IDs.
  

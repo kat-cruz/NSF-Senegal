@@ -21,7 +21,7 @@ Below are the baseline reports. All variables and their descriptions are in the 
 \<
 
 | Variable | Description |
-|----|----|
+|------------------------------------|------------------------------------|
 | hhid_village | Village ID |
 | hhid | Household ID |
 | trained_hh | Trained household |

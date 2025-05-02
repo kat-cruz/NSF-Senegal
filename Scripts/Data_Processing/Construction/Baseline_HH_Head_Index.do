@@ -84,9 +84,40 @@
 		*  Initialize hh_head
 		gen hh_head = (hh_relation_with_ == 1)
 		
+*<><<><><>><><<><><>>
+**#  EDA
+*<><<><><>><><<><><>>
+	
+* at a glance: how many hh have a hh heads
+		
+		* Create a new variable for households with hh_head == 1 and name_match == 1
+preserve 
+		egen name_match_hh = max(name_match) if hh_head == 1, by(hhid)
+
+		* Count households where both hh_head == 1 and name_match == 1
+		count if name_match_hh == 1 & hh_head == 1
+		tab name_match_hh
+restore 
+
+preserve 
+		egen has_head = max(hh_head), by(hhid)
+		* keep only one observation per household
+		bysort hhid (has_head): keep if _n == 1
+		tab has_head
+restore 
+	
+*<><<><><>><><<><><>>
+**#  MAKE CORRECTIONS 
+*<><<><><>><><<><><>>
+
+
 		* create flag variables
 		
 		egen num_heads_per_hh = total(hh_head), by(hhid)
+		
+		count if num_heads_per_hh == 1
+		
+		* clean up relation variables
 		
 		rename hh_relation_with_ hh_relation_with
 		tostring  hh_relation_with, gen(hh_relation)
@@ -105,11 +136,11 @@
 		replace hh_relation = "Other person related to the head of the family" if hh_relation_with == 12
 		replace hh_relation = "Other person not related to the head of the family" if hh_relation_with == 13
 
+ ** Subset data to look at what's going on 
 
-/*
 		keep hh_relation hh_relation_with str_clean_full_resp hh_age_ hh_gender_ hhid individ resp str_clean_head str_clean_full name_match hh_head num_heads_per_hh
 		order hhid individ resp hh_relation hh_relation_with hh_age_ hh_gender_ str_clean_full_resp str_clean_head str_clean_full name_match hh_head num_heads_per_hh
-*/
+
 					
 *<><<><><>><><<><><>>
 **#  CORRECT IF THERE ARE 2+ HH HEADS REPORTED IN RELATION VAR
@@ -209,8 +240,8 @@ restore
 *<><<><><>><><<><><>>
 
 		keep if hh_head == 1
-*^*^* rename the inedex var for clarity 
 		
+*^*^* rename the inedex var for clarity 
 
 		rename individual hh_head_index 	
 		
@@ -220,7 +251,7 @@ restore
 
 *^*^* save final data set.
 
-		save "$data_deidentified\household_head_index.dta", replace 		
+			save "$data_deidentified\household_head_index.dta", replace 		
 	
 	
 

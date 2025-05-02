@@ -70,6 +70,7 @@ merge m:1 hhid_village using "$baseline_community", nogen
 ***************
 * household head
 ***************
+// need to match this to protocol from the hh_head_index file being created
 gen hh_head_index = .
 
 forvalues i = 1/55 {
@@ -169,69 +170,78 @@ forvalues i = 1/55 {
 * hh_numero
 
 **********
-* hh_03_ (row max)
+* hh_03_ (changed from rowmax to rowtotal)
 **********
 forvalues i = 1/55 {
     capture confirm variable hh_03_`i'
     if !_rc {
         replace hh_03_`i' = .a if hh_03_`i' == 2
+        * Convert to binary first (1 if affirmative, 0 otherwise)
+        replace hh_03_`i' = 1 if hh_03_`i' == 1 & `i' <= hh_numero
+        replace hh_03_`i' = 0 if missing(hh_03_`i') & `i' <= hh_numero
     }
 }
 
-egen hh_03_ = rowmax(hh_03_*)
+* Count members who answer affirmatively
+egen hh_03_ = rowtotal(hh_03_*)
+label var hh_03_ "Count of HH members with affirmative response"
 
 **********
-* hh_10_ (row mean)
+* hh_10_ (changed from rowmean to rowtotal)
 **********
-egen hh_10_ = rowmean(hh_10_*)
+* For hh_10_ (water interaction), count members with any interaction
+gen hours_water_interact_count = 0
+forvalues i = 1/55 {
+    * Count members who have any water interaction hours (>0)
+    replace hours_water_interact_count = hours_water_interact_count + 1 if hh_10_`i' > 0 & `i' <= hh_numero & !missing(hh_10_`i')
+}
+* Rename to hh_10_ to maintain original variable name
+gen hh_10_ = hours_water_interact_count
+drop hours_water_interact_count
+label var hh_10_ "Count of HH members who interact with surface water"
 
 ***********
-* hh_12_6_ *if any member of household harvested aquatic vegetation*
+* hh_12_6_ (changed from rowmax to rowtotal)
 **********
 * For hh_12_6_ (harvested aquatic vegetation)
 * ensure we have values for all individuals who should have been asked
 forvalues i = 1/55 {
     * Set to 0 for those who were asked but have missing values
-    replace hh_12_6_`i' = 0 if missing(hh_12_6_`i') & hh_10_`i' == 1 & `i' <= hh_numero
+    replace hh_12_6_`i' = 0 if missing(hh_12_6_`i') & hh_10_`i' > 0 & `i' <= hh_numero
     
     * Also set to 0 for household members who didn't interact with water source
     replace hh_12_6_`i' = 0 if missing(hh_12_6_`i') & hh_10_`i' == 0 & `i' <= hh_numero
 }
 
-* Create household-level binary indicator (1 if any member harvested)
-egen hh_12_6_ = rowmax(hh_12_6_*)
-* Ensure all households have a value (though the above should already handle this)
-replace hh_12_6_ = 0 if missing(hh_12_6_)
+* Count household members who harvested aquatic vegetation
+egen hh_12_6_ = rowtotal(hh_12_6_*)
+label var hh_12_6_ "Count of HH members who harvested aquatic vegetation"
 
 **********
-* hh_16_ mean average hours per week producing fertilizer per household 
+* hh_16_ (changed from mean average to total hours)
 *********
 * For hh_16_ (hours producing fertilizer)
 * Set to 0 for individuals who should have been asked but have missing values
 forvalues i = 1/55 {
     * Set to 0 for those who were asked but have missing values
-    replace hh_16_`i' = 0 if missing(hh_16_`i') & hh_10_`i' == 1 & `i' <= hh_numero
+    replace hh_16_`i' = 0 if missing(hh_16_`i') & hh_10_`i' > 0 & `i' <= hh_numero
     
     * Also set to 0 for household members who didn't interact with water source
     replace hh_16_`i' = 0 if missing(hh_16_`i') & hh_10_`i' == 0 & `i' <= hh_numero
 }
 
-* Calculate average hours across all household members
-egen total_hours = rowtotal(hh_16_*)
-gen hh_16_ = total_hours / hh_numero
-* Handle any remaining missing values (though should be none after above steps)
-replace hh_16_ = 0 if missing(hh_16_)
-
-drop total_hours
+* Calculate total hours across all household members
+egen hh_16_ = rowtotal(hh_16_*)
+label var hh_16_ "Total hours per week producing fertilizer in household"
 
 **********
-* hh_15_2_ row max
+* hh_15_2_ (changed from rowmax to rowtotal)
 **********
 * For hh_15_2_ (used for fertilizer)
 * First ensure we handle the skip pattern for hh_15_
 forvalues i = 1/55 {
     * Set to 0 for those who should have been asked but have missing values
-    replace hh_15_`i' = 0 if missing(hh_15_`i') & hh_10_`i' == 1 & hh_12_6_`i' == 1
+    replace hh_15_`i' = 0 if missing(hh_15_`i') & hh_10_`i' > 0 & hh_12_6_`i' == 1
     
     * Also set to 0 for household members who weren't asked due to skip pattern
     replace hh_15_`i' = 0 if missing(hh_15_`i') & (hh_10_`i' == 0 | hh_12_6_`i' == 0) & `i' <= hh_numero
@@ -244,20 +254,19 @@ forvalues i = 1/55 {
     replace hh_15_2_`i' = 0 if missing(hh_15_2_`i') & `i' <= hh_numero
 }
 
-* Create household-level binary indicator (1 if any member used for fertilizer)
-egen hh_15_2_ = rowmax(hh_15_2_*)
-* Ensure all households have a value
-replace hh_15_2_ = 0 if missing(hh_15_2_)
+* Count household members who used harvested vegetation for fertilizer
+egen hh_15_2_ = rowtotal(hh_15_2_*)
+label var hh_15_2_ "Count of HH members who used vegetation for fertilizer"
 
 *******
-* hh_26_
+* hh_26_ (changed from proportion to count)
 ********
 * identify school-aged children (4–18 years old)
 forvalues i = 1/55 {
     gen child_4_18_`i' = inrange(hh_age_`i', 4, 18) & !missing(hh_age_`i')
 }
 
-* hh_26_: proportion of children currently enrolled
+* hh_26_: count of children currently enrolled
 forvalues i = 1/55 {
     gen child_in_school_`i' = 0
     replace child_in_school_`i' = 1 if hh_26_`i' == 1 & child_4_18_`i' == 1
@@ -266,13 +275,16 @@ forvalues i = 1/55 {
 
 egen num_children_4_18 = rowtotal(child_4_18_*)
 egen num_children_in_school = rowtotal(child_in_school_*)
-gen hh_26_ = num_children_in_school / num_children_4_18 if num_children_4_18 > 0
+
+* Use the raw count instead of proportion
+gen hh_26_ = num_children_in_school
+label var hh_26_ "Count of school-aged children enrolled in school"
 gen has_eligible_children = num_children_4_18 > 0
 
 **********
-* hh_29_
+* hh_29_ (changed from proportion to count)
 ***********
-* hh_29_: proportion of children in each schooling level
+* hh_29_: count of children in each schooling level
 forvalues i = 1/55 {
     gen child_prim_`i'    = inrange(hh_29_`i', 1, 6)   & child_4_18_`i'
     gen child_sec1_`i'    = inrange(hh_29_`i', 7, 10)  & child_4_18_`i'
@@ -285,16 +297,21 @@ egen num_sec1     = rowtotal(child_sec1_*)
 egen num_sec2     = rowtotal(child_sec2_*)
 egen num_postsec  = rowtotal(child_postsec_*)
 
-gen hh_29_01 = num_prim     / num_children_4_18 if num_children_4_18 > 0
-gen hh_29_02 = num_sec1     / num_children_4_18 if num_children_4_18 > 0
-gen hh_29_03 = num_sec2     / num_children_4_18 if num_children_4_18 > 0
-gen hh_29_04 = num_postsec  / num_children_4_18 if num_children_4_18 > 0
+* Use raw counts instead of proportions
+gen hh_29_01 = num_prim
+gen hh_29_02 = num_sec1
+gen hh_29_03 = num_sec2
+gen hh_29_04 = num_postsec
+
+label var hh_29_01 "Count of children in primary school"
+label var hh_29_02 "Count of children in lower secondary school"
+label var hh_29_03 "Count of children in upper secondary school"
+label var hh_29_04 "Count of children in post-secondary education"
 
 **********
-* hh_37_
+* hh_37_ (changed from proportion to total count)
 **********
 forvalues i = 1/55 {
-
     * identify enrolled school-aged children
     gen enrolled_child_`i' = child_4_18_`i' & hh_26_`i' == 1
 
@@ -308,16 +325,15 @@ forvalues i = 1/55 {
     gen missed_school_`i' = hh_37_`i' if enrolled_child_`i'
 }
 
-egen total_enrolled_kids = rowtotal(enrolled_child_*)
-egen total_missed_school = rowtotal(missed_school_*)
-
-gen hh_37_ = total_missed_school / total_enrolled_kids if total_enrolled_kids > 0
+* Use total absences rather than proportion
+egen hh_37_ = rowtotal(missed_school_*)
+label var hh_37_ "Total days of school missed by all enrolled children"
 
 * cleanup
-drop child_4_18_* enrolled_child_* missed_school_* total_enrolled_kids total_missed_school
+drop child_4_18_* enrolled_child_* missed_school_*
 
 *********
-* hh_38_
+* hh_38_ (changed from proportion to total)
 *********
 * identify school-aged children
 forvalues i = 1/55 {
@@ -340,15 +356,12 @@ forvalues i = 1/55 {
     gen valid_attend_`i' = hh_38_`i' if enrolled_`i' == 1
 }
 
-* count enrolled children
-egen num_enrolled = rowtotal(enrolled_*)
-egen total_attendance = rowtotal(valid_attend_*)
-
-* compute mean attendance among enrolled school-aged children
-gen hh_38_ = total_attendance / num_enrolled if num_enrolled > 0
+* Use total attendance days rather than average
+egen hh_38_ = rowtotal(valid_attend_*)
+label var hh_38_ "Total days of school attended by all enrolled children"
 
 * cleanup
-drop child_4_18_* enrolled_* valid_attend_* num_enrolled total_attendance
+drop child_4_18_* enrolled_* valid_attend_*
 
 ********
 * living_01_bin
@@ -368,17 +381,7 @@ egen game_B_total = rowtotal(montant_05 face_04)
 *********
 * TLU
 *********
-gen TLU = 0  // Start with TLU equal to 0 for all households
-
-* Assign TLU values based on animal species
-replace TLU = TLU + (1.0) if species_1 == 1  // Cattle
-replace TLU = TLU + (0.1) if species_2 == 1  // Sheep
-replace TLU = TLU + (0.1) if species_3 == 1  // Goat
-replace TLU = TLU + (1.0) if species_4 == 1  // Horse (equine)
-replace TLU = TLU + (0.5) if species_5 == 1  // Donkey
-replace TLU = TLU + (1.0) if species_6 == 1  // Draft animals
-replace TLU = TLU + (0.2) if species_7 == 1  // Pigs
-replace TLU = TLU + (0.01) if species_8 == 1 // Poultry
+* recode
 
 ********
 * agri_6_15
@@ -474,36 +477,7 @@ replace health_5_6_ = 0 if missing(health_5_6_)
 ***************
 * num_water_access_points
 ***************
-* generate binary indicators for each water source
-gen interior_tap = living_01 == 1
-gen public_tap = living_01 == 2
-gen neighbor_tap = living_01 == 3
-gen protected_well = living_01 == 4
-gen unprotected_well = living_01 == 5
-gen drill_hole = living_01 == 6
-gen tanker_service = living_01 == 7
-gen water_seller = living_01 == 8
-gen natural_source = living_01 == 9
-gen stream = living_01 == 10
-gen other_water = living_01 == 99
-
-* for each village, get max usage of each type (i.e., whether any HH uses it)
-egen v_interior_tap      = max(interior_tap),      by(hhid_village)
-egen v_public_tap        = max(public_tap),        by(hhid_village)
-egen v_neighbor_tap      = max(neighbor_tap),      by(hhid_village)
-egen v_protected_well    = max(protected_well),    by(hhid_village)
-egen v_unprotected_well  = max(unprotected_well),  by(hhid_village)
-egen v_drill_hole        = max(drill_hole),        by(hhid_village)
-egen v_tanker_service    = max(tanker_service),    by(hhid_village)
-egen v_water_seller      = max(water_seller),      by(hhid_village)
-egen v_natural_source    = max(natural_source),    by(hhid_village)
-egen v_stream            = max(stream),            by(hhid_village)
-egen v_other_water       = max(other_water),       by(hhid_village)
-
-* sum across all water types to get total number of unique sources used in village
-gen num_water_access_points = v_interior_tap + v_public_tap + v_neighbor_tap + ///
-    v_protected_well + v_unprotected_well + v_drill_hole + v_tanker_service + ///
-    v_water_seller + v_natural_source + v_stream + v_other_water
+* recode
 	
 ************
 * q_51
@@ -516,7 +490,7 @@ gen num_water_access_points = v_interior_tap + v_public_tap + v_neighbor_tap + /
 gen target_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B") | ///
                      inlist(hhid_village, "123B", "153A", "121A", "131A", "141A") | ///
                      hhid_village == "142A"
-					 
+					 				 
 **********************************
 * balance tables
 *******************************

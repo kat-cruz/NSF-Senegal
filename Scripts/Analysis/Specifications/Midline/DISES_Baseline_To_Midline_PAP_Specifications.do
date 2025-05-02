@@ -34,9 +34,10 @@ global midline "$master\Data_Management\Data\_CRDES_CleanData\Midline\Deidentifi
 global balance "$master\Data_Management\Output\Analysis\Balance_Tables\baseline_balance_tables_data_PAP.dta"
 global treatment "$master\Data_Management\Data\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 global asset_index "$master\Data_Management\Output\Data_Processing\Construction\PCA_asset_index_var.dta"
-global respondent_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\respondent_index.dta"
+global hh_head_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\household_head_index.dta"
 global balance_tables "$master\Data_Management\Output\Analysis\Balance_Tables"
-global locations "$master\Data_Management\Data\Location_Data\hhsurvey_villages.csv"
+global location_data "$master\Data_Management\Data\Location_Data\hhsurvey_villages.csv"
+global walking_distance_vector "$master\Data_Management\Data\Location_Data\walking_distance_simplified.csv"
 
 global baseline_agriculture "$baseline\Complete_Baseline_Agriculture.dta"
 global baseline_beliefs "$baseline\Complete_Baseline_Beliefs.dta"
@@ -101,51 +102,13 @@ gen living_01_bin = inlist(living_01, 1, 2, 3)
 ***************
 * num_water_access_points (village-level)
 ***************
-gen interior_tap = living_01 == 1
-gen public_tap = living_01 == 2
-gen neighbor_tap = living_01 == 3
-gen protected_well = living_01 == 4
-gen unprotected_well = living_01 == 5
-gen drill_hole = living_01 == 6
-gen tanker_service = living_01 == 7
-gen water_seller = living_01 == 8
-gen natural_source = living_01 == 9
-gen stream = living_01 == 10
-gen other_water = living_01 == 99
 
-egen v_interior_tap      = max(interior_tap),      by(hhid_village)
-egen v_public_tap        = max(public_tap),        by(hhid_village)
-egen v_neighbor_tap      = max(neighbor_tap),      by(hhid_village)
-egen v_protected_well    = max(protected_well),    by(hhid_village)
-egen v_unprotected_well  = max(unprotected_well),  by(hhid_village)
-egen v_drill_hole        = max(drill_hole),        by(hhid_village)
-egen v_tanker_service    = max(tanker_service),    by(hhid_village)
-egen v_water_seller      = max(water_seller),      by(hhid_village)
-egen v_natural_source    = max(natural_source),    by(hhid_village)
-egen v_stream            = max(stream),            by(hhid_village)
-egen v_other_water       = max(other_water),       by(hhid_village)
-
-gen num_water_access_points = v_interior_tap + v_public_tap + v_neighbor_tap + ///
-    v_protected_well + v_unprotected_well + v_drill_hole + v_tanker_service + ///
-    v_water_seller + v_natural_source + v_stream + v_other_water
 
 ***************
 * Household head controls
 ***************
 * Bring in respondent index to help ID head
-merge 1:1 hhid using "$respondent_index", nogen
-
-gen hh_head_index = .
-forvalues i = 1/55 {
-    replace hh_head_index = `i' if hh_relation_with_`i' == 1
-}
-replace hh_head_index = resp_index if missing(hh_head_index) & !missing(resp_index)
-
-* Fallback: use match by age/gender if still missing
-forvalues i = 1/55 {
-    replace hh_head_index = `i' if missing(hh_head_index) ///
-        & hh_age_resp == hh_age_`i' & hh_gender_resp == hh_gender_`i'
-}
+merge 1:1 hhid using "$hh_head_index", nogen
 
 * Age of head
 gen hh_age_h = .
@@ -171,7 +134,8 @@ gen auction_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B
                      inlist(hhid_village, "123B", "153A", "121A", "131A", "141A") | ///
                      hhid_village == "142A"
 					 
-keep hhid hhid_village hh_age_h hh_education_skills_5_h hh_gender_h hh_numero living_01_bin num_water_access_points auction_village
+* still need to construct (num_water_access_points)
+keep hhid hhid_village hh_age_h hh_education_skills_5_h hh_gender_h hh_numero living_01_bin auction_village
 
 
 tempfile control_data
@@ -217,8 +181,8 @@ label values treatment_arm treatlbl
 * gen stratum
 gen stratum = substr(hhid_village, 4, 1)
 
-* global controls
-global controls q_51 num_water_access_points hh_numero living_01_bin asset_index_std hh_age_h i.hh_gender_h i.hh_education_skills_5_h
+* global controls (need to construct num_water_access_points)
+global controls q_51 hh_numero living_01_bin asset_index_std hh_age_h i.hh_gender_h i.hh_education_skills_5_h
 
 tempfile combined_data
 save `combined_data', replace
@@ -227,96 +191,14 @@ save `combined_data', replace
 *******************************
 * DISTANCE VECTOR
 *******************************
-******************************* 
-* DISTANCE VECTOR
-******************************* 
-import delimited "$locations", clear
-foreach var of varlist * {
-    capture confirm string variable `var'
-    if !_rc {
-        replace `var' = subinstr(`var', "132A", "153A", .)
-    }
-}
-drop if hhid_village == "115U" | hhid_village == "116U" | hhid_village == "117U" | ///
-       hhid_village == "119U" | hhid_village == "118U" | hhid_village == "125U" | ///
-       hhid_village == "126U" | hhid_village == "124U" | hhid_village == "120U" | ///
-       hhid_village == "127U" | hhid_village == "128U" | hhid_village == "129U"
+import delimited "$walking_distance_vector", clear
+tempfile distance_vector
+save `distance_vector', replace
 
-* Generate treatment arm variable
-gen byte treatment_arm = real(substr(hhid_village, 3, 1))
-label define treatlbl 0 "Control" 1 "Arm A - Public Health" 2 "Arm B - Private Benefits" 3 "Arm C - Both Messages"
-label values treatment_arm treatlbl
+use `combined_data', clear
+merge m:1 hhid_village using `distance_vector', keep(master match) nogen
 
-* Keep only one observation per village to create village-level dataset
-duplicates report hhid_village
-duplicates drop hhid_village, force
-
-* Convert GPS coordinates to radians for distance calculation
-gen lat_rad = (gps_collectlatitude) * _pi/180
-gen lon_rad = (gps_collectlongitude) * _pi/180
-
-* Create variables to store distances to nearest village in each treatment arm
-gen dist_control = .
-gen dist_armA = .
-gen dist_armB = .
-gen dist_armC = .
-
-* Calculate distances between all villages
-local earth_radius = 6371 // Earth radius in kilometers
-tempfile villages
-save `villages'
-
-* Loop through each village
-forvalues i = 1/`=_N' {
-    local village_id = hhid_village[`i']
-    local lat1 = lat_rad[`i']
-    local lon1 = lon_rad[`i']
-    local treat_i = treatment_arm[`i']
-    
-    * Load the villages data again to compare with current village
-    use `villages', clear
-    
-    * Calculate distance to each other village using the Haversine formula
-    gen double h = sin((lat_rad - `lat1')/2)^2 + cos(`lat1') * cos(lat_rad) * sin((lon_rad - `lon1')/2)^2
-    gen double dist_km = 2 * `earth_radius' * asin(sqrt(h))
-    
-    * Convert to walking time (assuming 5 km/hour walking speed)
-    gen double dist_minutes = (dist_km / 5) * 60
-    
-    * For each treatment arm, find the minimum distance to a village in that arm
-    foreach arm in 0 1 2 3 {
-        if `treat_i' == `arm' {
-            * If current village is in this arm, distance is 0
-            local min_dist_`arm' = 0
-        }
-        else {
-            * Find minimum distance to a village in this arm
-            sum dist_minutes if treatment_arm == `arm', meanonly
-            if r(N) > 0 {
-                local min_dist_`arm' = r(min)
-            }
-            else {
-                local min_dist_`arm' = .
-            }
-        }
-    }
-    
-    * Load the file again to update the distance values for the current village
-    use `villages', clear
-    replace dist_control = `min_dist_0' if _n == `i'
-    replace dist_armA = `min_dist_1' if _n == `i'
-    replace dist_armB = `min_dist_2' if _n == `i'
-    replace dist_armC = `min_dist_3' if _n == `i'
-    save `villages', replace
-}
-
-* Create the final distance vector
-gen distance_vector = ""
-replace distance_vector = "[" + string(dist_control, "%9.2f") + ", " + ///
-                          string(dist_armA, "%9.2f") + ", " + ///
-                          string(dist_armB, "%9.2f") + ", " + ///
-                          string(dist_armC, "%9.2f") + "]"
-						  
+save `combined_data', replace
 			
 **************************************************
 * 1.1.1, 1.1.2, 1.1.3
@@ -358,9 +240,8 @@ keep hhid hhid_village midline_AVR
 tempfile midline_avr_data
 save `midline_avr_data', replace
 
-**************************************************
 * merge everything together
-**************************************************
+
 * start with the combined dataset from before
 use `combined_data', clear
 
@@ -378,6 +259,7 @@ merge 1:1 hhid using `midline_avr_data', keepusing(midline_AVR) keep(master matc
 **************************************************
 * 1.1.1, 1.1.2, 1.1.3
 * baseline AVR (self-reports)
+* variables: hh_12_6, hh_14
 
 * 1.1.4, 1.1.5, 1.1.6
 * baseline compost proudction

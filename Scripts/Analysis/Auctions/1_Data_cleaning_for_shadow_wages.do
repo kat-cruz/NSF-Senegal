@@ -604,7 +604,7 @@ replace work_days = agri_income_03 * 5 * 4 if agri_income_04 == 3
 replace agri_income_05 = . if agri_income_05 == -9 
 replace agri_income_06 = . if agri_income_06 == -9
 
-gen daily_wage = (agri_income_05 - agri_income_06) / work_days 
+gen daily_wage = agri_income_05 / work_days 
 
 replace agri_income_15 = . if agri_income_15 == -2 
 
@@ -1379,7 +1379,7 @@ replace work_days = agri_income_03 * 5 * 4 if agri_income_04 == 3
 replace agri_income_05 = . if agri_income_05 == -9 
 replace agri_income_06 = . if agri_income_06 == -9
 
-gen daily_wage = (agri_income_05 - agri_income_06) / work_days 
+gen daily_wage = agri_income_05 / work_days 
 
 replace agri_income_15 = . if agri_income_15 == -2 
 

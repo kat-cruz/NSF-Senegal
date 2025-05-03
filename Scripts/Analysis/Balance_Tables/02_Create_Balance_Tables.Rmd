@@ -635,7 +635,7 @@ mutate(Question = case_when(
     variable == "hh_29_02" ~ "Indicator for secondary middle level education (1=Yes, 0=No, asked about children)",
     variable == "hh_29_03" ~ "Indicator for secondary higher level education (1=Yes, 0=No, asked about children)",
     variable == "hh_29_04" ~ "Indicator for upper secondary education (1=Yes, 0=No, asked about children)",
-    variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class for 2022/2023 (1=Yes, 0=No, asked about children)",
+   # variable == "hh_31_bin" ~ "Indicator if student completed studies or moved to next class for 2022/2023 (1=Yes, 0=No, asked about children)",
     variable == "hh_37_" ~ "Indicator if missed >1 consecutive week of school due to illness in the past 12 months (1=Yes, 0=No, asked about children) †",
     variable == "hh_38_" ~ "Number of attended school days in the past week (asked about children)",
     

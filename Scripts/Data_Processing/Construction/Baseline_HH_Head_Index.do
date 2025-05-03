@@ -65,7 +65,10 @@
 *^*^* import data
 
 		import excel "$index\Identify_Respondent_HH_Index.xlsx", sheet("Sheet1") firstrow clear
+		
+*** UPDATE: Correct old HHID: 
 
+replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
 
 *<><<><><>><><<><><>>
 **#  CREATE HH HEAD VARIABLE
@@ -138,8 +141,8 @@ restore
 
  ** Subset data to look at what's going on 
 
-		keep hh_relation hh_relation_with str_clean_full_resp hh_age_ hh_gender_ hhid individ resp str_clean_head str_clean_full name_match hh_head num_heads_per_hh
-		order hhid individ resp hh_relation hh_relation_with hh_age_ hh_gender_ str_clean_full_resp str_clean_head str_clean_full name_match hh_head num_heads_per_hh
+		keep hh_relation individual hh_relation_with str_clean_full_resp hh_age_ hh_gender_ hhid individ resp str_clean_head str_clean_full name_match hh_head num_heads_per_hh
+		order hhid individ individual resp hh_relation hh_relation_with hh_age_ hh_gender_ str_clean_full_resp str_clean_head str_clean_full name_match hh_head num_heads_per_hh
 
 					
 *<><<><><>><><<><><>>

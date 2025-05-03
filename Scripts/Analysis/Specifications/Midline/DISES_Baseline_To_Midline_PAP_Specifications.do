@@ -37,7 +37,7 @@ global asset_index "$master\Data_Management\Output\Data_Processing\Construction\
 global hh_head_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\household_head_index.dta"
 global balance_tables "$master\Data_Management\Output\Analysis\Balance_Tables"
 global location_data "$master\Data_Management\Data\Location_Data\hhsurvey_villages.csv"
-global walking_distance_vector "$master\Data_Management\Data\Location_Data\walking_distance_simplified.csv"
+global walking_distance_vector "$master\Data_Management\Data\Location_Data\walking_distance_vector.csv"
 
 global baseline_agriculture "$baseline\Complete_Baseline_Agriculture.dta"
 global baseline_beliefs "$baseline\Complete_Baseline_Beliefs.dta"
@@ -92,50 +92,85 @@ merge m:1 hhid_village using "$baseline_community", nogen
 * - hh_gender_h: household head's sex
 * - hh_education_skills_5_h: household head's literacy status
 
-* Create hh_numero (household size assumed to already exist)
-* If not defined yet:
-* egen hh_numero = rownonmiss(hh_age_*)  // example based on age vars
 
-* Piped water access indicator
-gen living_01_bin = inlist(living_01, 1, 2, 3)
+* access to piped water
+* using indicator for selected tap water as main source of drinking water
 
-***************
-* num_water_access_points (village-level)
-***************
+* household-level piped water access (taps only)
+gen living_01_bin = inlist(living_01, 1, 2, 3) // interior, public, or neighbor's tap
+label variable living_01_bin "Household has piped water access"
 
+* count of water sources at village level
+preserve 
+    // generate indicators for each water source type
+    gen interior_tap = living_01 == 1 
+    gen public_tap = living_01 == 2
+    gen neighbor_tap = living_01 == 3 
+    gen protected_well = living_01 == 4
+    gen unprotected_well = living_01 == 5  
+    gen drill_hole = living_01 == 6
+    gen tanker_service = living_01 == 7
+    gen water_seller = living_01 == 8
+    gen natural_source = living_01 == 9
+    gen stream = living_01 == 10
+    gen other_water = living_01 == 99
 
-***************
-* Household head controls
-***************
-* Bring in respondent index to help ID head
+    // collapse to village level - any household using each source
+    collapse (max) interior_tap public_tap neighbor_tap protected_well unprotected_well ///
+        drill_hole tanker_service water_seller natural_source stream other_water, ///
+        by(hhid_village)
+    
+    // count total number of different water sources used in village
+    egen num_water_access_points = rowtotal(interior_tap public_tap neighbor_tap ///
+        protected_well unprotected_well drill_hole tanker_service water_seller ///
+        natural_source stream other_water)
+    
+    keep hhid_village num_water_access_points
+    
+    tempfile village_water
+    save `village_water'
+restore
+
+// merge village-level water access back to main data
+merge m:1 hhid_village using `village_water', nogen
+
+label variable num_water_access_points "Number of different water sources used in village"
+
+* household head controls
+* bring in hh head index for id
 merge 1:1 hhid using "$hh_head_index", nogen
 
-* Age of head
+* age of head
 gen hh_age_h = .
 forvalues i = 1/55 {
     replace hh_age_h = hh_age_`i' if hh_head_index == `i'
 }
+label variable hh_age_h "Household head age"
 
-* Gender of head (1 = male, 0 = female)
+* gender of head (1 = male, 0 = female)
 gen hh_gender_h = .
 forvalues i = 1/55 {
     replace hh_gender_h = 1 if hh_head_index == `i' & hh_gender_`i' == 1
     replace hh_gender_h = 0 if hh_head_index == `i' & hh_gender_`i' == 2
 }
+label variable hh_gender_h "Household head gender"
 
-* Literacy of head
+* literacy of head
 gen hh_education_skills_5_h = 0
 forvalues i = 1/55 {
     replace hh_education_skills_5_h = 1 if hh_head_index == `i' & hh_education_skills_5_`i' == 1
 }
+label variable hh_education_skills_5_h "Indicator that household head is literate"
 
-
+* 
 gen auction_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B") | ///
                      inlist(hhid_village, "123B", "153A", "121A", "131A", "141A") | ///
                      hhid_village == "142A"
-					 
-* still need to construct (num_water_access_points)
+
 keep hhid hhid_village hh_age_h hh_education_skills_5_h hh_gender_h hh_numero living_01_bin auction_village
+
+label variable hh_numero "Household Size"
+label variable auction_village
 
 
 tempfile control_data
@@ -187,11 +222,18 @@ global controls q_51 hh_numero living_01_bin asset_index_std hh_age_h i.hh_gende
 tempfile combined_data
 save `combined_data', replace
 
-
 *******************************
 * DISTANCE VECTOR
 *******************************
 import delimited "$walking_distance_vector", clear
+
+foreach var of varlist * {
+    capture confirm string variable `var'
+    if !_rc {
+        replace `var' = subinstr(`var', "132A", "153A", .)
+    }
+}
+
 tempfile distance_vector
 save `distance_vector', replace
 

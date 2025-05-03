@@ -971,8 +971,24 @@ save `balance_table_ata'
 		 
 		 
 	*^*^* collaspe by mean at the CHILD level 	 
+	
+	
+						
+			preserve
+
+				keep if child_in_home == 1
+
+				collapse (count) child_in_home hh_26_ hh_27_ hh_31_bin hh_37_ hh_29_* ///
+						 (mean) hh_38_, by(hhid)
+
+				tempfile child_aggregates
+				save `child_aggregates'
+
+			restore
+
 		 
 		
+/*
 			preserve
 
 			
@@ -985,6 +1001,9 @@ save `balance_table_ata'
 
 			
 			restore
+			
+
+*/
 
   *^*^* collaspe by mean at the HOUSEHOLD level & order variables
   

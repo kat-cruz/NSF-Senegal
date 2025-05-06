@@ -1,7 +1,7 @@
 *** Data cleaning for shadow wage estimation *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: May 2, 2025 ***
+*** File Last Updated On: May 6, 2025 ***
 
 clear all 
 
@@ -902,9 +902,16 @@ gen other_veg_12mo = (hh_15_ == 99)
 
 *** code don't knows as missing ***
 replace hh_03_ = . if hh_03_ == 2 
+replace hh_01_ = . if hh_01_ == -9 
+replace hh_02_ = . if hh_02_ == -9
+replace hh_04_ = . if hh_04_ == -9
 replace hh_05_ = . if hh_05_ == -9
 replace hh_06_ = . if hh_06_ == -9 
 replace hh_07_ = . if hh_07_ == -9
+replace hh_08_ = . if hh_08_ == -9
+replace hh_09_ = . if hh_09_ == -9
+replace hh_16_ = . if hh_16_ == -9
+replace hh_24_ = . if hh_24_ == -9
 
 *** count household labor hours totals and per capita *** 
 collapse (sum) chore_hours = hh_01_ (sum) water_hours = hh_02_ (sum) ag_hours = hh_04_ (sum) planting_hours = hh_05_ (sum) growth_hours = hh_06_ (sum) harvest_hours = hh_07_ (sum) tradehh_hours = hh_08_ (sum) tradeoutside_hours = hh_09_ (sum) water_hours_12mo = hh_10_ (sum) veg_collected_12mo = hh_14_ (sum) fertilizer_hours_12mo = hh_16_ (sum) feed_hours_12mo = hh_17_ (sum) water_hours_7days = hh_18_ (sum) veg_collected_7days = hh_22_ (sum) fertilizer_hours_7days = hh_24_ (sum) feed_hours_7days = hh_25_ (count) members = hh_gender_ (mean) female household_head spouse no_education primary_education secondary_education tertiary_education technical_education other_education sell_veg_12mo fertilizer_veg_12mo biodigest_veg_12mo nothing_veg_12mo other_veg_12mo hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_14_ hh_16_ hh_17_ hh_18_ hh_22_ hh_23_1_ hh_23_2_ hh_23_3_ hh_23_4_ hh_23_5_ hh_23_99_ hh_24_ hh_25_ , by(hhid)
@@ -1495,6 +1502,7 @@ gen daily_wage = agri_income_05 / work_days
 replace agri_income_15 = . if agri_income_15 == -2 
 
 replace agri_income_16 = 0 if agri_income_15 == 0 
+replace agri_income_16 = . if agri_income_16 == -9
 
 *** calculate total income from livestock sales *** 
 egen tot_livestock_sales = rowtotal(agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_6 agri_income_12_o)

@@ -333,6 +333,9 @@ gen manure_indirect_parking = (agri_6_31_ == 2)
 gen manure_purchase = (agri_6_31_ == 3)
 gen manure_other_source = (agri_6_31_ == 99)
 
+*** collapse to household level *** 
+collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage, by(hhid)
+
 *** save clean plot level data *** 
 save "$auctions\plot_level_ag.dta", replace 
 
@@ -411,6 +414,8 @@ replace manure_kgs = agri_6_32 * unit_convert_1 if agri_6_33_ == 2
 replace manure_kgs = agri_6_32 * unit_convert_2 if agri_6_33_ == 3 
 
 keep hhid plot manure_kgs 
+
+collapse (sum) manure_kgs, by(hhid)
 
 save "$auctions\manure_use.dta", replace 
 
@@ -706,10 +711,28 @@ merge 1:1 hhid using "$auctions\income.dta"
 
 drop _merge 
 
+merge 1:1 hhid using "$auctions\milk_sales_baseline.dta"
+
+gen any_milk_sales = _merge == 3 
+
+replace milk_sales = 0 if _merge == 1
+
+drop _merge 
+
 *** bring in community price data *** 
 gen hhid_village = substr(hhid, 1, 4)
 
 merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\plot_level_ag.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\manure_use.dta"
+
+replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
 
 drop _merge 
 
@@ -761,15 +784,15 @@ egen med_tomato_price = median(tomato_price)
 replace tomato_price = med_tomato_price if tomato_price == .   
 egen med_onion_price = median(onion_price)
 replace onion_price = med_onion_price if onion_price == . 
-egen med_cassava_price = med(cassava_price)
-egen med_sweetpotato_price = med(sweetpotato_price)
-egen med_yam_price = med(yam_price)
-egen med_carrot_price = med(carrot_price)
-egen med_cucumber_price = med(cucumber_price)
-egen med_pepper_price = med(pepper_price)
-egen med_bean_price = med(bean_price)
-egen med_pea_price = med(pea_price)
-egen med_lentil_price = med(lentil_price)
+egen med_cassava_price = median(cassava_price)
+egen med_sweetpotato_price = median(sweetpotato_price)
+egen med_yam_price = median(yam_price)
+egen med_carrot_price = median(carrot_price)
+egen med_cucumber_price = median(cucumber_price)
+egen med_pepper_price = median(pepper_price)
+egen med_bean_price = median(bean_price)
+egen med_pea_price = median(pea_price)
+egen med_lentil_price = median(lentil_price)
 
 *** create value of output variable *** 
 gen value_rice_prod = rice_prod * rice_price 
@@ -797,8 +820,10 @@ egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer m
 
 gen ag_wage = (agri_6_14 == 1 & agri_income_01 == 1)
 
+gen any_livestock_income = (tot_livestock_sales > 0) 
+
 *** label variables for production summary stats *** 
-label variable total_value_production "Total Value of Production"
+label variable total_value_production "Total Value of Crop Production (FCFA)"
 label variable total_production_hectares "Hectares in Production"
 label variable chore_hours "Family Hours Spent on Chores (7 days)"
 label variable water_hours "Family Hours Spent Fetching Water (7 days)"
@@ -812,58 +837,30 @@ label variable fertilizer_hours_7days "Family Hours Spent on Fertilizer (7 days)
 label variable number_equipment "Total Number of Pieces of Ag Equipment"
 label variable agri_6_14 "Cultivate Land (1 = Yes)"
 label variable agri_6_15 "Number of Plots"
+label variable collective_manage "Number of Plots Collectively Managed (1 = Yes)"
+label variable rice "Number of Plots where Main Crop is Rice"
+label variable plot_size_ha "Total Plot Size (hectares)"
+label variable agri_6_30_ "Number of Plots that Used Manure"
+label variable agri_6_34_comp_ "Number of Plots that Used Compost"
+label variable agri_6_34_ "Number of Plots that Used Household Waste"
+label variable agri_6_36_ "Number of Plots that Used Fertilizer"
+label variable urea_kgs "Total Urea Used (kgs)"
+label variable phosphate_kgs "Total Phosphates Used (kgs)"
+label variable npk_kgs "Total NPK Used (kgs)"
+label variable other_kgs "Total Other Chemical Fertilizer (kgs)"
+label variable any_milk_sales "Sells Milk (1 = Yes)"
+label variable milk_sales "Total Value of Milk Sales (FCFA)"
+label variable any_livestock_income "Reports Income from Livestock Sales (1 = Yes)"
+label variable tot_livestock_sales "Total Value of Livestock Sales (FCFA)"
 label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
 label variable daily_wage "Daily Wage for Paid Work (FCFA)"
 label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
 label variable agri_income_16 "Number of Hired Laborers"
 label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
 
-estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days agri_income_15 agri_income_16 number_equipment agri_income_01 daily_wage ag_wage 
+estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days urea_kgs phosphate_kgs npk_kgs other_kgs collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ agri_income_15 agri_income_16 number_equipment any_milk_sales milk_sales any_livestock_income tot_livestock_sales agri_income_01 daily_wage ag_wage 
 
 esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
-
-*** summary stats for plot level variables *** 
-use "$auctions\plot_level_ag.dta", clear
-
-merge 1:1 hhid plot using "$auctions\manure_use.dta"
-
-replace manure_kgs = 0 if _merge == 1 
-
-drop _merge 
-
-label variable collective_manage "Plot is Collectively Managed (1 = Yes)"
-label variable rice "Main Crop is Rice (1 = Yes)"
-label variable maize "Main Crop is Maize (1 = Yes)"
-label variable millet "Main Crop is Millet (1 = Yes)"
-label variable sorghum "Main Crop is Sorghum (1 = Yes)"
-label variable cowpea "Main Crop is Cowpea (1 = Yes)"
-label variable cassava "Main Crop is Cassava (1 = Yes)"
-label variable sweetpotato "Main Crop is Sweet Potato (1 = Yes)"
-label variable potato "Main Crop is Potato (1 = Yes)"
-label variable yam "Main Crop is Yam (1 = Yes)"
-label variable taro "Main Crop is Taro (1 = Yes)"
-label variable tomato "Main Crop is Tomatoes (1 = Yes)"
-label variable carrot "Main Crop is Carrots (1 = Yes)"
-label variable onion "Main Crop is Onions (1 = Yes)"
-label variable cucumber "Main Crop is Cucumbers (1 = Yes)"
-label variable pepper "Main Crop is Peppers (1 = Yes)"
-label variable peanut "Main Crop is Peanuts (1 = Yes)"
-label variable bean "Main Crop is Beans (1 = Yes)"
-label variable pea "Main Crop is Peas (1 = Yes)"
-label variable other "Other Main Crop (1 = Yes)"
-label variable plot_size_ha "Plot Size (hectares)"
-label variable agri_6_30_ "Used Manure on the Plot (1 = Yes)"
-label variable agri_6_34_comp_ "Used Compost on the Plot (1 = Yes)"
-label variable agri_6_34_ "Used Household Waste on the Plot (1 = Yes)"
-label variable agri_6_36_ "Used Fertilizer on the Plot (1 = Yes)"
-label variable urea_kgs "Urea Used on Plot (kgs)"
-label variable phosphate_kgs "Phosphates Used on Plot (kgs)"
-label variable npk_kgs "NPK Used on Plot (kgs)"
-label variable other_kgs "Other Chemical Fertilizer Used on Plot (kgs)"
-
-estpost sum collective_manage rice maize millet sorghum cowpea cassava sweetpotato potato yam taro tomato carrot onion cucumber pepper peanut bean pea other plot_size_ha agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ urea_kgs phosphate_kgs npk_kgs other_kgs
-
-esttab using "$auctions\plot_level_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
 *** midline data ***
 *** import household roster data *** 
@@ -1173,6 +1170,9 @@ gen manure_indirect_parking = (agri_6_31_ == 2)
 gen manure_purchase = (agri_6_31_ == 3)
 gen manure_other_source = (agri_6_31_ == 99)
 
+*** collapse to household level *** 
+collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage, by(hhid)
+
 *** save clean plot level data *** 
 save "$auctions\plot_level_ag_midline.dta", replace 
 
@@ -1253,6 +1253,9 @@ replace manure_kgs = agri_6_32 * unit_convert_1 if agri_6_33_ == 2
 replace manure_kgs = agri_6_32 * unit_convert_2 if agri_6_33_ == 3 
 
 keep hhid plot manure_kgs 
+
+*** collapse to household level *** 
+collapse (sum) manure_kgs, by(hhid)
 
 save "$auctions\manure_use_midline.dta", replace 
 
@@ -1578,10 +1581,28 @@ merge 1:1 hhid using "$auctions\income_midline.dta"
 
 drop _merge 
 
+merge 1:1 hhid using "$auctions\milk_sales_midline.dta"
+
+gen any_milk_sales = _merge == 3 
+
+replace milk_sales = 0 if _merge == 1
+
+drop _merge 
+
 *** bring in community price data *** 
 gen hhid_village = substr(hhid, 1, 4)
 
 merge m:1 hhid_village using "$midline\Complete_Midline_Community.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\plot_level_ag_midline.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\manure_use_midline.dta"
+
+replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
 
 drop _merge 
 
@@ -1620,15 +1641,15 @@ egen med_tomato_price = median(tomato_price)
 replace tomato_price = med_tomato_price if tomato_price == .   
 egen med_onion_price = median(onion_price)
 replace onion_price = med_onion_price if onion_price == . 
-egen med_cassava_price = med(cassava_price)
-egen med_sweetpotato_price = med(sweetpotato_price)
-egen med_yam_price = med(yam_price)
-egen med_carrot_price = med(carrot_price)
-egen med_cucumber_price = med(cucumber_price)
-egen med_pepper_price = med(pepper_price)
-egen med_bean_price = med(bean_price)
-egen med_pea_price = med(pea_price)
-egen med_lentil_price = med(lentil_price)
+egen med_cassava_price = median(cassava_price)
+egen med_sweetpotato_price = median(sweetpotato_price)
+egen med_yam_price = median(yam_price)
+egen med_carrot_price = median(carrot_price)
+egen med_cucumber_price = median(cucumber_price)
+egen med_pepper_price = median(pepper_price)
+egen med_bean_price = median(bean_price)
+egen med_pea_price = median(pea_price)
+egen med_lentil_price = median(lentil_price)
 
 *** create value of output variable *** 
 gen value_rice_prod = rice_prod * rice_price 
@@ -1656,8 +1677,10 @@ egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer m
 
 gen ag_wage = (agri_6_14 == 1 & agri_income_01 == 1)
 
+gen any_livestock_income = (tot_livestock_sales > 0) 
+
 *** label variables for production summary stats *** 
-label variable total_value_production "Total Value of Production"
+label variable total_value_production "Total Value of Crop Production (FCFA)"
 label variable total_production_hectares "Hectares in Production"
 label variable chore_hours "Family Hours Spent on Chores (7 days)"
 label variable water_hours "Family Hours Spent Fetching Water (7 days)"
@@ -1671,58 +1694,30 @@ label variable fertilizer_hours_7days "Family Hours Spent on Fertilizer (7 days)
 label variable number_equipment "Total Number of Pieces of Ag Equipment"
 label variable agri_6_14 "Cultivate Land (1 = Yes)"
 label variable agri_6_15 "Number of Plots"
+label variable collective_manage "Number of Plots Collectively Managed (1 = Yes)"
+label variable rice "Number of Plots where Main Crop is Rice"
+label variable plot_size_ha "Total Plot Size (hectares)"
+label variable agri_6_30_ "Number of Plots that Used Manure"
+label variable agri_6_34_comp_ "Number of Plots that Used Compost"
+label variable agri_6_34_ "Number of Plots that Used Household Waste"
+label variable agri_6_36_ "Number of Plots that Used Fertilizer"
+label variable urea_kgs "Total Urea Used (kgs)"
+label variable phosphate_kgs "Total Phosphates Used (kgs)"
+label variable npk_kgs "Total NPK Used (kgs)"
+label variable other_kgs "Total Other Chemical Fertilizer (kgs)"
+label variable any_milk_sales "Sells Milk (1 = Yes)"
+label variable milk_sales "Total Value of Milk Sales (FCFA)"
+label variable any_livestock_income "Reports Income from Livestock Sales (1 = Yes)"
+label variable tot_livestock_sales "Total Value of Livestock Sales (FCFA)"
 label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
 label variable daily_wage "Daily Wage for Paid Work (FCFA)"
 label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
 label variable agri_income_16 "Number of Hired Laborers"
 label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
 
-estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days agri_income_15 agri_income_16 number_equipment agri_income_01 daily_wage ag_wage
+estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days urea_kgs phosphate_kgs npk_kgs other_kgs collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ agri_income_15 agri_income_16 number_equipment any_milk_sales milk_sales any_livestock_income tot_livestock_sales agri_income_01 daily_wage ag_wage 
 
 esttab using "$auctions\household_level_production_sum_stats_midline.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
-
-*** summary stats for plot level variables *** 
-use "$auctions\plot_level_ag_midline.dta", clear
-
-merge 1:1 hhid plot using "$auctions\manure_use_midline.dta"
-
-replace manure_kgs = 0 if _merge == 1 
-
-drop _merge 
-
-label variable collective_manage "Plot is Collectively Managed (1 = Yes)"
-label variable rice "Main Crop is Rice (1 = Yes)"
-label variable maize "Main Crop is Maize (1 = Yes)"
-label variable millet "Main Crop is Millet (1 = Yes)"
-label variable sorghum "Main Crop is Sorghum (1 = Yes)"
-label variable cowpea "Main Crop is Cowpea (1 = Yes)"
-label variable cassava "Main Crop is Cassava (1 = Yes)"
-label variable sweetpotato "Main Crop is Sweet Potato (1 = Yes)"
-label variable potato "Main Crop is Potato (1 = Yes)"
-label variable yam "Main Crop is Yam (1 = Yes)"
-label variable taro "Main Crop is Taro (1 = Yes)"
-label variable tomato "Main Crop is Tomatoes (1 = Yes)"
-label variable carrot "Main Crop is Carrots (1 = Yes)"
-label variable onion "Main Crop is Onions (1 = Yes)"
-label variable cucumber "Main Crop is Cucumbers (1 = Yes)"
-label variable pepper "Main Crop is Peppers (1 = Yes)"
-label variable peanut "Main Crop is Peanuts (1 = Yes)"
-label variable bean "Main Crop is Beans (1 = Yes)"
-label variable pea "Main Crop is Peas (1 = Yes)"
-label variable other "Other Main Crop (1 = Yes)"
-label variable plot_size_ha "Plot Size (hectares)"
-label variable agri_6_30_ "Used Manure on the Plot (1 = Yes)"
-label variable agri_6_34_comp_ "Used Compost on the Plot (1 = Yes)"
-label variable agri_6_34_ "Used Household Waste on the Plot (1 = Yes)"
-label variable agri_6_36_ "Used Fertilizer on the Plot (1 = Yes)"
-label variable urea_kgs "Urea Used on Plot (kgs)"
-label variable phosphate_kgs "Phosphates Used on Plot (kgs)"
-label variable npk_kgs "NPK Used on Plot (kgs)"
-label variable other_kgs "Other Chemical Fertilizer Used on Plot (kgs)"
-
-estpost sum collective_manage rice maize millet sorghum cowpea cassava sweetpotato potato yam taro tomato carrot onion cucumber pepper peanut bean pea other plot_size_ha agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ urea_kgs phosphate_kgs npk_kgs other_kgs
-
-esttab using "$auctions\plot_level_sum_stats_midline.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
 *** create histogram of number of plots at baseline and midline *** 
 use "$auctions\number_of_plots.dta", clear 

@@ -460,13 +460,23 @@ replace millet_prod = . if millet_prod == -9
 
 gen sorghum_hectares = cereals_01_4 
 replace sorghum_hectares = 0 if cereals_consumption_4 == 0
-replace sorghum_hectares = . if cerealsposition_3 == 4
+replace sorghum_hectares = cereals_01_3 if cerealsposition_3 == 4
 replace sorghum_hectares = . if sorghum_hectares == -9 
 
-gen sorghum_prod = cereals_02_2 
-replace sorghum_prod = 0 if cereals_consumption_2 == 0 
-replace sorghum_prod = . if cerealsposition_2 == 3 
-replace sorghum_prod = . if sorghum_prod == -9  
+gen sorghum_prod = cereals_02_4 
+replace sorghum_prod = 0 if cereals_consumption_3 == 0 
+replace sorghum_prod = cereals_02_3 if cerealsposition_3 == 4 
+replace sorghum_prod = . if sorghum_prod == -9 
+
+gen cowpea_hectares = cereals_01_5 
+replace cowpea_hectares = 0 if cereals_consumption_4 == 0
+replace cowpea_hectares = cereals_01_4 if cerealsposition_4 == 5
+replace cowpea_hectares = . if cowpea_hectares == -9 
+
+gen cowpea_prod = cereals_02_5 
+replace cowpea_prod = 0 if cereals_consumption_4 == 0 
+replace cowpea_prod = cereals_02_5 if cerealsposition_4 == 5 
+replace cowpea_prod = . if sorghum_prod == -9  
 
 rename farines_01_1 cassava_hectares 
 replace cassava_hectares = 0 if farine_tubercules_consumption_1 == 0 
@@ -482,7 +492,7 @@ replace sweetpotato_hectares = . if sweetpotato_hectares == -9
 
 rename farines_02_2 sweetpotato_prod 
 replace sweetpotato_prod = 0 if farine_tubercules_consumption_2 == 0 
-replace sweetpotato_prod = . if sweetpotato_prod == -9
+replace sweetpotato_prod = . if sweetpotato_prod == -9 
 
 rename farines_01_3 potato_hectares 
 replace potato_hectares = 0 if farine_tubercules_consumption_3 == 0 
@@ -580,7 +590,7 @@ rename legumineuses_02_4 lentil_prod
 replace lentil_prod = 0 if legumineuses_consumption_4 == 0 
 replace lentil_prod = . if lentil_prod == -9
 
-keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod
+keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cowpea_hectares cowpea_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod farines_05_1 farines_05_2 farines_05_3 farines_05_4 farines_05_5 legumes_05_2 legumes_05_4 legumes_05_5 legumineuses_05_2 legumineuses_05_3 legumineuses_05_4 
 
 save "$auctions\production.dta", replace 
 
@@ -588,7 +598,7 @@ save "$auctions\production.dta", replace
 use "$data\Complete_Baseline_Income.dta", clear  
 
 *** clean household level income data *** 
-keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
+keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_12* agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
 
 replace agri_income_01 = . if agri_income_01 == 2 
 
@@ -610,7 +620,40 @@ replace agri_income_15 = . if agri_income_15 == -2
 
 replace agri_income_16 = 0 if agri_income_15 == 0 
 
+replace agri_income_12_1 = . if agri_income_12_1 == -9
+
+*** calculate total income from livestock sales *** 
+egen tot_livestock_sales = rowtotal(agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_o)
+
 save "$auctions\income.dta", replace 
+
+*** import income module data *** 
+use "$data\Complete_Baseline_Income.dta", clear  
+
+*** clean milk production data *** 
+keep hhid sale_animalesindex_* agri_income_11_* agri_income_12_* agri_income_13_* agri_income_14_* 
+
+forvalues i = 1/5 {
+	tostring agri_income_13_`i', replace
+}
+
+*** reshape to animal type level data *** 
+reshape long sale_animalesindex_ agri_income_11_ agri_income_12_ agri_income_13_ agri_income_13_1_ agri_income_13_2_ agri_income_13_3_ agri_income_13_99_ agri_income_13_9_ agri_income_13_5_ agri_income_13_6_ agri_income_13_7_ agri_income_13_8_ agri_income_13_10_ agri_income_14_ , i(hhid) j(animalcount)
+
+drop if sale_animalesindex_ == . 
+
+*** keep milk production transactions ***  
+keep if agri_income_13_1_ == 1 
+
+*** divide total sales evenly across all product types if milk is sold with other products *** 
+gen tot_animal_products = agri_income_13_1_ + agri_income_13_2_ + agri_income_13_3_ + agri_income_13_99_ + agri_income_13_9_ + agri_income_13_5_ + agri_income_13_6_ + agri_income_13_7_ + agri_income_13_8_ + agri_income_13_10_
+
+gen milk_sales = agri_income_14_ / tot_animal_products
+
+*** create household level milk production *** 
+collapse (sum) milk_sales, by(hhid)
+
+save "$auctions\milk_sales_baseline.dta", replace 
 
 *** merge together entire household dataset *** 
 use "$auctions\main_hh_baseline.dta", clear 
@@ -682,13 +725,27 @@ rename q63_8 tomato_price
 rename q63_9 onion_price
 rename q63_10 peanut_price
 
+rename farines_05_1 cassava_price 
+rename farines_05_2 sweetpotato_price 
+rename farines_05_3 potato_price 
+rename farines_05_4 yam_price 
+rename farines_05_5 taro_price
+rename legumes_05_2 carrot_price 
+rename legumes_05_4 cucumber_price
+rename legumes_05_5 pepper_price 
+rename legumineuses_05_2 bean_price 
+rename legumineuses_05_3 pea_price
+rename legumineuses_05_4 lentil_price 
+
 replace manure_price = . if manure_price == -9
 replace corn_price = . if corn_price == -9
 replace millet_price = . if millet_price == -9
 replace sorghum_price = . if sorghum_price == -9
 replace cowpea_price = . if cowpea_price == -9
 replace tomato_price = . if tomato_price == -9
-replace onion_price = . if peanut_price == -9
+replace onion_price = . if onion_price == -9
+replace peanut_price = . if peanut_price == -9
+replace sweetpotato_price = . if sweetpotato_price == -9 
 
 egen med_manure_price = median(manure_price)
 replace manure_price = med_manure_price if manure_price == . 
@@ -704,19 +761,37 @@ egen med_tomato_price = median(tomato_price)
 replace tomato_price = med_tomato_price if tomato_price == .   
 egen med_onion_price = median(onion_price)
 replace onion_price = med_onion_price if onion_price == . 
+egen med_cassava_price = med(cassava_price)
+egen med_sweetpotato_price = med(sweetpotato_price)
+egen med_yam_price = med(yam_price)
+egen med_carrot_price = med(carrot_price)
+egen med_cucumber_price = med(cucumber_price)
+egen med_pepper_price = med(pepper_price)
+egen med_bean_price = med(bean_price)
+egen med_pea_price = med(pea_price)
+egen med_lentil_price = med(lentil_price)
 
 *** create value of output variable *** 
 gen value_rice_prod = rice_prod * rice_price 
 gen value_corn_prod = maize_prod * corn_price
 gen value_millet_prod = millet_prod * millet_price 
 gen value_sorghum_prod = sorghum_prod * sorghum_price 
-gen value_cowpea_prod = bean_prod * cowpea_price
+gen value_cowpea_prod = cowpea_prod * cowpea_price
 gen value_tomato_prod = tomato_prod * tomato_price
 gen value_onion_prod = onion_prod * onion_price 
 gen value_peanut_prod = peanut_prod * peanut_price
+gen value_cassava_prod = cassava_prod * cassava_price
+gen value_sweetpotato_prod = sweetpotato_prod * sweetpotato_price
+gen value_yam_prod = yam_prod * yam_price
+gen value_carrot_prod = carrot_prod * carrot_price
+gen value_cucumber_prod = cucumber_prod * cucumber_price
+gen value_pepper_prod = pepper_prod * pepper_price
+gen value_bean_prod = bean_prod * bean_price
+gen value_pea_prod = pea_prod * pea_price
+gen value_lentil_prod = lentil_prod * lentil_price
 
-egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod)
-egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares bean_hectares tomato_hectares onion_hectares peanut_hectares)
+egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod value_cassava_prod value_sweetpotato_prod value_yam_prod value_carrot_prod value_cucumber_prod value_pepper_prod value_bean_prod value_pea_prod value_lentil_prod)
+egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares cowpea_hectares tomato_hectares onion_hectares peanut_hectares cassava_hectares sweetpotato_hectares yam_hectares carrot_hectares cucumber_hectares pepper_hectares bean_hectares pea_hectares lentil_hectares)
 
 egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer motorpumps hoes ridger sickle seeder kadiandou fanting other)
 
@@ -1226,8 +1301,16 @@ replace sorghum_hectares = 0 if cereals_consumption_4 == 0
 replace sorghum_hectares = . if sorghum_hectares == -9 
 
 gen sorghum_prod = cereals_02_2 
-replace sorghum_prod = 0 if cereals_consumption_2 == 0 
+replace sorghum_prod = 0 if cereals_consumption_4 == 0 
 replace sorghum_prod = . if sorghum_prod == -9  
+
+gen cowpea_hectares = cereals_01_5 
+replace cowpea_hectares = 0 if cereals_consumption_5 == 0
+replace cowpea_hectares = . if cowpea_hectares == -9 
+
+gen cowpea_prod = cereals_02_5 
+replace cowpea_prod = 0 if cereals_consumption_5 == 0 
+replace cowpea_prod = . if cowpea_prod == -9  
 
 rename farines_01_1 cassava_hectares 
 replace cassava_hectares = 0 if farine_tubercules_consumption_1 == 0 
@@ -1237,6 +1320,8 @@ rename farines_02_1 cassava_prod
 replace cassava_prod = 0 if farine_tubercules_consumption_1 == 0 
 replace cassava_prod = . if cassava_prod == -9
 
+rename farines_05_1 cassava_price
+
 rename farines_01_2 sweetpotato_hectares 
 replace sweetpotato_hectares = 0 if farine_tubercules_consumption_2 == 0 
 replace sweetpotato_hectares = . if sweetpotato_hectares == -9 
@@ -1244,6 +1329,9 @@ replace sweetpotato_hectares = . if sweetpotato_hectares == -9
 rename farines_02_2 sweetpotato_prod 
 replace sweetpotato_prod = 0 if farine_tubercules_consumption_2 == 0 
 replace sweetpotato_prod = . if sweetpotato_prod == -9
+
+rename farines_05_2 sweetpotato_price
+replace sweetpotato_price = . if sweetpotato_price == -9
 
 rename farines_01_3 potato_hectares 
 replace potato_hectares = 0 if farine_tubercules_consumption_3 == 0 
@@ -1264,6 +1352,9 @@ rename farines_02_4 yam_prod
 replace yam_prod = 0 if farine_tubercules_consumption_4 == 0 
 replace yam_prod = potato_prod if farine_tuberculesposition_3 == 4 
 replace yam_prod = . if yam_prod == -9
+
+rename farines_05_4 yam_price
+replace yam_price = farines_05_3 if farine_tuberculesposition_3 == 4 
 
 rename farines_01_5 taro_hectares 
 replace taro_hectares = 0 if farine_tubercules_consumption_5 == 0 
@@ -1293,6 +1384,9 @@ replace carrot_prod = 0 if legumes_consumption_2 == 0
 replace carrot_prod = . if legumesposition_2 == 3
 replace carrot_prod = . if carrot_prod == -9
 
+rename legumes_05_2 carrot_price
+replace carrot_price = . if legumesposition_2 == 3 
+
 rename legumes_01_3 onion_hectares 
 replace onion_hectares = 0 if legumes_consumption_3 == 0 
 replace onion_hectares = carrot_hectares if legumesposition_2 == 3
@@ -1313,6 +1407,10 @@ replace cucumber_prod = 0 if legumes_consumption_4 == 0
 replace cucumber_prod = onion_prod if legumesposition_3 == 4
 replace cucumber_prod = . if cucumber_prod == -9
 
+rename legumes_05_4 cucumber_price
+replace cucumber_price = legumes_05_3 if legumesposition_3 == 4 
+replace cucumber_price = . if cucumber_price == -9
+
 rename legumes_01_5 pepper_hectares 
 replace pepper_hectares = 0 if legumes_consumption_5 == 0 
 replace pepper_hectares = cucumber_hectares if legumesposition_4 == 5
@@ -1322,6 +1420,10 @@ rename legumes_02_5 pepper_prod
 replace pepper_prod = 0 if legumes_consumption_5 == 0 
 replace pepper_prod = cucumber_prod if legumesposition_4 == 5
 replace pepper_prod = . if pepper_prod == -9
+
+rename legumes_05_5 pepper_price
+replace pepper_price = cucumber_price if legumesposition_4 == 5
+replace pepper_price = . if pepper_price == -9
 
 rename legumineuses_01_1 peanut_hectares 
 replace peanut_hectares = 0 if legumineuses_consumption_1 == 0 
@@ -1339,6 +1441,8 @@ rename legumineuses_02_2 bean_prod
 replace bean_prod = 0 if legumineuses_consumption_2 == 0 
 replace bean_prod = . if bean_prod == -9
 
+rename legumineuses_05_2 bean_price 
+
 rename legumineuses_01_3 pea_hectares 
 replace pea_hectares = 0 if legumineuses_consumption_3 == 0 
 replace pea_hectares = . if pea_hectares == -9 
@@ -1346,6 +1450,8 @@ replace pea_hectares = . if pea_hectares == -9
 rename legumineuses_02_3 pea_prod 
 replace pea_prod = 0 if legumineuses_consumption_3 == 0 
 replace pea_prod = . if pea_prod == -9
+
+rename legumineuses_05_3 pea_price 
 
 rename legumineuses_01_4 lentil_hectares 
 replace lentil_hectares = 0 if legumineuses_consumption_4 == 0 
@@ -1355,7 +1461,9 @@ rename legumineuses_02_4 lentil_prod
 replace lentil_prod = 0 if legumineuses_consumption_4 == 0 
 replace lentil_prod = . if lentil_prod == -9
 
-keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod
+rename legumineuses_05_4 lentil_price
+
+keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cowpea_hectares cowpea_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod cassava_price sweetpotato_price yam_price carrot_price cucumber_price pepper_price bean_price pea_price lentil_price
 
 save "$auctions\production_midline.dta", replace 
 
@@ -1363,7 +1471,7 @@ save "$auctions\production_midline.dta", replace
 use "$midline\Complete_Midline_Income.dta", clear  
 
 *** clean household level income data *** 
-keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
+keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_12_* agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
 
 replace agri_income_01 = . if agri_income_01 == 2 
 
@@ -1385,7 +1493,38 @@ replace agri_income_15 = . if agri_income_15 == -2
 
 replace agri_income_16 = 0 if agri_income_15 == 0 
 
+*** calculate total income from livestock sales *** 
+egen tot_livestock_sales = rowtotal(agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_6 agri_income_12_o)
+
 save "$auctions\income_midline.dta", replace 
+
+*** import income module data *** 
+use "$midline\Complete_Midline_Income.dta", clear  
+
+*** clean milk production data *** 
+keep hhid sale_animalesindex_* agri_income_11_* agri_income_12_* agri_income_13_* agri_income_14_* 
+
+forvalues i = 1/6 {
+	tostring agri_income_13_`i', replace
+}
+
+*** reshape to animal type level data *** 
+reshape long sale_animalesindex_ agri_income_11_ agri_income_12_ agri_income_13_ agri_income_13_1_ agri_income_13_2_ agri_income_13_3_ agri_income_13_99_ agri_income_13_9_ agri_income_13_5_ agri_income_13_6_ agri_income_13_7_ agri_income_13_8_ agri_income_13_10_ agri_income_14_ , i(hhid) j(animalcount)
+
+drop if sale_animalesindex_ == . 
+
+*** keep milk production transactions ***  
+keep if agri_income_13_1_ == 1 
+
+*** divide total sales evenly across all product types if milk is sold with other products *** 
+gen tot_animal_products = agri_income_13_1_ + agri_income_13_2_ + agri_income_13_3_ + agri_income_13_99_ + agri_income_13_9_ + agri_income_13_5_ + agri_income_13_6_ + agri_income_13_7_ + agri_income_13_8_ + agri_income_13_10_
+
+gen milk_sales = agri_income_14_ / tot_animal_products
+
+*** create household level milk production *** 
+collapse (sum) milk_sales, by(hhid)
+
+save "$auctions\milk_sales_midline.dta", replace 
 
 *** merge together entire household dataset *** 
 use "$auctions\main_hh_midline.dta", clear 
@@ -1464,7 +1603,8 @@ replace millet_price = . if millet_price == -9
 replace sorghum_price = . if sorghum_price == -9
 replace cowpea_price = . if cowpea_price == -9
 replace tomato_price = . if tomato_price == -9
-replace onion_price = . if peanut_price == -9
+replace onion_price = . if onion_price == -9
+replace peanut_price = . if peanut_price == -9
 
 egen med_manure_price = median(manure_price)
 replace manure_price = med_manure_price if manure_price == . 
@@ -1480,19 +1620,37 @@ egen med_tomato_price = median(tomato_price)
 replace tomato_price = med_tomato_price if tomato_price == .   
 egen med_onion_price = median(onion_price)
 replace onion_price = med_onion_price if onion_price == . 
+egen med_cassava_price = med(cassava_price)
+egen med_sweetpotato_price = med(sweetpotato_price)
+egen med_yam_price = med(yam_price)
+egen med_carrot_price = med(carrot_price)
+egen med_cucumber_price = med(cucumber_price)
+egen med_pepper_price = med(pepper_price)
+egen med_bean_price = med(bean_price)
+egen med_pea_price = med(pea_price)
+egen med_lentil_price = med(lentil_price)
 
 *** create value of output variable *** 
 gen value_rice_prod = rice_prod * rice_price 
 gen value_corn_prod = maize_prod * corn_price
 gen value_millet_prod = millet_prod * millet_price 
 gen value_sorghum_prod = sorghum_prod * sorghum_price 
-gen value_cowpea_prod = bean_prod * cowpea_price
+gen value_cowpea_prod = cowpea_prod * cowpea_price
 gen value_tomato_prod = tomato_prod * tomato_price
 gen value_onion_prod = onion_prod * onion_price 
 gen value_peanut_prod = peanut_prod * peanut_price
+gen value_cassava_prod = cassava_prod * cassava_price
+gen value_sweetpotato_prod = sweetpotato_prod * sweetpotato_price
+gen value_yam_prod = yam_prod * yam_price
+gen value_carrot_prod = carrot_prod * carrot_price
+gen value_cucumber_prod = cucumber_prod * cucumber_price
+gen value_pepper_prod = pepper_prod * pepper_price
+gen value_bean_prod = bean_prod * bean_price
+gen value_pea_prod = pea_prod * pea_price
+gen value_lentil_prod = lentil_prod * lentil_price
 
-egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod)
-egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares bean_hectares tomato_hectares onion_hectares peanut_hectares)
+egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod value_cassava_prod value_sweetpotato_prod value_yam_prod value_carrot_prod value_cucumber_prod value_pepper_prod value_bean_prod value_pea_prod value_lentil_prod)
+egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares cowpea_hectares tomato_hectares onion_hectares peanut_hectares cassava_hectares sweetpotato_hectares yam_hectares carrot_hectares cucumber_hectares pepper_hectares bean_hectares pea_hectares lentil_hectares)
 
 egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer motorpumps hoes ridger sickle seeder kadiandou fanting other)
 

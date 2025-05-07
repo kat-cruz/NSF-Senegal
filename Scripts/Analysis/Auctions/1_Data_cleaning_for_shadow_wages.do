@@ -498,6 +498,7 @@ replace sweetpotato_hectares = . if sweetpotato_hectares == -9
 rename farines_02_2 sweetpotato_prod 
 replace sweetpotato_prod = 0 if farine_tubercules_consumption_2 == 0 
 replace sweetpotato_prod = . if sweetpotato_prod == -9 
+replace sweetpotato_prod = . if sweetpotato_prod == -90
 
 rename farines_01_3 potato_hectares 
 replace potato_hectares = 0 if farine_tubercules_consumption_3 == 0 

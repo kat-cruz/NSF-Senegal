@@ -1780,10 +1780,91 @@ append using "$auctions\shadow_wage_midline"
 
 replace year = 2025 if year == . 
 
+*** winsorize data *** 
+egen value_prod_99 = pctile(total_value_production), p(99)
+gen value_prod_1 = total_value_production 
+replace value_prod_1 = value_prod_99 if total_value_production > value_prod_99 
+replace value_prod_1 = . if total_value_production == . 
+
+egen value_prod_95 = pctile(total_value_production), p(95)
+gen value_prod_5 = total_value_production 
+replace value_prod_5 = value_prod_95 if total_value_production > value_prod_95 
+replace value_prod_5 = . if total_value_production == . 
+
+egen value_prod_90 = pctile(total_value_production), p(90)
+gen value_prod_10 = total_value_production 
+replace value_prod_10 = value_prod_90 if total_value_production > value_prod_90 
+replace value_prod_10 = . if total_value_production == . 
+
+egen prod_hect_99 = pctile(total_production_hectares), p(99)
+gen prod_hect_1 = total_production_hectares 
+replace prod_hect_1 = prod_hect_99 if total_production_hectares > prod_hect_99 
+replace prod_hect_1 = . if total_production_hectares == . 
+
+egen prod_hect_95 = pctile(total_production_hectares), p(95)
+gen prod_hect_5 = total_production_hectares 
+replace prod_hect_5 = prod_hect_95 if total_production_hectares > prod_hect_95 
+replace prod_hect_5 = . if total_production_hectares == . 
+
+egen prod_hect_90 = pctile(total_production_hectares), p(90)
+gen prod_hect_10 = total_production_hectares 
+replace prod_hect_10 = prod_hect_99 if total_production_hectares > prod_hect_90 
+replace prod_hect_10 = . if total_production_hectares == . 
+
+egen ag_hours_99 = pctile(total_ag_hours), p(99)
+gen ag_hours_1 = total_ag_hours 
+replace ag_hours_1 = ag_hours_99 if total_ag_hours > ag_hours_99 
+replace ag_hours_1 = . if total_ag_hours == . 
+
+egen ag_hours_95 = pctile(total_ag_hours), p(95)
+gen ag_hours_5 = total_ag_hours 
+replace ag_hours_5 = ag_hours_95 if total_ag_hours > ag_hours_95 
+replace ag_hours_5 = . if total_ag_hours == .
+
+egen ag_hours_90 = pctile(total_ag_hours), p(90)
+gen ag_hours_10 = total_ag_hours 
+replace ag_hours_10 = ag_hours_90 if total_ag_hours > ag_hours_90 
+replace ag_hours_10 = . if total_ag_hours == .
+
+egen fert_99 = pctile(total_fert), p(99)
+gen fert_1 = total_fert 
+replace fert_1 = fert_99 if total_fert > fert_99 
+replace fert_1 = . if total_fert == . 
+
+egen fert_95 = pctile(total_fert), p(95)
+gen fert_5 = total_fert 
+replace fert_5 = fert_95 if total_fert > fert_95 
+replace fert_5 = . if total_fert == . 
+
+egen fert_90 = pctile(total_fert), p(90)
+gen fert_10 = total_fert 
+replace fert_10 = fert_90 if total_fert > fert_90 
+replace fert_10 = . if total_fert == . 
+
+egen TLU_99 = pctile(TLU), p(99)
+gen TLU_1 = TLU
+replace TLU_1 = TLU_99 if TLU > TLU_99 
+replace TLU_1 = . if TLU == . 
+
+egen TLU_95 = pctile(TLU), p(95)
+gen TLU_5 = TLU
+replace TLU_5 = TLU_95 if TLU > TLU_95 
+replace TLU_5 = . if TLU == . 
+
+egen TLU_90 = pctile(TLU), p(90)
+gen TLU_10 = TLU
+replace TLU_10 = TLU_90 if TLU > TLU_90 
+replace TLU_10 = . if TLU == . 
+
+egen daily_wage_99 = pctile(daily_wage), p(99)
+gen daily_wage_1 = daily_wage 
+replace daily_wage_1 = daily_wage_99 if daily_wage > daily_wage_99 
+replace daily_wage_1 = . if daily_wage == . 
+
 *** label variables for production summary stats *** 
-label variable total_value_production "Total Value of Crop Production (FCFA)"
-label variable total_production_hectares "Hectares in Production"
-label variable total_ag_hours "Total Household Hours Spent on Agriculture"
+label variable value_prod_1 "Total Value of Crop Production (FCFA)"
+label variable prod_hect_1 "Hectares in Production"
+label variable ag_hours_1 "Total Household Hours Spent on Agriculture"
 label variable number_mech_equip "Total Number of Pieces of Mechanical Ag Equipment"
 label variable agri_6_14 "Cultivate Land (1 = Yes)"
 label variable agri_6_15 "Number of Plots"
@@ -1792,14 +1873,17 @@ label variable rice "Number of Plots where Main Crop is Rice"
 label variable agri_6_30_ "Number of Plots that Used Manure"
 label variable agri_6_34_comp_ "Number of Plots that Used Compost"
 label variable agri_6_34_ "Number of Plots that Used Household Waste"
-label variable total_fert "Total Fertilizer Used (kgs)"
-label variable TLU "Livestock Owned (TLU)"
+label variable fert_1 "Total Fertilizer Used (kgs)"
+label variable TLU_1 "Livestock Owned (TLU)"
 label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
-label variable daily_wage "Daily Wage for Paid Work (FCFA)"
+label variable daily_wage_1 "Daily Wage for Paid Work (FCFA)"
 label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
 label variable agri_income_16 "Number of Hired Laborers"
 label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
 
-estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU agri_income_01 daily_wage ag_wage 
+estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU_1 agri_income_01 daily_wage_1 ag_wage 
 
 esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+
+*** save clean dataset *** 
+save "$auctions\complete_data_clean.dta", replace 

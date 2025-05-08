@@ -1800,6 +1800,6 @@ label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
 label variable agri_income_16 "Number of Hired Laborers"
 label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
 
-estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
+estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU agri_income_01 daily_wage ag_wage 
 
 esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace

@@ -1,7 +1,7 @@
 *** Data cleaning for shadow wage estimation *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: May 6, 2025 ***
+*** File Last Updated On: May 8, 2025 ***
 
 clear all 
 
@@ -661,6 +661,49 @@ collapse (sum) milk_sales, by(hhid)
 
 save "$auctions\milk_sales_baseline.dta", replace 
 
+*** calculate TLUs ***
+*** import income module data *** 
+use "$data\Complete_Baseline_Income.dta", clear  
+
+*** keep livestock holding data *** 
+keep hhid speciesindex* agri_income_07* 
+
+drop agri_income_07_o 
+
+*** reshape to livestock level *** 
+reshape long speciesindex_ agri_income_07_ , i(hhid) j(num)
+
+drop if speciesindex_ ==. & agri_income_07_ == . 
+
+gen TLU = 0 
+replace TLU = 1*agri_income_07_ if speciesindex_ == 1 
+replace TLU = 0.1*agri_income_07_ if speciesindex_ == 2 
+replace TLU = 0.1*agri_income_07_ if speciesindex_ == 3
+replace TLU = 1*agri_income_07_ if speciesindex_ == 4
+replace TLU = 0.5*agri_income_07_ if speciesindex_ == 5
+replace TLU = 1*agri_income_07_ if speciesindex_ == 6
+replace TLU = 0.2*agri_income_07_ if speciesindex_ == 7
+replace TLU = 0.01*agri_income_07_ if speciesindex_ == 8
+
+collapse (sum) TLU, by(hhid) 
+
+merge 1:1 hhid using "$data\Complete_Baseline_Income.dta"
+
+replace TLU = 0 if _merge == 2 
+
+keep hhid TLU species_o agri_income_07_o
+
+replace TLU = TLU + 1*agri_income_07_o if species_o == "Boeuf"
+replace TLU = TLU + 0.01*agri_income_07_o if species_o == "Canards"
+replace TLU = TLU + 0.01*agri_income_07_o if species_o == "Pigeons"
+replace TLU = TLU + 1*agri_income_07_o if species_o == "Vache"
+replace TLU = TLU + 1*agri_income_07_o if species_o == "Vaches"
+replace TLU = TLU + 1*agri_income_07_o if species_o == "Vaches l"
+
+keep hhid TLU 
+
+save "$auctions\tlu_baseline.dta", replace 
+
 *** merge together entire household dataset *** 
 use "$auctions\main_hh_baseline.dta", clear 
 
@@ -719,6 +762,10 @@ gen any_milk_sales = _merge == 3
 replace milk_sales = 0 if _merge == 1
 
 drop _merge 
+
+merge 1:1 hhid using "$auctions\tlu_baseline.dta"
+
+drop _merge
 
 *** bring in community price data *** 
 gen hhid_village = substr(hhid, 1, 4)
@@ -818,50 +865,19 @@ egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_mil
 egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares cowpea_hectares tomato_hectares onion_hectares peanut_hectares cassava_hectares sweetpotato_hectares yam_hectares carrot_hectares cucumber_hectares pepper_hectares bean_hectares pea_hectares lentil_hectares)
 
 egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer motorpumps hoes ridger sickle seeder kadiandou fanting other)
+egen number_mech_equip = rowtotal(plow harrow tractor sprayer motorpumps)
 
 gen ag_wage = (agri_6_14 == 1 & agri_income_01 == 1)
 
 gen any_livestock_income = (tot_livestock_sales > 0) 
 
-*** label variables for production summary stats *** 
-label variable total_value_production "Total Value of Crop Production (FCFA)"
-label variable total_production_hectares "Hectares in Production"
-label variable chore_hours "Family Hours Spent on Chores (7 days)"
-label variable water_hours "Family Hours Spent Fetching Water (7 days)"
-label variable ag_hours "Family Hours Spent on Ag (7 days)"
-label variable planting_hours "Family Hours Spent on Planting (7 days)"
-label variable growth_hours "Family Hours Spent on Ag Peak Growth (7 days)"
-label variable harvest_hours "Family Hours Spent on Harvest (7 days)"
-label variable tradehh_hours "Family Hours Spent on Working in the Home (7 days)"
-label variable tradeoutside_hours "Family Hours Spent on Working Outside the Home (7 days)"
-label variable fertilizer_hours_7days "Family Hours Spent on Fertilizer (7 days)"
-label variable number_equipment "Total Number of Pieces of Ag Equipment"
-label variable agri_6_14 "Cultivate Land (1 = Yes)"
-label variable agri_6_15 "Number of Plots"
-label variable collective_manage "Number of Plots Collectively Managed (1 = Yes)"
-label variable rice "Number of Plots where Main Crop is Rice"
-label variable plot_size_ha "Total Plot Size (hectares)"
-label variable agri_6_30_ "Number of Plots that Used Manure"
-label variable agri_6_34_comp_ "Number of Plots that Used Compost"
-label variable agri_6_34_ "Number of Plots that Used Household Waste"
-label variable agri_6_36_ "Number of Plots that Used Fertilizer"
-label variable urea_kgs "Total Urea Used (kgs)"
-label variable phosphate_kgs "Total Phosphates Used (kgs)"
-label variable npk_kgs "Total NPK Used (kgs)"
-label variable other_kgs "Total Other Chemical Fertilizer (kgs)"
-label variable any_milk_sales "Sells Milk (1 = Yes)"
-label variable milk_sales "Total Value of Milk Sales (FCFA)"
-label variable any_livestock_income "Reports Income from Livestock Sales (1 = Yes)"
-label variable tot_livestock_sales "Total Value of Livestock Sales (FCFA)"
-label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
-label variable daily_wage "Daily Wage for Paid Work (FCFA)"
-label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
-label variable agri_income_16 "Number of Hired Laborers"
-label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
+egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hours)
 
-estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days urea_kgs phosphate_kgs npk_kgs other_kgs collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ agri_income_15 agri_income_16 number_equipment any_milk_sales milk_sales any_livestock_income tot_livestock_sales agri_income_01 daily_wage ag_wage 
+egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
+
+save "$auctions\shadow_wage_baseline.dta", replace 
 
 *** midline data ***
 *** import household roster data *** 
@@ -1538,6 +1554,48 @@ collapse (sum) milk_sales, by(hhid)
 
 save "$auctions\milk_sales_midline.dta", replace 
 
+*** calculate TLUs ***
+*** import income module data *** 
+use "$midline\Complete_Midline_Income.dta", clear  
+
+*** keep livestock holding data *** 
+keep hhid speciesindex* agri_income_07* 
+
+drop agri_income_07_o 
+
+*** reshape to livestock level *** 
+reshape long speciesindex_ agri_income_07_ , i(hhid) j(num)
+
+drop if speciesindex_ ==. & agri_income_07_ == . 
+
+replace agri_income_07_ = . if agri_income_07_ == -9
+
+gen TLU = 0 
+replace TLU = 1*agri_income_07_ if speciesindex_ == 1 
+replace TLU = 0.1*agri_income_07_ if speciesindex_ == 2 
+replace TLU = 0.1*agri_income_07_ if speciesindex_ == 3
+replace TLU = 1*agri_income_07_ if speciesindex_ == 4
+replace TLU = 0.5*agri_income_07_ if speciesindex_ == 5
+replace TLU = 1*agri_income_07_ if speciesindex_ == 6
+replace TLU = 0.2*agri_income_07_ if speciesindex_ == 7
+replace TLU = 0.01*agri_income_07_ if speciesindex_ == 8
+
+collapse (sum) TLU, by(hhid) 
+
+merge 1:1 hhid using "$midline\Complete_Midline_Income.dta"
+
+replace TLU = 0 if _merge == 2 
+
+keep hhid TLU species_o agri_income_07_o
+
+replace TLU = TLU + 0.01*agri_income_07_o if species_o == "PIGEON"
+replace TLU = TLU + 0.01*agri_income_07_o if species_o == "PINTADES"
+replace TLU = TLU + 1*agri_income_07_o if species_o == "VÃCHE"
+
+keep hhid TLU 
+
+save "$auctions\tlu_midline.dta", replace 
+
 *** merge together entire household dataset *** 
 use "$auctions\main_hh_midline.dta", clear 
 
@@ -1597,6 +1655,10 @@ gen any_milk_sales = _merge == 3
 replace milk_sales = 0 if _merge == 1
 
 drop _merge 
+
+merge 1:1 hhid using "$auctions\tlu_midline.dta"
+
+drop _merge
 
 *** bring in community price data *** 
 gen hhid_village = substr(hhid, 1, 4)
@@ -1683,50 +1745,19 @@ egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_mil
 egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares cowpea_hectares tomato_hectares onion_hectares peanut_hectares cassava_hectares sweetpotato_hectares yam_hectares carrot_hectares cucumber_hectares pepper_hectares bean_hectares pea_hectares lentil_hectares)
 
 egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer motorpumps hoes ridger sickle seeder kadiandou fanting other)
+egen number_mech_equip = rowtotal(plow harrow tractor sprayer motorpumps)
 
 gen ag_wage = (agri_6_14 == 1 & agri_income_01 == 1)
 
 gen any_livestock_income = (tot_livestock_sales > 0) 
 
-*** label variables for production summary stats *** 
-label variable total_value_production "Total Value of Crop Production (FCFA)"
-label variable total_production_hectares "Hectares in Production"
-label variable chore_hours "Family Hours Spent on Chores (7 days)"
-label variable water_hours "Family Hours Spent Fetching Water (7 days)"
-label variable ag_hours "Family Hours Spent on Ag (7 days)"
-label variable planting_hours "Family Hours Spent on Planting (7 days)"
-label variable growth_hours "Family Hours Spent on Ag Peak Growth (7 days)"
-label variable harvest_hours "Family Hours Spent on Harvest (7 days)"
-label variable tradehh_hours "Family Hours Spent on Working in the Home (7 days)"
-label variable tradeoutside_hours "Family Hours Spent on Working Outside the Home (7 days)"
-label variable fertilizer_hours_7days "Family Hours Spent on Fertilizer (7 days)"
-label variable number_equipment "Total Number of Pieces of Ag Equipment"
-label variable agri_6_14 "Cultivate Land (1 = Yes)"
-label variable agri_6_15 "Number of Plots"
-label variable collective_manage "Number of Plots Collectively Managed (1 = Yes)"
-label variable rice "Number of Plots where Main Crop is Rice"
-label variable plot_size_ha "Total Plot Size (hectares)"
-label variable agri_6_30_ "Number of Plots that Used Manure"
-label variable agri_6_34_comp_ "Number of Plots that Used Compost"
-label variable agri_6_34_ "Number of Plots that Used Household Waste"
-label variable agri_6_36_ "Number of Plots that Used Fertilizer"
-label variable urea_kgs "Total Urea Used (kgs)"
-label variable phosphate_kgs "Total Phosphates Used (kgs)"
-label variable npk_kgs "Total NPK Used (kgs)"
-label variable other_kgs "Total Other Chemical Fertilizer (kgs)"
-label variable any_milk_sales "Sells Milk (1 = Yes)"
-label variable milk_sales "Total Value of Milk Sales (FCFA)"
-label variable any_livestock_income "Reports Income from Livestock Sales (1 = Yes)"
-label variable tot_livestock_sales "Total Value of Livestock Sales (FCFA)"
-label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
-label variable daily_wage "Daily Wage for Paid Work (FCFA)"
-label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
-label variable agri_income_16 "Number of Hired Laborers"
-label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
+egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hours)
 
-estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days urea_kgs phosphate_kgs npk_kgs other_kgs collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ agri_income_15 agri_income_16 number_equipment any_milk_sales milk_sales any_livestock_income tot_livestock_sales agri_income_01 daily_wage ag_wage 
+egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-esttab using "$auctions\household_level_production_sum_stats_midline.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
+
+save "$auctions\shadow_wage_midline.dta", replace 
 
 *** create histogram of number of plots at baseline and midline *** 
 use "$auctions\number_of_plots.dta", clear 
@@ -1739,3 +1770,36 @@ replace year = 2025 if year == .
 
 twoway (histogram agri_6_15 if year == 2024, color(gray%50) width(0.5)) (histogram agri_6_15 if year == 2025, fcolor(none) lcolor(red) width(0.5)), legend(order(1 "Baseline" 2 "Midline") cols(2) position(6)) xtitle("Number of Plots")
 graph export "$auctions\hist_number_of_plots.eps", as(eps) replace
+
+*** append data together *** 
+use "$auctions\shadow_wage_baseline.dta", clear 
+
+gen year = 2024 
+
+append using "$auctions\shadow_wage_midline"
+
+replace year = 2025 if year == . 
+
+*** label variables for production summary stats *** 
+label variable total_value_production "Total Value of Crop Production (FCFA)"
+label variable total_production_hectares "Hectares in Production"
+label variable total_ag_hours "Total Household Hours Spent on Agriculture"
+label variable number_mech_equip "Total Number of Pieces of Mechanical Ag Equipment"
+label variable agri_6_14 "Cultivate Land (1 = Yes)"
+label variable agri_6_15 "Number of Plots"
+label variable collective_manage "Number of Plots Collectively Managed (1 = Yes)"
+label variable rice "Number of Plots where Main Crop is Rice"
+label variable agri_6_30_ "Number of Plots that Used Manure"
+label variable agri_6_34_comp_ "Number of Plots that Used Compost"
+label variable agri_6_34_ "Number of Plots that Used Household Waste"
+label variable total_fert "Total Fertilizer Used (kgs)"
+label variable TLU "Livestock Owned (TLU)"
+label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
+label variable daily_wage "Daily Wage for Paid Work (FCFA)"
+label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
+label variable agri_income_16 "Number of Hired Laborers"
+label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
+
+estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
+
+esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace

@@ -1,7 +1,7 @@
 *** Data cleaning for shadow wage estimation *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: May 2, 2025 ***
+*** File Last Updated On: May 8, 2025 ***
 
 clear all 
 
@@ -333,6 +333,9 @@ gen manure_indirect_parking = (agri_6_31_ == 2)
 gen manure_purchase = (agri_6_31_ == 3)
 gen manure_other_source = (agri_6_31_ == 99)
 
+*** collapse to household level *** 
+collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage, by(hhid)
+
 *** save clean plot level data *** 
 save "$auctions\plot_level_ag.dta", replace 
 
@@ -412,6 +415,8 @@ replace manure_kgs = agri_6_32 * unit_convert_2 if agri_6_33_ == 3
 
 keep hhid plot manure_kgs 
 
+collapse (sum) manure_kgs, by(hhid)
+
 save "$auctions\manure_use.dta", replace 
 
 *** clean number of plots data *** 
@@ -460,13 +465,23 @@ replace millet_prod = . if millet_prod == -9
 
 gen sorghum_hectares = cereals_01_4 
 replace sorghum_hectares = 0 if cereals_consumption_4 == 0
-replace sorghum_hectares = . if cerealsposition_3 == 4
+replace sorghum_hectares = cereals_01_3 if cerealsposition_3 == 4
 replace sorghum_hectares = . if sorghum_hectares == -9 
 
-gen sorghum_prod = cereals_02_2 
-replace sorghum_prod = 0 if cereals_consumption_2 == 0 
-replace sorghum_prod = . if cerealsposition_2 == 3 
-replace sorghum_prod = . if sorghum_prod == -9  
+gen sorghum_prod = cereals_02_4 
+replace sorghum_prod = 0 if cereals_consumption_3 == 0 
+replace sorghum_prod = cereals_02_3 if cerealsposition_3 == 4 
+replace sorghum_prod = . if sorghum_prod == -9 
+
+gen cowpea_hectares = cereals_01_5 
+replace cowpea_hectares = 0 if cereals_consumption_4 == 0
+replace cowpea_hectares = cereals_01_4 if cerealsposition_4 == 5
+replace cowpea_hectares = . if cowpea_hectares == -9 
+
+gen cowpea_prod = cereals_02_5 
+replace cowpea_prod = 0 if cereals_consumption_4 == 0 
+replace cowpea_prod = cereals_02_5 if cerealsposition_4 == 5 
+replace cowpea_prod = . if sorghum_prod == -9  
 
 rename farines_01_1 cassava_hectares 
 replace cassava_hectares = 0 if farine_tubercules_consumption_1 == 0 
@@ -482,7 +497,8 @@ replace sweetpotato_hectares = . if sweetpotato_hectares == -9
 
 rename farines_02_2 sweetpotato_prod 
 replace sweetpotato_prod = 0 if farine_tubercules_consumption_2 == 0 
-replace sweetpotato_prod = . if sweetpotato_prod == -9
+replace sweetpotato_prod = . if sweetpotato_prod == -9 
+replace sweetpotato_prod = . if sweetpotato_prod == -90
 
 rename farines_01_3 potato_hectares 
 replace potato_hectares = 0 if farine_tubercules_consumption_3 == 0 
@@ -580,7 +596,7 @@ rename legumineuses_02_4 lentil_prod
 replace lentil_prod = 0 if legumineuses_consumption_4 == 0 
 replace lentil_prod = . if lentil_prod == -9
 
-keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod
+keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cowpea_hectares cowpea_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod farines_05_1 farines_05_2 farines_05_3 farines_05_4 farines_05_5 legumes_05_2 legumes_05_4 legumes_05_5 legumineuses_05_2 legumineuses_05_3 legumineuses_05_4 
 
 save "$auctions\production.dta", replace 
 
@@ -588,7 +604,7 @@ save "$auctions\production.dta", replace
 use "$data\Complete_Baseline_Income.dta", clear  
 
 *** clean household level income data *** 
-keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
+keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_12* agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
 
 replace agri_income_01 = . if agri_income_01 == 2 
 
@@ -610,7 +626,83 @@ replace agri_income_15 = . if agri_income_15 == -2
 
 replace agri_income_16 = 0 if agri_income_15 == 0 
 
+replace agri_income_12_1 = . if agri_income_12_1 == -9
+
+*** calculate total income from livestock sales *** 
+egen tot_livestock_sales = rowtotal(agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_o)
+
 save "$auctions\income.dta", replace 
+
+*** import income module data *** 
+use "$data\Complete_Baseline_Income.dta", clear  
+
+*** clean milk production data *** 
+keep hhid sale_animalesindex_* agri_income_11_* agri_income_12_* agri_income_13_* agri_income_14_* 
+
+forvalues i = 1/5 {
+	tostring agri_income_13_`i', replace
+}
+
+*** reshape to animal type level data *** 
+reshape long sale_animalesindex_ agri_income_11_ agri_income_12_ agri_income_13_ agri_income_13_1_ agri_income_13_2_ agri_income_13_3_ agri_income_13_99_ agri_income_13_9_ agri_income_13_5_ agri_income_13_6_ agri_income_13_7_ agri_income_13_8_ agri_income_13_10_ agri_income_14_ , i(hhid) j(animalcount)
+
+drop if sale_animalesindex_ == . 
+
+*** keep milk production transactions ***  
+keep if agri_income_13_1_ == 1 
+
+*** divide total sales evenly across all product types if milk is sold with other products *** 
+gen tot_animal_products = agri_income_13_1_ + agri_income_13_2_ + agri_income_13_3_ + agri_income_13_99_ + agri_income_13_9_ + agri_income_13_5_ + agri_income_13_6_ + agri_income_13_7_ + agri_income_13_8_ + agri_income_13_10_
+
+gen milk_sales = agri_income_14_ / tot_animal_products
+
+*** create household level milk production *** 
+collapse (sum) milk_sales, by(hhid)
+
+save "$auctions\milk_sales_baseline.dta", replace 
+
+*** calculate TLUs ***
+*** import income module data *** 
+use "$data\Complete_Baseline_Income.dta", clear  
+
+*** keep livestock holding data *** 
+keep hhid speciesindex* agri_income_07* 
+
+drop agri_income_07_o 
+
+*** reshape to livestock level *** 
+reshape long speciesindex_ agri_income_07_ , i(hhid) j(num)
+
+drop if speciesindex_ ==. & agri_income_07_ == . 
+
+gen TLU = 0 
+replace TLU = 1*agri_income_07_ if speciesindex_ == 1 
+replace TLU = 0.1*agri_income_07_ if speciesindex_ == 2 
+replace TLU = 0.1*agri_income_07_ if speciesindex_ == 3
+replace TLU = 1*agri_income_07_ if speciesindex_ == 4
+replace TLU = 0.5*agri_income_07_ if speciesindex_ == 5
+replace TLU = 1*agri_income_07_ if speciesindex_ == 6
+replace TLU = 0.2*agri_income_07_ if speciesindex_ == 7
+replace TLU = 0.01*agri_income_07_ if speciesindex_ == 8
+
+collapse (sum) TLU, by(hhid) 
+
+merge 1:1 hhid using "$data\Complete_Baseline_Income.dta"
+
+replace TLU = 0 if _merge == 2 
+
+keep hhid TLU species_o agri_income_07_o
+
+replace TLU = TLU + 1*agri_income_07_o if species_o == "Boeuf"
+replace TLU = TLU + 0.01*agri_income_07_o if species_o == "Canards"
+replace TLU = TLU + 0.01*agri_income_07_o if species_o == "Pigeons"
+replace TLU = TLU + 1*agri_income_07_o if species_o == "Vache"
+replace TLU = TLU + 1*agri_income_07_o if species_o == "Vaches"
+replace TLU = TLU + 1*agri_income_07_o if species_o == "Vaches l"
+
+keep hhid TLU 
+
+save "$auctions\tlu_baseline.dta", replace 
 
 *** merge together entire household dataset *** 
 use "$auctions\main_hh_baseline.dta", clear 
@@ -663,10 +755,32 @@ merge 1:1 hhid using "$auctions\income.dta"
 
 drop _merge 
 
+merge 1:1 hhid using "$auctions\milk_sales_baseline.dta"
+
+gen any_milk_sales = _merge == 3 
+
+replace milk_sales = 0 if _merge == 1
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\tlu_baseline.dta"
+
+drop _merge
+
 *** bring in community price data *** 
 gen hhid_village = substr(hhid, 1, 4)
 
 merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\plot_level_ag.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\manure_use.dta"
+
+replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
 
 drop _merge 
 
@@ -682,13 +796,27 @@ rename q63_8 tomato_price
 rename q63_9 onion_price
 rename q63_10 peanut_price
 
+rename farines_05_1 cassava_price 
+rename farines_05_2 sweetpotato_price 
+rename farines_05_3 potato_price 
+rename farines_05_4 yam_price 
+rename farines_05_5 taro_price
+rename legumes_05_2 carrot_price 
+rename legumes_05_4 cucumber_price
+rename legumes_05_5 pepper_price 
+rename legumineuses_05_2 bean_price 
+rename legumineuses_05_3 pea_price
+rename legumineuses_05_4 lentil_price 
+
 replace manure_price = . if manure_price == -9
 replace corn_price = . if corn_price == -9
 replace millet_price = . if millet_price == -9
 replace sorghum_price = . if sorghum_price == -9
 replace cowpea_price = . if cowpea_price == -9
 replace tomato_price = . if tomato_price == -9
-replace onion_price = . if peanut_price == -9
+replace onion_price = . if onion_price == -9
+replace peanut_price = . if peanut_price == -9
+replace sweetpotato_price = . if sweetpotato_price == -9 
 
 egen med_manure_price = median(manure_price)
 replace manure_price = med_manure_price if manure_price == . 
@@ -704,91 +832,52 @@ egen med_tomato_price = median(tomato_price)
 replace tomato_price = med_tomato_price if tomato_price == .   
 egen med_onion_price = median(onion_price)
 replace onion_price = med_onion_price if onion_price == . 
+egen med_cassava_price = median(cassava_price)
+egen med_sweetpotato_price = median(sweetpotato_price)
+egen med_yam_price = median(yam_price)
+egen med_carrot_price = median(carrot_price)
+egen med_cucumber_price = median(cucumber_price)
+egen med_pepper_price = median(pepper_price)
+egen med_bean_price = median(bean_price)
+egen med_pea_price = median(pea_price)
+egen med_lentil_price = median(lentil_price)
 
 *** create value of output variable *** 
 gen value_rice_prod = rice_prod * rice_price 
 gen value_corn_prod = maize_prod * corn_price
 gen value_millet_prod = millet_prod * millet_price 
 gen value_sorghum_prod = sorghum_prod * sorghum_price 
-gen value_cowpea_prod = bean_prod * cowpea_price
+gen value_cowpea_prod = cowpea_prod * cowpea_price
 gen value_tomato_prod = tomato_prod * tomato_price
 gen value_onion_prod = onion_prod * onion_price 
 gen value_peanut_prod = peanut_prod * peanut_price
+gen value_cassava_prod = cassava_prod * cassava_price
+gen value_sweetpotato_prod = sweetpotato_prod * sweetpotato_price
+gen value_yam_prod = yam_prod * yam_price
+gen value_carrot_prod = carrot_prod * carrot_price
+gen value_cucumber_prod = cucumber_prod * cucumber_price
+gen value_pepper_prod = pepper_prod * pepper_price
+gen value_bean_prod = bean_prod * bean_price
+gen value_pea_prod = pea_prod * pea_price
+gen value_lentil_prod = lentil_prod * lentil_price
 
-egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod)
-egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares bean_hectares tomato_hectares onion_hectares peanut_hectares)
+egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod value_cassava_prod value_sweetpotato_prod value_yam_prod value_carrot_prod value_cucumber_prod value_pepper_prod value_bean_prod value_pea_prod value_lentil_prod)
+egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares cowpea_hectares tomato_hectares onion_hectares peanut_hectares cassava_hectares sweetpotato_hectares yam_hectares carrot_hectares cucumber_hectares pepper_hectares bean_hectares pea_hectares lentil_hectares)
 
 egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer motorpumps hoes ridger sickle seeder kadiandou fanting other)
+egen number_mech_equip = rowtotal(plow harrow tractor sprayer motorpumps)
 
 gen ag_wage = (agri_6_14 == 1 & agri_income_01 == 1)
 
-*** label variables for production summary stats *** 
-label variable total_value_production "Total Value of Production"
-label variable total_production_hectares "Hectares in Production"
-label variable chore_hours "Family Hours Spent on Chores (7 days)"
-label variable water_hours "Family Hours Spent Fetching Water (7 days)"
-label variable ag_hours "Family Hours Spent on Ag (7 days)"
-label variable planting_hours "Family Hours Spent on Planting (7 days)"
-label variable growth_hours "Family Hours Spent on Ag Peak Growth (7 days)"
-label variable harvest_hours "Family Hours Spent on Harvest (7 days)"
-label variable tradehh_hours "Family Hours Spent on Working in the Home (7 days)"
-label variable tradeoutside_hours "Family Hours Spent on Working Outside the Home (7 days)"
-label variable fertilizer_hours_7days "Family Hours Spent on Fertilizer (7 days)"
-label variable number_equipment "Total Number of Pieces of Ag Equipment"
-label variable agri_6_14 "Cultivate Land (1 = Yes)"
-label variable agri_6_15 "Number of Plots"
-label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
-label variable daily_wage "Daily Wage for Paid Work (FCFA)"
-label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
-label variable agri_income_16 "Number of Hired Laborers"
-label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
+gen any_livestock_income = (tot_livestock_sales > 0) 
 
-estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days agri_income_15 agri_income_16 number_equipment agri_income_01 daily_wage ag_wage 
+egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hours)
 
-esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-*** summary stats for plot level variables *** 
-use "$auctions\plot_level_ag.dta", clear
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
 
-merge 1:1 hhid plot using "$auctions\manure_use.dta"
-
-replace manure_kgs = 0 if _merge == 1 
-
-drop _merge 
-
-label variable collective_manage "Plot is Collectively Managed (1 = Yes)"
-label variable rice "Main Crop is Rice (1 = Yes)"
-label variable maize "Main Crop is Maize (1 = Yes)"
-label variable millet "Main Crop is Millet (1 = Yes)"
-label variable sorghum "Main Crop is Sorghum (1 = Yes)"
-label variable cowpea "Main Crop is Cowpea (1 = Yes)"
-label variable cassava "Main Crop is Cassava (1 = Yes)"
-label variable sweetpotato "Main Crop is Sweet Potato (1 = Yes)"
-label variable potato "Main Crop is Potato (1 = Yes)"
-label variable yam "Main Crop is Yam (1 = Yes)"
-label variable taro "Main Crop is Taro (1 = Yes)"
-label variable tomato "Main Crop is Tomatoes (1 = Yes)"
-label variable carrot "Main Crop is Carrots (1 = Yes)"
-label variable onion "Main Crop is Onions (1 = Yes)"
-label variable cucumber "Main Crop is Cucumbers (1 = Yes)"
-label variable pepper "Main Crop is Peppers (1 = Yes)"
-label variable peanut "Main Crop is Peanuts (1 = Yes)"
-label variable bean "Main Crop is Beans (1 = Yes)"
-label variable pea "Main Crop is Peas (1 = Yes)"
-label variable other "Other Main Crop (1 = Yes)"
-label variable plot_size_ha "Plot Size (hectares)"
-label variable agri_6_30_ "Used Manure on the Plot (1 = Yes)"
-label variable agri_6_34_comp_ "Used Compost on the Plot (1 = Yes)"
-label variable agri_6_34_ "Used Household Waste on the Plot (1 = Yes)"
-label variable agri_6_36_ "Used Fertilizer on the Plot (1 = Yes)"
-label variable urea_kgs "Urea Used on Plot (kgs)"
-label variable phosphate_kgs "Phosphates Used on Plot (kgs)"
-label variable npk_kgs "NPK Used on Plot (kgs)"
-label variable other_kgs "Other Chemical Fertilizer Used on Plot (kgs)"
-
-estpost sum collective_manage rice maize millet sorghum cowpea cassava sweetpotato potato yam taro tomato carrot onion cucumber pepper peanut bean pea other plot_size_ha agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ urea_kgs phosphate_kgs npk_kgs other_kgs
-
-esttab using "$auctions\plot_level_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+save "$auctions\shadow_wage_baseline.dta", replace 
 
 *** midline data ***
 *** import household roster data *** 
@@ -830,9 +919,16 @@ gen other_veg_12mo = (hh_15_ == 99)
 
 *** code don't knows as missing ***
 replace hh_03_ = . if hh_03_ == 2 
+replace hh_01_ = . if hh_01_ == -9 
+replace hh_02_ = . if hh_02_ == -9
+replace hh_04_ = . if hh_04_ == -9
 replace hh_05_ = . if hh_05_ == -9
 replace hh_06_ = . if hh_06_ == -9 
 replace hh_07_ = . if hh_07_ == -9
+replace hh_08_ = . if hh_08_ == -9
+replace hh_09_ = . if hh_09_ == -9
+replace hh_16_ = . if hh_16_ == -9
+replace hh_24_ = . if hh_24_ == -9
 
 *** count household labor hours totals and per capita *** 
 collapse (sum) chore_hours = hh_01_ (sum) water_hours = hh_02_ (sum) ag_hours = hh_04_ (sum) planting_hours = hh_05_ (sum) growth_hours = hh_06_ (sum) harvest_hours = hh_07_ (sum) tradehh_hours = hh_08_ (sum) tradeoutside_hours = hh_09_ (sum) water_hours_12mo = hh_10_ (sum) veg_collected_12mo = hh_14_ (sum) fertilizer_hours_12mo = hh_16_ (sum) feed_hours_12mo = hh_17_ (sum) water_hours_7days = hh_18_ (sum) veg_collected_7days = hh_22_ (sum) fertilizer_hours_7days = hh_24_ (sum) feed_hours_7days = hh_25_ (count) members = hh_gender_ (mean) female household_head spouse no_education primary_education secondary_education tertiary_education technical_education other_education sell_veg_12mo fertilizer_veg_12mo biodigest_veg_12mo nothing_veg_12mo other_veg_12mo hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_14_ hh_16_ hh_17_ hh_18_ hh_22_ hh_23_1_ hh_23_2_ hh_23_3_ hh_23_4_ hh_23_5_ hh_23_99_ hh_24_ hh_25_ , by(hhid)
@@ -1098,6 +1194,9 @@ gen manure_indirect_parking = (agri_6_31_ == 2)
 gen manure_purchase = (agri_6_31_ == 3)
 gen manure_other_source = (agri_6_31_ == 99)
 
+*** collapse to household level *** 
+collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage, by(hhid)
+
 *** save clean plot level data *** 
 save "$auctions\plot_level_ag_midline.dta", replace 
 
@@ -1179,6 +1278,9 @@ replace manure_kgs = agri_6_32 * unit_convert_2 if agri_6_33_ == 3
 
 keep hhid plot manure_kgs 
 
+*** collapse to household level *** 
+collapse (sum) manure_kgs, by(hhid)
+
 save "$auctions\manure_use_midline.dta", replace 
 
 *** clean number of plots data *** 
@@ -1226,8 +1328,16 @@ replace sorghum_hectares = 0 if cereals_consumption_4 == 0
 replace sorghum_hectares = . if sorghum_hectares == -9 
 
 gen sorghum_prod = cereals_02_2 
-replace sorghum_prod = 0 if cereals_consumption_2 == 0 
+replace sorghum_prod = 0 if cereals_consumption_4 == 0 
 replace sorghum_prod = . if sorghum_prod == -9  
+
+gen cowpea_hectares = cereals_01_5 
+replace cowpea_hectares = 0 if cereals_consumption_5 == 0
+replace cowpea_hectares = . if cowpea_hectares == -9 
+
+gen cowpea_prod = cereals_02_5 
+replace cowpea_prod = 0 if cereals_consumption_5 == 0 
+replace cowpea_prod = . if cowpea_prod == -9  
 
 rename farines_01_1 cassava_hectares 
 replace cassava_hectares = 0 if farine_tubercules_consumption_1 == 0 
@@ -1237,6 +1347,8 @@ rename farines_02_1 cassava_prod
 replace cassava_prod = 0 if farine_tubercules_consumption_1 == 0 
 replace cassava_prod = . if cassava_prod == -9
 
+rename farines_05_1 cassava_price
+
 rename farines_01_2 sweetpotato_hectares 
 replace sweetpotato_hectares = 0 if farine_tubercules_consumption_2 == 0 
 replace sweetpotato_hectares = . if sweetpotato_hectares == -9 
@@ -1244,6 +1356,9 @@ replace sweetpotato_hectares = . if sweetpotato_hectares == -9
 rename farines_02_2 sweetpotato_prod 
 replace sweetpotato_prod = 0 if farine_tubercules_consumption_2 == 0 
 replace sweetpotato_prod = . if sweetpotato_prod == -9
+
+rename farines_05_2 sweetpotato_price
+replace sweetpotato_price = . if sweetpotato_price == -9
 
 rename farines_01_3 potato_hectares 
 replace potato_hectares = 0 if farine_tubercules_consumption_3 == 0 
@@ -1264,6 +1379,9 @@ rename farines_02_4 yam_prod
 replace yam_prod = 0 if farine_tubercules_consumption_4 == 0 
 replace yam_prod = potato_prod if farine_tuberculesposition_3 == 4 
 replace yam_prod = . if yam_prod == -9
+
+rename farines_05_4 yam_price
+replace yam_price = farines_05_3 if farine_tuberculesposition_3 == 4 
 
 rename farines_01_5 taro_hectares 
 replace taro_hectares = 0 if farine_tubercules_consumption_5 == 0 
@@ -1293,6 +1411,9 @@ replace carrot_prod = 0 if legumes_consumption_2 == 0
 replace carrot_prod = . if legumesposition_2 == 3
 replace carrot_prod = . if carrot_prod == -9
 
+rename legumes_05_2 carrot_price
+replace carrot_price = . if legumesposition_2 == 3 
+
 rename legumes_01_3 onion_hectares 
 replace onion_hectares = 0 if legumes_consumption_3 == 0 
 replace onion_hectares = carrot_hectares if legumesposition_2 == 3
@@ -1313,6 +1434,10 @@ replace cucumber_prod = 0 if legumes_consumption_4 == 0
 replace cucumber_prod = onion_prod if legumesposition_3 == 4
 replace cucumber_prod = . if cucumber_prod == -9
 
+rename legumes_05_4 cucumber_price
+replace cucumber_price = legumes_05_3 if legumesposition_3 == 4 
+replace cucumber_price = . if cucumber_price == -9
+
 rename legumes_01_5 pepper_hectares 
 replace pepper_hectares = 0 if legumes_consumption_5 == 0 
 replace pepper_hectares = cucumber_hectares if legumesposition_4 == 5
@@ -1322,6 +1447,10 @@ rename legumes_02_5 pepper_prod
 replace pepper_prod = 0 if legumes_consumption_5 == 0 
 replace pepper_prod = cucumber_prod if legumesposition_4 == 5
 replace pepper_prod = . if pepper_prod == -9
+
+rename legumes_05_5 pepper_price
+replace pepper_price = cucumber_price if legumesposition_4 == 5
+replace pepper_price = . if pepper_price == -9
 
 rename legumineuses_01_1 peanut_hectares 
 replace peanut_hectares = 0 if legumineuses_consumption_1 == 0 
@@ -1339,6 +1468,8 @@ rename legumineuses_02_2 bean_prod
 replace bean_prod = 0 if legumineuses_consumption_2 == 0 
 replace bean_prod = . if bean_prod == -9
 
+rename legumineuses_05_2 bean_price 
+
 rename legumineuses_01_3 pea_hectares 
 replace pea_hectares = 0 if legumineuses_consumption_3 == 0 
 replace pea_hectares = . if pea_hectares == -9 
@@ -1346,6 +1477,8 @@ replace pea_hectares = . if pea_hectares == -9
 rename legumineuses_02_3 pea_prod 
 replace pea_prod = 0 if legumineuses_consumption_3 == 0 
 replace pea_prod = . if pea_prod == -9
+
+rename legumineuses_05_3 pea_price 
 
 rename legumineuses_01_4 lentil_hectares 
 replace lentil_hectares = 0 if legumineuses_consumption_4 == 0 
@@ -1355,7 +1488,9 @@ rename legumineuses_02_4 lentil_prod
 replace lentil_prod = 0 if legumineuses_consumption_4 == 0 
 replace lentil_prod = . if lentil_prod == -9
 
-keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod
+rename legumineuses_05_4 lentil_price
+
+keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cowpea_hectares cowpea_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod cassava_price sweetpotato_price yam_price carrot_price cucumber_price pepper_price bean_price pea_price lentil_price
 
 save "$auctions\production_midline.dta", replace 
 
@@ -1363,7 +1498,7 @@ save "$auctions\production_midline.dta", replace
 use "$midline\Complete_Midline_Income.dta", clear  
 
 *** clean household level income data *** 
-keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
+keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_12_* agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
 
 replace agri_income_01 = . if agri_income_01 == 2 
 
@@ -1384,8 +1519,82 @@ gen daily_wage = agri_income_05 / work_days
 replace agri_income_15 = . if agri_income_15 == -2 
 
 replace agri_income_16 = 0 if agri_income_15 == 0 
+replace agri_income_16 = . if agri_income_16 == -9
+
+*** calculate total income from livestock sales *** 
+egen tot_livestock_sales = rowtotal(agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_6 agri_income_12_o)
 
 save "$auctions\income_midline.dta", replace 
+
+*** import income module data *** 
+use "$midline\Complete_Midline_Income.dta", clear  
+
+*** clean milk production data *** 
+keep hhid sale_animalesindex_* agri_income_11_* agri_income_12_* agri_income_13_* agri_income_14_* 
+
+forvalues i = 1/6 {
+	tostring agri_income_13_`i', replace
+}
+
+*** reshape to animal type level data *** 
+reshape long sale_animalesindex_ agri_income_11_ agri_income_12_ agri_income_13_ agri_income_13_1_ agri_income_13_2_ agri_income_13_3_ agri_income_13_99_ agri_income_13_9_ agri_income_13_5_ agri_income_13_6_ agri_income_13_7_ agri_income_13_8_ agri_income_13_10_ agri_income_14_ , i(hhid) j(animalcount)
+
+drop if sale_animalesindex_ == . 
+
+*** keep milk production transactions ***  
+keep if agri_income_13_1_ == 1 
+
+*** divide total sales evenly across all product types if milk is sold with other products *** 
+gen tot_animal_products = agri_income_13_1_ + agri_income_13_2_ + agri_income_13_3_ + agri_income_13_99_ + agri_income_13_9_ + agri_income_13_5_ + agri_income_13_6_ + agri_income_13_7_ + agri_income_13_8_ + agri_income_13_10_
+
+gen milk_sales = agri_income_14_ / tot_animal_products
+
+*** create household level milk production *** 
+collapse (sum) milk_sales, by(hhid)
+
+save "$auctions\milk_sales_midline.dta", replace 
+
+*** calculate TLUs ***
+*** import income module data *** 
+use "$midline\Complete_Midline_Income.dta", clear  
+
+*** keep livestock holding data *** 
+keep hhid speciesindex* agri_income_07* 
+
+drop agri_income_07_o 
+
+*** reshape to livestock level *** 
+reshape long speciesindex_ agri_income_07_ , i(hhid) j(num)
+
+drop if speciesindex_ ==. & agri_income_07_ == . 
+
+replace agri_income_07_ = . if agri_income_07_ == -9
+
+gen TLU = 0 
+replace TLU = 1*agri_income_07_ if speciesindex_ == 1 
+replace TLU = 0.1*agri_income_07_ if speciesindex_ == 2 
+replace TLU = 0.1*agri_income_07_ if speciesindex_ == 3
+replace TLU = 1*agri_income_07_ if speciesindex_ == 4
+replace TLU = 0.5*agri_income_07_ if speciesindex_ == 5
+replace TLU = 1*agri_income_07_ if speciesindex_ == 6
+replace TLU = 0.2*agri_income_07_ if speciesindex_ == 7
+replace TLU = 0.01*agri_income_07_ if speciesindex_ == 8
+
+collapse (sum) TLU, by(hhid) 
+
+merge 1:1 hhid using "$midline\Complete_Midline_Income.dta"
+
+replace TLU = 0 if _merge == 2 
+
+keep hhid TLU species_o agri_income_07_o
+
+replace TLU = TLU + 0.01*agri_income_07_o if species_o == "PIGEON"
+replace TLU = TLU + 0.01*agri_income_07_o if species_o == "PINTADES"
+replace TLU = TLU + 1*agri_income_07_o if species_o == "VÃCHE"
+
+keep hhid TLU 
+
+save "$auctions\tlu_midline.dta", replace 
 
 *** merge together entire household dataset *** 
 use "$auctions\main_hh_midline.dta", clear 
@@ -1439,10 +1648,32 @@ merge 1:1 hhid using "$auctions\income_midline.dta"
 
 drop _merge 
 
+merge 1:1 hhid using "$auctions\milk_sales_midline.dta"
+
+gen any_milk_sales = _merge == 3 
+
+replace milk_sales = 0 if _merge == 1
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\tlu_midline.dta"
+
+drop _merge
+
 *** bring in community price data *** 
 gen hhid_village = substr(hhid, 1, 4)
 
 merge m:1 hhid_village using "$midline\Complete_Midline_Community.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\plot_level_ag_midline.dta"
+
+drop _merge 
+
+merge 1:1 hhid using "$auctions\manure_use_midline.dta"
+
+replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
 
 drop _merge 
 
@@ -1464,7 +1695,8 @@ replace millet_price = . if millet_price == -9
 replace sorghum_price = . if sorghum_price == -9
 replace cowpea_price = . if cowpea_price == -9
 replace tomato_price = . if tomato_price == -9
-replace onion_price = . if peanut_price == -9
+replace onion_price = . if onion_price == -9
+replace peanut_price = . if peanut_price == -9
 
 egen med_manure_price = median(manure_price)
 replace manure_price = med_manure_price if manure_price == . 
@@ -1480,91 +1712,52 @@ egen med_tomato_price = median(tomato_price)
 replace tomato_price = med_tomato_price if tomato_price == .   
 egen med_onion_price = median(onion_price)
 replace onion_price = med_onion_price if onion_price == . 
+egen med_cassava_price = median(cassava_price)
+egen med_sweetpotato_price = median(sweetpotato_price)
+egen med_yam_price = median(yam_price)
+egen med_carrot_price = median(carrot_price)
+egen med_cucumber_price = median(cucumber_price)
+egen med_pepper_price = median(pepper_price)
+egen med_bean_price = median(bean_price)
+egen med_pea_price = median(pea_price)
+egen med_lentil_price = median(lentil_price)
 
 *** create value of output variable *** 
 gen value_rice_prod = rice_prod * rice_price 
 gen value_corn_prod = maize_prod * corn_price
 gen value_millet_prod = millet_prod * millet_price 
 gen value_sorghum_prod = sorghum_prod * sorghum_price 
-gen value_cowpea_prod = bean_prod * cowpea_price
+gen value_cowpea_prod = cowpea_prod * cowpea_price
 gen value_tomato_prod = tomato_prod * tomato_price
 gen value_onion_prod = onion_prod * onion_price 
 gen value_peanut_prod = peanut_prod * peanut_price
+gen value_cassava_prod = cassava_prod * cassava_price
+gen value_sweetpotato_prod = sweetpotato_prod * sweetpotato_price
+gen value_yam_prod = yam_prod * yam_price
+gen value_carrot_prod = carrot_prod * carrot_price
+gen value_cucumber_prod = cucumber_prod * cucumber_price
+gen value_pepper_prod = pepper_prod * pepper_price
+gen value_bean_prod = bean_prod * bean_price
+gen value_pea_prod = pea_prod * pea_price
+gen value_lentil_prod = lentil_prod * lentil_price
 
-egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod)
-egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares bean_hectares tomato_hectares onion_hectares peanut_hectares)
+egen total_value_production = rowtotal(value_rice_prod value_corn_prod value_millet_prod value_sorghum_prod value_cowpea_prod value_tomato_prod value_onion_prod value_peanut_prod value_cassava_prod value_sweetpotato_prod value_yam_prod value_carrot_prod value_cucumber_prod value_pepper_prod value_bean_prod value_pea_prod value_lentil_prod)
+egen total_production_hectares = rowtotal(rice_hectares maize_hectares millet_hectares sorghum_hectares cowpea_hectares tomato_hectares onion_hectares peanut_hectares cassava_hectares sweetpotato_hectares yam_hectares carrot_hectares cucumber_hectares pepper_hectares bean_hectares pea_hectares lentil_hectares)
 
 egen number_equipment = rowtotal(plow harrow draftanimals cart tractor sprayer motorpumps hoes ridger sickle seeder kadiandou fanting other)
+egen number_mech_equip = rowtotal(plow harrow tractor sprayer motorpumps)
 
 gen ag_wage = (agri_6_14 == 1 & agri_income_01 == 1)
 
-*** label variables for production summary stats *** 
-label variable total_value_production "Total Value of Production"
-label variable total_production_hectares "Hectares in Production"
-label variable chore_hours "Family Hours Spent on Chores (7 days)"
-label variable water_hours "Family Hours Spent Fetching Water (7 days)"
-label variable ag_hours "Family Hours Spent on Ag (7 days)"
-label variable planting_hours "Family Hours Spent on Planting (7 days)"
-label variable growth_hours "Family Hours Spent on Ag Peak Growth (7 days)"
-label variable harvest_hours "Family Hours Spent on Harvest (7 days)"
-label variable tradehh_hours "Family Hours Spent on Working in the Home (7 days)"
-label variable tradeoutside_hours "Family Hours Spent on Working Outside the Home (7 days)"
-label variable fertilizer_hours_7days "Family Hours Spent on Fertilizer (7 days)"
-label variable number_equipment "Total Number of Pieces of Ag Equipment"
-label variable agri_6_14 "Cultivate Land (1 = Yes)"
-label variable agri_6_15 "Number of Plots"
-label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
-label variable daily_wage "Daily Wage for Paid Work (FCFA)"
-label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
-label variable agri_income_16 "Number of Hired Laborers"
-label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
+gen any_livestock_income = (tot_livestock_sales > 0) 
 
-estpost sum agri_6_14 agri_6_15 total_value_production total_production_hectares chore_hours water_hours ag_hours planting_hours growth_hours harvest_hours tradehh_hours tradeoutside_hours fertilizer_hours_7days agri_income_15 agri_income_16 number_equipment agri_income_01 daily_wage ag_wage
+egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hours)
 
-esttab using "$auctions\household_level_production_sum_stats_midline.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-*** summary stats for plot level variables *** 
-use "$auctions\plot_level_ag_midline.dta", clear
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
 
-merge 1:1 hhid plot using "$auctions\manure_use_midline.dta"
-
-replace manure_kgs = 0 if _merge == 1 
-
-drop _merge 
-
-label variable collective_manage "Plot is Collectively Managed (1 = Yes)"
-label variable rice "Main Crop is Rice (1 = Yes)"
-label variable maize "Main Crop is Maize (1 = Yes)"
-label variable millet "Main Crop is Millet (1 = Yes)"
-label variable sorghum "Main Crop is Sorghum (1 = Yes)"
-label variable cowpea "Main Crop is Cowpea (1 = Yes)"
-label variable cassava "Main Crop is Cassava (1 = Yes)"
-label variable sweetpotato "Main Crop is Sweet Potato (1 = Yes)"
-label variable potato "Main Crop is Potato (1 = Yes)"
-label variable yam "Main Crop is Yam (1 = Yes)"
-label variable taro "Main Crop is Taro (1 = Yes)"
-label variable tomato "Main Crop is Tomatoes (1 = Yes)"
-label variable carrot "Main Crop is Carrots (1 = Yes)"
-label variable onion "Main Crop is Onions (1 = Yes)"
-label variable cucumber "Main Crop is Cucumbers (1 = Yes)"
-label variable pepper "Main Crop is Peppers (1 = Yes)"
-label variable peanut "Main Crop is Peanuts (1 = Yes)"
-label variable bean "Main Crop is Beans (1 = Yes)"
-label variable pea "Main Crop is Peas (1 = Yes)"
-label variable other "Other Main Crop (1 = Yes)"
-label variable plot_size_ha "Plot Size (hectares)"
-label variable agri_6_30_ "Used Manure on the Plot (1 = Yes)"
-label variable agri_6_34_comp_ "Used Compost on the Plot (1 = Yes)"
-label variable agri_6_34_ "Used Household Waste on the Plot (1 = Yes)"
-label variable agri_6_36_ "Used Fertilizer on the Plot (1 = Yes)"
-label variable urea_kgs "Urea Used on Plot (kgs)"
-label variable phosphate_kgs "Phosphates Used on Plot (kgs)"
-label variable npk_kgs "NPK Used on Plot (kgs)"
-label variable other_kgs "Other Chemical Fertilizer Used on Plot (kgs)"
-
-estpost sum collective_manage rice maize millet sorghum cowpea cassava sweetpotato potato yam taro tomato carrot onion cucumber pepper peanut bean pea other plot_size_ha agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_6_36_ urea_kgs phosphate_kgs npk_kgs other_kgs
-
-esttab using "$auctions\plot_level_sum_stats_midline.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+save "$auctions\shadow_wage_midline.dta", replace 
 
 *** create histogram of number of plots at baseline and midline *** 
 use "$auctions\number_of_plots.dta", clear 
@@ -1577,3 +1770,120 @@ replace year = 2025 if year == .
 
 twoway (histogram agri_6_15 if year == 2024, color(gray%50) width(0.5)) (histogram agri_6_15 if year == 2025, fcolor(none) lcolor(red) width(0.5)), legend(order(1 "Baseline" 2 "Midline") cols(2) position(6)) xtitle("Number of Plots")
 graph export "$auctions\hist_number_of_plots.eps", as(eps) replace
+
+*** append data together *** 
+use "$auctions\shadow_wage_baseline.dta", clear 
+
+gen year = 2024 
+
+append using "$auctions\shadow_wage_midline"
+
+replace year = 2025 if year == . 
+
+*** winsorize data *** 
+egen value_prod_99 = pctile(total_value_production), p(99)
+gen value_prod_1 = total_value_production 
+replace value_prod_1 = value_prod_99 if total_value_production > value_prod_99 
+replace value_prod_1 = . if total_value_production == . 
+
+egen value_prod_95 = pctile(total_value_production), p(95)
+gen value_prod_5 = total_value_production 
+replace value_prod_5 = value_prod_95 if total_value_production > value_prod_95 
+replace value_prod_5 = . if total_value_production == . 
+
+egen value_prod_90 = pctile(total_value_production), p(90)
+gen value_prod_10 = total_value_production 
+replace value_prod_10 = value_prod_90 if total_value_production > value_prod_90 
+replace value_prod_10 = . if total_value_production == . 
+
+egen prod_hect_99 = pctile(total_production_hectares), p(99)
+gen prod_hect_1 = total_production_hectares 
+replace prod_hect_1 = prod_hect_99 if total_production_hectares > prod_hect_99 
+replace prod_hect_1 = . if total_production_hectares == . 
+
+egen prod_hect_95 = pctile(total_production_hectares), p(95)
+gen prod_hect_5 = total_production_hectares 
+replace prod_hect_5 = prod_hect_95 if total_production_hectares > prod_hect_95 
+replace prod_hect_5 = . if total_production_hectares == . 
+
+egen prod_hect_90 = pctile(total_production_hectares), p(90)
+gen prod_hect_10 = total_production_hectares 
+replace prod_hect_10 = prod_hect_99 if total_production_hectares > prod_hect_90 
+replace prod_hect_10 = . if total_production_hectares == . 
+
+egen ag_hours_99 = pctile(total_ag_hours), p(99)
+gen ag_hours_1 = total_ag_hours 
+replace ag_hours_1 = ag_hours_99 if total_ag_hours > ag_hours_99 
+replace ag_hours_1 = . if total_ag_hours == . 
+
+egen ag_hours_95 = pctile(total_ag_hours), p(95)
+gen ag_hours_5 = total_ag_hours 
+replace ag_hours_5 = ag_hours_95 if total_ag_hours > ag_hours_95 
+replace ag_hours_5 = . if total_ag_hours == .
+
+egen ag_hours_90 = pctile(total_ag_hours), p(90)
+gen ag_hours_10 = total_ag_hours 
+replace ag_hours_10 = ag_hours_90 if total_ag_hours > ag_hours_90 
+replace ag_hours_10 = . if total_ag_hours == .
+
+egen fert_99 = pctile(total_fert), p(99)
+gen fert_1 = total_fert 
+replace fert_1 = fert_99 if total_fert > fert_99 
+replace fert_1 = . if total_fert == . 
+
+egen fert_95 = pctile(total_fert), p(95)
+gen fert_5 = total_fert 
+replace fert_5 = fert_95 if total_fert > fert_95 
+replace fert_5 = . if total_fert == . 
+
+egen fert_90 = pctile(total_fert), p(90)
+gen fert_10 = total_fert 
+replace fert_10 = fert_90 if total_fert > fert_90 
+replace fert_10 = . if total_fert == . 
+
+egen TLU_99 = pctile(TLU), p(99)
+gen TLU_1 = TLU
+replace TLU_1 = TLU_99 if TLU > TLU_99 
+replace TLU_1 = . if TLU == . 
+
+egen TLU_95 = pctile(TLU), p(95)
+gen TLU_5 = TLU
+replace TLU_5 = TLU_95 if TLU > TLU_95 
+replace TLU_5 = . if TLU == . 
+
+egen TLU_90 = pctile(TLU), p(90)
+gen TLU_10 = TLU
+replace TLU_10 = TLU_90 if TLU > TLU_90 
+replace TLU_10 = . if TLU == . 
+
+egen daily_wage_99 = pctile(daily_wage), p(99)
+gen daily_wage_1 = daily_wage 
+replace daily_wage_1 = daily_wage_99 if daily_wage > daily_wage_99 
+replace daily_wage_1 = . if daily_wage == . 
+
+*** label variables for production summary stats *** 
+label variable value_prod_1 "Total Value of Crop Production (FCFA)"
+label variable prod_hect_1 "Hectares in Production"
+label variable ag_hours_1 "Total Household Hours Spent on Agriculture"
+label variable number_mech_equip "Total Number of Pieces of Mechanical Ag Equipment"
+label variable agri_6_14 "Cultivate Land (1 = Yes)"
+label variable agri_6_15 "Number of Plots"
+label variable collective_manage "Number of Plots Collectively Managed (1 = Yes)"
+label variable rice "Number of Plots where Main Crop is Rice"
+label variable agri_6_30_ "Number of Plots that Used Manure"
+label variable agri_6_34_comp_ "Number of Plots that Used Compost"
+label variable agri_6_34_ "Number of Plots that Used Household Waste"
+label variable fert_1 "Total Fertilizer Used (kgs)"
+label variable TLU_1 "Livestock Owned (TLU)"
+label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
+label variable daily_wage_1 "Daily Wage for Paid Work (FCFA)"
+label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
+label variable agri_income_16 "Number of Hired Laborers"
+label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
+
+estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU_1 agri_income_01 daily_wage_1 ag_wage 
+
+esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+
+*** save clean dataset *** 
+save "$auctions\complete_data_clean.dta", replace 

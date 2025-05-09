@@ -1895,8 +1895,26 @@ estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 colle
 
 esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
+*** create indicator variables *** 
+gen manure = (agri_6_30_ > 0)
+replace manure = 0 if agri_6_14 == 0
+gen compost = (agri_6_34_comp_ > 0)
+replace compost = 0 if agri_6_14 == 0
+gen hhwaste = (agri_6_34_ > 0)
+replace hhwaste = 0 if agri_6_14 == 0
+
 *** create village indicator *** 
 gen hhid_village = substr(hhid, 1, 4)
+
+*** check correspondence between use manure and TLU for households who cultivate ***
+corr manure TLU if agri_6_14 == 1 
+corr agri_6_30_ TLU if agri_6_14 == 1
+
+twoway scatter TLU manure if agri_6_14 == 1
+twoway scatter TLU agri_6_30_ if agri_6_14 == 1
+
+reg manure TLU if agri_6_14 == 1
+reg agri_6_30_ TLU if agri_6_14 == 1
 
 *** save clean dataset *** 
 save "$auctions\complete_data_clean.dta", replace 

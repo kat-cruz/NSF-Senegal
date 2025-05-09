@@ -1895,5 +1895,8 @@ estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 colle
 
 esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
+*** create village indicator *** 
+gen hhid_village = substr(hhid, 1, 4)
+
 *** save clean dataset *** 
 save "$auctions\complete_data_clean.dta", replace 

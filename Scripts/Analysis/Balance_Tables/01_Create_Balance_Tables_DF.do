@@ -1022,6 +1022,7 @@ save `balance_table_ata'
 			 (first) hhid_village num_water_access_points q_51 target_village, ///
 			by(hhid)
 			
+			hh_12_6_ hh_03_ health_5_3_bin health_5_6_
 			
 			merge 1:1 hhid using `child_aggregates'
 	//hh_26_ hh_27_  hh_31_bin hh_37_ hh_38_ hh_29_*  ///  //edu vars 

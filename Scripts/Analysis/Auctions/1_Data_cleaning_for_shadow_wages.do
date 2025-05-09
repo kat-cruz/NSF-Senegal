@@ -1861,6 +1861,16 @@ gen daily_wage_1 = daily_wage
 replace daily_wage_1 = daily_wage_99 if daily_wage > daily_wage_99 
 replace daily_wage_1 = . if daily_wage == . 
 
+egen daily_wage_95 = pctile(daily_wage), p(95)
+gen daily_wage_5 = daily_wage 
+replace daily_wage_5 = daily_wage_95 if daily_wage > daily_wage_95 
+replace daily_wage_5 = . if daily_wage == . 
+
+egen daily_wage_90 = pctile(daily_wage), p(90)
+gen daily_wage_10 = daily_wage 
+replace daily_wage_10 = daily_wage_90 if daily_wage > daily_wage_90 
+replace daily_wage_10 = . if daily_wage == . 
+
 *** label variables for production summary stats *** 
 label variable value_prod_1 "Total Value of Crop Production (FCFA)"
 label variable prod_hect_1 "Hectares in Production"

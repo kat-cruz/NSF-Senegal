@@ -5,3 +5,4 @@
 *.stswp
 
 /.quarto/
+.DS_Store

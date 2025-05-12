@@ -8,8 +8,8 @@ clear all
 set maxvar 20000
 
 **** Master file path  ****
-if "`c(username)'"=="socrm" {
-                global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
+if "`c(username)'"=="mollydoruska" {
+                global master "/Users/mollydoruska\Box\NSF Senegal\Data_Management"
 }
 else if "`c(username)'"=="kls329" {
                 global master "/Users/kls329\Box\NSF Senegal\Data_Management"

@@ -1,17 +1,18 @@
 *==============================================================================
-
+* Program : Transform Household and Health module data into long form 
+*=============================================================================
 * written by: Kateri Mouawad
 * Created: April 2025
 * Updates recorded in GitHub
 
-
 * <><<><><>> Read Me  <><<><><>>
 
 	*^*^* This .do file processes:
+	*** 							DISES_Baseline_Complete_PII
 	
 	
 	*^*^* This .do file outputs:
-
+	***							   baseline_household_long.dta
 
 *<><<><><>><><<><><>>
 **# INITIATE SCRIPT
@@ -41,6 +42,7 @@
 	global hhids "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline"
 	global data_deidentified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
 	global data_identified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
+	global long_out "$master\Data_Management\Output\Data_Processing\Construction"
 
 	*** import complete data for geographic and preliminary information ***
 	use "$data_clean\DISES_Baseline_Complete_PII", clear 
@@ -100,9 +102,6 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
      name* ///
      end_hh_composition* final_list* final_list_confirm* 
 	
-
-
-
 		 
 	*^*^* reindex variables with bad indecies to prep for reshape the data 	
 		 
@@ -140,40 +139,73 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 				cap rename hh_20name_`j'_`i' hh_20name_`i'_`j'
 			}
 		}
-
 		
-	tostring 	
+		* hh_21 
+		forval i = 7(-1)1 {
+			forval j = 1/55 {
+				cap rename hh_21_`j'_`i' hh_21_`i'_`j'
+			}
+		}
+		
+	*** transform variables that need to be strings for the reshape 
+		
+		forvalues i = 1/55 {
+			tostring hh_20_`i', replace
+			tostring hh_23_`i', replace
+			tostring hh_12_`i', replace
+			tostring hh_education_level_o_`i', replace 
+			tostring hh_ethnicity_o_`i', replace 
+			tostring  hh_education_skills_`i', replace 
+			tostring   hh_main_activity_o_`i', replace 
+			tostring   hh_relation_with_o_`i', replace 
+			 
+		}
+		
+	tostring hh_11_o_* hh_12_o* hh_15_o_* hh_19_o* hh_20_o* hh_23_o* hh_29_o_* hh_12name* hh_20name*, replace 
 		
 	reshape long ///
-    hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_11_ hh_11_o_ ///
-    hh_12_ hh_12_a_ hh_12_o_ hh_12_calc_ hh_12_roster_ ///
-    hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
-    hh_12name_1_ hh_12name_2_ hh_12name_3_ hh_12name_4_ hh_12name_5_ hh_12name_6_ hh_12name_7_ ///
-    hh_13_ hh_13_o_ hh_13_sum_ ///
-    hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ ///
-    hh_14_ hh_15_ hh_15_o_ hh_16_ hh_17_ hh_18_ hh_19_ hh_19_o_ ///
-    hh_20_ hh_20_a_ hh_20_o_ hh_20_calc_ hh_20_roster_ ///
-    hh_20index_1_ hh_20index_2_ hh_20index_3_ hh_20index_4_ hh_20index_5_ hh_20index_6_ hh_20index_7_ ///
-    hh_20name_1_ hh_20name_2_ hh_20name_3_ hh_20name_4_ hh_20name_5_ hh_20name_6_ hh_20name_7_ ///
-    hh_21_ hh_21_o_ hh_21_sum_ ///
-    hh_21_1_ hh_21_2_ hh_21_3_ hh_21_4_ hh_21_5_ hh_21_6_ hh_21_7_ ///
-    hh_22_ hh_23_ hh_23_o_ hh_23_1_ hh_23_2_ hh_23_3_ hh_23_4_ hh_23_5_ hh_23_99_ hh_24_ hh_25_ hh_26_ hh_27_ hh_28_ hh_29_ hh_29_o_ hh_30_ ///
-    hh_31_ hh_32_ hh_33_ hh_34_ hh_35_ hh_36_ hh_37_ hh_38_, ///
-    i(hhid) j(variable_index)
+    hh_age_ hh_gender_  hh_ethnicity_ hh_ethnicity_o_ hh_relation_with_o_ ///
+			hh_education_skills_ hh_education_skills_0_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_skills_o_ hh_education_level_o_ hh_education_level_  hh_education_year_achieve_   ///
+			hh_mother_live_ hh_relation_imam_ hh_relation_with_ hh_presence_winter_ hh_presence_dry_ hh_main_activity_ hh_main_activity_o_ hh_active_agri_ ///
+			hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_11_ hh_11_o_ ///
+			hh_12_ hh_12_1_ hh_12_2_ hh_12_3_ hh_12_4_ hh_12_5_ hh_12_6_ hh_12_7_ hh_12_8_ ///
+			hh_12_a_ hh_12_o_ hh_12_calc_ hh_12_roster_ hh_12_roster_count_ ///
+			hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
+			hh_12name_1_ hh_12name_2_ hh_12name_3_ hh_12name_4_ hh_12name_5_ hh_12name_6_ hh_12name_7_ ///
+			hh_13_ hh_13_o_ hh_13_sum_ ///
+			hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ ///
+			hh_14_ hh_15_ hh_15_o_ hh_16_ hh_17_ hh_18_ hh_19_ hh_19_o_ ///
+			hh_20_ hh_20_1_ hh_20_2_ hh_20_3_ hh_20_4_ hh_20_5_ hh_20_6_ hh_20_7_ hh_20_8_ ///
+			hh_20_a_ hh_20_o_ hh_20_calc_ hh_20_roster_  hh_20_roster_count_ ///
+			hh_20index_1_ hh_20index_2_ hh_20index_3_ hh_20index_4_ hh_20index_5_ hh_20index_6_ hh_20index_7_ ///
+			hh_20name_1_ hh_20name_2_ hh_20name_3_ hh_20name_4_ hh_20name_5_ hh_20name_6_ hh_20name_7_ ///
+			hh_21_ hh_21_o_ hh_21_sum_ ///
+			hh_21_1_ hh_21_2_ hh_21_3_ hh_21_4_ hh_21_5_ hh_21_6_ hh_21_7_ ///
+			hh_22_ hh_23_ hh_23_o_ hh_23_1_ hh_23_2_ hh_23_3_ hh_23_4_ hh_23_5_ hh_23_99_ hh_24_ hh_25_ hh_26_ hh_27_ hh_28_ hh_29_ hh_29_o_ hh_30_ ///
+			hh_31_ hh_32_ hh_33_ hh_34_ hh_35_ hh_36_ hh_37_ hh_38_, ///
+			i(hhid) j(id)
 
 		
+	**## Create matching individ
+			tostring hhid, replace format("%12.0f")
+			tostring id, gen(str_id) format("%02.0f")
+			gen str individ = hhid + str_id
+			format individ %15s
+		
+	save "$long_out\baseline_household_long.dta", replace 
+		
+	
+*<><<><><>><><<><><>>
+**# Health roster module
+*<><<><><>><><<><><>>	
 		
 		
 		
 		
-		** figure out this mismatch  hh_23_2
 		
 		
 		
-		
-		
-		
-		
+/* 
 		
 		
 	reshape long ///
@@ -195,6 +227,7 @@ reshape long hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_1
 	
 	
 	
+*/
 	
 	
 	

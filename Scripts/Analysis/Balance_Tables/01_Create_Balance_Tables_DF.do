@@ -53,26 +53,26 @@ set more off
 *<><<><><>><><<><><>>
 
 *^*^* Set base Box path for each user
-if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
-if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
-if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
-if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
-if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
+	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
+	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
+	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
+	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+	if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
-if "`c(username)'"=="km978" global gitmaster "C:\Users\Kateri\Downloads\GIT-Senegal\NSF-Senegal"
-if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Senegal\NSF-Senegal"
+	if "`c(username)'"=="km978" global gitmaster "C:\Users\Kateri\Downloads\GIT-Senegal\NSF-Senegal"
+	if "`c(username)'"=="Kateri" global gitmaster "C:\Users\km978\Downloads\GIT-Senegal\NSF-Senegal"
 
 
 *^*^* Define project-specific paths
 
-global data "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
-global trainedData "${master}\Data_Management\Output\Data_Processing\Checks\Corrections\Treatment"
-global index "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
+	global data "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
+	global trainedData "${master}\Data_Management\Output\Data_Processing\Checks\Corrections\Treatment"
+	global index "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
 
 *^*^* Data folders 
-global dataOutput "${master}\Data_Management\Output\Analysis\Balance_Tables" 
-global asset "${master}\Data_Management\Output\Data_Processing\Construction"
-global latexOutput "$git_path\Latex_Output\Balance_Tables"
+	global dataOutput "${master}\Data_Management\Output\Analysis\Balance_Tables" 
+	global asset "${master}\Data_Management\Output\Data_Processing\Construction"
+	global latexOutput "$git_path\Latex_Output\Balance_Tables"
 
 
 *<><<><><>><><<><><>>
@@ -732,8 +732,8 @@ foreach x in 1 2 3 4 5 99 {
 * Recode hh_gender_ (change 2 to 0, leave others unchanged)
 		recode hh_gender_ (2=0)
 
-tempfile balance_table_ata
-save `balance_table_ata'
+		tempfile balance_table_ata
+			save `balance_table_ata'
 
 * Create binary indicators for each water source type
 		gen interior_tap = living_01 == 1

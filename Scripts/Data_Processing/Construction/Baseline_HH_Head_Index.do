@@ -61,14 +61,27 @@
 	global data "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline\Individual_IDs_For_EPLS_UCAD_Matching"
 	global index "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline"
 	global data_deidentified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
+	global long_data "$master\Data_Management\Output\Data_Processing\Construction"
+	
+*^*^* import long data	
+	
+	use "$long_data\baseline_household_long.dta", clear 
+	
+	keep hhid individ hh_03_-hh_09_
+	
+	tempfile work_vars
+	save `work_vars'
 
 *^*^* import data
 
 		import excel "$index\Identify_Respondent_HH_Index.xlsx", sheet("Sheet1") firstrow clear
+		merge 1:1 individ using `work_vars'
+		
+		keep if _merge == 3
 		
 *** UPDATE: Correct old HHID: 
 
-replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
+	*replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
 
 *<><<><><>><><<><><>>
 **#  CREATE HH HEAD VARIABLE

@@ -14,6 +14,7 @@
 	*^*^* This .do file outputs:
 	***							   baseline_household_long.dta
 
+**# Bookmark #1
 *<><<><><>><><<><><>>
 **# INITIATE SCRIPT
 *<><<><><>><><<><><>>

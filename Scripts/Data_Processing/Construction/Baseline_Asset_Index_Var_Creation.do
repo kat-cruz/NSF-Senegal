@@ -216,7 +216,7 @@
 ** Pigs	              0.2
 ** Poultry	          0.01
 
-
+*** update TLU here too 
 	gen TLU = 0  // Start with TLU equal to 0 for all households
 
 		* Assign TLU values based on animal species

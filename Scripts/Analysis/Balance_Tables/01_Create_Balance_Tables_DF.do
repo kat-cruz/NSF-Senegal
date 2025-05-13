@@ -640,6 +640,8 @@ foreach x in 1 2 3 4 5 6 7 8 9 10 99 {
 		**1 = Interior tap
 		**2 = Public tap
 		**3 = Neighbor's tap
+		
+	*	(update to include protected well and tanker)
 
 		gen living_01_bin = 0
 			replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 
@@ -735,6 +737,7 @@ foreach x in 1 2 3 4 5 99 {
 		tempfile balance_table_ata
 			save `balance_table_ata'
 
+/*
 * Create binary indicators for each water source type
 		gen interior_tap = living_01 == 1
 		gen public_tap = living_01 == 2
@@ -771,6 +774,7 @@ foreach x in 1 2 3 4 5 99 {
 	use `balance_table_ata'
 	merge m:m hhid_village using `water_access'
 	drop _merge
+*/
 
   *^*^* create TLU species variable 
 
@@ -783,6 +787,8 @@ foreach x in 1 2 3 4 5 99 {
 ** Draft animals	  1.0
 ** Pigs	              0.2
 ** Poultry	          0.01
+
+** change to amount for TLU
 
 
 		gen TLU = 0  // Start with TLU equal to 0 for all households
@@ -911,7 +917,7 @@ foreach x in 1 2 3 4 5 99 {
 		replace hhid = "153A" + substr(hhid, 5, .) if substr(hhid, 1, 4) == "132A"
 		save"$dataOutput\PCA_asset_index_var.dta", replace 
 */
-	 	  
+	 	  ** confirm asset index is at hh level 
 		merge m:m hhid using "$asset\PCA_asset_index_var.dta"
 		
 		

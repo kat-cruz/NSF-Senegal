@@ -138,7 +138,7 @@ preserve
 		tab child_head
 		*** no observations - procced as planned 
 *** replace with matched name
-		replace hh_head = 0 if name_match == 0 & num_heads_per_hh > 1 
+		replace hh_head = 0 if name_match == 0 & hh_head == 1 
 *** 		see what's left
 		egen num_heads_per_hh_2 = total(hh_head), by(hhid)
 		tab num_heads_per_hh_2
@@ -153,6 +153,8 @@ restore
 **##  3.	No Household Head Identified
 *-----------------------------------------*		
 		
+*^*^* a.	If name in hh_head_name_complet matches someone in hh_full_name_calc_ and hh_age_ >= 18, assign that person as head
+
 preserve 
 	
 	keep if num_heads_per_hh < 1
@@ -168,21 +170,142 @@ preserve
 			egen num_heads_per_hh_2 = total(hh_head), by(hhid)
 				tab num_heads_per_hh_2
 				
+				drop child_head num_heads_per_hh_2
 				
-*** 	b.	If no name match, assign the eldest working male. 	
+		tempfile no_hh_firstpass
+			save `no_hh_firstpass'
+		
+	restore 
+	
+				
+*^*^* 	b.	If no name match, assign the eldest working male. 	
 
 
-	egen max_age = max(hh_age_), by(hhid)
-		gen eldest_working_male = 0
-			replace eldest_working_male = 1 if hh_age_ == max_age & hh_gender_ == 1 & work == 1
+preserve 
+
+use `no_hh_firstpass', clear 
+
+*** 		create indicator for whether each household has a head
+		egen has_head = max(hh_head), by(hhid)
+		tab has_head
+		
+				keep if has_head == 0
+
+***  identify candidate heads: working males 18+ in households missing a head
+		gen candidate = 0
+		replace candidate = 1 if has_head == 0 & hh_gender_ == 1 & work == 1 & hh_age_ >= 18
+
+***  create sort key — candidates first, eldest among them first
+		gen sortkey = -1000 * candidate - hh_age_
+
+*** sort so each household has candidates first, then by descending age
+		sort hhid sortkey
+
+***  select the first candidate in each household
+		gen select_head = 0
+		by hhid: replace select_head = 1 if candidate == 1 & _n == 1
+
+***  assign that person as household head
+		replace hh_head = 1 if has_head == 0 & select_head == 1
+
+		drop has_head select_head candidate sortkey
+		
+				tempfile no_hh_secondpass
+					save `no_hh_secondpass'
+		
+		
+restore 
+
+*^*^*	c.	If no eldest working male is present, assign respondent 
+
+
+preserve 
+
+use `no_hh_secondpass', clear 
+
+*** 		create indicator for whether each household has a head
+		egen has_head = max(hh_head), by(hhid)
+		tab has_head
+
+			keep if has_head == 0
+		
+			replace hh_head = 1 if resp == 1
 			
-***				 flag households that currently have no head
-						egen has_head = max(hh_head), by(hhid)
+			drop has_head
 
-***	 			 assign head if eldest_working_male == 1 and household has no head
-						replace hh_head = 1 if has_head == 0 & eldest_working_male == 1
-						
-*** c.	If no eldest working male is present, assign respondent
+			tempfile no_hh_thirdpass
+					save `no_hh_thirdpass'
+
+restore
+
+*-----------------------------------------*
+**## 4. 	Matching Criteria
+*-----------------------------------------*		
+
+preserve 
+
+use `no_hh_thirdpass', clear
+
+	egen has_head = max(hh_head), by(hhid)
+			tab has_head
+		
+		keep if has_head == 0
+
+*^*^*d.	If no eldest working male is present and respondent is not identifiable, assging hh_head to eldest male. 
+
+		replace hh_head = 1 if individ == "081B0401"
+		
+				tempfile no_hh_fourthpass
+					save `no_hh_fourthpass'
+
+
+restore 
+
+
+
+*-----------------------------------------*
+**#Append data 
+*-----------------------------------------*	
+
+
+keep if num_heads_per_hh == 1
+append using `corrected_multiple_heads'
+append using `no_hh_firstpass'
+append using `no_hh_secondpass'
+append using `no_hh_thirdpass'
+append using `no_hh_fourthpass'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
 
 
 ***				 flag households that currently have no head

@@ -14,12 +14,13 @@
 
 	*** This Do File PROCESSES: 
 	***						 Identify_Respondent_HH_Index.xlsx
+	***						 baseline_household_long.dta
                             
 	*** This Do File CREATES: 
 	***                      household_head_index.dta
 	
 	
-	*** Procedure: 
+	*** Procedure: NEED TO UPDATE 
 	
 	*** 1) bring in Identify_Respondent_HH_Index.xlsx
 	*** 2) generate name_match which indicates if the housheold head name is inside the household roster 
@@ -69,7 +70,7 @@
 	
 	use "$long_data\baseline_household_long.dta", clear 
 	
-	keep hhid individ hh_active_agri_ hh_03_ hh_08_ hh_09_
+	keep hhid individ hh_main_activity_ hh_active_agri_ hh_03_ hh_08_ hh_09_
 	
 	gen work = .
 	replace work = 1 if (hh_active_agri_ > 0 | hh_03_ > 0 | hh_08_ > 0 | hh_09_ > 0) ///
@@ -122,12 +123,13 @@
 		
 *-----------------------------------------*
 **##  2.	Multiple Household Heads
-** 		a.	Use hh_head_name_complet and age > 18 to identify the correct head via name matching with hh roster names (hh_full_name_calc_).
 *-----------------------------------------*		
 		
 		*** gen amount of hh heads per hh
 		egen num_heads_per_hh = total(hh_head), by(hhid)
 		
+	
+*^*^*	a.	Use hh_head_name_complet and age > 18 to identify the correct head via name matching with hh roster names (hh_full_name_calc_). *^*^*
 		
 preserve 
 
@@ -138,22 +140,68 @@ preserve
 		tab child_head
 		*** no observations - procced as planned 
 *** replace with matched name
-		replace hh_head = 0 if name_match == 0 & hh_head == 1 
+		replace hh_head = 0 if (name_match == 0 & hh_head == 1)
 *** 		see what's left
 		egen num_heads_per_hh_2 = total(hh_head), by(hhid)
 		tab num_heads_per_hh_2
-*** 		all households have only 1 head by the end of these corrections
+*** need to filter cleaned data 	
+		count // 174
 		
-		tempfile corrected_multiple_heads
-			save `corrected_multiple_heads'
+		tempfile multiple_heads_firstpass
+			save `multiple_heads_firstpass'
+		
+		keep if num_heads_per_hh_2 == 1
+		
+		count // 138
+		
+		tempfile multiple_heads_cleaned1
+			save `multiple_heads_cleaned1'
+
+			
+restore 
+
+
+*^*^*   b.	If no matched name is available, select oldest working male as head   *^*^*
+
+preserve 
+
+use `multiple_heads_firstpass', clear
+
+	keep if num_heads_per_hh_2 == 0
+	
+	
+***  	identify candidate heads: working males 18+ in households missing a head
+			gen candidate = 0
+				replace candidate = 1 if hh_gender_ == 1 & work == 1 & hh_age_ >= 18
+
+***  	create sort key — candidates first, eldest among them first
+			gen sortkey = -1000 * candidate - hh_age_
+
+*** 	sort so each household has candidates first, then by descending age
+			sort hhid sortkey
+
+***  	select the first candidate in each household
+			gen select_head = 0
+			by hhid: replace select_head = 1 if candidate == 1 & _n == 1
+
+***  	assign that person as household head
+			by hhid: replace hh_head = 1 if select_head == 1
+
+			drop  select_head candidate sortkey
+		
+		count // 36
+
+				tempfile multiple_heads_cleaned2
+					save `multiple_heads_cleaned2'
 
 restore 
+
 
 *-----------------------------------------*
 **##  3.	No Household Head Identified
 *-----------------------------------------*		
 		
-*^*^* a.	If name in hh_head_name_complet matches someone in hh_full_name_calc_ and hh_age_ >= 18, assign that person as head
+*^*^* a.	If name in hh_head_name_complet matches someone in hh_full_name_calc_ and hh_age_ >= 18, assign that person as head	  *^*^*
 
 preserve 
 	
@@ -172,13 +220,25 @@ preserve
 				
 				drop child_head num_heads_per_hh_2
 				
+		count // 392
+		
 		tempfile no_hh_firstpass
 			save `no_hh_firstpass'
+			
+		egen has_head = max(hh_head), by(hhid)
+			tab has_head
+		
+				keep if has_head == 1
+				
+		tempfile no_hh_cleaned1
+			save `no_hh_cleaned1'
+			
+
 		
 	restore 
 	
 				
-*^*^* 	b.	If no name match, assign the eldest working male. 	
+*^*^* 	b.	If no name match, assign the eldest working male.  *^*^*
 
 
 preserve 
@@ -212,11 +272,20 @@ use `no_hh_firstpass', clear
 		
 				tempfile no_hh_secondpass
 					save `no_hh_secondpass'
+					
+		egen has_head = max(hh_head), by(hhid)
+			tab has_head
 		
-		
+				keep if has_head == 1
+				drop has_head
+				
+		tempfile no_hh_cleaned2
+			save `no_hh_cleaned2'
+			
+	
 restore 
 
-*^*^*	c.	If no eldest working male is present, assign respondent 
+*^*^*	c.	If no working male is available, assign the eldest male  *^*^*
 
 
 preserve 
@@ -229,18 +298,41 @@ use `no_hh_secondpass', clear
 
 			keep if has_head == 0
 		
-			replace hh_head = 1 if resp == 1
-			
-			drop has_head
+		gen candidate = 0
+		replace candidate = 1 if has_head == 0 & hh_gender_ == 1 & hh_age_ >= 18
 
+***  create sort key — candidates first, eldest among them first
+		gen sortkey = -1000 * candidate - hh_age_
+
+*** sort so each household has candidates first, then by descending age
+		sort hhid sortkey
+
+***  select the first candidate in each household
+		gen select_head = 0
+		by hhid: replace select_head = 1 if candidate == 1 & _n == 1
+
+***  assign that person as household head
+		replace hh_head = 1 if has_head == 0 & select_head == 1
+
+				drop has_head select_head candidate sortkey
+***	save working data 
 			tempfile no_hh_thirdpass
 					save `no_hh_thirdpass'
 
+***    create filter to keep cleaned data 
+			egen has_head = max(hh_head), by(hhid)
+				tab has_head
+		
+				keep if has_head == 1
+				drop has_head
+				
+		tempfile no_hh_cleaned3
+			save `no_hh_cleaned3'
+
 restore
 
-*-----------------------------------------*
-**## 4. 	Matching Criteria
-*-----------------------------------------*		
+
+*^*^*d.	If eldest male is not available, select respondent as head  *^*^*
 
 preserve 
 
@@ -250,17 +342,16 @@ use `no_hh_thirdpass', clear
 			tab has_head
 		
 		keep if has_head == 0
+ 
+			replace hh_head = 1 if resp == 1
+			
+			drop has_head
 
-*^*^*d.	If no eldest working male is present and respondent is not identifiable, assging hh_head to eldest male. 
-
-		replace hh_head = 1 if individ == "081B0401"
-		
-				tempfile no_hh_fourthpass
-					save `no_hh_fourthpass'
+		tempfile no_hh_cleaned4
+			save `no_hh_cleaned4'
 
 
 restore 
-
 
 
 *-----------------------------------------*
@@ -269,11 +360,46 @@ restore
 
 
 keep if num_heads_per_hh == 1
-append using `corrected_multiple_heads'
-append using `no_hh_firstpass'
-append using `no_hh_secondpass'
-append using `no_hh_thirdpass'
-append using `no_hh_fourthpass'
+	append using `multiple_heads_cleaned1'
+	append using `multiple_heads_cleaned2'
+	append using `no_hh_cleaned1'
+	append using `no_hh_cleaned2'
+	append using `no_hh_cleaned3'
+	append using `no_hh_cleaned4'
+
+
+*** one last check for old times sake 
+	count 
+		tab hh_head //  2,080 bless 
+		duplicates tag individ, generate(uhoh)
+		tab uhoh 
+
+		drop uhoh 
+
+*-----------------------------------------*
+**#  SELECT VARIABLES AND SAVE FILE 
+*-----------------------------------------*
+
+		keep if hh_head == 1
+		
+*** r		ename the inedex var for clarity 
+
+		rename individual hh_head_index 	
+		
+*** 		keep only household id and respondent index variable *** 
+		
+		keep hhid hh_head_index 
+
+***			save final data set.
+
+	save "$data_deidentified\household_head_index.dta", replace 
+
+
+
+
+
+
+*** end of .do file 
 
 
 
@@ -291,39 +417,8 @@ append using `no_hh_fourthpass'
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-***				 flag households that currently have no head
-						egen has_head_2 = max(hh_head), by(hhid)
-						tab has_head_2
-***	 			 assign head if eldest_working_male == 1 and household has no head
-						replace hh_head = 1 if has_head_2 == 0 & resp == 1
-						
-***         check at what was not corrected	
-			egen num_heads_per_hh_3 = total(hh_head), by(hhid)
-				tab num_heads_per_hh_3
-				
-*** 16 households with no head by the end of these corrections 
-			
-restore 
-
-
-
+/* 
+** DELETE WHEN FINALIZED 
 *-----------------------------------------*
 **## 4. 	Matching Criteria
 *-----------------------------------------*		
@@ -381,41 +476,6 @@ restore
 		replace hh_head = 1 if individ == "081B0901"
 
 
-
-
-
-
-
-/*
-
-
-
-
-
-
-				
-*^*^* Create eldest working male
-
-	egen max_age = max(hh_age_), by(hhid)
-		gen eldest_working_male = 0
-			replace eldest_working_male = 1 if hh_age_ == max_age & hh_gender_ == 1
-			
-			
-* One obs per household
-	gen child_head = hh_head == 1 & hh_age_ < 18
-
-	gen eldest_working_head = .
-	replace eldest_working_head = 1 if hh_head == 1 & eldest_working_male == 1
-	replace eldest_working_head = 0 if hh_head == 1 & eldest_working_male == 0
-
-	gen working_head = .
-	replace working_head = 1 if hh_head == 1 & work == 1
-	replace working_head = 0 if hh_head == 1 & work == 0
-
-	egen name_match_hh = max(name_match) if hh_head == 1, by(hhid)
-	egen has_head = max(hh_head), by(hhid)
-
-
 		* clean up relation variables
 		
 		rename hh_relation_with_ hh_relation_with
@@ -436,187 +496,6 @@ restore
 		replace hh_relation = "Other person not related to the head of the family" if hh_relation_with == 13
 
 		
-*-----------------------------------------*
-*<><<><><>><><<><><>>
-**#  EDA
-*<><<><><>><><<><><>>
-*-----------------------------------------*
-
-
-*-----------------------------------------*
-* Create household-level summary table    *
-*-----------------------------------------*
-
-preserve
-
-
-	* Count number of heads per household
-	bysort hhid (hhid): gen num_heads_per_hh = sum(hh_head)
-	bysort hhid (hhid): replace num_heads_per_hh = num_heads_per_hh[_N]
-
-	* Collapse to household level
-	collapse (max) has_head name_match_hh child_head eldest_working_head ///
-		working_head num_heads_per_hh, by(hhid)
-
-	* Create summary table
-	* List of binary household-level variables
-	local vars has_head name_match_hh child_head eldest_working_head working_head
-
-	di "--------------------------------------------------"
-	di "Summary: Count of 1s, Total non-missing, and Percentage"
-	di "--------------------------------------------------"
-	di "Variable                  Count_1   Total   Percent"
-
-	foreach var of local vars {
-		quietly count if `var' == 1
-		local count1 = r(N)
-		
-		quietly count if !missing(`var')
-		local total = r(N)
-
-		local pct = 100 * `count1' / `total'
-		
-		di as text "`var'" _col(28) ///
-		   as result %9.0g `count1' _col(40) ///
-		   %7.0g `total' _col(50) ///
-		   %6.1f `pct' "%"
-	}
-restore
-
-
-
-*-----------------------------------------*
-**#  MAKE CORRECTIONS 
-*-----------------------------------------*
-	
-*-----------------------------------------*
-**##  CORRECT 2+ HH Heads
-*-----------------------------------------*
-
-		*** correct for <1 housheold head
-		replace hh_head = 0 if name_match == 0 & num_heads_per_hh > 1
-		*** see what's left
-		egen num_heads_per_hh_2 = total(hh_head), by(hhid)
-		tab num_heads_per_hh_2
-		*** that worked
-		
-		replace child_head = . if hh_head == 0
-			tab child_head
-			
-*-----------------------------------------*
-**##  CORRECT if NO HH heads
-*-----------------------------------------*
-		
-		replace hh_head = 1 if name_match == 1 & num_heads_per_hh < 1
-			
-			replace child_head = 1 if hh_head == 1 & hh_age_ < 18
-				tab child_head
-			
-*-----------------------------------------*
-**###  check to see if there are still more than 1 hh head/0 hh head
-*-----------------------------------------*
-
-preserve 
-				
-		egen num_heads_per_hh_3 = total(hh_head == 1), by(hhid)
-		keep if num_heads_per_hh_3 == 0
-		drop num_heads_per_hh_3
-				
-restore 
-
-*-----------------------------------------*
-**#  **Mannually correct for where name didn't match 
-*-----------------------------------------*
-			
-		** correct child head with name-matched hh head
-		replace hh_head = 1 if individ == "050A2003"
-				** replace child with 0
-				replace hh_head = 0 if individ == "050A2009"
-		** found name			
-		replace hh_head = 1 if individ == "023A1201"
-		** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "023B1801"		
-		** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "032B0201"
-		** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "041A0801"
-		** keep true household head here. Didn't work first round as there was no name 
-		replace hh_head = 1 if individ == "061A0704"
-		** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "070B0701"
-		** keep true household head here. Didn't work first round as there was no name 
-		replace hh_head = 1 if individ == "073B1921"
-		** no name match, replace with respondent 		
-		replace hh_head = 1 if individ == "081B2001"	
-		** found name		
-		replace hh_head = 1 if individ == "081B1801"
-		** can't find respondent/hh head for 081B04, take elsdest male 
-		replace hh_head = 1 if individ == "081B0401"
-		** can't find respondent/hh head for 081B04, take elsdest male 
-		replace hh_head = 1 if individ == "101B1103"
-		** found name		
-		replace hh_head = 1 if individ == "113B1401"
-		** found first name		
-		replace hh_head = 1 if individ == "113B0701"	
-		** found name		
-		replace hh_head = 1 if individ == "153A1501"	
-		** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "132B1401"
-		** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "133A1601"	
-		** no name match, replace with respondent. Respondent name isn't certain either tbh
-		replace hh_head = 1 if individ == "143A1001"	
-		** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "040A1401"
-		** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "041A1903"
-	** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "071B1501"
-	** no name match, replace with respondent 
-		replace hh_head = 1 if individ == "081B0901"
-
-		
-		
-*-----------------------------------------*
-**#  CHECK TO SEE WHATS LEFT
-*-----------------------------------------*
-
-
-		replace child_head = . if hh_head == 0
-			tab child_head
-
-preserve
-		
-		egen num_heads_per_hh_4 = total(hh_head == 1), by(hhid)
-		keep if num_heads_per_hh_4 == 0
-		drop num_heads_per_hh_4
-
-		** all (17,202) observations were deleted, so it looks like it worked. 
-		
-restore
-		
-*-----------------------------------------*
-**#  SELECT VARIABLES AND SAVE FILE 
-*-----------------------------------------*
-
-		keep if hh_head == 1
-		
-*^*^* rename the inedex var for clarity 
-
-		rename individual hh_head_index 	
-		
-*^*^* keep only household id and respondent index variable *** 
-		
-		keep hhid hh_head_index 
-
-*^*^* save final data set.
-
-			save "$data_deidentified\household_head_index.dta", replace 		
-	
-	
-*/
-
-	
-	
-*^*^* end of .do file
-		
+*/ 
+ 
+ 

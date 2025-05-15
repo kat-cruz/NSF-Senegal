@@ -54,9 +54,9 @@
 
 *^*^* Set base Box path for each user
 	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
-	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
+		if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
 	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
-	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
+		if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
 	if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 *^*^* additional file paths 
@@ -70,7 +70,7 @@
 	
 	use "$long_data\baseline_household_long.dta", clear 
 	
-	keep hhid individ hh_main_activity_ hh_active_agri_ hh_03_ hh_08_ hh_09_
+		keep hhid individ hh_main_activity_ hh_active_agri_ hh_03_ hh_08_ hh_09_
 	
 	gen work = .
 	replace work = 1 if (hh_active_agri_ > 0 | hh_03_ > 0 | hh_08_ > 0 | hh_09_ > 0) ///
@@ -121,38 +121,80 @@
 		
 		gen hh_head = (hh_relation_with_ == 1)
 		
+*-----------------------------------------*		
+* At a glance: 2,010 households have 1 head
+		
+	* keep only one observation per household
+/* 
+	egen tag = tag(hhid)
+
+	* list and count households with more than one head
+	list hhid num_heads_per_hh if hh_head == 1 & tag == 1, sepby(hhid)
+
+	count if num_heads_per_hh == 1 & tag == 1
+	drop tag		
+		
+		
+*/
 *-----------------------------------------*
 **##  2.	Multiple Household Heads
 *-----------------------------------------*		
 		
 		*** gen amount of hh heads per hh
 		egen num_heads_per_hh = total(hh_head), by(hhid)
+					
+*-----------------------------------------*		
+* At a glance: 20 households have more than one household head
 		
-	
+	* keep only one observation per household
+	egen tag = tag(hhid)
+
+	* list and count households with more than one head
+	list hhid num_heads_per_hh if num_heads_per_hh > 1 & tag == 1, sepby(hhid)
+
+	count if num_heads_per_hh > 1 & tag == 1
+	drop tag		
+*-----------------------------------------*	
+
 *^*^*	a.	Use hh_head_name_complet and age > 18 to identify the correct head via name matching with hh roster names (hh_full_name_calc_). *^*^*
 		
 preserve 
 
-*** keep if multiple heads are present - deal with no hh heads later 		
-		keep if num_heads_per_hh > 1
-*** check if name_match has a head < 18
-		gen child_head = 1 if name_match == 1 & hh_age_ < 18
-		tab child_head
-		*** no observations - procced as planned 
-*** replace with matched name
-		replace hh_head = 0 if (name_match == 0 & hh_head == 1)
+***		keep if multiple heads are present - deal with no hh heads later 		
+			keep if num_heads_per_hh > 1
+*** 		check if name_match has a head < 18
+			gen child_head = 1 if name_match == 1 & hh_age_ < 18
+				tab child_head
+*** 		no observations - procced as planned 
+
+
+
+*** 	preview which households will be affected
+				list hhid if name_match == 0 & hh_head == 1, sepby(hhid)
+
+				* Count how many unique households will be affected
+				egen tag = tag(hhid) if name_match == 0 & hh_head == 1
+				count if tag == 1
+				drop tag 
+
+
+*** 	replace with 0 if name doesn't match to keep true hh head
+			replace hh_head = 0 if name_match == 0 & hh_head == 1
+			
+			
 *** 		see what's left
-		egen num_heads_per_hh_2 = total(hh_head), by(hhid)
-		tab num_heads_per_hh_2
-*** need to filter cleaned data 	
-		count // 174
+			egen num_heads_per_hh_2 = total(hh_head), by(hhid)
+				tab num_heads_per_hh_2
+*** 		need to filter cleaned data 	
+			count // 174
+
 		
 		tempfile multiple_heads_firstpass
 			save `multiple_heads_firstpass'
 		
-		keep if num_heads_per_hh_2 == 1
+			keep if num_heads_per_hh_2 == 1
 		
-		count // 138
+				count // 138
 		
 		tempfile multiple_heads_cleaned1
 			save `multiple_heads_cleaned1'
@@ -183,9 +225,17 @@ use `multiple_heads_firstpass', clear
 ***  	select the first candidate in each household
 			gen select_head = 0
 			by hhid: replace select_head = 1 if candidate == 1 & _n == 1
+			
+***		preview resultus:
+				list hhid if select_head == 1 & hh_head != 1, sepby(hhid)
+
+				* Count how many unique households will be affected
+				egen tag = tag(hhid) if select_head == 1 & hh_head != 1
+					count if tag == 1
+						drop tag
 
 ***  	assign that person as household head
-			by hhid: replace hh_head = 1 if select_head == 1
+			 replace hh_head = 1 if select_head == 1
 
 			drop  select_head candidate sortkey
 		
@@ -206,12 +256,18 @@ restore
 preserve 
 	
 	keep if num_heads_per_hh < 1
-	
-*** 		a.	If name in hh_head_name_complet matches someone in hh_full_name_calc_ and hh_age_ >= 18, assign that person as head. (example 3.a)
+
 *** 		check if name_match has a head < 18
 				gen child_head = 1 if name_match == 1 & hh_age_ < 18
 					tab child_head
 *** 		no issues - proceed as planned 
+
+*** 		preview results 
+
+			list hhid if name_match == 1 & hh_age_ > 18 & hh_head != 1, sepby(hhid)
+			egen tag = tag(hhid) if name_match == 1 & hh_age_ > 18 & hh_head != 1
+			count if tag == 1
+				drop tag
 
 	replace hh_head = 1 if name_match == 1 & hh_age_ > 18
 ***         check at what was not corrected	
@@ -232,10 +288,8 @@ preserve
 				
 		tempfile no_hh_cleaned1
 			save `no_hh_cleaned1'
-			
-
-		
-	restore 
+					
+restore 
 	
 				
 *^*^* 	b.	If no name match, assign the eldest working male.  *^*^*
@@ -264,6 +318,14 @@ use `no_hh_firstpass', clear
 ***  select the first candidate in each household
 		gen select_head = 0
 		by hhid: replace select_head = 1 if candidate == 1 & _n == 1
+		
+***		preview results 
+			list hhid if has_head == 0 & select_head == 1 & hh_head != 1, sepby(hhid)
+
+			egen tag = tag(hhid) if has_head == 0 & select_head == 1 & hh_head != 1
+			count if tag == 1
+				drop tag
+
 
 ***  assign that person as household head
 		replace hh_head = 1 if has_head == 0 & select_head == 1
@@ -310,6 +372,13 @@ use `no_hh_secondpass', clear
 ***  select the first candidate in each household
 		gen select_head = 0
 		by hhid: replace select_head = 1 if candidate == 1 & _n == 1
+		
+***		preview results 
+			list hhid if has_head == 0 & select_head == 1 & hh_head != 1, sepby(hhid)
+
+			egen tag = tag(hhid) if has_head == 0 & select_head == 1 & hh_head != 1
+			count if tag == 1
+				drop tag
 
 ***  assign that person as household head
 		replace hh_head = 1 if has_head == 0 & select_head == 1
@@ -342,6 +411,12 @@ use `no_hh_thirdpass', clear
 			tab has_head
 		
 		keep if has_head == 0
+		
+		***		preview results 
+			list hhid if resp == 1 & hh_head != 1, sepby(hhid)
+			egen tag = tag(hhid) if resp == 1 & hh_head != 1
+			count if tag == 1
+				drop tag
  
 			replace hh_head = 1 if resp == 1
 			
@@ -355,7 +430,7 @@ restore
 
 
 *-----------------------------------------*
-**#Append data 
+**#  Append data 
 *-----------------------------------------*	
 
 
@@ -382,20 +457,17 @@ keep if num_heads_per_hh == 1
 
 		keep if hh_head == 1
 		
-*** r		ename the inedex var for clarity 
+*** 	rename the inedex var for clarity 
 
-		rename individual hh_head_index 	
+			rename individual hh_head_index 	
 		
-*** 		keep only household id and respondent index variable *** 
+*** 	keep only household id and respondent index variable *** 
 		
-		keep hhid hh_head_index 
+			keep hhid hh_head_index 
 
 ***			save final data set.
 
 	save "$data_deidentified\household_head_index.dta", replace 
-
-
-
 
 
 

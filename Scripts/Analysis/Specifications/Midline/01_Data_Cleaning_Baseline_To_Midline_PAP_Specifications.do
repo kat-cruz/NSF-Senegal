@@ -16,7 +16,6 @@ set mem 100m
 set maxvar 30000
 set matsize 11000
 set more off
-version 14.1
 
 **************************************************
 * SET FILE PATHS
@@ -35,8 +34,6 @@ global balance "$master\Data_Management\Output\Analysis\Balance_Tables\baseline_
 global treatment "$master\Data_Management\Data\_CRDES_CleanData\Treatment\Identified\treatment_indicator_PII.dta"
 global asset_index "$master\Data_Management\Output\Data_Processing\Construction\PCA_asset_index_var.dta"
 global hh_head_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\household_head_index.dta"
-global balance_tables "$master\Data_Management\Output\Analysis\Balance_Tables"
-global location_data "$master\Data_Management\Data\Location_Data\hhsurvey_villages.csv"
 global walking_distance_vector "$master\Data_Management\Data\Location_Data\walking_distance_vector.csv"
 
 global baseline_agriculture "$baseline\Complete_Baseline_Agriculture.dta"
@@ -66,7 +63,7 @@ global midline_knowledge "$midline\Complete_Midline_Knowledge.dta"
 global midline_lean "$midline\Complete_Midline_Lean_Season.dta"
 global midline_production "$midline\Complete_Midline_Production.dta"
 global midline_standard "$midline\Complete_Midline_Standard_Of_Living.dta"
-global midline_community "$baseline\Complete_Midline_Community.dta"
+global midline_community "$midline\Complete_Midline_Community.dta"
 
 **************************************************
 * controls and treatment data
@@ -95,7 +92,6 @@ merge m:1 hhid_village using "$baseline_community", nogen
 
 * access to piped water
 * using indicator for selected tap water as main source of drinking water
-
 * household-level piped water access (taps only)
 gen living_01_bin = inlist(living_01, 1, 2, 3) // interior, public, or neighbor's tap
 label variable living_01_bin "Household has piped water access"
@@ -167,11 +163,7 @@ gen auction_village = inlist(hhid_village, "122A", "123A", "121B", "131B", "120B
                      inlist(hhid_village, "123B", "153A", "121A", "131A", "141A") | ///
                      hhid_village == "142A"
 
-keep hhid hhid_village hh_age_h hh_education_skills_5_h hh_gender_h hh_numero living_01_bin auction_village
-
-label variable hh_numero "Household Size"
-label variable auction_village
-
+keep hhid hhid_village hh_age_h hh_education_skills_5_h hh_gender_h hh_numero living_01_bin auction_village q4 q_51
 
 tempfile control_data
 save `control_data', replace
@@ -217,7 +209,7 @@ label values treatment_arm treatlbl
 gen stratum = substr(hhid_village, 4, 1)
 
 * global controls (need to construct num_water_access_points)
-global controls q_51 hh_numero living_01_bin asset_index_std hh_age_h i.hh_gender_h i.hh_education_skills_5_h
+global controls q_4 q_51 hh_numero living_01_bin asset_index_std hh_age_h i.hh_gender_h i.hh_education_skills_5_h
 
 tempfile combined_data
 save `combined_data', replace
@@ -227,129 +219,135 @@ save `combined_data', replace
 *******************************
 import delimited "$walking_distance_vector", clear
 
-foreach var of varlist * {
-    capture confirm string variable `var'
-    if !_rc {
-        replace `var' = subinstr(`var', "132A", "153A", .)
-    }
-}
-
 tempfile distance_vector
 save `distance_vector', replace
 
 use `combined_data', clear
 merge m:1 hhid_village using `distance_vector', keep(master match) nogen
 
+* label variables
+label var walking_minutes_to_arm_0 "Walking minutes to nearest control village (arm 0)"
+label var walking_minutes_to_arm_1 "Walking minutes to nearest treatment village (arm A)"
+label var walking_minutes_to_arm_2 "Walking minutes to nearest treatment village (arm B)"
+label var walking_minutes_to_arm_3 "Walking minutes to nearest treatment village (arm C)"
+label var treatment_arm "Treatment arm"
+label var stratum "Randomization stratum"
+label var q4 "Number of Water Access Points"
+label var q_51 "Distance to nearest health facility"
+label var hhid "Household ID"
+label var hhid_village "Village ID"
+label var hh_numero "Household size"
+label var gpd_datalatitude "GPS latitude"
+label var gpd_datalongitude "GPS longitude"
+label var distance_vector "Distance vector"
+label var auction_village "Village in auction experiment (Doruska et al. 2024)"
+label var trained_hh "Treated Household"
+
+global distance_vector walking_minutes_to_arm_0 walking_minutes_to_arm_1 walking_minutes_to_arm_2 walking_minutes_to_arm_3
+
 save `combined_data', replace
-			
-**************************************************
-* 1.1.1, 1.1.2, 1.1.3
-**************************************************
-* baseline AVR (self-reports)
-use "$baseline_household", clear
-* household engaged in AVR (binary variable)
-foreach var of varlist hh_14_* {
-    replace `var' = 0 if missing(`var')
-}
-egen max_hh14 = rowmax(hh_14_*)
-
-gen baseline_AVR = 0
-replace baseline_AVR = 1 if max_hh14 > 0 
-
-* keep just household id and avr for merging
-keep hhid baseline_AVR
-
-* store the avr data for later
-tempfile baseline_avr_data
-save `baseline_avr_data', replace
-
-* 1.1.1, 1.1.2, 1.1.3
-* midline AVR (self-reports)
-use "$midline_household", clear
-* household engaged in AVR (binary variable)
-foreach var of varlist hh_14_* {
-    replace `var' = 0 if missing(`var')
-}
-egen max_hh14 = rowmax(hh_14_*)
-
-gen midline_AVR = 0
-replace midline_AVR = 1 if max_hh14 > 0 
-
-* keep just household id and avr for merging
-keep hhid hhid_village midline_AVR
-
-* store the midline avr data for later merging
-tempfile midline_avr_data
-save `midline_avr_data', replace
-
-* merge everything together
-
-* start with the combined dataset from before
-use `combined_data', clear
-
-* merge with treatment data
-merge 1:1 hhid using `treatment_data', keep(master match) nogen
-
-* merge in the baseline avr data
-merge 1:1 hhid using `baseline_avr_data', keepusing(baseline_AVR) keep(master match) nogen
-
-* merge in the midline avr data
-merge 1:1 hhid using `midline_avr_data', keepusing(midline_AVR) keep(master match) nogen
 
 **************************************************
 * load and prepare baseline outcome variables
 **************************************************
+use "$baseline_household", clear
+
+* merge all together needed for balance tables
+merge 1:1 hhid using "$baseline_health", nogen
+merge 1:1 hhid using "$baseline_agriculture", nogen
+merge 1:1 hhid using "$baseline_income", nogen
+merge 1:1 hhid using "$baseline_standard", nogen
+merge 1:1 hhid using "$baseline_games", nogen
+merge 1:1 hhid using "$baseline_enumerator", nogen
+merge 1:1 hhid using "$baseline_beliefs", nogen	
+merge m:1 hhid_village using "$baseline_community", nogen
+
 * 1.1.1, 1.1.2, 1.1.3
 * baseline AVR (self-reports)
-* variables: hh_12_6, hh_14
+* variables: hh_12_6, hh_13_6, hh_14, hh_20_6, hh_21, hh_22
+* aggregate hh_12_6* to a value of 1 if there is any value of 1 or that rowtotal > 0
+* aggregate hh_14* to a value of 1 if there is any value greater than 0 in that rowtotal
+* aggregate hh_20_6* to a value of 1 if there is any value of 1 or that rowtotal > 0
+* aggregate hh_22* to a value of 1 if there is any value greater than 0 in that row total
 
 * 1.1.4, 1.1.5, 1.1.6
 * baseline compost proudction
-* repurpose vegetation for fertilizer. unsure the appropriate proxy
+* variables: hh_15_2, hh_23_2, agri_6_34_comp, agri_6_34
+* hh_15_2* > 0
+* hh_23_2* > 1
+* agri_6_34_comp == 1
+* agri_6_34 == 1
 
 * 1.1.6
 * baseline agricultral total factor productivity (value of total output divided by value of all inputs)
-* baseline profitability
-* heterogeneity anlalysis 
+* variables: _actif_number, _agri_number, agri_6_21, agri_6_32, agri_6_34_comp, agri_6_34, agri_6_35, agri_6_37, agri_6_38_a, agri_6_39_a, agri_6_40_a, agri_6_41_a, cereals_01, cereals_02, cereals_05, farines_01, farines_02, farines_05, legumes_01, legumes_02, legumes_05, legumineuses_01, legumineuses_02, legumineuses_05, aquatique_01, aquatique_02, aquatique_05,  o_culture_01, o_culture_02, o_culture_05, agri_income_07, agri_income_08, agri_income_11, agri_income_12, agri_income_14, agri_income_16, agri_income_19, agri_income_33, agri_income_36, agri_income_41, agri_income_45, agri_income_47, agri_income_48, hh_04, hh_05, hh_06, hh_07, hh_16, hh_17, hh_24, hh_25
 
 * 1.1.7
 * baseline self-reported months of soudure and reduced coping strategies index
+* variables: food01, food02, food03, food05, food06, food07, food08, food09, food11, food12	Household level	Household level
 
 * 1.1.8
 * baseline prevalence of schistosomaisis self-reported condition and symptoms
+* variables: health_5_3, health_5_5, health_5_6, health_5_8, health_5_9	Individual level for child testing, household level for self-reported data	Individual level
+
+* 1.1.11
+* Does promoting the private benefits of a common pool resource (aquatic vegetation) induce a change in beliefs about property rights?
+* variables: beliefs_01, beliefs_02, beliefs_03, beliefs_04, beliefs_05, beliefs_06, beliefs_07, beliefs_08, beliefs_09
 
 * 2.1.1
 * baseline number of days of work or school lost due to ill health
+* variables: health_5_4, hh_03, hh_04, hh_08, hh_09, hh_37, hh_38
 
 * 2.1.2
 * baseline highest completed grade, current school enrollment, self-reported school attendance
+* variables: hh_26, hh_29, hh_30, hh_31, hh_32, hh_33, hh_34, hh_35, hh_36, hh_37, hh_38
 
 **************************************************
 * load and prepare midline outcome variables
 **************************************************
+use "$midline_household", clear
+
+* merge all together needed for balance tables
+merge 1:1 hhid using "$midline_health", nogen
+merge 1:1 hhid using "$midline_agriculture", nogen
+merge 1:1 hhid using "$midline_income", nogen
+merge 1:1 hhid using "$midline_standard", nogen
+merge 1:1 hhid using "$midline_games", nogen
+merge 1:1 hhid using "$midline_enumerator", nogen
+merge 1:1 hhid using "$midline_beliefs", nogen	
+merge m:1 hhid_village using "$midline_community", nogen
+
 * 1.1.1, 1.1.2, 1.1.3
 * midline AVR (self-reports)
+* variables: hh_12_6, hh_13_6, hh_14, hh_20_6, hh_21, hh_22
 
 * 1.1.4, 1.1.5, 1.1.6
 * midline compost proudction
-* repurpose vegetation for fertilizer? unsure the appropriate proxy
+* variables: hh_15_2, hh_23_2, agri_6_34_comp, agri_6_34
 
 * 1.1.6
 * midline agricultral total factor productivity (value of total output divided by value of all inputs)
-* midline profitability
-* heterogeneity anlalysis 
+* variables: _actif_number, _agri_number, agri_6_21, agri_6_32, agri_6_34_comp, agri_6_34, agri_6_35, agri_6_37, agri_6_38_a, agri_6_39_a, agri_6_40_a, agri_6_41_a, cereals_01, cereals_02, cereals_05, farines_01, farines_02, farines_05, legumes_01, legumes_02, legumes_05, legumineuses_01, legumineuses_02, legumineuses_05, aquatique_01, aquatique_02, aquatique_05,  o_culture_01, o_culture_02, o_culture_05, agri_income_07, agri_income_08, agri_income_11, agri_income_12, agri_income_14, agri_income_16, agri_income_19, agri_income_33, agri_income_36, agri_income_41, agri_income_45, agri_income_47, agri_income_48, hh_04, hh_05, hh_06, hh_07, hh_16, hh_17, hh_24, hh_25
 
 * 1.1.7
 * midline self-reported months of soudure and reduced coping strategies index
+* variables: food01, food02, food03, food05, food06, food07, food08, food09, food11, food12	Household level	Household level
 
 * 1.1.8
 * midline prevalence of schistosomaisis self-reported condition and symptoms
+* variables: health_5_3, health_5_5, health_5_6, health_5_8, health_5_9	Individual level for child testing, household level for self-reported data	Individual level
+
+* 1.1.11
+* Does promoting the private benefits of a common pool resource (aquatic vegetation) induce a change in beliefs about property rights?
+* variables: beliefs_01, beliefs_02, beliefs_03, beliefs_04, beliefs_05, beliefs_06, beliefs_07, beliefs_08, beliefs_09
 
 * 2.1.1
 * midline number of days of work or school lost due to ill health
+* variables: health_5_4, hh_03, hh_04, hh_08, hh_09, hh_37, hh_38
 
 * 2.1.2
 * midline highest completed grade, current school enrollment, self-reported school attendance
+* variables: hh_26, hh_29, hh_30, hh_31, hh_32, hh_33, hh_34, hh_35, hh_36, hh_37, hh_38
 
 **************************************************
 * specifications

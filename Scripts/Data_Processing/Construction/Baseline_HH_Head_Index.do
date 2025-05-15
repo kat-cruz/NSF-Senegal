@@ -61,14 +61,13 @@
 
 *^*^* additional file paths 
 
-	global data "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline\Individual_IDs_For_EPLS_UCAD_Matching"
 	global index "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline"
-	global data_deidentified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
-	global long_data "$master\Data_Management\Output\Data_Processing\Construction"
+	global output "$master\Data_Management\Output\Data_Processing\Construction"
+	global data "$master\Data_Management\Output\Data_Processing\Construction"
 	
 *^*^* import long data	
 	
-	use "$long_data\baseline_household_long.dta", clear 
+	use "$data\baseline_household_long.dta", clear 
 	
 		keep hhid individ hh_main_activity_ hh_active_agri_ hh_03_ hh_08_ hh_09_
 	
@@ -120,7 +119,9 @@
 *-----------------------------------------*	
 		
 		gen hh_head = (hh_relation_with_ == 1)
-		
+			gen child_head = 1 if hh_head == 1 & hh_age_ < 18
+				tab child_head
+					drop child_head
 *-----------------------------------------*		
 * At a glance: 2,010 households have 1 head
 		
@@ -165,6 +166,7 @@ preserve
 *** 		check if name_match has a head < 18
 			gen child_head = 1 if name_match == 1 & hh_age_ < 18
 				tab child_head
+					drop child_head
 *** 		no observations - procced as planned 
 
 
@@ -305,20 +307,20 @@ use `no_hh_firstpass', clear
 		
 				keep if has_head == 0
 
-***  identify candidate heads: working males 18+ in households missing a head
-		gen candidate = 0
-		replace candidate = 1 if has_head == 0 & hh_gender_ == 1 & work == 1 & hh_age_ >= 18
+***  	identify candidate heads: working males 18+ in households missing a head
+			gen candidate = 0
+			replace candidate = 1 if has_head == 0 & hh_gender_ == 1 & work == 1 & hh_age_ >= 18
 
-***  create sort key — candidates first, eldest among them first
-		gen sortkey = -1000 * candidate - hh_age_
+***  	create sort key — candidates first, eldest among them first
+			gen sortkey = -1000 * candidate - hh_age_
 
-*** sort so each household has candidates first, then by descending age
-		sort hhid sortkey
+*** 	sort so each household has candidates first, then by descending age
+			sort hhid sortkey
 
-***  select the first candidate in each household
-		gen select_head = 0
-		by hhid: replace select_head = 1 if candidate == 1 & _n == 1
-		
+***  	select the first candidate in each household
+			gen select_head = 0
+			by hhid: replace select_head = 1 if candidate == 1 & _n == 1
+			
 ***		preview results 
 			list hhid if has_head == 0 & select_head == 1 & hh_head != 1, sepby(hhid)
 
@@ -354,7 +356,7 @@ preserve
 
 use `no_hh_secondpass', clear 
 
-*** 		create indicator for whether each household has a head
+*** create indicator for whether each household has a head
 		egen has_head = max(hh_head), by(hhid)
 		tab has_head
 
@@ -366,37 +368,37 @@ use `no_hh_secondpass', clear
 ***  create sort key — candidates first, eldest among them first
 		gen sortkey = -1000 * candidate - hh_age_
 
-*** sort so each household has candidates first, then by descending age
+***  sort so each household has candidates first, then by descending age
 		sort hhid sortkey
 
 ***  select the first candidate in each household
 		gen select_head = 0
 		by hhid: replace select_head = 1 if candidate == 1 & _n == 1
 		
-***		preview results 
+***	  preview results 
 			list hhid if has_head == 0 & select_head == 1 & hh_head != 1, sepby(hhid)
 
 			egen tag = tag(hhid) if has_head == 0 & select_head == 1 & hh_head != 1
 			count if tag == 1
 				drop tag
 
-***  assign that person as household head
+***   assign that person as household head
 		replace hh_head = 1 if has_head == 0 & select_head == 1
 
 				drop has_head select_head candidate sortkey
-***	save working data 
+***	  save working data 
 			tempfile no_hh_thirdpass
 					save `no_hh_thirdpass'
 
-***    create filter to keep cleaned data 
+***   create filter to keep cleaned data 
 			egen has_head = max(hh_head), by(hhid)
 				tab has_head
 		
 				keep if has_head == 1
 				drop has_head
-				
-		tempfile no_hh_cleaned3
-			save `no_hh_cleaned3'
+						
+				tempfile no_hh_cleaned3
+					save `no_hh_cleaned3'
 
 restore
 
@@ -467,7 +469,7 @@ keep if num_heads_per_hh == 1
 
 ***			save final data set.
 
-	save "$data_deidentified\household_head_index.dta", replace 
+	save "$data\household_head_index.dta", replace 
 
 
 

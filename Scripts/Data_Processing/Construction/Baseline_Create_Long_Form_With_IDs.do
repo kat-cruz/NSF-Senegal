@@ -14,20 +14,22 @@
 	*^*^* This .do file outputs:
 	***							   baseline_household_long.dta
 
-**# Bookmark #1
-*<><<><><>><><<><><>>
+
+
+*-----------------------------------------*
 **# INITIATE SCRIPT
-*<><<><><>><><<><><>>
+*-----------------------------------------*
 		
 	clear all
 	set mem 100m
-	set maxvar 30000
-	set matsize 11000
+		set maxvar 30000
+		set matsize 11000
 	set more off
 
-*<><<><><>><><<><><>>
+
+*-----------------------------------------*
 **# SET FILE PATHS
-*<><<><><>><><<><><>>
+*-----------------------------------------*
 
 *^*^* Set base Box path for each user
 	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
@@ -44,18 +46,41 @@
 	global data_deidentified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
 	global data_identified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 	global long_out "$master\Data_Management\Output\Data_Processing\Construction"
+	*** I've created a data set that contains the resp and household head index for the balance tables along with the IDs
+	global balance_out "$master\Data_Management\Output\Analysis\Balance_Tables"
+		global respondent_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\respondent_index.dta"
+		global hh_head_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\household_head_index.dta"
 
 	*** import complete data for geographic and preliminary information ***
 	use "$data_clean\DISES_Baseline_Complete_PII", clear 
+		
+		
+			
+/* 
 
+		*merge 1:1 hhid using "$hh_head_index", nogen
+		*merge 1:1 hhid using "$respondent_index", nogen
+			
+			forvalues i = 1/55 {
+			gen resp_index_`i' = (resp_index == `i')
+		}
+			
+			forvalues i = 1/55 {
+			gen hh_head_index_`i' = (hh_head_index == `i')
+		}
+	
+*/
 	
 	
-*<><<><><>><><<><><>>
+
+*-----------------------------------------*
 **# Household roster module
-*<><<><><>><><<><><>>	
+*-----------------------------------------*
 	
 	** Laying out all variables for bookeeping 
-	
+
+preserve 	
+
 keep starttime* endtime* deviceid* devicephonenum* username* device_info* duration* caseid* ///
      today* record_text* audit_record*  ///
      village_select* village_select_o* hhid_village* hhid region* departement* commune* village* grappe* schoolmosqueclinic* grappe_int* ///
@@ -64,7 +89,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
      consent* ///
      start_survey*  ///
      start_identification* hh_region* hh_department* hh_commune* hh_district* ///
-     hh_arrondissement* hh_village* hh_numero* hh_phone* hh_head_name_complet* hh_name_complet_resp* ///
+    hh_head_index resp_index hh_arrondissement* hh_village* hh_numero* hh_phone* hh_head_name_complet* hh_name_complet_resp* ///
      hh_age_resp* hh_gender_resp* hh_date* hh_time* end_identification* ///
      start_hh_composition*  _household_roster* ///
      hh_first_name* hh_name* hh_surname* hh_full_name_calc* hh_gender* hh_age* ///
@@ -163,9 +188,10 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 		}
 		
 	tostring hh_11_o_* hh_12_o* hh_15_o_* hh_19_o* hh_20_o* hh_23_o* hh_29_o_* hh_12name* hh_20name*, replace 
+	
 		
 	reshape long ///
-    hh_age_ hh_gender_  hh_ethnicity_ hh_ethnicity_o_ hh_relation_with_o_ ///
+    hh_head_index_ resp_index_ hh_age_ hh_gender_  hh_ethnicity_ hh_ethnicity_o_ hh_relation_with_o_ ///
 			hh_education_skills_ hh_education_skills_0_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_skills_o_ hh_education_level_o_ hh_education_level_  hh_education_year_achieve_   ///
 			hh_mother_live_ hh_relation_imam_ hh_relation_with_ hh_presence_winter_ hh_presence_dry_ hh_main_activity_ hh_main_activity_o_ hh_active_agri_ ///
 			hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_11_ hh_11_o_ ///
@@ -192,96 +218,62 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 			tostring id, gen(str_id) format("%02.0f")
 			gen str individ = hhid + str_id
 			format individ %15s
-		
+			
+
 	save "$long_out\baseline_household_long.dta", replace 
 		
-	
-*<><<><><>><><<><><>>
+restore 
+
+ 
+*-----------------------------------------*
 **# Health roster module
-*<><<><><>><><<><><>>	
+*-----------------------------------------*	
 		
+preserve 		
+ 
+keep hhid health*
+
+
+forvalues i = 1/55 {
+			tostring health_5_11_o_`i', replace 
+			tostring  health_5_3_`i', replace 
+			tostring health_5_3_o_`i', replace 
+			 
+		}
+
+
+reshape long ///
+	hh_head_index_ resp_index_ ///
+	health_5_2_ health_5_3_ ///
+	health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_  health_5_3_13_ health_5_3_14_ health_5_3_99_  ///
+	health_5_3_o_ health_5_4_ health_5_5_  ///
+	health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ ///
+	health_5_11_  health_5_11_o_ health_5_12_ health_5_13_ health_5_14_ ///
+	health_5_14_note_ health_5_14_a_ health_5_14_c_ ///
+	healthage_ healthindex_ healthgenre_ healthname_, ///
+			i(hhid) j(id)
+	
+				
+				
 		
-		
-		
-		
-		
-		
-/* 
-		
-		
-	reshape long ///
-    hh_12index_1_ hh_12index_2_ hh_12index_3_ hh_12index_4_ hh_12index_5_ hh_12index_6_ hh_12index_7_ ///
-    hh_12name_1_ hh_12name_2_ hh_12name_3_ hh_12name_4_ hh_12name_5_ hh_12name_6_ hh_12name_7_ ///
-    hh_13_1_ hh_13_2_ hh_13_3_ hh_13_4_ hh_13_5_ hh_13_6_ hh_13_7_ ///
-    hh_20index_1_ hh_20index_2_ hh_20index_3_ hh_20index_4_ hh_20index_5_ hh_20index_6_ hh_20index_7_ ///
-    hh_20name_1_ hh_20name_2_ hh_20name_3_ hh_20name_4_ hh_20name_5_ hh_20name_6_ hh_20name_7_ ///
-    hh_21_1_ hh_21_2_ hh_21_3_ hh_21_4_ hh_21_5_ hh_21_6_ hh_21_7_, ///
-    i(hhid_village) j(member)
-
-		 
-		 
-* Reshape the variables into long format with underscore at the end
-reshape long hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_11_ hh_11_o_ hh_12_ hh_12_a_ hh_12_o_ hh_12_calc_ hh_12_roster_ hh_12index_ hh_12name_ hh_13_ hh_13_o_ hh_13_sum_ hh_14_ hh_15_ hh_15_o_ hh_16_ hh_17_ hh_18_ hh_19_ hh_19_o_ hh_20_ hh_20_a_ hh_20_o_ hh_20_calc_ hh_20_roster_ hh_20index_ hh_20name_ hh_21_ hh_21_o_ hh_21_sum_ hh_22_ hh_23_ hh_23_o_ hh_24_ hh_25_ hh_26_ hh_27_ hh_28_ hh_29_ hh_29_o_ hh_30_ hh_31_ hh_32_ hh_33_ hh_34_ hh_35_ hh_36_ hh_37_ hh_38_, i(hhid) j(variable_index)
-
-
+	**## Create matching individ
+			tostring hhid, replace format("%12.0f")
+			tostring id, gen(str_id) format("%02.0f")
+			gen str individ = hhid + str_id
+			format individ %15s				
+				
+						
+	save "$long_out\baseline_health_long.dta", replace 	
 	
-	
-	
-	
-*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-**** Loop through all variables in the dataset
-/*
-ds, has(type numeric)  // You can drop "has(type numeric)" if you want to check all vars
-foreach var of varlist `r(varlist)' {
-**** Only proceed if the variable matches the pattern hh_#_#_#
-    if regexm("`var'", "^hh_[0-9]+_[0-9]+_[0-9]+$") {
-        
-       **** Extract the i and j using regular expressions
-        local i = regexs(2)
-        local j = regexs(3)
-			****Extract i and j using capture to avoid errors
-        if regexm("`var'", "^hh_([0-9]+)_([0-9]+)_([0-9]+)$") {
-            local i = real(regexs(2))
-            local j = real(regexs(3))
-            
-				**** Check if middle number is greater than last number
-            if `i' > `j' {
-                di as error "⚠️ Possibly misordered: `var'"
-            }
-        }
-    }
-*/
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+				
+restore 				
+				
+				
+				
+*** end of .do file				
+				
+				
+            			
 
 
 

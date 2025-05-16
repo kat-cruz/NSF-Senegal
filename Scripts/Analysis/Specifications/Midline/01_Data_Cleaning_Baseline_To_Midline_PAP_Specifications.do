@@ -421,10 +421,48 @@ keep hhid baseline_rcsi_* baseline_ipc_phase baseline_months_soudure
 * 1.1.8
 * baseline prevalence of schistosomaisis self-reported condition and symptoms
 * variables: health_5_3, health_5_5, health_5_6, health_5_8, health_5_9	Individual level for child testing, household level for self-reported data	Individual level
+use "$baseline_health", clear
+
+* First create binary indicators for each numbered variable
+forvalues i = 1/55 {
+    * Binary indicators for each symptom/condition
+    cap gen health_5_3_2_`i'_bin = (health_5_3_2_`i' == 1)
+    cap gen health_5_5_`i'_bin = (health_5_5_`i' == 1) 
+    cap gen health_5_6_`i'_bin = (health_5_6_`i' == 1)
+    cap gen health_5_8_`i'_bin = (health_5_8_`i' == 1)
+    cap gen health_5_9_`i'_bin = (health_5_9_`i' == 1)
+}
+
+* Collapse to household level - any member reporting
+foreach symptom in health_5_3_2 health_5_5 health_5_6 health_5_8 health_5_9 {
+    * Get max across household members
+    egen hh_`symptom' = rowmax(`symptom'_*_bin)
+    label var hh_`symptom' "Any HH member reporting `symptom'"
+}
+
+* Create composite indicator (any symptom)
+egen baseline_schisto_symptoms = rowmax(hh_health_5_3_2 hh_health_5_5 hh_health_5_6 hh_health_5_8 hh_health_5_9)
+label var baseline_schisto_symptoms "Any HH member reporting schisto symptoms"
+
+* Calculate symptom count
+egen baseline_schisto_count = rowtotal(hh_health_5_3_2 hh_health_5_5 hh_health_5_6 hh_health_5_8 hh_health_5_9)
+label var baseline_schisto_count "Number of distinct schisto symptoms in HH"
+
+* Label variables more specifically
+label var hh_health_5_3_2 "HH: Any member with bilharzia past 12mo"
+label var hh_health_5_5 "HH: Any member received schisto meds past 12mo"
+label var hh_health_5_6 "HH: Any member ever diagnosed with schisto"
+label var hh_health_5_8 "HH: Any member with blood in urine past 12mo"
+label var hh_health_5_9 "HH: Any member with blood in stool past 12mo"
+
+* Keep household-level measures
+keep hhid hh_health_5_* baseline_schisto_symptoms baseline_schisto_count
+
 
 * 1.1.11
 * Does promoting the private benefits of a common pool resource (aquatic vegetation) induce a change in beliefs about property rights?
 * variables: beliefs_01, beliefs_02, beliefs_03, beliefs_04, beliefs_05, beliefs_06, beliefs_07, beliefs_08, beliefs_09
+
 
 * 2.1.1
 * baseline number of days of work or school lost due to ill health

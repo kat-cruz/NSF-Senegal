@@ -346,7 +346,7 @@ foreach var in hh_29_ hh_37_ hh_38_ {
 	}
 
 *-------------------*
-**#### hh_11_
+**#### hh_15_
 *-------------------*
 *** 	*How did he use aquatic vegetation?
 ***	 	 create binary variables for hh_15
@@ -356,6 +356,48 @@ foreach var in hh_29_ hh_37_ hh_38_ {
 		replace hh_15_`x' = 1 if hh_15_ == `x'
 	}		 
 	
+
+
+
+*-------------------*
+**#### household head variables
+*-------------------*
+
+rename hh_age_ hh_age 
+			rename hh_gender_ hh_gender
+			rename hh_education_skills_5_ hh_education_skills_5
+* Loop through the variables and create the corresponding head variables
+		foreach var in hh_age hh_gender hh_education_skills_5 hh_education_level_bin {
+			* Create new variable for each
+			gen `var'_h = . 
+			
+			* Replace the new variable with the value from the original variable if hh_relation_with_ == 1
+			replace `var'_h = `var' if hh_index_ == 1
+		}
+
+
+*-----------------------------------------*
+**### collapse household variables
+*-----------------------------------------*
+ 
+		collapse (mean) ///
+			hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh child_in_home ///
+			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ /// 	
+			 (first) hhid_village, ///
+		collapse (max) hh_12_6_ hh_03_ health_5_3_bin health_5_6_
+			by(hhid)
+			
+	
+			
+			merge 1:1 hhid using `child_aggregates'
+	//hh_26_ hh_27_  hh_31_bin hh_37_ hh_38_ hh_29_*  ///  //edu vars 
+	
+
+		
+		order 
+		
+		
+		
 	** main source of drinking water supply
 		** 1 = Interior tap
 		** 2 = Public tap
@@ -365,6 +407,11 @@ foreach var in hh_29_ hh_37_ hh_38_ {
 		** 8 = Water vendor
 		
 	*	(update to include protected well and tanker)
+	
+*-----------------------------------------*
+**# Standard of Living Module 
+*-----------------------------------------*
+
 *-------------------*
 **#### living_01_bin
 *-------------------*
@@ -404,44 +451,6 @@ foreach var in hh_29_ hh_37_ hh_38_ {
 
 		gen living_06_bin = 0
 			replace living_06_bin = 1 if living_06 == 1 | living_06 == 3
-
-
-*-------------------*
-**#### household head variables
-*-------------------*
-
-rename hh_age_ hh_age 
-			rename hh_gender_ hh_gender
-			rename hh_education_skills_5_ hh_education_skills_5
-* Loop through the variables and create the corresponding head variables
-		foreach var in hh_age hh_gender hh_education_skills_5 hh_education_level_bin {
-			* Create new variable for each
-			gen `var'_h = . 
-			
-			* Replace the new variable with the value from the original variable if hh_relation_with_ == 1
-			replace `var'_h = `var' if hh_index_ == 1
-		}
-
-
-*-----------------------------------------*
-**### collapse household variables
-*-----------------------------------------*
- 
-		collapse (mean) ///
-			hh_age_h hh_education_level_bin_h hh_education_skills_5_h hh_gender_h hh_numero trained_hh child_in_home ///
-			hh_03_ hh_10_ hh_11_* hh_12_*  hh_13_* hh_14_ hh_15_* hh_16_ /// 	
-			 (first) hhid_village, ///
-		collapse (max) hh_12_6_ hh_03_ health_5_3_bin health_5_6_
-			by(hhid)
-			
-	
-			
-			merge 1:1 hhid using `child_aggregates'
-	//hh_26_ hh_27_  hh_31_bin hh_37_ hh_38_ hh_29_*  ///  //edu vars 
-	
-
-		
-		order 
 
 
 *** merge all together needed for balance tables

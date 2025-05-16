@@ -35,6 +35,7 @@ global treatment "$master\Data_Management\Data\_CRDES_CleanData\Treatment\Identi
 global asset_index "$master\Data_Management\Output\Data_Processing\Construction\PCA_asset_index_var.dta"
 global hh_head_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\household_head_index.dta"
 global walking_distance_vector "$master\Data_Management\Data\Location_Data\walking_distance_vector.csv"
+global tfp "$master\Data_Management\Output\Analysis\Auctions_Shadow_Wages\complete_data_clean.dta"
 
 global baseline_agriculture "$baseline\Complete_Baseline_Agriculture.dta"
 global baseline_beliefs "$baseline\Complete_Baseline_Beliefs.dta"
@@ -69,8 +70,7 @@ global midline_community "$midline\Complete_Midline_Community.dta"
 * controls and treatment data
 **************************************************
 use "$baseline_household", clear
-
-* merge all together needed for balance tables
+* merge all together
 merge 1:1 hhid using "$baseline_health", nogen
 merge 1:1 hhid using "$baseline_agriculture", nogen
 merge 1:1 hhid using "$baseline_income", nogen
@@ -172,6 +172,9 @@ save `control_data', replace
 * MERGE IN ASSET INDEX *
 **************************************************
 use "$asset_index", clear
+
+
+
 tempfile asset_data
 save `asset_data', replace
 
@@ -250,9 +253,9 @@ save `combined_data', replace
 **************************************************
 * load and prepare baseline outcome variables
 **************************************************
+* 1.1.1, 1.1.2, 1.1.3
+* baseline AVR (self-reports)
 use "$baseline_household", clear
-
-* merge all together needed for balance tables
 merge 1:1 hhid using "$baseline_health", nogen
 merge 1:1 hhid using "$baseline_agriculture", nogen
 merge 1:1 hhid using "$baseline_income", nogen
@@ -262,25 +265,101 @@ merge 1:1 hhid using "$baseline_enumerator", nogen
 merge 1:1 hhid using "$baseline_beliefs", nogen	
 merge m:1 hhid_village using "$baseline_community", nogen
 
-* 1.1.1, 1.1.2, 1.1.3
-* baseline AVR (self-reports)
 * variables: hh_12_6, hh_13_6, hh_14, hh_20_6, hh_21, hh_22
 * aggregate hh_12_6* to a value of 1 if there is any value of 1 or that rowtotal > 0
+ds hh_12_6*, has(type string)
+foreach var of varlist `r(varlist)' {
+    destring `var', replace force
+}
+egen rowtotal_hh_12_6 = rowtotal(hh_12_6*)
+gen agg_hh_12_6 = rowtotal_hh_12_6 > 0
 * aggregate hh_14* to a value of 1 if there is any value greater than 0 in that rowtotal
+egen rowtotal_hh_14 = rowtotal(hh_14*)
+gen agg_hh_14 = rowtotal_hh_14 > 0
 * aggregate hh_20_6* to a value of 1 if there is any value of 1 or that rowtotal > 0
+ds hh_20_6*, has(type string)
+foreach var of varlist `r(varlist)' {
+    destring `var', replace force
+}
+egen rowtotal_hh_20_6 = rowtotal(hh_20_6*)
+gen agg_hh_20_6 = rowtotal_hh_20_6 > 0
 * aggregate hh_22* to a value of 1 if there is any value greater than 0 in that row total
+egen rowtotal_hh_22 = rowtotal(hh_22*)
+gen agg_hh_22 = rowtotal_hh_22 > 0
+* create AVR composite indicator from any of the aggregated components
+gen baseline_avr = (agg_hh_12_6 == 1 | agg_hh_14 == 1 | agg_hh_20_6 == 1 | agg_hh_22 == 1)
 
 * 1.1.4, 1.1.5, 1.1.6
 * baseline compost proudction
 * variables: hh_15_2, hh_23_2, agri_6_34_comp, agri_6_34
 * hh_15_2* > 0
+ds hh_15_2*, has(type string)
+if "`r(varlist)'" != "" {
+    foreach var of varlist `r(varlist)' {
+        destring `var', replace force
+    }
+}
+egen rowtotal_hh_15_2 = rowtotal(hh_15_2*)
+gen agg_hh_15_2 = rowtotal_hh_15_2 > 0
 * hh_23_2* > 1
+ds hh_23_2*, has(type string)
+if "`r(varlist)'" != "" {
+    foreach var of varlist `r(varlist)' {
+        destring `var', replace force
+    }
+}
+egen rowtotal_hh_23_2 = rowtotal(hh_23_2*)
+gen agg_hh_23_2 = rowtotal_hh_23_2 > 1
 * agri_6_34_comp == 1
+ds agri_6_34_comp*, has(type numeric)
+egen rowtotal_agri_6_34_comp = rowtotal(`r(varlist)')
+gen agg_agri_6_34_comp = rowtotal_agri_6_34_comp > 0
 * agri_6_34 == 1
+ds agri_6_34*, has(type numeric)
+egen rowtotal_agri_6_34 = rowtotal(`r(varlist)')
+gen agg_agri_6_34 = rowtotal_agri_6_34 > 0
+
+* create compost composite indicator from any of the aggregated components
+gen baseline_compost_production = (agg_hh_15_2 == 1 | agg_hh_23_2 == 1 | agg_agri_6_34_comp == 1 | agg_agri_6_34 == 1)
+
+* variable labels
+label var baseline_avr "Baseline AVR"
+label var baseline_compost_production "Baseline compost production"
+
+keep hhid baseline_avr baseline_compost_production
+
+tempfile baseline_outcomes
+save `baseline_outcomes'
+
+* merge back into combined data
+use `combined_data', clear
+merge 1:1 hhid using `baseline_outcomes', keep(master match) nogen
 
 * 1.1.6
 * baseline agricultral total factor productivity (value of total output divided by value of all inputs)
-* variables: _actif_number, _agri_number, agri_6_21, agri_6_32, agri_6_34_comp, agri_6_34, agri_6_35, agri_6_37, agri_6_38_a, agri_6_39_a, agri_6_40_a, agri_6_41_a, cereals_01, cereals_02, cereals_05, farines_01, farines_02, farines_05, legumes_01, legumes_02, legumes_05, legumineuses_01, legumineuses_02, legumineuses_05, aquatique_01, aquatique_02, aquatique_05,  o_culture_01, o_culture_02, o_culture_05, agri_income_07, agri_income_08, agri_income_11, agri_income_12, agri_income_14, agri_income_16, agri_income_19, agri_income_33, agri_income_36, agri_income_41, agri_income_45, agri_income_47, agri_income_48, hh_04, hh_05, hh_06, hh_07, hh_16, hh_17, hh_24, hh_25
+* variables: using the calculations from the auctions experiment analysis
+use "$tfp", clear
+keep if year == 2024
+* cost of own labor
+gen labor_cost = total_ag_hours * daily_wage_1
+replace labor_cost = . if total_ag_hours == . | daily_wage_1 == .
+* cost of hired labor
+gen hired_labor_cost = agri_income_16 * daily_wage_1
+replace hired_labor_cost = . if agri_income_16 == . | daily_wage_1 == .
+**# Bookmark #1
+* FERTILIZER COST
+gen fertilizer_cost = total_fert * 300  
+replace fertilizer_cost = . if total_fert == .
+* total input costs
+egen total_input_cost = rowtotal(labor_cost hired_labor_cost fertilizer_cost)
+* need other input cost of assets
+
+* TFP = Value of output / total input cost
+gen tfp = total_value_production / total_input_cost
+replace tfp = . if total_value_production == . | total_input_cost == 0
+* Profitability = Value of output - total input cost
+gen profitability = total_value_production - total_input_cost
+replace profitability = . if total_value_production == . | total_input_cost == .
 
 * 1.1.7
 * baseline self-reported months of soudure and reduced coping strategies index

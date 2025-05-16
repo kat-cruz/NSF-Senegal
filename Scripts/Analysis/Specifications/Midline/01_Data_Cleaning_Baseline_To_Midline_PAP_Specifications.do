@@ -336,34 +336,87 @@ use `combined_data', clear
 merge 1:1 hhid using `baseline_outcomes', keep(master match) nogen
 
 * 1.1.6
-* baseline agricultral total factor productivity (value of total output divided by value of all inputs)
-* variables: using the calculations from the auctions experiment analysis
 use "$tfp", clear
 keep if year == 2024
-* cost of own labor
-gen labor_cost = total_ag_hours * daily_wage_1
-replace labor_cost = . if total_ag_hours == . | daily_wage_1 == .
-* cost of hired labor
-gen hired_labor_cost = agri_income_16 * daily_wage_1
-replace hired_labor_cost = . if agri_income_16 == . | daily_wage_1 == .
-**# Bookmark #1
-* FERTILIZER COST
-gen fertilizer_cost = total_fert * 300  
-replace fertilizer_cost = . if total_fert == .
-* total input costs
-egen total_input_cost = rowtotal(labor_cost hired_labor_cost fertilizer_cost)
-* need other input cost of assets
+merge 1:1 hhid using "$baseline_agriculture", nogen
+merge 1:1 hhid using "$baseline_income", nogen 
+merge 1:1 hhid using "$baseline_production", nogen
+merge m:1 hhid_village using "$baseline_community", nogen
 
-* TFP = Value of output / total input cost
-gen tfp = total_value_production / total_input_cost
-replace tfp = . if total_value_production == . | total_input_cost == 0
-* Profitability = Value of output - total input cost
-gen profitability = total_value_production - total_input_cost
-replace profitability = . if total_value_production == . | total_input_cost == .
+* keep only variables needed for TFP calculation
+keep hhid hhid_village year ///
+    value_prod_1 /// Output value
+    prod_hect_1 /// Land input
+    ag_hours_1  /// Labor hours
+    daily_wage_1 /// Wage rate
+    agri_income_16 /// Hired labor cost
+    fert_1 /// Fertilizer quantity
+    q63_1 /// Fertilizer price (from community survey)
+    number_mech_equip /// Equipment
+    agri_income_01 /// Land rental payments
+    total_production_hectares // For land rate calculation
+
+* calculate input values using observed prices
+* Labor cost (family + hired)
+gen labor_cost = (ag_hours_1 * daily_wage_1) + agri_income_16
+
+* land cost
+bysort hhid_village: egen land_rate = median(agri_income_01/total_production_hectares)
+gen land_cost = prod_hect_1 * land_rate
+
+* fertilizer cost
+gen fert_cost = fert_1 * q63_1
+
+* equipment cost (using standard rental/depreciation)
+gen equip_cost = number_mech_equip * 25000 // Standard equipment value
+
+* calculate total costs and TFP
+egen total_input_value = rowtotal(labor_cost land_cost fert_cost equip_cost)
+gen tfp = value_prod_1/total_input_value
 
 * 1.1.7
 * baseline self-reported months of soudure and reduced coping strategies index
-* variables: food01, food02, food03, food05, food06, food07, food08, food09, food11, food12	Household level	Household level
+* variables: food01, food02, food03, food05, food06, food07, food08, food09, food11, food12
+use "$baseline_lean", clear
+
+* Binary indicators rather than frequency
+* Since we have yes/no responses for 12-month period rather than days/week
+* Using standard severity weights but adjusted for binary responses:
+*   - Less preferred food = 1
+*   - Borrow food/help = 2
+*   - Reduce portions = 1
+*   - Restrict adult consumption = 3
+*   - Reduce meals = 1
+
+* create weighted binary component scores
+gen baseline_rcsi_work = (food02==1) * 2     // Paid work (borrowing/help proxy)
+gen baseline_rcsi_assets = (food03==1) * 3   // Sold assets (adult restriction proxy)
+gen baseline_rcsi_migrate = (food11==1) * 1  // Migration (less preferred food proxy)
+gen baseline_rcsi_skip = (food12==1) * 1     // Skip meals (reduce meals proxy)
+
+* calculate modified annual rCSI score
+egen baseline_rcsi_annual = rowtotal(baseline_rcsi_work baseline_rcsi_assets baseline_rcsi_migrate baseline_rcsi_skip)
+label var baseline_rcsi_annual "Annual Reduced Coping Strategies Score"
+
+* generate modified IPC Phase categories 
+* Note: These thresholds are adapted for annual binary measures
+gen baseline_ipc_phase = .
+replace baseline_ipc_phase = 1 if baseline_rcsi_annual <= 1    // No/minimal coping
+replace baseline_ipc_phase = 2 if baseline_rcsi_annual == 2    // Stress coping
+replace baseline_ipc_phase = 3 if baseline_rcsi_annual == 3    // Crisis coping
+replace baseline_ipc_phase = 4 if baseline_rcsi_annual >= 4    // Emergency coping
+label define baseline_ipc 1 "Minimal" 2 "Stress" 3 "Crisis" 4 "Emergency"
+label values baseline_ipc_phase baseline_ipc
+
+* percentages by phase
+tab baseline_ipc_phase, m
+
+* baseline months soudure
+rename food01 baseline_months_soudure
+label var baseline_months_soudure "Self-reported months of lean season"
+
+keep hhid baseline_rcsi_* baseline_ipc_phase baseline_months_soudure
+
 
 * 1.1.8
 * baseline prevalence of schistosomaisis self-reported condition and symptoms
@@ -380,7 +433,7 @@ replace profitability = . if total_value_production == . | total_input_cost == .
 * 2.1.2
 * baseline highest completed grade, current school enrollment, self-reported school attendance
 * variables: hh_26, hh_29, hh_30, hh_31, hh_32, hh_33, hh_34, hh_35, hh_36, hh_37, hh_38
-
+xxx
 **************************************************
 * load and prepare midline outcome variables
 **************************************************

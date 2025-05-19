@@ -69,8 +69,43 @@
 	
 	use "$data\baseline_household_long.dta", clear 
 	
-		keep hhid individ hh_main_activity_ hh_active_agri_ hh_03_ hh_08_ hh_09_
+		keep hhid individ hh_main_activity_ hh_active_agri_ hh_03_ hh_08_ hh_09_ hh_10_
+		
+		gen hh_activity_str = ""
+
+		replace hh_activity_str = "Unemployed"              if hh_main_activity_ == 0
+		replace hh_activity_str = "Agriculture"             if hh_main_activity_ == 1
+		replace hh_activity_str = "Livestock farming"       if hh_main_activity_ == 2
+		replace hh_activity_str = "Fishing"                 if hh_main_activity_ == 3
+		replace hh_activity_str = "Forestry"                if hh_main_activity_ == 4
+		replace hh_activity_str = "Handicraft"              if hh_main_activity_ == 5
+		replace hh_activity_str = "Commerce"                if hh_main_activity_ == 6
+		replace hh_activity_str = "Salaried employment"     if hh_main_activity_ == 7
+		replace hh_activity_str = "Transportation"          if hh_main_activity_ == 8
+		replace hh_activity_str = "Harvesting/Gathering"    if hh_main_activity_ == 9
+		replace hh_activity_str = "Pupil/student"           if hh_main_activity_ == 10
+		replace hh_activity_str = "Other (to be specified)" if hh_main_activity_ == 99
+
+		
+		
+		
+		gen work = .
+
+		* Set to 1 if hh_main_activity_ > 0 AND any of the others > 0
+		replace work = 1 if hh_main_activity_ > 0 & ///
+			(hh_03_ > 0 | hh_08_ > 0 | hh_09_ > 0 | hh_10_ > 0) & ///
+			!missing(hh_main_activity_, hh_03_, hh_08_, hh_09_, hh_10_)
+
+		* Set to 0 if ALL activity vars are zero, regardless of hh_main_activity_
+		replace work = 0 if hh_03_ <= 0 & hh_08_ <= 0 & hh_09_ <= 0 & hh_10_ <= 0 & ///
+			!missing(hh_03_, hh_08_, hh_09_, hh_10_)
+
+
+
+	tempfile work_vars
+	save `work_vars'
 	
+/* 
 	gen work = .
 	replace work = 1 if (hh_active_agri_ > 0 | hh_03_ > 0 | hh_08_ > 0 | hh_09_ > 0) ///
 		& !missing(hh_active_agri_) & !missing(hh_03_) & !missing(hh_08_) & !missing(hh_09_)
@@ -80,6 +115,7 @@
 
 	tempfile work_vars
 	save `work_vars'
+*/
 
 *^*^* import data
 
@@ -89,9 +125,10 @@
 		keep if _merge == 3
 		
 		 ** keep relevant variables 
-		keep hhid individ individual resp hh_relation_with_ hh_head_name_complet hh_full_name_calc_ hh_name_complet_resp hh_age_ hh_gender_ work 
-			order hhid individ individual resp hh_relation_with_ hh_head_name_complet hh_full_name_calc_ hh_name_complet_resp hh_age_ hh_gender_ work 
+		keep hhid individ individual resp hh_relation_with_ hh_head_name_complet hh_full_name_calc_ hh_name_complet_resp hh_age_ hh_gender_ hh_main_activity_  hh_activity_str hh_active_agri_ work hh_03_ hh_08_ hh_09_ hh_10_
+			order hhid individ individual resp hh_relation_with_ hh_head_name_complet hh_full_name_calc_ hh_name_complet_resp hh_age_ hh_gender_ hh_main_activity_ hh_activity_str  hh_active_agri_ work hh_03_ hh_08_ hh_09_ hh_10_
 
+			keep if hh_main_activity_ == 0 & (hh_03_ > 0 | hh_08_ > 0 | hh_09_ > 0 | hh_10_ > 0)
 *-----------------------------------------*
 **#  CREATE relevant variables 
 *-----------------------------------------*

@@ -1151,7 +1151,8 @@
 	
 			keep in 57/78
 		
-				save "$cleandata_ucad_mid\geuo_033A_midline_df_left_school.dta", replace 
+					tempfile _033A_left_school
+						save  `_033A_left_school'
 	restore 
 
 		
@@ -1257,7 +1258,8 @@
 	keep if inrange(obs_no, 50, 53)
 	drop obs_no
 	
-		save "$cleandata_ucad_mid\dodel_072B_midline_left_study.dta", replace 
+				tempfile _072B_left_school
+					save  `_072B_left_school'
 	restore 
 	* save all kids in midline  
 	
@@ -1496,22 +1498,22 @@
 	
 			
 	drop in 1/6
+	gen notes = ""
 	gen hhid_village = "021B"
 		order hhid_village
+		
+				replace notes = age in 57
+				replace age = sexe in 57
+				replace sexe = identifiant in 57
+				replace identifiant = initiales in 57
+				replace initiales = numero in 57
+				replace numero = "" in 57
 	
 	*^*^* keep kids who left baseline
 	
 	preserve 
 	
 			keep in 57
-		
-		gen temp_v1 = v2
-			replace v1 = temp_v1
-			replace v2 = v3
-			replace v3 = v4
-			replace v4 = .
-
-			drop temp_v1
 		
 				tempfile _021B_left_school
 					save `_021B_left_school'
@@ -1523,9 +1525,7 @@
 	drop in 55/56
 	drop in 56/58
 	
-		
-
-	save "$cleandata_ucad_mid\thiangaye_021B_midline_df.dta", replace 
+			save "$cleandata_ucad_mid\thiangaye_021B_midline_df.dta", replace 
 	
 	
 **##   Fanaye Diery (062B)
@@ -1588,6 +1588,8 @@
 		
 		
 		drop in 1/6
+		gen hhid_village = "062B"
+			order hhid_village
 		
 			*^*^* keep kids who left baseline
 	
@@ -1595,13 +1597,21 @@
 	
 			keep in 51/56
 		
-				save "$cleandata_ucad_mid\fanaye_diery_062B_midline_left_school.dta", replace 
+				tempfile _062B_left_school
+					save  `_062B_left_school'
 		
 	restore 
 		
 	** drop kids who left baseline now to keep record of all kids enrolled in midline 
 	
-	drop in 50/58
+	drop in 50
+	drop in 56/57
+	
+		gen notes = ""
+			forvalues i = 50/55 {
+				replace notes = fu_p1 in `i'
+				replace fu_p1 = "" in `i'
+			}
 		
 	save "$cleandata_ucad_mid\fanaye_diery_062B_midline_df", replace 	 		
 
@@ -1665,20 +1675,32 @@
 		
 		
 		drop in 1/6
-		
+			gen hhid_village = "031B"
+				order hhid_village	
+
 			*^*^* keep kids who left baseline
 	
 	preserve 
 	
 			keep in 58
 		
-				save "$cleandata_ucad_mid\saneinte_031B_midline_left_school.dta", replace 
-		
+				tempfile _031B_left_school
+					save  `_031B_left_school'
+
 	restore 
 		
 	** drop kids who left baseline now to keep record of all kids enrolled in midline 
 	
-	drop in 56/59
+	drop in 56/57
+	drop in 57
+	
+	gen notes = ""
+			
+			forvalues i = 56/56 {
+				replace notes = fu_p1 in `i'
+				replace fu_p1 = "" in `i'
+			}
+
 		
 	save "$cleandata_ucad_mid\saneinte_031B_midline_df", replace 	 
 	

@@ -59,6 +59,7 @@ global midline_lean "$midline\Complete_Midline_Lean_Season.dta"
 global midline_production "$midline\Complete_Midline_Production.dta"
 global midline_standard "$midline\Complete_Midline_Standard_Of_Living.dta"
 global midline_community "$midline\Complete_Midline_Community.dta"
+global midline_principal ""
 
 **************************************************
 * baseline data
@@ -83,6 +84,8 @@ From the school survey:
 Requested individual-level data:
 -child infection status, age, and gender
 */
+**************************************************
+* Baseline Data Cleaning
 **************************************************
 use "$baseline_household", clear
 * merge all together
@@ -199,6 +202,59 @@ foreach freq in 1 2 3 {
     label var village_freq_`freq'_count "Count of HH with `lbl' water contact"
 }
 
+* WASH Labels
+foreach i in 1 2 3 4 5 6 7 8 9 10 99 {
+    local lbl : label (living_01) `i'
+    label var village_water_`i' "Number of households in village using `lbl' as main water source"
+}
+
+foreach i in 0 1 2 3 4 5 6 99 {
+    local lbl : label (living_04) `i'
+    label var village_toilet_`i' "Number of households in village using `lbl' as main toilet type"
+}
+
+* Vegetation Collection Label
+label var village_veg_total "Total kilograms of aquatic vegetation collected by all households in village per week"
+
+* Illness Labels
+label var village_ill_count "Number of households in village reporting any illness in past 12 months"
+
+foreach i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
+    local lbl : label (health_5_3_1) `i'
+    label var village_illness_`i' "Number of households in village reporting: `lbl'"
+}
+
+* Schistosomiasis Specific Labels
+label var village_treated_count "Number of households in village with any member receiving schistosomiasis treatment in past 12 months"
+label var village_diagnosed_count "Number of households in village with any member ever diagnosed with schistosomiasis"
+label var village_blood_8_count "Number of households in village with any member reporting blood in urine in past 12 months"
+label var village_blood_9_count "Number of households in village with any member reporting blood in stools in past 12 months"
+
+* Water Usage Labels
+label var village_fetch_total "Total hours spent fetching water by all households in village (past 7 days)"
+label var village_hh_10_total "Total hours spent within 1m of surface water by all households in village (per week)"
+label var village_hh_13_total "Total hours spent at specific water sources by all households in village (per week)"
+
+* Surface Water Source Labels
+foreach i in 1 2 3 4 99 {
+    local lbl : label (hh_11_1) `i'
+    label var village_source_`i'_count "Number of households in village using `lbl' as surface water source"
+}
+
+* Water Contact Labels
+label var village_contact_count "Number of households in village reporting water contact in past 12 months"
+label var village_freq_1_count "Number of households in village with daily water contact"
+label var village_freq_2_count "Number of households in village with weekly water contact"
+label var village_freq_3_count "Number of households in village with monthly water contact"
+
+* Community Survey Labels
+label var number_hh "Total number of households in village (community survey)"
+label var number_total "Total population in village (community survey)"
+label var q_23 "Number of village water sources"
+label var q_24 "Number of functional village water sources"
+label var q_35_check "Presence of village health committee (1=yes)"
+label var q_35 "Number of village health committee members"
+
 * Keep only village-level aggregates and community variables
 keep hhid_village ///
     /* Village WASH counts */ ///
@@ -219,3 +275,20 @@ keep hhid_village ///
 
 * Drop duplicates and keep only village-level counts
 duplicates drop hhid_village, force
+
+**************************************************
+* Midline Data Cleaning
+**************************************************
+use "$midline_household", clear
+* merge all together
+merge 1:1 hhid using "$midline_health", nogen
+merge 1:1 hhid using "$midline_agriculture", nogen
+merge 1:1 hhid using "$midline_income", nogen
+merge 1:1 hhid using "$midline_standard", nogen
+merge 1:1 hhid using "$midline_games", nogen
+merge 1:1 hhid using "$midline_enumerator", nogen
+merge 1:1 hhid using "$midline_beliefs", nogen	
+merge 1:1 hhid using "$midline_knowledge", nogen
+merge m:1 hhid_village using "$midline_community", nogen
+* merge school principal survey
+

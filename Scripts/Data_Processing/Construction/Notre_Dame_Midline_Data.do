@@ -100,204 +100,122 @@ merge m:1 hhid_village using "$baseline_community", nogen
 * child infection status, age, and gender from the paristological data?
 keep hhid_village hhid living_01 living_04 hh_14* health_5_2* health_5_3* health_5_5* health_5_6* health_5_8* health_5_9* hh_02* hh_10* hh_13* hh_11* knowledge_18 knowledge_21 number_hh number_total q_23 q_24 q_35_check q_35 
 
-* living_01
-* village-level proportions for each water source category
+* living_01: Count households with each water source type by village
 foreach cat in 1 2 3 4 5 6 7 8 9 10 99 {
-    * Generate proportion for each category
-    gen prop_water_`cat' = (living_01 == `cat')
-    
-    * Calculate village-level means (proportions)
-    bysort hhid_village: egen village_water_`cat' = mean(prop_water_`cat')
-    
-    * Label variables
+    gen water_count_`cat' = (living_01 == `cat')
+    bysort hhid_village: egen village_water_`cat' = total(water_count_`cat')
     local lbl : label (living_01) `cat'
-    label var village_water_`cat' "Prop. HH in village: `lbl'"
+    label var village_water_`cat' "Count of HH in village: `lbl'"
 }
 
-* living_04
-* village-level proportions for each toilet type
+* living_04: Count households with each toilet type by village
 foreach cat in 0 1 2 3 4 5 6 99 {
-    * proportion for each category
-    gen prop_toilet_`cat' = (living_04 == `cat')
-    
-    * village-level means (proportions)
-    bysort hhid_village: egen village_toilet_`cat' = mean(prop_toilet_`cat')
-    
-    * variables with proper descriptions
+    gen toilet_count_`cat' = (living_04 == `cat')
+    bysort hhid_village: egen village_toilet_`cat' = total(toilet_count_`cat')
     local lbl : label (living_04) `cat'
-    label var village_toilet_`cat' "Prop. HH in village: `lbl'"
+    label var village_toilet_`cat' "Count of HH in village: `lbl'"
 }
 
-* hh_14
-* Sum vegetation collection across household members (hh_14)
+* hh_14: Total vegetation collection by village
 egen hh_veg_total = rowtotal(hh_14*)
-label var hh_veg_total "Total kg vegetation collected by household per week"
+bysort hhid_village: egen village_veg_total = total(hh_veg_total)
+label var village_veg_total "Total kg vegetation collected in village per week"
 
-* Calculate village-level means (hh_14)
-bysort hhid_village: egen village_veg_mean = mean(hh_veg_total)
-label var village_veg_mean "Mean kg vegetation collected per HH in village"
-
-* health_5_2
-* Create binary illness indicators for each household member
+* health_5_2: Count households with any illness by village
 forvalues i = 1/55 {
     cap gen health_5_2_`i'_bin = (health_5_2_`i' == 1) if health_5_2_`i' != 2
 }
-
-* Household level calculations
-* Any illness in household
 egen hh_any_ill = rowmax(health_5_2_*_bin)
-label var hh_any_ill "Any HH member ill in past 12mo"
+bysort hhid_village: egen village_ill_count = total(hh_any_ill)
+label var village_ill_count "Count of HH in village with any illness"
 
-* health_5_3*
-* household-level illness indicators for each condition
+* health_5_3: Count households with each condition by village
 foreach condition in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 99 {
-    * First get household-level indicators
     egen hh_illness_`condition' = rowmax(health_5_3_`condition'_*)
-    label var hh_illness_`condition' "HH: Any member with condition `condition'"
-    
-    * Then aggregate to village level
-    bysort hhid_village: egen village_illness_`condition' = mean(hh_illness_`condition')
+    bysort hhid_village: egen village_illness_`condition' = total(hh_illness_`condition')
     local lbl : label (health_5_3_1) `condition'
-    label var village_illness_`condition' "Village prop: `lbl'"
+    label var village_illness_`condition' "Count of HH in village: `lbl'"
 }
 
-* summary measures at household level
-egen hh_condition_count = rowtotal(hh_illness_*)
-label var hh_condition_count "Number of distinct conditions in HH"
-
-* health_5_5*
-* Create clean binary treatment indicators for each household member
+* health_5_5: Count households with schisto treatment
 forvalues i = 1/55 {
-    * Create binary indicator only for clear Yes/No responses
-    cap gen health_5_5_`i'_bin = .
-    cap replace health_5_5_`i'_bin = 1 if health_5_5_`i' == 1
-    cap replace health_5_5_`i'_bin = 0 if health_5_5_`i' == 0
-    * Note: leaves as missing if health_5_5_`i' == 2 (Don't know)
+    cap gen health_5_5_`i'_bin = (health_5_5_`i' == 1) if health_5_5_`i' != 2
 }
-
-* Household level calculations
-* Any member received treatment (excluding don't know responses)
 egen hh_any_schisto_treat = rowmax(health_5_5_*_bin)
-label var hh_any_schisto_treat "Any HH member received schisto treatment"
+bysort hhid_village: egen village_treated_count = total(hh_any_schisto_treat)
+label var village_treated_count "Count of HH in village with schisto treatment"
 
-* Count of household members with known treatment status
-egen hh_known_treatment = rownonmiss(health_5_5_*_bin)
-label var hh_known_treatment "Number of HH members with known treatment status"
-
-* Village level calculations
-* Proportion of households with any treatment (among those with known status)
-bysort hhid_village: egen village_any_treated = mean(hh_any_schisto_treat)
-label var village_any_treated "Prop. of HH in village with any schisto treatment"
-
-* health_5_6*
-* Create clean binary diagnosis indicators for each household member
+* health_5_6: Count households with schisto diagnosis
 forvalues i = 1/55 {
-    * Create binary indicator only for clear Yes/No responses
-    cap gen health_5_6_`i'_bin = .
-    cap replace health_5_6_`i'_bin = 1 if health_5_6_`i' == 1
-    cap replace health_5_6_`i'_bin = 0 if health_5_6_`i' == 0
-    * Note: leaves as missing if health_5_6_`i' == 2 (Don't know)
+    cap gen health_5_6_`i'_bin = (health_5_6_`i' == 1) if health_5_6_`i' != 2
 }
-
-* Household level calculations
-* Any member ever diagnosed
 egen hh_any_schisto_diag = rowmax(health_5_6_*_bin)
-label var hh_any_schisto_diag "Any HH member ever diagnosed with schisto"
+bysort hhid_village: egen village_diagnosed_count = total(hh_any_schisto_diag)
+label var village_diagnosed_count "Count of HH in village with schisto diagnosis"
 
-* Count of household members with known diagnosis status
-egen hh_known_diagnosis = rownonmiss(health_5_6_*_bin)
-label var hh_known_diagnosis "Number of HH members with known diagnosis status"
-
-* Village level calculations
-* Proportion of households with any diagnosis (among those with known status)
-bysort hhid_village: egen village_any_diagnosed = mean(hh_any_schisto_diag)
-label var village_any_diagnosed "Prop. of HH in village with any schisto diagnosis"
-
-* health_5_8* and health_5_9* (blood in urine and stools)
+* health_5_8/9: Count households with blood symptoms
 foreach symptom in 8 9 {
-    * Create clean binary indicators for each household member
     forvalues i = 1/55 {
-        * Create binary indicator only for clear Yes/No responses
-        cap gen health_5_`symptom'_`i'_bin = .
-        cap replace health_5_`symptom'_`i'_bin = 1 if health_5_`symptom'_`i' == 1
-        cap replace health_5_`symptom'_`i'_bin = 0 if health_5_`symptom'_`i' == 0
-        * Note: leaves as missing if == 2 (Don't know)
+        cap gen health_5_`symptom'_`i'_bin = (health_5_`symptom'_`i' == 1) if health_5_`symptom'_`i' != 2
     }
-    
-    * Household level calculations
-    * Any member with symptom
     egen hh_any_blood_`symptom' = rowmax(health_5_`symptom'_*_bin)
-    label var hh_any_blood_`symptom' "Any HH member with blood in `symptom'==8 urine / `symptom'==9 stools"
-    
-    * Count members with known symptom status
-    egen hh_known_blood_`symptom' = rownonmiss(health_5_`symptom'_*_bin)
-    label var hh_known_blood_`symptom' "Number HH members with known blood status (`symptom')"
-    
-    * Village level calculations
-    * Proportion of households reporting symptom
-    bysort hhid_village: egen village_any_blood_`symptom' = mean(hh_any_blood_`symptom')
-    label var village_any_blood_`symptom' "Prop. HH in village with blood in `symptom'==8 urine / `symptom'==9 stools"
-    
-    * Data quality check
-    gen has_blood_data_`symptom' = (hh_known_blood_`symptom' > 0)
-    bysort hhid_village: egen village_blood_reporting_`symptom' = mean(has_blood_data_`symptom')
-    label var village_blood_reporting_`symptom' "Prop. HH reporting blood status (`symptom')"
+    bysort hhid_village: egen village_blood_`symptom'_count = total(hh_any_blood_`symptom')
+    label var village_blood_`symptom'_count "Count of HH in village with blood in `symptom'==8 urine / `symptom'==9 stools"
 }
 
-* Create combined blood symptom indicators
-egen hh_any_blood_symptom = rowmax(hh_any_blood_8 hh_any_blood_9)
-label var hh_any_blood_symptom "Any HH member with either blood symptom"
-
-* hh_02
+* Water usage: Total hours by village
+* hh_02: Water fetching
 egen hh_fetch_total = rowtotal(hh_02*)
-label var hh_fetch_total "Total hours fetching water by HH (last 7 days)"
+bysort hhid_village: egen village_fetch_total = total(hh_fetch_total)
+label var village_fetch_total "Total hours fetching water in village (last 7 days)"
 
-bysort hhid_village: egen village_fetch_mean = mean(hh_fetch_total)
-label var village_fetch_mean "Mean hours fetching water per HH in village"
-
-* hh_10 hh_13
+* hh_10/13: Water contact hours
 foreach var in hh_10 hh_13 {
-    * Total hours across household members
     egen `var'_total = rowtotal(`var'*)
-    label var `var'_total "Total hours near water per week (HH total)"
-    
+    bysort hhid_village: egen village_`var'_total = total(`var'_total)
+    label var village_`var'_total "Total hours near water in village per week"
 }
 
-* hh_11
-* First for each type
+* hh_11: Count households using each water source
 foreach type in 1 2 3 4 99 {
-    * Any household member using this source
     gen byte hh_water_source_`type' = 0
     foreach i of numlist 1/55 {
         cap replace hh_water_source_`type' = 1 if hh_11_`i' == `type'
     }
-    
-    * Get village proportions
-    bysort hhid_village: egen village_water_source_`type' = mean(hh_water_source_`type')
-    
-    * Label variables
+    bysort hhid_village: egen village_source_`type'_count = total(hh_water_source_`type')
     local lbl : label (hh_11_1) `type'
-    label var village_water_source_`type' "Prop. HH using `lbl' as surface water"
+    label var village_source_`type'_count "Count of HH using `lbl' as surface water"
 }
 
-* knowledge_18: Water contact in last 12 months
-* Create clean binary indicator
-gen water_contact = .
-replace water_contact = 1 if knowledge_18 == 1
-replace water_contact = 0 if knowledge_18 == 0
-label var water_contact "Had water contact in last 12mo"
+* knowledge_18/21: Count households by water contact and frequency
+gen water_contact = (knowledge_18 == 1)
+bysort hhid_village: egen village_contact_count = total(water_contact)
+label var village_contact_count "Count of HH with water contact"
 
-* Village-level proportion with water contact
-bysort hhid_village: egen village_water_contact = mean(water_contact)
-label var village_water_contact "Prop. HH with water contact in village"
+foreach freq in 1 2 3 {
+    gen freq_`freq' = (knowledge_21 == `freq')
+    bysort hhid_village: egen village_freq_`freq'_count = total(freq_`freq')
+    local lbl : label freq `freq'
+    label var village_freq_`freq'_count "Count of HH with `lbl' water contact"
+}
 
-* knowledge_21: Contact frequency 
-* Create ordinal frequency measure (higher = more frequent)
-gen water_freq = .
-replace water_freq = 3 if knowledge_21 == 1  // Daily
-replace water_freq = 2 if knowledge_21 == 2  // Weekly
-replace water_freq = 1 if knowledge_21 == 3  // Monthly
-label define freq 1 "Monthly" 2 "Weekly" 3 "Daily"
-label values water_freq freq
-label var water_freq "Frequency of water contact"
+* Keep only village-level aggregates and community variables
+keep hhid_village ///
+    /* Village WASH counts */ ///
+    village_water_* village_toilet_* ///
+    /* Village vegetation total */ ///
+    village_veg_total ///
+    /* Village illness counts */ ///
+    village_ill_count village_illness_* ///
+    village_treated_count village_diagnosed_count ///
+    village_blood_*_count ///
+    /* Village water usage */ ///
+    village_fetch_total village_hh_10_total village_hh_13_total ///
+    village_source_*_count ///
+    /* Village water contact */ ///
+    village_contact_count village_freq_*_count ///
+    /* Community variables */ ///
+    number_hh number_total q_23 q_24 q_35_check q_35
 
+* Drop duplicates and keep only village-level counts
+duplicates drop hhid_village, force

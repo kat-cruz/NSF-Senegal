@@ -70,7 +70,8 @@
 	use "$data\baseline_household_long.dta", clear 
 	
 		keep hhid individ hh_main_activity_ hh_active_agri_ hh_03_ hh_08_ hh_09_ hh_10_
-		
+		 
+/*
 		gen hh_activity_str = ""
 
 		replace hh_activity_str = "Unemployed"              if hh_main_activity_ == 0
@@ -85,6 +86,7 @@
 		replace hh_activity_str = "Harvesting/Gathering"    if hh_main_activity_ == 9
 		replace hh_activity_str = "Pupil/student"           if hh_main_activity_ == 10
 		replace hh_activity_str = "Other (to be specified)" if hh_main_activity_ == 99
+*/
 
 		
 		
@@ -92,7 +94,7 @@
 		gen work = .
 
 		* Set to 1 if hh_main_activity_ > 0 AND any of the others > 0
-		replace work = 1 if hh_main_activity_ > 0 & ///
+		replace work = 1 if hh_main_activity_ > 0 | ///
 			(hh_03_ > 0 | hh_08_ > 0 | hh_09_ > 0 | hh_10_ > 0) & ///
 			!missing(hh_main_activity_, hh_03_, hh_08_, hh_09_, hh_10_)
 
@@ -125,10 +127,10 @@
 		keep if _merge == 3
 		
 		 ** keep relevant variables 
-		keep hhid individ individual resp hh_relation_with_ hh_head_name_complet hh_full_name_calc_ hh_name_complet_resp hh_age_ hh_gender_ hh_main_activity_  hh_activity_str hh_active_agri_ work hh_03_ hh_08_ hh_09_ hh_10_
-			order hhid individ individual resp hh_relation_with_ hh_head_name_complet hh_full_name_calc_ hh_name_complet_resp hh_age_ hh_gender_ hh_main_activity_ hh_activity_str  hh_active_agri_ work hh_03_ hh_08_ hh_09_ hh_10_
+		keep hhid individ individual resp hh_relation_with_ hh_head_name_complet hh_full_name_calc_ hh_name_complet_resp hh_age_ hh_gender_ hh_main_activity_  hh_active_agri_ work hh_03_ hh_08_ hh_09_ hh_10_
+			order hhid individ individual resp hh_relation_with_ hh_head_name_complet hh_full_name_calc_ hh_name_complet_resp hh_age_ hh_gender_ hh_main_activity_  hh_active_agri_ work hh_03_ hh_08_ hh_09_ hh_10_
 
-			keep if hh_main_activity_ == 0 & (hh_03_ > 0 | hh_08_ > 0 | hh_09_ > 0 | hh_10_ > 0)
+			*keep if hh_main_activity_ == 0 & (hh_03_ > 0 | hh_08_ > 0 | hh_09_ > 0 | hh_10_ > 0)
 *-----------------------------------------*
 **#  CREATE relevant variables 
 *-----------------------------------------*
@@ -155,43 +157,35 @@
 **		a.	Assign household head indicator = 1 if hh_relation == 1 (self-reported household head).
 *-----------------------------------------*	
 		
-		gen hh_head = (hh_relation_with_ == 1)
-			gen child_head = 1 if hh_head == 1 & hh_age_ < 18
-				tab child_head
-					drop child_head
-*-----------------------------------------*		
-* At a glance: 2,010 households have 1 head
-		
-	* keep only one observation per household
-/* 
-	egen tag = tag(hhid)
-
-	* list and count households with more than one head
-	list hhid num_heads_per_hh if hh_head == 1 & tag == 1, sepby(hhid)
-
-	count if num_heads_per_hh == 1 & tag == 1
-	drop tag		
-		
-		
-*/
+	gen hh_head = (hh_relation_with_ == 1)
+		gen child_head = 1 if hh_head == 1 & hh_age_ < 18
+			tab child_head
+				drop child_head
+				
 *-----------------------------------------*
 **##  2.	Multiple Household Heads
 *-----------------------------------------*		
 		
 		*** gen amount of hh heads per hh
 		egen num_heads_per_hh = total(hh_head), by(hhid)
+		
+*-----------------------------------------*		
+* At a glance: 2,010 households have 1 head
+		
+	* count how many households have only 1 head 
+ 
+	egen tag = tag(hhid)
+		count if num_heads_per_hh == 1 & tag == 1
+			drop tag		
+		
 					
 *-----------------------------------------*		
 * At a glance: 20 households have more than one household head
 		
-	* keep only one observation per household
+	* count how many households have 2+ heads 
 	egen tag = tag(hhid)
-
-	* list and count households with more than one head
-	list hhid num_heads_per_hh if num_heads_per_hh > 1 & tag == 1, sepby(hhid)
-
-	count if num_heads_per_hh > 1 & tag == 1
-	drop tag		
+		count if num_heads_per_hh > 1 & tag == 1
+			drop tag		
 *-----------------------------------------*	
 
 *^*^*	a.	Use hh_head_name_complet and age > 18 to identify the correct head via name matching with hh roster names (hh_full_name_calc_). *^*^*
@@ -362,7 +356,7 @@ use `no_hh_firstpass', clear
 			list hhid if has_head == 0 & select_head == 1 & hh_head != 1, sepby(hhid)
 
 			egen tag = tag(hhid) if has_head == 0 & select_head == 1 & hh_head != 1
-			count if tag == 1
+			count if tag == 1 // 12
 				drop tag
 
 
@@ -389,7 +383,7 @@ restore
 *^*^*	c.	If no working male is available, assign the eldest male  *^*^*
 
 
-preserve 
+*preserve 
 
 use `no_hh_secondpass', clear 
 
@@ -454,7 +448,7 @@ use `no_hh_thirdpass', clear
 		***		preview results 
 			list hhid if resp == 1 & hh_head != 1, sepby(hhid)
 			egen tag = tag(hhid) if resp == 1 & hh_head != 1
-			count if tag == 1
+			count if tag == 1 //4
 				drop tag
  
 			replace hh_head = 1 if resp == 1

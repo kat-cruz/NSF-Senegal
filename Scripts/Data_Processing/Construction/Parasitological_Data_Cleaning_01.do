@@ -37,8 +37,8 @@
 *<><<><><>><><<><><>>
 		
 	clear all
-	set mem 100m
-	set maxvar 30000
+		set mem 100m
+		set maxvar 30000
 	set matsize 11000
 	set more off
 
@@ -83,7 +83,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("10_GU") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -135,6 +135,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/6
 		drop in 57
@@ -148,7 +149,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("1_DO") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -200,6 +201,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/6
 		drop if identifiant == "Control realized by Bruno Senghor 21.06.2024"
@@ -212,7 +214,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("2_DI") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -264,6 +266,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/4
 		drop if identifiant == "Control realized by Bruno Senghor 21.06.2024"
@@ -277,7 +280,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("3_NP") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -329,6 +332,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/4
 		drop in 54/55
@@ -341,7 +345,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("4_TH") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -393,6 +397,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/4
 		drop in 56/57
@@ -407,7 +412,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("5_FD") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -459,6 +464,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/6
 		drop in 56/57
@@ -475,7 +481,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("6_SA") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -527,19 +533,20 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/4
 		drop in 57
 
 	save "$cleandata_ucad_base\saneinte_031B_baseline_df", replace 	 	
 	
-**##   Yetti Yone (033B)
+**##   Yetti Yone (033B) KRM - double check 
 *-----------------------------------------* Baseline Village Yetti Yone *-----------------------------------------*
 
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("7_YY") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -599,13 +606,16 @@
 	
 			keep in 57/58
 		
-				save "$cleandata_ucad_mid\yetti_yone_033B_baseline_left_school.dta", replace 
+				tempfile _033B_left_school
+					save  `_033B_left_school'
+
 		
 	restore 
 				
-		drop in 57/60
+		**drop unneeded/empty rows
+				drop in 59/60
 
-	save "$cleandata_ucad_base\yetti_yone_033B_baseline_df", replace 	 	
+			save "$cleandata_ucad_base\yetti_yone_033B_baseline_df", replace 	 	
 		
 **##   Yamane (130A)
 *-----------------------------------------* Baseline Village Yamane *-----------------------------------------*
@@ -613,7 +623,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("8_YA") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -665,12 +675,13 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/4
 				
 		drop in 57
 
-	save "$cleandata_ucad_base\yamane_130A_baseline_df", replace 
+			save "$cleandata_ucad_base\yamane_130A_baseline_df", replace 
 	
 
 	**##   Diaminar Loyene (130A)
@@ -680,7 +691,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("9_DL") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -733,8 +744,9 @@
 		label variable treatment_date "Date of PZQ treatment"
 		
 		
+		**drop unneeded/empty rows
+		
 		drop in 1/4
-				
 		drop in 56/57
 
 			save "$cleandata_ucad_base\diaminar_loyene_130A_baseline_df", replace 	 			
@@ -745,7 +757,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("11_KA") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -797,9 +809,9 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/6
-				
 		drop in 55
 
 			save "$cleandata_ucad_base\kassack_nord_030A_baseline_df", replace 	 			
@@ -812,7 +824,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("12_SO") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -864,9 +876,9 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/6
-				
 		drop in 57
 
 			save "$cleandata_ucad_base\ndiamar_020A_baseline_df", replace 	 				
@@ -879,7 +891,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("13_MA") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -931,9 +943,9 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/6
-				
 		drop in 51
 
 			save "$cleandata_ucad_base\el_debiyaye_maraye_021A_baseline_df", replace 	 				
@@ -946,7 +958,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("14_DP") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -998,9 +1010,9 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/6
-				
 		drop in 53
 
 			save "$cleandata_ucad_base\dioss_peulh_032A_baseline_df", replace 	 				
@@ -1011,7 +1023,7 @@
 		import excel "$rawdata_ucad_base\DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx", sheet("15_MB") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -1063,9 +1075,9 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable treatment_date "Date of PZQ treatment"
 		
+		**drop unneeded/empty rows
 		
 		drop in 1/6
-				
 		drop in 57
 
 			save "$cleandata_ucad_base\mberaye_023B_baseline_df", replace 	 					
@@ -1261,8 +1273,9 @@
 				tempfile _072B_left_school
 					save  `_072B_left_school'
 	restore 
-	* save all kids in midline  
 	
+	
+	**drop unneeded/empty rows	
 			
 			drop in 49/50
 			drop in 52/54
@@ -1346,7 +1359,7 @@
 						
 	restore 
 		
-		* keep only midline kids for filtering 
+		**drop unneeded/empty rows
 
 			drop in 51
 			drop in 54
@@ -1428,7 +1441,7 @@
 		
 	restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
+	**drop unneeded/empty rows
 	
 		drop in 52
 		drop in 54
@@ -1509,7 +1522,7 @@
 				replace initiales = numero in 57
 				replace numero = "" in 57
 	
-	*^*^* keep kids who left baseline
+	*^*^* keep kids who left midline 
 	
 	preserve 
 	
@@ -1520,10 +1533,10 @@
 		
 	restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
-	
-	drop in 55/56
-	drop in 56/58
+	**drop unneeded/empty rows
+		
+		drop in 55/56
+		drop in 56/58
 	
 			save "$cleandata_ucad_mid\thiangaye_021B_midline_df.dta", replace 
 	
@@ -1534,7 +1547,7 @@
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("5_FD") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -1590,8 +1603,15 @@
 		drop in 1/6
 		gen hhid_village = "062B"
 			order hhid_village
+			
+		gen notes = ""
+			forvalues i = 50/56 {
+				replace notes = fu_p1 in `i'
+				replace fu_p1 = "" in `i'
+			}
 		
-			*^*^* keep kids who left baseline
+		
+			*^*^* keep kids who left midline 
 	
 	preserve 
 	
@@ -1602,26 +1622,21 @@
 		
 	restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
+	**drop unneeded/empty rows
 	
 	drop in 50
 	drop in 56/57
-	
-		gen notes = ""
-			forvalues i = 50/55 {
-				replace notes = fu_p1 in `i'
-				replace fu_p1 = "" in `i'
-			}
-		
-	save "$cleandata_ucad_mid\fanaye_diery_062B_midline_df", replace 	 		
 
+		save "$cleandata_ucad_mid\fanaye_diery_062B_midline_df", replace 	 		
+
+		
 	**##  Saneinte (031B)
 *-----------------------------------------* Midline Village Saneinte *-----------------------------------------*
 
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("6_SA") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -1677,8 +1692,17 @@
 		drop in 1/6
 			gen hhid_village = "031B"
 				order hhid_village	
+		
+		gen notes = ""
+			
+		replace notes = age in 58
+		replace age = sexe in 58
+		replace sexe = identifiant in 58
+		replace identifiant = initiales in 58
+		replace initiales = numero in 58
+		replace numero = "" in 58
 
-			*^*^* keep kids who left baseline
+			*^*^* keep kids who left midline
 	
 	preserve 
 	
@@ -1689,20 +1713,12 @@
 
 	restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
+	**drop unneeded/empty rows
 	
 	drop in 56/57
 	drop in 57
 	
-	gen notes = ""
-			
-			forvalues i = 56/56 {
-				replace notes = fu_p1 in `i'
-				replace fu_p1 = "" in `i'
-			}
-
-		
-	save "$cleandata_ucad_mid\saneinte_031B_midline_df", replace 	 
+		save "$cleandata_ucad_mid\saneinte_031B_midline_df", replace 	 
 	
 	
 **##  Yetti Yone (033B)
@@ -1711,7 +1727,7 @@
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("7_YY") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -1765,22 +1781,38 @@
 		
 		
 		drop in 1/6
+			gen notes = ""
+			gen hhid_village = "033B"
+				order hhid_village
+				
 		
-			*^*^* keep kids who left baseline
+		replace notes = age in 52/57
+		replace age = sexe in 52/57
+		replace sexe = identifiant in 52/57
+		replace identifiant = initiales in 52/57
+		replace initiales = numero in 52/57
+		replace numero = "" in 52/57
+
+
+		
+			*^*^* keep kids who left midline 
 	
 	preserve 
 	
 			keep in 52/57
 		
-				save "$cleandata_ucad_mid\yetti_yone_033B_midline_left_school.dta", replace 
+				tempfile _033B_left_school
+					save  `_033B_left_school'
+
 		
 	restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
+	**drop unneeded/empty rows
 	
-	drop in 51/60
+	drop in 51
+	drop in 57/59
 		
-	save "$cleandata_ucad_mid\yetti_yone_033B_midline_df", replace 	 		
+		save "$cleandata_ucad_mid\yetti_yone_033B_midline_df", replace 	 		
 	
 	
 	
@@ -1790,7 +1822,7 @@
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("8_YA") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -1844,58 +1876,70 @@
 		
 		
 		drop in 1/6
-		
-			*^*^* keep kids who left baseline
+		gen notes = ""
+		gen hhid_village = "130A"
+			order hhid_village
 	
-	preserve 
+		replace notes = fu_p1 in 53/57
+		replace fu_p1 = "" in 53/57
+		
+			*^*^* keep kids who left midline 
+	
+		preserve 
 	
 			keep in 53/57
 		
-				save "$cleandata_ucad_mid\yamane_130A_midline_left_school.dta", replace 
+				tempfile _130A_left_school
+					save  `_130A_left_school'
+
 		
-	restore 
+		restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
+	**drop unneeded/empty rows
 	
-	drop in 52/59
+	drop in 52
+	drop in 57/58
 		
-	save "$cleandata_ucad_mid\yamane_130A_midline_df", replace 	 		
+		save "$cleandata_ucad_mid\yamane_130A_midline_df", replace 	 		
 		
 	
 	
 **##  Diaminar Loyene (130A) VERIFY & RUN
 *-----------------------------------------* Midline Village Diaminar Loyene *-----------------------------------------*
 
-/* 
+
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("9_DL") firstrow clear
 
 
-*rename variables for clarity 
+* drop columns that are hidden in raw data_mg
+
+	drop DISES_SEN23119_Parasitologied B 
 
 		*^*^*rename variables for clarity 
 
-		rename DISES_SEN23119_Parasitologied numero
-		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
-		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
-		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename C numero
+		rename D initiales
+		rename E identifiant
+		rename F sexe
+		rename G age
+		rename H fu_p1
+		rename I omega_vivant_p1
+		rename J sm_fup1
+		rename K fu_p2
+		rename L omega_vivant_p2
+		rename M sm_fup2
+		rename N p1_kato1
+		rename O p1_kato1_epg
+		rename P p1_kato2
+		rename Q p1_kato2_epg
+		rename R sh_kk_p1
+		rename S p2_kato1
+		rename T p2_kato1_epg
+		rename U p2_kato2
+		rename V p2_kato2_epg
+		rename W sh_kk_p2
+		rename X treatment_date
+
 		
 		*^*^* Label variables 
 	  
@@ -1924,22 +1968,31 @@
 		
 		
 		drop in 1/6
+		gen notes = ""
+		gen hhid_village = "022A"
+			order hhid_village
+
+		replace notes = fu_p1 in 57
+		replace fu_p1 = "" in 57
 		
-			*^*^* keep kids who left baseline
+			*^*^* keep kids who left midline 
 	
 	preserve 
 	
-			keep in 53/57
+			keep in 51
 		
-				save "$cleandata_ucad_mid\diaminar_loyene_022A_midline_left_school.dta", replace 
+				tempfile _022A_left_school
+					save  `_022A_left_school'
+
 		
 	restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
+	**drop unneeded/empty rows
 	
-	drop in 52/59
+	drop in 55/56
+	drop in 56
 		
-	save "$cleandata_ucad_mid\diaminar_loyene_022A_midline_df", replace 	
+		save "$cleandata_ucad_mid\diaminar_loyene_022A_midline_df", replace 	
 	
 */
 	
@@ -1949,7 +2002,7 @@
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("11_KA") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -2003,22 +2056,31 @@
 		
 		
 		drop in 1/6
+		gen notes = ""
+		gen hhid_village = "030A"
+			order hhid_village
+
+		replace notes = fu_p1 in 53/55
+			replace fu_p1 = "" in 53/55
 		
-			*^*^* keep kids who left baseline
+			*^*^* keep kids who left midline 
 	
 	preserve 
 	
 			keep in 53/55
 		
-				save "$cleandata_ucad_mid\kassack_nord_030A_midline_left_school.dta", replace 
+				tempfile _030A_left_school
+					save  `_030A_left_school'
+
 		
 	restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
+	**drop unneeded/empty rows
 	
-	drop in 52/57
+	drop in 52
+	drop in 55/56
 		
-	save "$cleandata_ucad_mid\kassack_nord_030A_midline_df", replace 	
+		save "$cleandata_ucad_mid\kassack_nord_030A_midline_df", replace 	
 		
 **##  Ndiamar (Souloul) 020A (correct for kids who refused/absent de 2 passage)
 *-----------------------------------------* Midline Village Ndiamar *-----------------------------------------*
@@ -2026,7 +2088,7 @@
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("12_SO") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -2080,23 +2142,33 @@
 		
 		
 		drop in 1/6
+		gen notes = ""
+		gen hhid_village = "020A"
+			order hhid_village
+			
+		replace notes = fu_p1 in 57
+		replace fu_p1 = "" in 57
+
+	
 		
-			*^*^* keep kids who left baseline
+			*^*^* keep kids who left midline 
 	
 	preserve 
 	
 			keep in 57
-			gen village = "Ndiamar (Souloul) 020A"
 		
-				save "$cleandata_ucad_mid\ndiamar_020A_midline_left_school.dta", replace 
+				tempfile _020A_left_school
+					save  `_020A_left_school'
+
 		
 	restore 
-		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
 	
-	drop in 56/60
+	* drop rows without data 
+	
+	drop in 56
+	drop in 57/59
 		
-	save "$cleandata_ucad_mid\ndiamar_020A_midline_df", replace 	
+		save "$cleandata_ucad_mid\ndiamar_020A_midline_df", replace 	
 		
 	
 **## El Debiyaye Maraye II (021A) (Maraye)
@@ -2105,7 +2177,7 @@
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("13_MA") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
@@ -2160,20 +2232,29 @@
 		
 		drop in 1/6
 		
-			*^*^* keep kids who left baseline
+		gen notes = ""
+		gen hhid_village = "021A"
+			order hhid_village
+
+		replace notes = fu_p1 in 47/51
+		replace fu_p1 = "" in 47/51
+		
+			*^*^* keep kids who left midline 
 	
 	preserve 
 	
 			keep in 47/51
-			gen village = "El Debiyaye Maraye II (Maraye) 021A "
 		
-				save "$cleandata_ucad_mid\el_debiyaye_maraye_021A_midline_left_school.dta", replace 
+				tempfile _021A_left_school
+					save  `_021A_left_school'
+
 		
 	restore 
 		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
+	**drop unneeded/empty rows
 	
-	drop in 46/53
+	drop in 46
+	drop in 51/52
 		
 	save "$cleandata_ucad_mid\el_debiyaye_maraye_021A_midline_df", replace 		
 	
@@ -2185,9 +2266,9 @@
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("14_DP") firstrow clear
 
 
-*rename variables for clarity 
+ 
 
-		*^*^*rename variables for clarity 
+		*^*^ 
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
@@ -2240,22 +2321,33 @@
 		
 		drop in 1/6
 		
-			*^*^* keep kids who left baseline
+		gen notes = ""
+		gen hhid_village = "032A"
+			order hhid_village
+			
+		
+		replace notes = fu_p1 in 51/53
+		replace fu_p1 = "" in 51/53
+
+
+		
+			*^*^* keep kids who left midline 
 	
 	preserve 
 	
 			keep in 51/53
-			gen village = "Dioss Peulh (032A)"
 		
-				save "$cleandata_ucad_mid\dioss_peulh_032A_midline_left_school.dta", replace 
-		
+			tempfile _032A_left_school
+					save  `_032A_left_school'
+
 	restore 
-		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
 	
-	drop in 50/55
+	**drop unneeded/empty rows
+	
+	drop in 50
+	drop in 53/54
 		
-	save "$cleandata_ucad_mid\dioss_peulh_032A_midline_df", replace 		
+		save "$cleandata_ucad_mid\dioss_peulh_032A_midline_df", replace 		
 		
 	
 	
@@ -2264,9 +2356,6 @@
 
 		import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("15_MB") firstrow clear
 
-
-*rename variables for clarity 
-
 		*^*^*rename variables for clarity 
 
 		rename DISES_SEN23119_Parasitologied numero
@@ -2319,23 +2408,32 @@
 		
 		
 		drop in 1/6
+		gen notes = ""
+		gen hhid_village = "023B"
+			order hhid_village
+
+		replace notes = fu_p1 in 55/57
+		replace fu_p1 = "" in 55/57
+
 		
-			*^*^* keep kids who left baseline
+		
+			*^*^* keep kids who left midline 
 	
 	preserve 
 	
 			keep in 55/57
-			gen village = "Mberaye (023B)"
 		
-				save "$cleandata_ucad_mid\mberaye_023B_midline_left_school.dta", replace 
-		
+			tempfile _023B_left_school
+					save  `_023B_left_school'
+					
 	restore 
-		
-	** drop kids who left baseline now to keep record of all kids enrolled in midline 
 	
-	drop in 54/58
+	**drop unneeded/empty rows
+	
+	drop in 54
+	drop in 57
 		
-	save "$cleandata_ucad_mid\mberaye_023B_midline_df", replace 		
+		save "$cleandata_ucad_mid\mberaye_023B_midline_df", replace 		
 		
 	
 */
@@ -2352,15 +2450,15 @@
 
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("1_MA") firstrow clear
 
-*rename variables for clarity 
+ 
 
 		*^*^*rename variables for clarity 
 
-		rename DISES_SEN2151_Parasitologiede numero
-		rename B initiales
+		rename A numero
+		rename DISES_SEN23119_Parasitologied initiales
 		rename C identifiant
 		rename D sexe
-		rename E age
+		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -2377,7 +2475,10 @@
 		rename S p2_kato2
 		rename T p2_kato2_epg
 		rename U sh_kk_p2
-		rename V treatment_date
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
 		
 		*^*^* Label variables 
 	  
@@ -2385,7 +2486,7 @@
 		label variable initiales "Initials"
 		label variable identifiant "Unique ID"
 		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -2402,32 +2503,1043 @@
 		label variable p2_kato2 "Kato-Katz 2 (P2)"
 		label variable p2_kato2_epg "EPG (P2, slide 2)"
 		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
+		gen hhid_village = "131B"
+			order hhid_village
+			
+			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop in 57
+		drop in 51/52
+		
+		** grab ages 
 
+		preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent_MA") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+			
+		keep initiales identifiant age sexe age
+		drop in 1/5
+		drop in 51/54
+	
+			
+			tempfile _131B_ages
+				save `_131B_ages'
+				
+		restore 
+		
 
-	save "$cleandata_ucad_base\geuo_033A_baseline_df", replace 	
+		merge 1:1 sexe identifiant initiales using `_131B_ages', nogen 
+		
+			replace grade = age in 51
+				replace age = "" in 51
+			replace notes = sexe in 51
+				replace sexe = "" in 51
+			
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\malla_131B_midline_df", replace 	
+		
+
+**##  Mbilor (012A)
+*-----------------------------------------* Village Mbilor
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("2_MR") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+
+		rename A numero
+		rename DISES_SEN23119_Parasitologied initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "012A"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop in 53/54
+		
+		** grab ages 
+
+		preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent MR") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+			rename F signature 
+			
+		keep initiales identifiant age sexe signature
+
+		drop in 1/5
+		drop in 53/56
+		drop in 55
+	
+			
+			tempfile _012A_ages
+				save `_012A_ages'
+				
+		restore 
+		
+		
+		merge 1:1 initiales identifiant sexe using `_012A_ages', nogen 
+
+		** clean up notes
+		
+		replace notes = sexe in 53/54
+			replace sexe = "" in 53/54
+		replace grade = signature in 53/54
+			replace signature = "" in 53/54
+				drop signature
+			
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\mbilor_012A_midline_df", replace 		
+	
+
+**##  Gueum Yalla (010B)
+*-----------------------------------------* Village Gueum Yalla
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("3_GY") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+
+		rename A numero
+		rename DISES_SEN23119_Parasitologied initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "010B"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop in 51/52
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent GY") firstrow clear
+		
+		
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+		
+		keep initiales identifiant age sexe  
+		drop in 1/4
+		drop in 51/54
+	
+			
+			tempfile _010B_ages
+				save `_010B_ages'
+				
+	restore 
+		
+	** merge in ages 
+			
+		merge 1:1 identifiant initiales using `_010B_ages', nogen 
+	
+				
+		replace notes = sexe in 51/52
+			replace sexe = "" in 51/52
+			
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\gueum_yalla_010B_midline_df", replace 		
+	
+		
+**##  Keur Birane Kobar (010A)
+*-----------------------------------------* Village Keur Birane Kobar
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("4_KB") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+
+		rename A numero
+		rename DISES_SEN23119_Parasitologied initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "010A"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop in 54/55
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent KB") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop in 1/5
+		drop in 54/57
+			
+			tempfile _010A_ages
+				save `_010A_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 identifiant using `_010A_ages', nogen 
+	
+			replace grade = age in 56/58
+				replace age = "" in 56/58
+			replace notes = sexe in 56/58
+				replace sexe = "" in 56/58
+			
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\keur_birane_kobar_010A_midline_df", replace 		
+		
+	
+		
+**##  Ndiakhaye (011B)
+*-----------------------------------------* Village Ndiakhaye
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("5_NK") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+
+		rename DISES_SEN23119_Parasitologied numero
+		rename B initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "011B"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop in 51/54
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent NK") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _011B_ages
+				save `_011B_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_011B_ages', nogen 
+		
+		forvalues i = 51/52 { 
+	
+			replace grade = age in `i'
+				replace age = "" in `i'
+			replace notes = sexe in `i'
+				replace sexe = "" in `i'
+				
+				}
+			
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\ndiakhaye_011B_midline_df", replace 		
+		
+	 
+	 
+**##  Foss (121B)
+*-----------------------------------------* Village Foss
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("6_FS") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+
+		rename A numero
+		rename DISES_SEN23119_Parasitologied initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "121B"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop in 54/55
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent FS") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _011B_ages
+				save `_011B_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_011B_ages', nogen 
+		
+		forvalues i = 54/55 { 
+	
+			replace grade = age in `i'
+				replace age = "" in `i'
+			replace notes = sexe in `i'
+				replace sexe = "" in `i'
+				
+				}
+			
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\foss_121B_midline_df", replace 		
+		
+		
+**##  Diaminar (012B)
+*-----------------------------------------* Village Diaminar
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("7_DK") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+
+		rename A numero
+		rename DISES_SEN23119_Parasitologied initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "012B"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop if identifiant == ""
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent DK") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _012B_ages
+				save `_012B_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_012B_ages', nogen 
+		
+		forvalues i = 50/52 { 
+	
+			replace grade = age in `i'
+				replace age = "" in `i'
+			replace notes = sexe in `i'
+				replace sexe = "" in `i'
+				
+				}
+			
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\diaminar_012B_midline_df", replace 		
+	
+		
+**##  Syer (120B)
+*-----------------------------------------* Village Syer
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("8_ST") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+
+		rename A numero
+		rename DISES_SEN23119_Parasitologied initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "120B"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop if identifiant == ""
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent ST") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _120B_ages
+				save `_120B_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_120B_ages', nogen 
+		
+		forvalues i = 51/51 { 
+	
+			replace grade = age in `i'
+				replace age = "" in `i'
+			replace notes = sexe in `i'
+				replace sexe = "" in `i'
+				
+				}
+			
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\syer_120B_midline_df", replace 		
+		
+	
+**##  Thilla (023A)
+*-----------------------------------------* Village Thilla
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("9_TB") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+
+		rename DISES_SEN23119_Parasitologied numero
+		rename B initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "023A"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop if identifiant == ""
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent TB") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _023A_ages
+				save `_023A_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_023A_ages', nogen 
+	
+			order age, before(grade)
+
+	save "$cleandata_epls_mid\thilla_023A_midline_df", replace 		
+			
+	
+**##  Minguene Boye (013B)
+*-----------------------------------------* Village Minguene Boye
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("10_MI") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+		
+		rename DISES_SEN23119_Parasitologied numero
+		rename B initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "013B"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop if identifiant == ""
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent MI") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _013B_ages
+				save `_013B_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_013B_ages', nogen 
+		
+			replace notes = sexe in 53
+			replace notes = sexe in 56/58
+			replace notes = sexe in 60/62
+				replace sexe = "" in 53
+				replace sexe = "" in 56/58
+				replace sexe = "" in 60/62
+			replace grade = age in 53
+			replace grade = age in 56/58
+			replace grade = age in 60/62
+				replace age = "" in 53
+				replace age = "" in 56/58
+				replace age = "" in 60/62
+							
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\minguene_boye_013B_midline_df", replace 		
 	
 	
 	

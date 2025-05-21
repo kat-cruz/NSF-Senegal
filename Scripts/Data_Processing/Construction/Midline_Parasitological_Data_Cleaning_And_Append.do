@@ -70,6 +70,7 @@
 	global rawdata_epls_mid "$master\Data_Management\Data\_Partner_RawData\Parasitological_Data\EPLS_Data\Midline"
 	global rawdata_epls_base "$master\Data_Management\Data\_Partner_RawData\Parasitological_Data\EPLS_Data\Baseline"
 	
+	global dataexport "$master\Data_Management\Data\_Partner_RawData\Parasitological_Data"
  
 *<><<><><>><><<><><>>
 **# CLEAN BASELINE UCAD DATA
@@ -2507,10 +2508,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
-		
-		gen hhid_village = "131B"
-			order hhid_village
-			
+					
 			**drop unneeded/empty rows
 		
 		drop in 1/6
@@ -2544,6 +2542,9 @@
 				replace age = "" in 51
 			replace notes = sexe in 51
 				replace sexe = "" in 51
+				
+		gen hhid_village = "131B"
+		order hhid_village
 			
 		order age, before(grade)
 
@@ -2551,8 +2552,7 @@
 		
 
 **##  Mbilor (012A)
-*-----------------------------------------* Village Mbilor
- *-----------------------------------------*	
+*-----------------------------------------* Village Mbilor *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("2_MR") firstrow clear
@@ -2612,9 +2612,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
-		
-		gen hhid_village = "012A"
-			order hhid_village
+	
 			
 			**drop unneeded/empty rows
 		
@@ -2656,14 +2654,16 @@
 			replace signature = "" in 53/54
 				drop signature
 			
+		gen hhid_village = "012A"
+		order hhid_village
+		
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\mbilor_012A_midline_df", replace 		
 	
 
 **##  Gueum Yalla (010B)
-*-----------------------------------------* Village Gueum Yalla
- *-----------------------------------------*	
+*-----------------------------------------* Village Gueum Yalla *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("3_GY") firstrow clear
@@ -2724,8 +2724,6 @@
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
-		gen hhid_village = "010B"
-			order hhid_village
 			
 			**drop unneeded/empty rows
 		
@@ -2762,14 +2760,16 @@
 		replace notes = sexe in 51/52
 			replace sexe = "" in 51/52
 			
+		gen hhid_village = "010B"
+			order hhid_village
+			
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\gueum_yalla_010B_midline_df", replace 		
 	
 		
 **##  Keur Birane Kobar (010A)
-*-----------------------------------------* Village Keur Birane Kobar
- *-----------------------------------------*	
+*-----------------------------------------* Village Keur Birane Kobar *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("4_KB") firstrow clear
@@ -2829,9 +2829,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
-		
-		gen hhid_village = "010A"
-			order hhid_village
+	
 			
 			**drop unneeded/empty rows
 		
@@ -2870,6 +2868,9 @@
 			replace notes = sexe in 56/58
 				replace sexe = "" in 56/58
 			
+		gen hhid_village = "010A"
+			order hhid_village
+		
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\keur_birane_kobar_010A_midline_df", replace 		
@@ -2877,8 +2878,7 @@
 	
 		
 **##  Ndiakhaye (011B)
-*-----------------------------------------* Village Ndiakhaye
- *-----------------------------------------*	
+*-----------------------------------------* Village Ndiakhaye *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("5_NK") firstrow clear
@@ -2939,9 +2939,6 @@
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
-		gen hhid_village = "011B"
-			order hhid_village
-			
 			**drop unneeded/empty rows
 		
 		drop in 1/6
@@ -2983,6 +2980,9 @@
 				
 				}
 			
+		gen hhid_village = "011B"
+			order hhid_village
+			
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\ndiakhaye_011B_midline_df", replace 		
@@ -2990,8 +2990,7 @@
 	 
 	 
 **##  Foss (121B)
-*-----------------------------------------* Village Foss
- *-----------------------------------------*	
+*-----------------------------------------* Village Foss *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("6_FS") firstrow clear
@@ -3052,9 +3051,7 @@
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
-		gen hhid_village = "121B"
-			order hhid_village
-			
+
 			**drop unneeded/empty rows
 		
 		drop in 1/6
@@ -3095,15 +3092,17 @@
 				replace sexe = "" in `i'
 				
 				}
-			
+				
+		gen hhid_village = "121B"
+			order hhid_village
+						
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\foss_121B_midline_df", replace 		
 		
 		
 **##  Diaminar (012B)
-*-----------------------------------------* Village Diaminar
- *-----------------------------------------*	
+*-----------------------------------------* Village Diaminar *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("7_DK") firstrow clear
@@ -3164,9 +3163,6 @@
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
-		gen hhid_village = "012B"
-			order hhid_village
-			
 			**drop unneeded/empty rows
 		
 		drop in 1/6
@@ -3207,15 +3203,17 @@
 				replace sexe = "" in `i'
 				
 				}
-			
+				
+	gen hhid_village = "012B"
+		order hhid_village
+						
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\diaminar_012B_midline_df", replace 		
 	
 		
 **##  Syer (120B)
-*-----------------------------------------* Village Syer
- *-----------------------------------------*	
+*-----------------------------------------* Village Syer *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("8_ST") firstrow clear
@@ -3275,9 +3273,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
-		
-		gen hhid_village = "120B"
-			order hhid_village
+	
 			
 			**drop unneeded/empty rows
 		
@@ -3319,15 +3315,18 @@
 				replace sexe = "" in `i'
 				
 				}
+				
+		gen hhid_village = "120B"
+			order hhid_village
 			
 		order age, before(grade)
+		
 
 	save "$cleandata_epls_mid\syer_120B_midline_df", replace 		
 		
 	
 **##  Thilla (023A)
-*-----------------------------------------* Village Thilla
- *-----------------------------------------*	
+*-----------------------------------------* Village Thilla *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("9_TB") firstrow clear
@@ -3387,9 +3386,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
-		
-		gen hhid_village = "023A"
-			order hhid_village
+	
 			
 			**drop unneeded/empty rows
 		
@@ -3422,6 +3419,9 @@
 	** merge in ages 
 			
 		merge 1:1 initiales identifiant sexe using `_023A_ages', nogen 
+		
+		gen hhid_village = "023A"
+			order hhid_village
 	
 			order age, before(grade)
 
@@ -3429,8 +3429,7 @@
 			
 	
 **##  Minguene Boye (013B)
-*-----------------------------------------* Village Minguene Boye
- *-----------------------------------------*	
+*-----------------------------------------* Village Minguene Boye *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("10_MI") firstrow clear
@@ -3491,8 +3490,6 @@
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
-		gen hhid_village = "013B"
-			order hhid_village
 			
 			**drop unneeded/empty rows
 		
@@ -3538,14 +3535,16 @@
 				replace age = "" in 53
 				replace age = "" in 56/58
 				replace age = "" in 60/62
-							
+
+		gen hhid_village = "013B"
+			order hhid_village	
+			
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\minguene_boye_013B_midline_df", replace 		
 	
 **##  Ndelle Boye (013A)
-*-----------------------------------------* Village Ndelle Boye
- *-----------------------------------------*	
+*-----------------------------------------* Village Ndelle Boye *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("11_NB") firstrow clear
@@ -3606,9 +3605,7 @@
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
-		gen hhid_village = "013A"
-			order hhid_village
-			
+
 			**drop unneeded/empty rows
 		
 		drop in 1/6
@@ -3649,6 +3646,9 @@
 				replace sexe = "" in `i'
 				
 				}
+
+		gen hhid_village = "013A"
+			order hhid_village
 							
 		order age, before(grade)
 
@@ -3656,8 +3656,7 @@
 	
 	
 **##  Assy (011A)
-*-----------------------------------------* Village Assy
- *-----------------------------------------*	
+*-----------------------------------------* Village Assy *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("12_AB") firstrow clear
@@ -3717,9 +3716,7 @@
 		label variable sh_kk_p2 "S. haematobium (P2)"
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
-		
-		gen hhid_village = "011A"
-			order hhid_village
+	
 			
 			**drop unneeded/empty rows
 		
@@ -3761,15 +3758,16 @@
 				replace sexe = "" in `i'
 				
 				}
-							
+
+		gen hhid_village = "011A"
+			order hhid_village
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\assy_011A_midline_df", replace 		
 	
 	
 **##  Mbakhana (122A)
-*-----------------------------------------* Village Mbakhana
- *-----------------------------------------*	
+*-----------------------------------------* Village Mbakhana *-----------------------------------------*	
 	
 	
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("13_MB") firstrow clear
@@ -3830,8 +3828,6 @@
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
-		gen hhid_village = "122A"
-			order hhid_village
 			
 			**drop unneeded/empty rows
 		
@@ -3873,18 +3869,20 @@
 				replace sexe = "" in `i'
 				
 				}
-							
+					
+					
+		gen hhid_village = "122A"
+			order hhid_village
 		order age, before(grade)
 
 	save "$cleandata_epls_mid\mbakhana_122A_midline_df", replace 		
 	
 		
 **##  Mbarigo (123A)
-*-----------------------------------------* Village Mbarigo
- *-----------------------------------------*	
+*-----------------------------------------* Village Mbarigo *-----------------------------------------*	
 	
 	
-		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("13_MB") firstrow clear
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("14_MO") firstrow clear
 
  
 
@@ -3942,8 +3940,6 @@
 		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
 		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 		
-		gen hhid_village = "122A"
-			order hhid_village
 			
 			**drop unneeded/empty rows
 		
@@ -3954,7 +3950,7 @@
 
 	preserve 
 		
-			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent _MB") firstrow clear
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent MO") firstrow clear
 			
 			rename B initiales
 			rename C identifiant
@@ -3967,17 +3963,17 @@
 		drop if initiales == "Initiales"
 		drop if identifiant == ""
 			
-			tempfile _122A_ages
-				save `_122A_ages'
+			tempfile _123A_ages
+				save `_123A_ages'
 				
 	restore
 		
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_122A_ages', nogen 
+		merge 1:1 initiales identifiant sexe using `_123A_ages', nogen 
 		
-		forvalues i = 51/52 { 
+		forvalues i = 51/54 { 
 	
 			replace grade = age in `i'
 				replace age = "" in `i'
@@ -3985,10 +3981,12 @@
 				replace sexe = "" in `i'
 				
 				}
-							
+				
+		gen hhid_village = "123A"
+			order hhid_village							
 		order age, before(grade)
 
-	save "$cleandata_epls_mid\mbakhana_122A_midline_df", replace 			
+	save "$cleandata_epls_mid\mbarigo_123A_midline_df", replace 			
 			
 *<><<><><>><><<><><>>
 **# APPEND UCAD DATA
@@ -4046,8 +4044,9 @@
  append using "$cleandata_ucad_mid\complete_midline_ucad_parasitology_df.dta"
 
 
-	save "$cleandata_ucad_mid\complete_midline_parasitology_df.dta", replace 
-		
+	save "$dataexport\complete_midline_parasitology_df.dta", replace 
+		export excel using "$dataexport/complete_midline_parasitology_df.xlsx", firstrow(variables) replace
+
 	
 	
 *** end of .do file

@@ -1155,7 +1155,7 @@
 	* gen village ID
 	
 		gen hhid_village = "033A"
-		order hhid_village
+			order hhid_village
 		
 	* save kids that left school
 		
@@ -1169,8 +1169,6 @@
 
 		
 	* save all kids in midline  
-	
-	restore 
 	
 		preserve 
 			
@@ -1188,7 +1186,7 @@
 			replace notes = "Crtl finalisé __Dr Bruno_le / /2025" if numero == "Crtl finalisé __Dr Bruno_le / /2025"
 			replace numero = "" if numero == "Crtl finalisé __Dr Bruno_le / /2025"
 			
-		save "$cleandata_ucad_mid\all_geuo_033A_midline_df.dta", replace 
+		save "$cleandata_ucad_mid\geuo_033A_midline_df.dta", replace 
 	
 	restore 
 	
@@ -1280,7 +1278,7 @@
 			drop in 49/50
 			drop in 52/54
 			
-		save "$cleandata_ucad_mid\all_dodel_072B_midline_df.dta", replace 
+		save "$cleandata_ucad_mid\dodel_072B_midline_df.dta", replace 
 	
 	
 	
@@ -1347,6 +1345,10 @@
 		
 	* drop the first 6 rows (they're header or formatting rows)
 		drop in 1/6
+			* gen village ID
+	
+		gen hhid_village = "030B"
+			order hhid_village
 		
 		** keep kids who left baseline
 	
@@ -3541,14 +3543,511 @@
 
 	save "$cleandata_epls_mid\minguene_boye_013B_midline_df", replace 		
 	
+**##  Ndelle Boye (013A)
+*-----------------------------------------* Village Ndelle Boye
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("11_NB") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+		
+		rename DISES_SEN23119_Parasitologied numero
+		rename B initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "013A"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop if identifiant == ""
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent NB") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _013A_ages
+				save `_013A_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_013A_ages', nogen 
+		
+		forvalues i = 51/58 { 
+	
+			replace grade = age in `i'
+				replace age = "" in `i'
+			replace notes = sexe in `i'
+				replace sexe = "" in `i'
+				
+				}
+							
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\ndelle_boye_013A_midline_df", replace 		
 	
 	
+**##  Assy (011A)
+*-----------------------------------------* Village Assy
+ *-----------------------------------------*	
 	
 	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("12_AB") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+		
+		rename DISES_SEN23119_Parasitologied numero
+		rename B initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "011A"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop if identifiant == ""
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent AB") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _011A_ages
+				save `_011A_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_011A_ages', nogen 
+		
+		forvalues i = 52/58 { 
+	
+			replace grade = age in `i'
+				replace age = "" in `i'
+			replace notes = sexe in `i'
+				replace sexe = "" in `i'
+				
+				}
+							
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\assy_011A_midline_df", replace 		
 	
 	
+**##  Mbakhana (122A)
+*-----------------------------------------* Village Mbakhana
+ *-----------------------------------------*	
+	
+	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("13_MB") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+		
+		rename DISES_SEN23119_Parasitologied numero
+		rename B initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "122A"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop if identifiant == ""
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent _MB") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _122A_ages
+				save `_122A_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_122A_ages', nogen 
+		
+		forvalues i = 51/52 { 
+	
+			replace grade = age in `i'
+				replace age = "" in `i'
+			replace notes = sexe in `i'
+				replace sexe = "" in `i'
+				
+				}
+							
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\mbakhana_122A_midline_df", replace 		
+	
+		
+**##  Mbarigo (123A)
+*-----------------------------------------* Village Mbarigo
+ *-----------------------------------------*	
+	
+	
+		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("13_MB") firstrow clear
+
+ 
+
+		*^*^*rename variables for clarity 
+		
+		rename DISES_SEN23119_Parasitologied numero
+		rename B initiales
+		rename C identifiant
+		rename D sexe
+		rename E grade
+		rename F fu_p1
+		rename G omega_vivant_p1
+		rename H sm_fup1
+		rename I fu_p2
+		rename J omega_vivant_p2
+		rename K sm_fup2
+		rename L p1_kato1
+		rename M p1_kato1_epg
+		rename N p1_kato2
+		rename O p1_kato2_epg
+		rename P sh_kk_p1
+		rename Q p2_kato1
+		rename R p2_kato1_epg
+		rename S p2_kato2
+		rename T p2_kato2_epg
+		rename U sh_kk_p2
+		rename V pzq_traitement_date1
+		rename W pzq_traitement_date2
+		rename X notes 
+
+		
+		*^*^* Label variables 
+	  
+		label variable numero "Record number"
+		label variable initiales "Initials"
+		label variable identifiant "Unique ID"
+		label variable sexe "Sex"
+		label variable grade "Grade in class"
+		label variable fu_p1 "Follow-up period 1"
+		label variable omega_vivant_p1 "ω (alive) during FU/P1"
+		label variable sm_fup1 "S. mansoni present at FU/P1"
+		label variable fu_p2 "Follow-up period 2"
+		label variable omega_vivant_p2 "ω (alive) during FU/P2"
+		label variable sm_fup2 "S. mansoni present at FU/P2"
+		label variable p1_kato1 "Kato-Katz 1 (P1)"
+		label variable p1_kato1_epg "EPG (P1, slide 1)"
+		label variable p1_kato2 "Kato-Katz 2 (P1)"
+		label variable p1_kato2_epg "EPG (P1, slide 2)"
+		label variable sh_kk_p1 "S. haematobium (P1)"
+		label variable p2_kato1 "Kato-Katz 1 (P2)"
+		label variable p2_kato1_epg "EPG (P2, slide 1)"
+		label variable p2_kato2 "Kato-Katz 2 (P2)"
+		label variable p2_kato2_epg "EPG (P2, slide 2)"
+		label variable sh_kk_p2 "S. haematobium (P2)"
+		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+		
+		gen hhid_village = "122A"
+			order hhid_village
+			
+			**drop unneeded/empty rows
+		
+		drop in 1/6
+		drop if identifiant == ""
+		
+		** grab ages 
+
+	preserve 
+		
+			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent _MB") firstrow clear
+			
+			rename B initiales
+			rename C identifiant
+			rename D sexe
+			rename E age
+
+			
+		keep initiales identifiant age sexe 
+
+		drop if initiales == "Initiales"
+		drop if identifiant == ""
+			
+			tempfile _122A_ages
+				save `_122A_ages'
+				
+	restore
+		
+		
+	** merge in ages 
+			
+		merge 1:1 initiales identifiant sexe using `_122A_ages', nogen 
+		
+		forvalues i = 51/52 { 
+	
+			replace grade = age in `i'
+				replace age = "" in `i'
+			replace notes = sexe in `i'
+				replace sexe = "" in `i'
+				
+				}
+							
+		order age, before(grade)
+
+	save "$cleandata_epls_mid\mbakhana_122A_midline_df", replace 			
+			
+*<><<><><>><><<><><>>
+**# APPEND UCAD DATA
+*<><<><><>><><<><><>>
 	
 	
 
+	clear
+	local folder "$cleandata_ucad_mid"  
+
+	cd "`folder'"
+	local files: dir . files "*.dta"
+
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
+
+
+	save "$cleandata_ucad_mid\complete_midline_ucad_parasitology_df.dta", replace 
+	
+	
+	
+			
+*<><<><><>><><<><><>>
+**# APPEND EPLS DATA
+*<><<><><>><><<><><>>
+	
+	
+
+	clear
+	local folder "$cleandata_epls_mid"  
+
+	cd "`folder'"
+	local files: dir . files "*.dta"
+
+	foreach file in `files' {
+		di "Appending `file'"
+		append using "`file'"
+	}
+
+
+	save "$cleandata_epls_mid\complete_midline_epls_parasitology_df.dta", replace 
+		
+	
+			
+*<><<><><>><><<><><>>
+**# APPEND FINAL MIDLINE DF
+*<><<><><>><><<><><>>
+	
+	
+
+ use "$cleandata_epls_mid\complete_midline_epls_parasitology_df.dta", clear
+ 
+ append using "$cleandata_ucad_mid\complete_midline_ucad_parasitology_df.dta"
+
+
+	save "$cleandata_ucad_mid\complete_midline_parasitology_df.dta", replace 
+		
+	
+	
+*** end of .do file

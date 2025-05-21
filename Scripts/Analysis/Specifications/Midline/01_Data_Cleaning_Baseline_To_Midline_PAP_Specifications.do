@@ -6,7 +6,7 @@
 **************************************************
 
 *** This Do File PROCESSES: PUT ALL SCRIPTS HERE***
-*** This Do File CREATES: ANCOVA regression outputs for the PAP specifcaitons on baseline to midline data
+*** This Do File CREATES: Dataset for analysis of the Baseline to Midline PAP
 						
 *** Procedure: ***
 * 

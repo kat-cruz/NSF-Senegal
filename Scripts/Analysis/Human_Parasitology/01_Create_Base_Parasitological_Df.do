@@ -75,7 +75,7 @@ global date = strofreal(date(c(current_date),"DMY"), "%tdYYNNDD")
 * LOAD IN RAW UCAD/EPLS PARASITOLOGICAL DATA
 *<><<><><>><><<><><>>	
 
-import excel "${raw_data}\UCAD & EPLS parasitological data.xlsx", sheet("Sheet1") firstrow
+import excel "${raw_data}\Baseline UCAD & EPLS parasitological data.xlsx", sheet("Sheet1") firstrow
 
 * Clean leading/trailing spaces from identificant
 	replace identificant = strtrim(identificant)

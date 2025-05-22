@@ -1432,6 +1432,7 @@
 			
 	drop in 1/6
 	gen hhid_village = "020B"
+		order hhid_village
 	
 	** keep kids who left baseline
 	
@@ -3992,8 +3993,25 @@
 **# APPEND UCAD DATA
 *<><<><><>><><<><><>>
 	
+use "$cleandata_ucad_mid\geuo_033a_midline_df.dta", clear
+append using "$cleandata_ucad_mid\dodel_072b_midline_df.dta"
+append using "$cleandata_ucad_mid\diabobe_030b_midline_df.dta"
+append using "$cleandata_ucad_mid\thiangaye_021b_midline_df.dta"
+append using "$cleandata_ucad_mid\ndiayene_pendao_020b_midline_df.dta"
+append using "$cleandata_ucad_mid\fanaye_diery_062b_midline_df.dta"
+append using "$cleandata_ucad_mid\saneinte_031b_midline_df.dta"
+append using "$cleandata_ucad_mid\yetti_yone_033b_midline_df.dta"
+append using "$cleandata_ucad_mid\yamane_130a_midline_df.dta"
+append using "$cleandata_ucad_mid\diaminar_loyene_022a_midline_df.dta"
+append using "$cleandata_ucad_mid\kassack_nord_030a_midline_df.dta"
+append using "$cleandata_ucad_mid\ndiamar_020a_midline_df.dta"
+append using "$cleandata_ucad_mid\el_debiyaye_maraye_021a_midline_df.dta"
+append using "$cleandata_ucad_mid\dioss_peulh_032a_midline_df.dta"
+append using "$cleandata_ucad_mid\mberaye_023b_midline_df.dta"
+
 	
 
+/* 
 	clear
 	local folder "$cleandata_ucad_mid"  
 
@@ -4003,8 +4021,9 @@
 	foreach file in `files' {
 		di "Appending `file'"
 		append using "`file'"
-	}
 
+	}
+*/
 
 	save "$cleandata_ucad_mid\complete_midline_ucad_parasitology_df.dta", replace 
 	
@@ -4016,7 +4035,23 @@
 *<><<><><>><><<><><>>
 	
 	
+	use "$cleandata_epls_mid\thilla_023A_midline_df.dta", clear
+		append using "$cleandata_epls_mid\syer_120B_midline_df.dta"
+		append using "$cleandata_epls_mid\ndiakhaye_011B_midline_df.dta"
+		append using "$cleandata_epls_mid\ndelle_boye_013A_midline_df.dta"
+		append using "$cleandata_epls_mid\minguene_boye_013B_midline_df.dta"
+		append using "$cleandata_epls_mid\mbilor_012A_midline_df.dta"
+		append using "$cleandata_epls_mid\mbarigo_123A_midline_df.dta"
+		append using "$cleandata_epls_mid\mbakhana_122A_midline_df.dta"
+		append using "$cleandata_epls_mid\malla_131B_midline_df.dta"
+		append using "$cleandata_epls_mid\keur_birane_kobar_010A_midline_df.dta"
+		append using "$cleandata_epls_mid\gueum_yalla_010B_midline_df.dta"
+		append using "$cleandata_epls_mid\foss_121B_midline_df.dta"
+		append using "$cleandata_epls_mid\diaminar_012B_midline_df.dta"
+		append using "$cleandata_epls_mid\assy_011A_midline_df.dta"
 
+	save "$cleandata_epls_mid\complete_midline_epls_parasitology_df.dta", replace 
+/* 
 	clear
 	local folder "$cleandata_epls_mid"  
 
@@ -4029,8 +4064,9 @@
 	}
 
 
-	save "$cleandata_epls_mid\complete_midline_epls_parasitology_df.dta", replace 
+	
 		
+*/
 	
 			
 *<><<><><>><><<><><>>
@@ -4043,6 +4079,13 @@
  
  append using "$cleandata_ucad_mid\complete_midline_ucad_parasitology_df.dta"
 
+ ** rename for clarity 
+ 
+ rename treatment_date ucad_treatment_date
+ rename pzq_traitement_date1 epls_pzq_traitement_date1
+ rename pzq_traitement_date2 epls_pzq_traitement_date2
+ 
+ order ucad_treatment_date, before(epls_pzq_traitement_date1)
 
 	save "$dataexport\complete_midline_parasitology_df.dta", replace 
 		export excel using "$dataexport/complete_midline_parasitology_df.xlsx", firstrow(variables) replace

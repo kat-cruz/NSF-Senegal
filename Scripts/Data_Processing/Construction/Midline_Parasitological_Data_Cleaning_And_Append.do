@@ -1,9 +1,8 @@
-*==============================================================================
+*-----------------------------------------*
 * written by: Kateri Mouawad
 * Created: February 2025
 * Updates recorded in GitHub
-
-
+*-----------------------------------------*
 * <><<><><>> Read Me  <><<><><>>
 
 
@@ -11,16 +10,42 @@
 									* DISES UCAD.UGB.1_VILLAGES.PARASITOLOGY DATA ALL VILLAGES.controled_1_25.06.24.xlsx
 									* Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx
 
-		*** This .do file outputs: (need to finish updating output)
-								
-			**			ndiamar_020A_midline_left_school.dta
-			**			ndiamar_020A_midline_df
-			**			el_debiyaye_maraye_021A_midline_left_school.dta
-			**			el_debiyaye_maraye_021A_midline_df
-			**			dioss_peulh_032A_midline_left_school.dta
-			**			dioss_peulh_032A_midline_df
-			**			mberaye_023B_midline_left_school.dta
-			**			mberaye_023B_midline_df
+		*** This .do file outputs: 
+		
+			**			thiangaye_021B_midline_df.dta
+			**			ndiayene_pendao_020B_midline_df.dta
+			**			geuo_033A_midline_df.dta
+			**			dodel_072B_midline_df.dta
+			**			diabobe_030B_midline_df.dta
+			**			yetti_yone_033B_midline_df.dta
+			**			yamane_130A_midline_df.dta
+			**			saneinte_031B_midline_df.dta
+			**			ndiamar_020A_midline_df.dta
+			**			kassack_nord_030A_midline_df.dta
+			**			fanaye_diery_062B_midline_df.dta
+			**			diaminar_loyene_022A_midline_df.dta
+			**			mberaye_023B_midline_df.dta
+			**			el_debiyaye_maraye_021A_midline_df.dta
+			**			dioss_peulh_032A_midline_df.dta
+			**			complete_midline_ucad_parasitology_df.dta
+			**			thilla_023A_midline_df.dta
+			**			syer_120B_midline_df.dta
+			**			ndiakhaye_011B_midline_df.dta
+			**			ndelle_boye_013A_midline_df.dta
+			**			minguene_boye_013B_midline_df.dta
+			**			mbilor_012A_midline_df.dta
+			**			mbarigo_123A_midline_df.dta
+			**			mbakhana_122A_midline_df.dta
+			**			malla_131B_midline_df.dta
+			**			keur_birane_kobar_010A_midline_df.dta
+			**			gueum_yalla_010B_midline_df.dta
+			**			foss_121B_midline_df.dta
+			**			diaminar_012B_midline_df.dta
+			**			complete_midline_epls_parasitology_df.dta
+			**			assy_011A_midline_df.dta
+			** 			complete_midline_parasitology_df
+			**			complete_midline_parasitology_df.xlsx
+
 						
 								
 		*** PROCEDURE:
@@ -28,9 +53,15 @@
 		
 				* 1) Import raw UCAD/EPLS data by village 
 				* 2) rename variables
-				* 3) drop useless rows
+				* 3) drop empty/irralavent rows
 				* 4) label variables
+				* 5) Generate village ID
+				* 6) Move any notes in paras variables to the note column 
 				* 5) save .dta
+				
+		**** NOTE:
+		
+		** 	EPLS stored age in the consent forms in midline. I grabbed age in each consent form and merged it to the paras data frame.
 
 *<><<><><>><><<><><>>
 **# INITIATE SCRIPT
@@ -90,9 +121,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -115,9 +146,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variableage_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -156,9 +187,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename Eage_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -181,9 +212,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -205,7 +236,7 @@
 		**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == "Control realized by Bruno Senghor 21.06.2024"
+		drop if identificant == "Control realized by Bruno Senghor 21.06.2024"
 
 	save "$cleandata_ucad_base\dodel_072B_baseline_df", replace 
 	
@@ -221,9 +252,9 @@
 
 		rename CartoBil_SEN2151_Parasitologie numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename Eage_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -246,9 +277,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -270,7 +301,7 @@
 		**drop unneeded/empty rows
 		
 		drop in 1/4
-		drop if identifiant == "Control realized by Bruno Senghor 21.06.2024"
+		drop if identificant == "Control realized by Bruno Senghor 21.06.2024"
 
 	save "$cleandata_ucad_base\diabobe_030B_baseline_df", replace 
 	
@@ -287,9 +318,9 @@
 
 		rename A numero
 		rename DISES_SEN2151_Parasitologiede initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename Eage_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -312,9 +343,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -352,9 +383,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename Eage_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -377,9 +408,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -419,9 +450,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename Eage_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -444,9 +475,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -488,9 +519,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp_hp 
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -513,9 +544,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp  "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -553,9 +584,9 @@
 
 		rename A numero
 		rename DISES_SEN2151_Parasitologiede initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp_hp 
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -578,9 +609,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -630,9 +661,9 @@
 
 		rename A numero
 		rename DISES_SEN2151_Parasitologiede initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -655,9 +686,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -698,9 +729,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -723,9 +754,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -764,9 +795,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -789,9 +820,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -831,9 +862,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -856,9 +887,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -898,9 +929,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -923,9 +954,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -965,9 +996,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -990,9 +1021,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1030,9 +1061,9 @@
 
 		rename DISES_SEN2151_Parasitologiede numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1055,9 +1086,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1101,9 +1132,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1127,9 +1158,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1203,9 +1234,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1229,9 +1260,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1296,9 +1327,9 @@
 
 		rename CartoBil_SEN23119_Parasitologi numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1322,9 +1353,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1380,9 +1411,9 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1406,9 +1437,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1463,9 +1494,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1489,9 +1520,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1520,9 +1551,9 @@
 		order hhid_village
 		
 				replace notes = age in 57
-				replace age = sexe in 57
-				replace sexe = identifiant in 57
-				replace identifiant = initiales in 57
+				replace age_hp = sex_hp in 57
+				replace sex_hp = identificant in 57
+				replace identificant = initiales in 57
 				replace initiales = numero in 57
 				replace numero = "" in 57
 	
@@ -1557,9 +1588,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1582,9 +1613,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1646,9 +1677,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1671,9 +1702,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1700,9 +1731,9 @@
 		gen notes = ""
 			
 		replace notes = age in 58
-		replace age = sexe in 58
-		replace sexe = identifiant in 58
-		replace identifiant = initiales in 58
+		replace age_hp = sex_hp in 58
+		replace sex_hp = identificant in 58
+		replace identificant = initiales in 58
 		replace initiales = numero in 58
 		replace numero = "" in 58
 
@@ -1737,9 +1768,9 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1762,9 +1793,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1791,9 +1822,9 @@
 				
 		
 		replace notes = age in 52/57
-		replace age = sexe in 52/57
-		replace sexe = identifiant in 52/57
-		replace identifiant = initiales in 52/57
+		replace age_hp = sex_hp in 52/57
+		replace sex_hp = identificant in 52/57
+		replace identificant = initiales in 52/57
 		replace initiales = numero in 52/57
 		replace numero = "" in 52/57
 
@@ -1832,9 +1863,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -1857,9 +1888,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -1923,9 +1954,9 @@
 
 		rename C numero
 		rename D initiales
-		rename E identifiant
-		rename F sexe
-		rename G age
+		rename E identificant
+		rename F sex_hp
+		rename G age_hp
 		rename H fu_p1
 		rename I omega_vivant_p1
 		rename J sm_fup1
@@ -1949,9 +1980,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -2012,9 +2043,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -2037,9 +2068,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -2098,9 +2129,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -2123,9 +2154,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -2187,9 +2218,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -2212,9 +2243,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -2276,9 +2307,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -2301,9 +2332,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -2364,9 +2395,9 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
-		rename E age
+		rename C identificant
+		rename D sex_hp
+		rename E age_hp
 		rename F fu_p1
 		rename G omega_vivant_p1
 		rename H sm_fup1
@@ -2389,9 +2420,9 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
-		label variable age "Current age"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
+		label variable age_hp "Current age"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
 		label variable sm_fup1 "S. mansoni present at FU/P1"
@@ -2460,8 +2491,8 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -2488,8 +2519,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -2522,11 +2553,11 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent_MA") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 			
-		keep initiales identifiant age sexe age
+		keep initiales identificant age_hp sex_hp 
 		drop in 1/5
 		drop in 51/54
 	
@@ -2537,17 +2568,17 @@
 		restore 
 		
 
-		merge 1:1 sexe identifiant initiales using `_131B_ages', nogen 
+		merge 1:1 sex_hp identificant initiales using `_131B_ages', nogen 
 		
-			replace grade = age in 51
-				replace age = "" in 51
-			replace notes = sexe in 51
-				replace sexe = "" in 51
+			replace grade = age_hp in 51
+				replace age_hp = "" in 51
+			replace notes = sex_hp in 51
+				replace sex_hp = "" in 51
 				
 		gen hhid_village = "131B"
 		order hhid_village
 			
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\malla_131B_midline_df", replace 	
 		
@@ -2564,8 +2595,8 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -2592,8 +2623,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -2627,12 +2658,12 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent MR") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 			rename F signature 
 			
-		keep initiales identifiant age sexe signature
+		keep initiales identificant age_hp sex_hp signature
 
 		drop in 1/5
 		drop in 53/56
@@ -2645,12 +2676,12 @@
 		restore 
 		
 		
-		merge 1:1 initiales identifiant sexe using `_012A_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_012A_ages', nogen 
 
 		** clean up notes
 		
-		replace notes = sexe in 53/54
-			replace sexe = "" in 53/54
+		replace notes = sex_hp in 53/54
+			replace sex_hp = "" in 53/54
 		replace grade = signature in 53/54
 			replace signature = "" in 53/54
 				drop signature
@@ -2658,7 +2689,7 @@
 		gen hhid_village = "012A"
 		order hhid_village
 		
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\mbilor_012A_midline_df", replace 		
 	
@@ -2675,8 +2706,8 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -2703,8 +2734,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -2739,11 +2770,11 @@
 		
 		
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 		
-		keep initiales identifiant age sexe  
+		keep initiales identificant age_hp sex_hp  
 		drop in 1/4
 		drop in 51/54
 	
@@ -2755,16 +2786,16 @@
 		
 	** merge in ages 
 			
-		merge 1:1 identifiant initiales using `_010B_ages', nogen 
+		merge 1:1 identificant initiales using `_010B_ages', nogen 
 	
 				
-		replace notes = sexe in 51/52
-			replace sexe = "" in 51/52
+		replace notes = sex_hp in 51/52
+			replace sex_hp = "" in 51/52
 			
 		gen hhid_village = "010B"
 			order hhid_village
 			
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\gueum_yalla_010B_midline_df", replace 		
 	
@@ -2781,8 +2812,8 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -2809,8 +2840,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -2844,12 +2875,12 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent KB") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop in 1/5
 		drop in 54/57
@@ -2862,17 +2893,17 @@
 		
 	** merge in ages 
 			
-		merge 1:1 identifiant using `_010A_ages', nogen 
+		merge 1:1 identificant using `_010A_ages', nogen 
 	
-			replace grade = age in 56/58
-				replace age = "" in 56/58
-			replace notes = sexe in 56/58
-				replace sexe = "" in 56/58
+			replace grade = age_hp in 56/58
+				replace age_hp = "" in 56/58
+			replace notes = sex_hp in 56/58
+				replace sex_hp = "" in 56/58
 			
 		gen hhid_village = "010A"
 			order hhid_village
 		
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\keur_birane_kobar_010A_midline_df", replace 		
 		
@@ -2890,8 +2921,8 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -2918,8 +2949,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -2952,15 +2983,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent NK") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _011B_ages
 				save `_011B_ages'
@@ -2970,21 +3001,21 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_011B_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_011B_ages', nogen 
 		
 		forvalues i = 51/52 { 
 	
-			replace grade = age in `i'
-				replace age = "" in `i'
-			replace notes = sexe in `i'
-				replace sexe = "" in `i'
+			replace grade = age_hp in `i'
+				replace age_hp = "" in `i'
+			replace notes = sex_hp in `i'
+				replace sex_hp = "" in `i'
 				
 				}
 			
 		gen hhid_village = "011B"
 			order hhid_village
 			
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\ndiakhaye_011B_midline_df", replace 		
 		
@@ -3002,8 +3033,8 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3030,8 +3061,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3065,15 +3096,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent FS") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _011B_ages
 				save `_011B_ages'
@@ -3083,21 +3114,21 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_011B_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_011B_ages', nogen 
 		
 		forvalues i = 54/55 { 
 	
-			replace grade = age in `i'
-				replace age = "" in `i'
-			replace notes = sexe in `i'
-				replace sexe = "" in `i'
+			replace grade = age_hp in `i'
+				replace age_hp = "" in `i'
+			replace notes = sex_hp in `i'
+				replace sex_hp = "" in `i'
 				
 				}
 				
 		gen hhid_village = "121B"
 			order hhid_village
 						
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\foss_121B_midline_df", replace 		
 		
@@ -3114,8 +3145,8 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3142,8 +3173,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3167,7 +3198,7 @@
 			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == ""
+		drop if identificant == ""
 		
 		** grab ages 
 
@@ -3176,15 +3207,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent DK") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _012B_ages
 				save `_012B_ages'
@@ -3194,21 +3225,21 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_012B_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_012B_ages', nogen 
 		
 		forvalues i = 50/52 { 
 	
-			replace grade = age in `i'
-				replace age = "" in `i'
-			replace notes = sexe in `i'
-				replace sexe = "" in `i'
+			replace grade = age_hp in `i'
+				replace age_hp = "" in `i'
+			replace notes = sex_hp in `i'
+				replace sex_hp = "" in `i'
 				
 				}
 				
 	gen hhid_village = "012B"
 		order hhid_village
 						
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\diaminar_012B_midline_df", replace 		
 	
@@ -3225,8 +3256,8 @@
 
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3253,8 +3284,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3279,7 +3310,7 @@
 			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == ""
+		drop if identificant == ""
 		
 		** grab ages 
 
@@ -3288,15 +3319,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent ST") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _120B_ages
 				save `_120B_ages'
@@ -3306,21 +3337,21 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_120B_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_120B_ages', nogen 
 		
 		forvalues i = 51/51 { 
 	
-			replace grade = age in `i'
-				replace age = "" in `i'
-			replace notes = sexe in `i'
-				replace sexe = "" in `i'
+			replace grade = age_hp in `i'
+				replace age_hp = "" in `i'
+			replace notes = sex_hp in `i'
+				replace sex_hp = "" in `i'
 				
 				}
 				
 		gen hhid_village = "120B"
 			order hhid_village
 			
-		order age, before(grade)
+		order age_hp, before(grade)
 		
 
 	save "$cleandata_epls_mid\syer_120B_midline_df", replace 		
@@ -3338,8 +3369,8 @@
 
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3366,8 +3397,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3392,7 +3423,7 @@
 			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == ""
+		drop if identificant == ""
 		
 		** grab ages 
 
@@ -3401,15 +3432,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent TB") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _023A_ages
 				save `_023A_ages'
@@ -3419,12 +3450,12 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_023A_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_023A_ages', nogen 
 		
 		gen hhid_village = "023A"
 			order hhid_village
 	
-			order age, before(grade)
+			order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\thilla_023A_midline_df", replace 		
 			
@@ -3441,8 +3472,8 @@
 		
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3469,8 +3500,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3495,7 +3526,7 @@
 			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == ""
+		drop if identificant == ""
 		
 		** grab ages 
 
@@ -3504,15 +3535,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent MI") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _013B_ages
 				save `_013B_ages'
@@ -3522,25 +3553,25 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_013B_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_013B_ages', nogen 
 		
-			replace notes = sexe in 53
-			replace notes = sexe in 56/58
-			replace notes = sexe in 60/62
-				replace sexe = "" in 53
-				replace sexe = "" in 56/58
-				replace sexe = "" in 60/62
-			replace grade = age in 53
-			replace grade = age in 56/58
-			replace grade = age in 60/62
-				replace age = "" in 53
-				replace age = "" in 56/58
-				replace age = "" in 60/62
+			replace notes = sex_hp in 53
+			replace notes = sex_hp in 56/58
+			replace notes = sex_hp in 60/62
+				replace sex_hp = "" in 53
+				replace sex_hp = "" in 56/58
+				replace sex_hp = "" in 60/62
+			replace grade = age_hp in 53
+			replace grade = age_hp in 56/58
+			replace grade = age_hp in 60/62
+				replace age_hp = "" in 53
+				replace age_hp = "" in 56/58
+				replace age_hp = "" in 60/62
 
 		gen hhid_village = "013B"
 			order hhid_village	
 			
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\minguene_boye_013B_midline_df", replace 		
 	
@@ -3556,8 +3587,8 @@
 		
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3584,8 +3615,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3610,7 +3641,7 @@
 			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == ""
+		drop if identificant == ""
 		
 		** grab ages 
 
@@ -3619,15 +3650,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent NB") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _013A_ages
 				save `_013A_ages'
@@ -3637,21 +3668,21 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_013A_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_013A_ages', nogen 
 		
 		forvalues i = 51/58 { 
 	
-			replace grade = age in `i'
-				replace age = "" in `i'
-			replace notes = sexe in `i'
-				replace sexe = "" in `i'
+			replace grade = age_hp in `i'
+				replace age_hp = "" in `i'
+			replace notes = sex_hp in `i'
+				replace sex_hp = "" in `i'
 				
 				}
 
 		gen hhid_village = "013A"
 			order hhid_village
 							
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\ndelle_boye_013A_midline_df", replace 		
 	
@@ -3668,8 +3699,8 @@
 		
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3696,8 +3727,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3722,7 +3753,7 @@
 			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == ""
+		drop if identificant == ""
 		
 		** grab ages 
 
@@ -3731,15 +3762,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent AB") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _011A_ages
 				save `_011A_ages'
@@ -3749,20 +3780,20 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_011A_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_011A_ages', nogen 
 		
 		forvalues i = 52/58 { 
 	
-			replace grade = age in `i'
-				replace age = "" in `i'
-			replace notes = sexe in `i'
-				replace sexe = "" in `i'
+			replace grade = age_hp in `i'
+				replace age_hp = "" in `i'
+			replace notes = sex_hp in `i'
+				replace sex_hp = "" in `i'
 				
 				}
 
 		gen hhid_village = "011A"
 			order hhid_village
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\assy_011A_midline_df", replace 		
 	
@@ -3779,8 +3810,8 @@
 		
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3807,8 +3838,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3833,7 +3864,7 @@
 			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == ""
+		drop if identificant == ""
 		
 		** grab ages 
 
@@ -3842,15 +3873,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent _MB") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _122A_ages
 				save `_122A_ages'
@@ -3860,21 +3891,21 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_122A_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_122A_ages', nogen 
 		
 		forvalues i = 51/52 { 
 	
-			replace grade = age in `i'
-				replace age = "" in `i'
-			replace notes = sexe in `i'
-				replace sexe = "" in `i'
+			replace grade = age_hp in `i'
+				replace age_hp = "" in `i'
+			replace notes = sex_hp in `i'
+				replace sex_hp = "" in `i'
 				
 				}
 					
 					
 		gen hhid_village = "122A"
 			order hhid_village
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\mbakhana_122A_midline_df", replace 		
 	
@@ -3891,8 +3922,8 @@
 		
 		rename DISES_SEN23119_Parasitologied numero
 		rename B initiales
-		rename C identifiant
-		rename D sexe
+		rename C identificant
+		rename D sex_hp
 		rename E grade
 		rename F fu_p1
 		rename G omega_vivant_p1
@@ -3919,8 +3950,8 @@
 	  
 		label variable numero "Record number"
 		label variable initiales "Initials"
-		label variable identifiant "Unique ID"
-		label variable sexe "Sex"
+		label variable identificant "Unique ID"
+		label variable sex_hp "Sex"
 		label variable grade "Grade in class"
 		label variable fu_p1 "Follow-up period 1"
 		label variable omega_vivant_p1 "ω (alive) during FU/P1"
@@ -3945,7 +3976,7 @@
 			**drop unneeded/empty rows
 		
 		drop in 1/6
-		drop if identifiant == ""
+		drop if identificant == ""
 		
 		** grab ages 
 
@@ -3954,15 +3985,15 @@
 			import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("Consent MO") firstrow clear
 			
 			rename B initiales
-			rename C identifiant
-			rename D sexe
-			rename E age
+			rename C identificant
+			rename D sex_hp
+			rename E age_hp
 
 			
-		keep initiales identifiant age sexe 
+		keep initiales identificant age_hp sex_hp 
 
 		drop if initiales == "Initiales"
-		drop if identifiant == ""
+		drop if identificant == ""
 			
 			tempfile _123A_ages
 				save `_123A_ages'
@@ -3972,20 +4003,20 @@
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identifiant sexe using `_123A_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_123A_ages', nogen 
 		
 		forvalues i = 51/54 { 
 	
-			replace grade = age in `i'
-				replace age = "" in `i'
-			replace notes = sexe in `i'
-				replace sexe = "" in `i'
+			replace grade = age_hp in `i'
+				replace age_hp = "" in `i'
+			replace notes = sex_hp in `i'
+				replace sex_hp = "" in `i'
 				
 				}
 				
 		gen hhid_village = "123A"
 			order hhid_village							
-		order age, before(grade)
+		order age_hp, before(grade)
 
 	save "$cleandata_epls_mid\mbarigo_123A_midline_df", replace 			
 			

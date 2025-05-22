@@ -777,63 +777,48 @@ foreach dataset in midline_outcomes food_security health_outcomes work_outcomes 
 
 save `combined_data', replace
 
+* 2.1.2: Education Outcomes
+use "$midline_household", clear
+
+* For each household member
+forvalues i = 1/55 {
+    * Current enrollment (hh_32)
+    gen enrolled_`i' = (hh_32_`i' == 1)
+    
+    * Grade level (hh_35) - convert to years of education
+    gen years_edu_`i' = .
+    replace years_edu_`i' = hh_35_`i' if inrange(hh_35_`i', 1, 13)  // Primary through Secondary
+    replace years_edu_`i' = 14 if hh_35_`i' == 14  // University
+    
+    * Attendance (hh_38) - days attended last week
+    gen attendance_`i' = hh_38_`i' if inrange(hh_38_`i', 0, 7)
+}
+
+* Household level measures
+* Any school-aged children enrolled
+egen midline_any_enrolled = rowmax(enrolled_*)
+label var midline_any_enrolled "Any school-aged children enrolled"
+
+* Average years of education 
+egen midline_avg_years_edu = rowmean(years_edu_*)
+label var midline_avg_years_edu "Average years of education for school-aged children"
+
+* Average attendance days
+egen midline_avg_attendance = rowmean(attendance_*)
+label var midline_avg_attendance "Average days attended school last week"
+
+keep hhid midline_any_enrolled midline_avg_years_edu midline_avg_attendance
+
+tempfile education_outcomes
+save `education_outcomes'
+
+* Merge all midline outcomes into combined dataset
+use `combined_data', clear
+foreach dataset in midline_outcomes food_security health_outcomes work_outcomes education_outcomes {
+    merge 1:1 hhid using ``dataset'', keep(master match) nogen
+}
+
+drop gpd_datalatitude gpd_datalongitude
+
 * save final dataset to specifications folder
 save "$specifications/baseline_to_midline_pap_specifications.dta", replace
-
-**************************************************
-* specifications
-**************************************************
-* primary outcomes
-* does training induce AVR (self-reports)
-* 1.1.1
-* need to add distance vector and then the controls are not binary from balance data either
-* reg midline_AVR baseline_AVR $controls i.auctions_experiment, vce(cluster hhid_village) 
-* 1.1.2
-
-* 1.1.3
-* need endline
-
-* 1.1.4
-
-* 1.1.5
-
-* 1.1.6
-
-* 1.1.7
-
-* 1.1.8.1
-* demands paristological
-
-* 1.1.8.2
-
-* 1.1.9.
-* demands paristological
-
-* 1.1.10.1
-
-* 1.1.10.2
-
-* 1.1.11
-
-* 1.1.12
-* midline to endline
-
-* secondary outcomes
-* 2.1.1
-
-* 2.1.2
-
-* 2.1.3
-* baseline to endline
-
-* 2.2.1
-* demands sweep/drone imagery
-
-* 2.2.2
-* demands upstream water point as regressor
-
-* 2.2.3
-* demands upstream water point as regressor
-
-* 2.3.1
-* demands focus group

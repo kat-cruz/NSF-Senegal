@@ -61,22 +61,30 @@
 
  
 *-----------------------------------------*
-**# CLEAN BASELINE UCAD DATA
+**# Merge baseline against midline to see if there's new kids 
 *-----------------------------------------*
 
 
 		import excel "$paras_base", sheet("Sheet1") firstrow clear 
 			merge m:m identificant using "$paras_mid"  
 
-			keep age_hp sex_hp identificant _merge hhid_village initiales
-
-
 			keep if _merge != 3
 			
+		** I already matched new kids from UCAD's village Geuo so we can drop that
+		
 			drop if hhid_village == "033A"
-
-
-		order hhid_village identificant initiales age_hp sex_hp 
+			
+		** drop kids that left midline/baseline
+		
+			drop if missing(sex_hp) & missing(sex_hp) 
+				
+		** drop kids that left midline/baseline
+		
+			drop if notes == "Hors village"
+		
+				
+		keep age_hp sex_hp identificant _merge hhid_village initiales
+			order hhid_village identificant initiales age_hp sex_hp 
 		
 		export excel using "$dataexport/epls_midline_new_students_to_match.xlsx", firstrow(variables) replace
 

@@ -199,7 +199,8 @@
 
 ** Create rooms per member variable
 
-	gen rooms_per_member = hh_numero / agri_6_6 if agri_6_6 > 0 	
+	gen rooms_per_member = hh_numero / agri_6_6 if agri_6_6 > 0 
+				replace rooms_per_member = 0 if agri_6_6 == 0
 
 ** create binary for agri_6_23
 
@@ -268,6 +269,5 @@ preserve
 save "$dataOutput\PCA_asset_index_var.dta", replace
 
 restore 
-*/
 
 

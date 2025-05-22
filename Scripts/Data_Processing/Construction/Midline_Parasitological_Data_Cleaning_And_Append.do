@@ -125,11 +125,11 @@
 		rename D sex_hp
 		rename E age_hp_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
+		rename J omega_vivant_2
+		rename K sm_fu_2
 		rename L p1_kato1
 		rename M p1_kato1_epg
 		rename N p1_kato2
@@ -1123,7 +1123,7 @@
 *<><<><><>><><<><><>>
 
 	**##  Geuo (033A)
-	
+	**##UPDATES TO MAKE STARTING HERE LOL
 *-----------------------------------------* Midline Village Geuo *-----------------------------------------*
 
 	import excel "$rawdata_ucad_mid\Dises year 2_fusion final_3_08042025.UCAD.UGB.xlsx", sheet("10_GU") firstrow clear
@@ -1136,22 +1136,22 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 
 		
 	  *^*^* Label variables 
@@ -4024,21 +4024,21 @@
 **# APPEND UCAD DATA
 *<><<><><>><><<><><>>
 	
-use "$cleandata_ucad_mid\geuo_033a_midline_df.dta", clear
-append using "$cleandata_ucad_mid\dodel_072b_midline_df.dta"
-append using "$cleandata_ucad_mid\diabobe_030b_midline_df.dta"
-append using "$cleandata_ucad_mid\thiangaye_021b_midline_df.dta"
-append using "$cleandata_ucad_mid\ndiayene_pendao_020b_midline_df.dta"
-append using "$cleandata_ucad_mid\fanaye_diery_062b_midline_df.dta"
-append using "$cleandata_ucad_mid\saneinte_031b_midline_df.dta"
-append using "$cleandata_ucad_mid\yetti_yone_033b_midline_df.dta"
-append using "$cleandata_ucad_mid\yamane_130a_midline_df.dta"
-append using "$cleandata_ucad_mid\diaminar_loyene_022a_midline_df.dta"
-append using "$cleandata_ucad_mid\kassack_nord_030a_midline_df.dta"
-append using "$cleandata_ucad_mid\ndiamar_020a_midline_df.dta"
-append using "$cleandata_ucad_mid\el_debiyaye_maraye_021a_midline_df.dta"
-append using "$cleandata_ucad_mid\dioss_peulh_032a_midline_df.dta"
-append using "$cleandata_ucad_mid\mberaye_023b_midline_df.dta"
+	use "$cleandata_ucad_mid\geuo_033a_midline_df.dta", clear
+		append using "$cleandata_ucad_mid\dodel_072b_midline_df.dta"
+		append using "$cleandata_ucad_mid\diabobe_030b_midline_df.dta"
+		append using "$cleandata_ucad_mid\thiangaye_021b_midline_df.dta"
+		append using "$cleandata_ucad_mid\ndiayene_pendao_020b_midline_df.dta"
+		append using "$cleandata_ucad_mid\fanaye_diery_062b_midline_df.dta"
+		append using "$cleandata_ucad_mid\saneinte_031b_midline_df.dta"
+		append using "$cleandata_ucad_mid\yetti_yone_033b_midline_df.dta"
+		append using "$cleandata_ucad_mid\yamane_130a_midline_df.dta"
+		append using "$cleandata_ucad_mid\diaminar_loyene_022a_midline_df.dta"
+		append using "$cleandata_ucad_mid\kassack_nord_030a_midline_df.dta"
+		append using "$cleandata_ucad_mid\ndiamar_020a_midline_df.dta"
+		append using "$cleandata_ucad_mid\el_debiyaye_maraye_021a_midline_df.dta"
+		append using "$cleandata_ucad_mid\dioss_peulh_032a_midline_df.dta"
+		append using "$cleandata_ucad_mid\mberaye_023b_midline_df.dta"
 
 	
 
@@ -4094,9 +4094,6 @@ append using "$cleandata_ucad_mid\mberaye_023b_midline_df.dta"
 		append using "`file'"
 	}
 
-
-	
-		
 */
 	
 			

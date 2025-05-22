@@ -6,8 +6,10 @@
 * Created: October 2024
 * Updates recorded in GitHub
 
+*<><<><><>><><<><><>>	
+** Read Me  <><<><><>>
+*<><<><><>><><<><><>>	
 
-* <><<><><>> Read Me  <><<><><>>
 ** General notes:
  * individual_id_crdes variable is created here which replicates the individual IDs made in the Individual_Level_IDs.do file
  * hh_13 are just indicies - the variable needs to be filtered (as seen at line 337)
@@ -35,15 +37,19 @@
  *** Run the following:
 		* 1) To update
 		
+*-----------------------------------------*
+**# INITIATE SCRIPT
+*-----------------------------------------*		
+		
 	clear all
 	set mem 100m
 	set maxvar 30000
 	set matsize 11000
 	set more off
 
-*<><<><><>><><<><><>>	
-* SET FILE PATHS
-*<><<><><>><><<><><>>	
+*-----------------------------------------*
+**# SET FILE PATHS
+*-----------------------------------------*
 
 * Set base Box path for each user
 	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box"
@@ -72,10 +78,10 @@ global date = strofreal(date(c(current_date),"DMY"), "%tdYYNNDD")
 	clear
 	
 *<><<><><>><><<><><>>	
-* LOAD IN RAW UCAD/EPLS PARASITOLOGICAL DATA
+**# Baseline Cleaning
 *<><<><><>><><<><><>>	
 
-import excel "${raw_data}\Baseline UCAD & EPLS parasitological data.xlsx", sheet("Sheet1") firstrow
+import excel "${raw_data}\Baseline UCAD & EPLS parasitological data.xlsx", sheet("Sheet1") firstrow clear
 
 * Clean leading/trailing spaces from identificant
 	replace identificant = strtrim(identificant)
@@ -248,15 +254,144 @@ import excel "${raw_data}\Baseline UCAD & EPLS parasitological data.xlsx", sheet
 * Check merge results
 		tab _merge
 
-	rename identificant epls_ucad_id
-
-		order village_id village_name hhid_crdes individual_id_crdes match_score sex_crdes age_crdes sex_epls_ucad age_epls_ucad epls_ucad_result epls_or_ucad epls_ucad_id sex_hp age_hp fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_pg pq_kato2_omega p1_kato2_k2_peg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 pzq_1 pzq_2 data_source _merge
+		order village_id village_name hhid_crdes individual_id_crdes match_score sex_crdes age_crdes sex_epls_ucad age_epls_ucad epls_ucad_result epls_or_ucad identificant sex_hp age_hp fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_pg pq_kato2_omega p1_kato2_k2_peg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 pzq_1 pzq_2 data_source _merge
 		
 
 
-		save "${output}\01_prepped_inf_matches_df.dta", replace
+		save "${output}\01_baseline_prepped_inf_matches_df.dta", replace
+
+*<><<><><>><><<><><>>	
+**# Midline Cleaning
+*<><<><><>><><<><><>>	
+
+	use  "${raw_data}\complete_midline_parasitology_df.dta", clear
+
+* Clean leading/trailing spaces from identificant
+		replace identificant = strtrim(identificant)
+
+	gen village_name = ""
+
+		replace village_name = "Ndiamar (SO)" if hhid_village  == "020A"
+		replace village_name = "Diabobes (DI)" if hhid_village  == "030B"
+		replace village_name = "Diaminar Loyene (DL)" if hhid_village  == "022A"
+		replace village_name = "Dioss Peulh (DP)" if hhid_village  == "032A"
+		replace village_name = "Dodel (DO)" if hhid_village  == "072B"
+		replace village_name = "Maraye (MA)" if hhid_village  == "021A"
+		replace village_name = "Fanaye Diery (FD)" if hhid_village  == "062B"
+		replace village_name = "Gueo (GU)" if hhid_village  == "033A"
+		replace village_name = "Kassak Nord (KA)" if hhid_village  == "030A"
+		replace village_name = "Mberaye (MB)" if hhid_village  == "023B"
+		replace village_name = "Ndiamar (SL)" if hhid_village  == "020A"
+		replace village_name = "Ndiayene Pendao (NP)" if hhid_village  == "020B"
+		replace village_name = "Saneinte Tacque (SA)" if hhid_village  == "031B"
+		replace village_name = "Thiangaye (TH)" if hhid_village  == "021B"
+		replace village_name = "Yamane (YA)" if hhid_village  == "130A"
+		replace village_name = "Yetti Yoni (YY)" if hhid_village  == "033B"
+		replace village_name = "Assy (AB)" if hhid_village  == "011A"
+		replace village_name = "Diaminar Keur Kane (DK)" if hhid_village  == "012B"
+		replace village_name = "Gueum Yalla (GY)" if hhid_village  == "010B"
+		replace village_name = "Keur Birane Kobar (KB)" if hhid_village  == "010A"
+		replace village_name = "Mbilor (MR)" if hhid_village  == "012A"
+		replace village_name = "Minguene Boye (MI)" if hhid_village  == "013B"
+		replace village_name = "Ndelle Boye (NB)" if hhid_village  == "013A"
+		replace village_name = "Ndiakhaye (NK)" if hhid_village  == "011B"
+		replace village_name = "Thilla (TB)" if hhid_village  == "023A"
+		replace village_name = "Mbakhana (MB)" if hhid_village  == "122A"
+		replace village_name = "Mbarigo (MO)" if hhid_village  == "123A"
+		replace village_name = "Foss (FS)" if hhid_village  == "121B"
+		replace village_name = "Malla (MA)" if hhid_village  == "131B"
+		replace village_name = "Syer (ST)" if hhid_village  == "120B"
+
+* Prioritize UCAD/UGB villages for data_source
+	
+	gen data_source = 0
+
+		replace data_source = 1 if inlist(hhid_village, ///
+			"020A", "030B", "022A", "032A", "072B")
+
+		replace data_source = 1 if inlist(hhid_village, ///
+			"021A", "062B", "033A", "030A", "023B")
+
+		replace data_source = 1 if inlist(hhid_village, ///
+			"020B", "031B", "021B", "130A", "033B")
 
 
+	* Assign remaining villages (i.e., EPLS) as 0
+		replace data_source = 0 if data_source == .
 
+		* Label the variable for clarity
+		label define source_label 0 "EPLS" 1 "UCAD/UGB"
+		label values data_source source_label
 
+		drop if missing(identificant)
+		* drop children who dropped from baseline or midline data 
+		drop if missing(age_hp) & missing(sex_hp)
 
+* First, save the current dataset
+				save "${output}\01_mid_infection_df", replace
+				
+*-----------------------------------------*
+**##Clean scored data 
+*-----------------------------------------*
+
+preserve 
+
+* Import the Excel file
+	import excel "${clean_data}\Child_Matches_Dataset.xlsx", firstrow clear
+
+	* Clean up the variable names 
+	rename VillageID hhid_village
+	rename Villagename village_name
+	rename HHIDCRDES hhid_crdes
+	rename IndividualIDCRDES individual_id_crdes
+	rename MatchScore match_score
+	rename SexCRDES sex_crdes
+	rename AgeCRDES age_crdes
+	rename EPLSorUCADID identificant
+	rename SexEPLSorUCAD sex_epls_ucad
+	rename AgeEPLSorUCAD age_epls_ucad
+	rename EPLSorUCADResult epls_ucad_result
+	rename EPLS1orUCAD2 epls_or_ucad
+
+* keep only the relevant variables
+	keep village_name hhid_crdes individual_id_crdes match_score identificant
+			*drop if missing(individual_id_crdes) & missing(hhid_crdes) & missing(match_score) 
+	
+				save "${output}\01_child_matched_IDs_df", replace
+				
+
+				* Save this as a temporary file - to test to figure out what is going on smh 
+/*
+				tempfile _child_matched_IDs_df
+					save `_child_matched_IDs_df'
+*/
+				
+restore 
+			
+			
+	merge m:m identificant using "${output}\01_child_matched_IDs_df", nogen 
+	
+	
+order hhid_village village_name hhid_crdes individual_id_crdes identificant match_score sex_hp age_hp fu_p1 omega_vivant_p1 omega_vivant_p2 sm_fup1 sm_fup2 fu_p2 sm_fu_2 p1_kato1_omega p1_kato1_k1_pg pq_kato2_omega p1_kato2_k2_peg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 pzq_1 pzq_2 data_source 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

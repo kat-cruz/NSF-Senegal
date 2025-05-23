@@ -1153,31 +1153,31 @@
 		rename U sh_kk_2
 		rename V pzq_1
 
-		
-	  *^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+ *^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
+
 		
 		
 	* drop the first 6 rows (they're header or formatting rows)
@@ -1189,16 +1189,6 @@
 		gen hhid_village = "033A"
 			order hhid_village
 		
-	* save kids that left school
-		
-	preserve 
-	
-			keep in 57/78
-		
-					tempfile _033A_left_school
-						save  `_033A_left_school'
-	restore 
-
 		
 	* save all kids in midline  
 	
@@ -1214,7 +1204,7 @@
 			drop in 57/58
 			drop in 78/79
 			replace notes = "Transfert\Nouveaux recruts" if notes == "Transfert"
-			replace omega_vivant_p2 = "" if omega_vivant_p2 == "Nouveaux recruts "
+			replace omega_vivant_2 = "" if omega_vivant_2 == "Nouveaux recruts "
 			replace notes = "Crtl finalisé __Dr Bruno_le / /2025" if numero == "Crtl finalisé __Dr Bruno_le / /2025"
 			replace numero = "" if numero == "Crtl finalisé __Dr Bruno_le / /2025"
 			
@@ -1238,48 +1228,46 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 
-		
-	  *^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 	* drop the first 6 rows (they're header or formatting rows)
@@ -1291,20 +1279,9 @@
 	* gen village ID
 	
 		gen hhid_village = "072B"
-		order hhid_village
+			order hhid_village
 		
-	** keep kids who left were in baseline but left in midline	
-	preserve 
-	
-	gen obs_no = _n
-	keep if inrange(obs_no, 50, 53)
-	drop obs_no
-	
-				tempfile _072B_left_school
-					save  `_072B_left_school'
-	restore 
-	
-	
+
 	**drop unneeded/empty rows	
 			
 			drop in 49/50
@@ -1331,48 +1308,46 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-	  *^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 	* drop the first 6 rows (they're header or formatting rows)
@@ -1415,49 +1390,47 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 
-		
-	  *^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
-		
 		
 	** drop the first 6 rows (they're header or formatting rows)
 			
@@ -1465,17 +1438,7 @@
 	gen hhid_village = "020B"
 		order hhid_village
 	
-	** keep kids who left baseline
 	
-	preserve 
-	
-			keep in 53/54
-		
-				tempfile _020B_left_school
-				save `_020B_left_school'
-		
-	restore 
-		
 	**drop unneeded/empty rows
 	
 		drop in 52
@@ -1498,48 +1461,46 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-	  *^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 	* drop the first 6 rows (they're header or formatting rows)
@@ -1557,17 +1518,6 @@
 				replace initiales = numero in 57
 				replace numero = "" in 57
 	
-	*^*^* keep kids who left midline 
-	
-	preserve 
-	
-			keep in 57
-		
-				tempfile _021B_left_school
-					save `_021B_left_school'
-		
-	restore 
-		
 	**drop unneeded/empty rows
 		
 		drop in 55/56
@@ -1592,47 +1542,46 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -1646,16 +1595,6 @@
 			}
 		
 		
-			*^*^* keep kids who left midline 
-	
-	preserve 
-	
-			keep in 51/56
-		
-				tempfile _062B_left_school
-					save  `_062B_left_school'
-		
-	restore 
 		
 	**drop unneeded/empty rows
 	
@@ -1681,47 +1620,47 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -1737,21 +1676,11 @@
 		replace initiales = numero in 58
 		replace numero = "" in 58
 
-			*^*^* keep kids who left midline
-	
-	preserve 
-	
-			keep in 58
-		
-				tempfile _031B_left_school
-					save  `_031B_left_school'
-
-	restore 
 		
 	**drop unneeded/empty rows
 	
-	drop in 56/57
-	drop in 57
+		drop in 56/57
+		drop in 57
 	
 		save "$cleandata_ucad_mid\saneinte_031B_midline_df", replace 	 
 	
@@ -1772,47 +1701,46 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -1829,18 +1757,6 @@
 		replace numero = "" in 52/57
 
 
-		
-			*^*^* keep kids who left midline 
-	
-	preserve 
-	
-			keep in 52/57
-		
-				tempfile _033B_left_school
-					save  `_033B_left_school'
-
-		
-	restore 
 		
 	**drop unneeded/empty rows
 	
@@ -1867,47 +1783,47 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -1918,18 +1834,7 @@
 		replace notes = fu_p1 in 53/57
 		replace fu_p1 = "" in 53/57
 		
-			*^*^* keep kids who left midline 
-	
-		preserve 
-	
-			keep in 53/57
-		
-				tempfile _130A_left_school
-					save  `_130A_left_school'
-
-		
-		restore 
-		
+			
 	**drop unneeded/empty rows
 	
 	drop in 52
@@ -1939,7 +1844,7 @@
 		
 	
 	
-**##  Diaminar Loyene (130A) VERIFY & RUN
+**##  Diaminar Loyene (130A) CHECK
 *-----------------------------------------* Midline Village Diaminar Loyene *-----------------------------------------*
 
 
@@ -1958,48 +1863,46 @@
 		rename F sex_hp
 		rename G age_hp
 		rename H fu_p1
-		rename I omega_vivant_p1
-		rename J sm_fup1
+		rename I omega_vivant_1
+		rename J sm_fu_1
 		rename K fu_p2
-		rename L omega_vivant_p2
-		rename M sm_fup2
-		rename N p1_kato1
-		rename O p1_kato1_epg
-		rename P p1_kato2
-		rename Q p1_kato2_epg
-		rename R sh_kk_p1
-		rename S p2_kato1
-		rename T p2_kato1_epg
-		rename U p2_kato2
-		rename V p2_kato2_epg
-		rename W sh_kk_p2
-		rename X treatment_date
-
+		rename L omega_vivant_2
+		rename M sm_fu_2
+		rename N p1_kato1_omega
+		rename O p1_kato1_k1_epg
+		rename P p1_kato2_omega
+		rename Q p1_kato2_k2_epg
+		rename R sh_kk_1
+		rename S p2_kato1_omega
+		rename T p2_kato1_k1_epg
+		rename U p2_kato2_omega
+		rename V p2_kato2_k2_epg
+		rename W sh_kk_2
+		rename X pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -2010,18 +1913,7 @@
 		replace notes = fu_p1 in 57
 		replace fu_p1 = "" in 57
 		
-			*^*^* keep kids who left midline 
-	
-	preserve 
-	
-			keep in 51
-		
-				tempfile _022A_left_school
-					save  `_022A_left_school'
 
-		
-	restore 
-		
 	**drop unneeded/empty rows
 	
 	drop in 55/56
@@ -2047,48 +1939,47 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
-		
+*^*^* label variables
+
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		drop in 1/6
 		gen notes = ""
@@ -2097,18 +1988,7 @@
 
 		replace notes = fu_p1 in 53/55
 			replace fu_p1 = "" in 53/55
-		
-			*^*^* keep kids who left midline 
-	
-	preserve 
-	
-			keep in 53/55
-		
-				tempfile _030A_left_school
-					save  `_030A_left_school'
 
-		
-	restore 
 		
 	**drop unneeded/empty rows
 	
@@ -2133,47 +2013,46 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -2184,20 +2063,8 @@
 		replace notes = fu_p1 in 57
 		replace fu_p1 = "" in 57
 
-	
-		
-			*^*^* keep kids who left midline 
-	
-	preserve 
-	
-			keep in 57
-		
-				tempfile _020A_left_school
-					save  `_020A_left_school'
 
-		
-	restore 
-	
+
 	* drop rows without data 
 	
 	drop in 56
@@ -2222,47 +2089,46 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -2274,18 +2140,7 @@
 		replace notes = fu_p1 in 47/51
 		replace fu_p1 = "" in 47/51
 		
-			*^*^* keep kids who left midline 
 	
-	preserve 
-	
-			keep in 47/51
-		
-				tempfile _021A_left_school
-					save  `_021A_left_school'
-
-		
-	restore 
-		
 	**drop unneeded/empty rows
 	
 	drop in 46
@@ -2311,47 +2166,47 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -2365,23 +2220,11 @@
 		replace fu_p1 = "" in 51/53
 
 
-		
-			*^*^* keep kids who left midline 
-	
-	preserve 
-	
-			keep in 51/53
-		
-			tempfile _032A_left_school
-					save  `_032A_left_school'
-
-	restore 
-	
 	**drop unneeded/empty rows
 	
-	drop in 50
-	drop in 53/54
-		
+		drop in 50
+		drop in 53/54
+			
 		save "$cleandata_ucad_mid\dioss_peulh_032A_midline_df", replace 		
 		
 	
@@ -2399,47 +2242,47 @@
 		rename D sex_hp
 		rename E age_hp
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V treatment_date
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable age_hp "Current age"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable treatment_date "Date of PZQ treatment"
+*^*^* label variables
+
+		label variable numero                "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable age_hp               "Current age"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1                "Date of PZQ treatment"
 		
 		
 		drop in 1/6
@@ -2451,17 +2294,6 @@
 		replace fu_p1 = "" in 55/57
 
 		
-		
-			*^*^* keep kids who left midline 
-	
-	preserve 
-	
-			keep in 55/57
-		
-			tempfile _023B_left_school
-					save  `_023B_left_school'
-					
-	restore 
 	
 	**drop unneeded/empty rows
 	
@@ -2486,60 +2318,59 @@
 		import excel "$rawdata_epls_mid\Dises_Année 2_Compilation data_mg.xlsx", sheet("1_MA") firstrow clear
 
  
-
-		*^*^*rename variables for clarity 
-
 		rename A numero
 		rename DISES_SEN23119_Parasitologied initiales
 		rename C identificant
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
+		
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade               	"Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from field team"	
 
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
 					
 			**drop unneeded/empty rows
 		
@@ -2556,6 +2387,8 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
+			
 			
 		keep initiales identificant age_hp sex_hp 
 		drop in 1/5
@@ -2576,7 +2409,7 @@
 				replace sex_hp = "" in 51
 				
 		gen hhid_village = "131B"
-		order hhid_village
+			order hhid_village
 			
 		order age_hp, before(grade)
 
@@ -2599,51 +2432,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 	
 			
 			**drop unneeded/empty rows
@@ -2661,6 +2494,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 			rename F signature 
 			
 		keep initiales identificant age_hp sex_hp signature
@@ -2710,51 +2544,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 		
 			
 			**drop unneeded/empty rows
@@ -2773,6 +2607,8 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
+			
 		
 		keep initiales identificant age_hp sex_hp  
 		drop in 1/4
@@ -2816,51 +2652,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 	
 			
 			**drop unneeded/empty rows
@@ -2878,6 +2714,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -2925,51 +2762,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 		
 			**drop unneeded/empty rows
 		
@@ -2986,6 +2823,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -3037,51 +2875,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 		
 
 			**drop unneeded/empty rows
@@ -3099,7 +2937,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
-
+				label variable age_hp "Current age"
 			
 		keep initiales identificant age_hp sex_hp 
 
@@ -3149,51 +2987,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 		
 			**drop unneeded/empty rows
 		
@@ -3210,6 +3048,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -3260,51 +3099,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 	
 			
 			**drop unneeded/empty rows
@@ -3322,6 +3161,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -3373,51 +3213,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 	
 			
 			**drop unneeded/empty rows
@@ -3435,6 +3275,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -3476,52 +3317,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
+		
+*^*^* label variables
 
-		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
-		
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from UCAD/EPLS team"	
 			
 			**drop unneeded/empty rows
 		
@@ -3538,6 +3378,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -3591,51 +3432,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from field team"	
 		
 
 			**drop unneeded/empty rows
@@ -3653,6 +3494,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -3703,51 +3545,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from field team"	
 	
 			
 			**drop unneeded/empty rows
@@ -3765,6 +3607,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -3814,51 +3657,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from field team"	
 		
 			
 			**drop unneeded/empty rows
@@ -3876,6 +3719,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -3926,51 +3770,51 @@
 		rename D sex_hp
 		rename E grade
 		rename F fu_p1
-		rename G omega_vivant_p1
-		rename H sm_fup1
+		rename G omega_vivant_1
+		rename H sm_fu_1
 		rename I fu_p2
-		rename J omega_vivant_p2
-		rename K sm_fup2
-		rename L p1_kato1
-		rename M p1_kato1_epg
-		rename N p1_kato2
-		rename O p1_kato2_epg
-		rename P sh_kk_p1
-		rename Q p2_kato1
-		rename R p2_kato1_epg
-		rename S p2_kato2
-		rename T p2_kato2_epg
-		rename U sh_kk_p2
-		rename V pzq_traitement_date1
-		rename W pzq_traitement_date2
-		rename X notes 
-
+		rename J omega_vivant_2
+		rename K sm_fu_2
+		rename L p1_kato1_omega
+		rename M p1_kato1_k1_epg
+		rename N p1_kato2_omega
+		rename O p1_kato2_k2_epg
+		rename P sh_kk_1
+		rename Q p2_kato1_omega
+		rename R p2_kato1_k1_epg
+		rename S p2_kato2_omega
+		rename T p2_kato2_k2_epg
+		rename U sh_kk_2
+		rename V pzq_1
+		rename W pzq_2
+		rename X notes
 		
-		*^*^* Label variables 
-	  
-		label variable numero "Record number"
-		label variable initiales "Initials"
-		label variable identificant "Unique ID"
-		label variable sex_hp "Sex"
-		label variable grade "Grade in class"
-		label variable fu_p1 "Follow-up period 1"
-		label variable omega_vivant_p1 "ω (alive) during FU/P1"
-		label variable sm_fup1 "S. mansoni present at FU/P1"
-		label variable fu_p2 "Follow-up period 2"
-		label variable omega_vivant_p2 "ω (alive) during FU/P2"
-		label variable sm_fup2 "S. mansoni present at FU/P2"
-		label variable p1_kato1 "Kato-Katz 1 (P1)"
-		label variable p1_kato1_epg "EPG (P1, slide 1)"
-		label variable p1_kato2 "Kato-Katz 2 (P1)"
-		label variable p1_kato2_epg "EPG (P1, slide 2)"
-		label variable sh_kk_p1 "S. haematobium (P1)"
-		label variable p2_kato1 "Kato-Katz 1 (P2)"
-		label variable p2_kato1_epg "EPG (P2, slide 1)"
-		label variable p2_kato2 "Kato-Katz 2 (P2)"
-		label variable p2_kato2_epg "EPG (P2, slide 2)"
-		label variable sh_kk_p2 "S. haematobium (P2)"
-		label variable pzq_traitement_date1 "Date of 1st PZQ treatment post-parasitology"
-		label variable pzq_traitement_date2 "Date of 2nd PZQ treatment post-parasitology"
+*^*^* label variables
+
+		label variable numero               "Record number"
+		label variable initiales            "Initials"
+		label variable identificant         "Unique ID"
+		label variable sex_hp               "Sex"
+		label variable grade                "Current grade"
+		label variable fu_p1                "Follow-up period 1"
+		label variable omega_vivant_1       "ω (alive) during FU/P1"
+		label variable sm_fu_1              "S. mansoni present at FU/P1"
+		label variable fu_p2                "Follow-up period 2"
+		label variable omega_vivant_2       "ω (alive) during FU/P2"
+		label variable sm_fu_2              "S. mansoni present at FU/P2"
+		label variable p1_kato1_omega       "Kato-Katz 1 (P1)"
+		label variable p1_kato1_k1_epg      "EPG (P1, slide 1)"
+		label variable p1_kato2_omega       "Kato-Katz 2 (P1)"
+		label variable p1_kato2_k2_epg      "EPG (P1, slide 2)"
+		label variable sh_kk_1              "S. haematobium (P1)"
+		label variable p2_kato1_omega       "Kato-Katz 1 (P2)"
+		label variable p2_kato1_k1_epg      "EPG (P2, slide 1)"
+		label variable p2_kato2_omega       "Kato-Katz 2 (P2)"
+		label variable p2_kato2_k2_epg      "EPG (P2, slide 2)"
+		label variable sh_kk_2              "S. haematobium (P2)"
+		label variable pzq_1				"Date of 1st PZQ treatment post-parasitology"
+		label variable pzq_2				"Date of 2nd PZQ treatment post-parasitology"
+		label variable notes				"Notes from field team"	
 		
 			
 			**drop unneeded/empty rows
@@ -3988,6 +3832,7 @@
 			rename C identificant
 			rename D sex_hp
 			rename E age_hp
+				label variable age_hp "Current age"
 
 			
 		keep initiales identificant age_hp sex_hp 
@@ -4107,13 +3952,6 @@
  
  append using "$cleandata_ucad_mid\complete_midline_ucad_parasitology_df.dta"
 
- ** rename for clarity 
- 
- rename treatment_date ucad_treatment_date
- rename pzq_traitement_date1 epls_pzq_traitement_date1
- rename pzq_traitement_date2 epls_pzq_traitement_date2
- 
- order ucad_treatment_date, before(epls_pzq_traitement_date1)
 
 	save "$dataexport\complete_midline_parasitology_df.dta", replace 
 		export excel using "$dataexport/complete_midline_parasitology_df.xlsx", firstrow(variables) replace

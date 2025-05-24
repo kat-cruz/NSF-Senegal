@@ -9,85 +9,282 @@
 
 * <><<><><>> Read Me  <><<><><>>
 
-** This file processes: 
+			** This file processes: 
 
-	* Complete_Baseline_Health.dta
-	* Complete_Baseline_Household_Roster.dta
-	* Complete_Baseline_Standard_Of_Living.dta
-	* Complete_Baseline_Beliefs.dta
-	* Complete_Baseline_Agriculture.dta
-	* Complete_Baseline_Community.dta
-	* PCA_asset_index_var.dta
-	* DISES_baseline_ecological data.dta
-	* 01_prepped_inf_matches_df.dta
+							* Complete_Baseline_Health.dta
+							* Complete_Baseline_Household_Roster.dta
+							* Complete_Baseline_Standard_Of_Living.dta
+							* Complete_Baseline_Beliefs.dta
+							* Complete_Baseline_Agriculture.dta
+							* Complete_Baseline_Community.dta
+							* PCA_asset_index_var.dta
+							* DISES_baseline_ecological data.dta
+							* 01_prepped_inf_matches_df.dta
 	
-** This .do file outputs:
+			** This .do file outputs:
 
-	* 02_child_infection_analysis_df.dta
+							* 02_child_infection_analysis_df.dta
 
-
-*<><<><><>><><<><><>>
+*-----------------------------------------*
 **# INITIATE SCRIPT
-*<><<><><>><><<><><>>
+*-----------------------------------------*
 		
 	clear all
 	set mem 100m
-	set maxvar 30000
-	set matsize 11000
+		set maxvar 30000
+		set matsize 11000
 	set more off
 
-*<><<><><>><><<><><>>
-* SET FILE PATHS
+*-----------------------------------------*
+**# SET FILE PATHS
+*-----------------------------------------*
+
 *<><<><><>><><<><><>>
 
 *^*^* Set base Box path for each user
-	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
-	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
-	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
-	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
-	if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
+	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
+	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal\Data_Management"
+	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal\Data_Management"
+	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
+	if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal\Data_Management"
 
 
 *^*^* Define project-specific paths
-	global data "$master\Data_Management\Output\Analysis\Human_Parasitology\Analysis_Data"
-	global crdes_data "${master}\Data_Management\Data\_CRDES_CleanData"
-	global eco_data "${master}\Data_Management\Data\_Partner_CleanData\Ecological_Data"
-	global output "${master}\Data_Management\Output\Analysis\Human_Parasitology\Analysis_Data"
-	global asset "${master}\Data_Management\Output\Data_Processing\Construction"
-	global paras"${master}\Data_Management\Output\Analysis\Human_Parasitology\Analysis_Data"
+	global data "$master\Output\Analysis\Human_Parasitology\Analysis_Data"
+	global crdes_data "${master}\Data\_CRDES_CleanData"
+	global crdes_long_data "${master}\Output\Data_Processing\Construction"
+	global eco_data "${master}\Data\_Partner_CleanData\Ecological_Data"
+	global output "${master}\Output\Analysis\Human_Parasitology\Analysis_Data"
+	global asset "${master}\Output\Data_Processing\Construction"
+	global paras"${master}\Output\Analysis\Human_Parasitology\Analysis_Data"
+
 
 *global output "$master\Data_Management\_Partner_CleanData\Parasitological_Analysis_Data\Analysis_Data"
 
 *<><<><><>><><<><><>>
-**# LOAD IN DATA
+**# BEGIN BASELINE WORK
 *<><<><><>><><<><><>>
 
-	use "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Health.dta", clear // health data 
 
-	merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Household_Roster.dta" // hh roster data
-		drop _merge
+*-----------------------------------------*
+**## Household roster module 
+*-----------------------------------------*
 
-	merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Standard_Of_Living.dta" // standard of living data
-		drop _merge 
-		
-	merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Beliefs.dta" // standard of living data
-		drop _merge 
+*-------------------*
+**### Load in data 
+*-------------------*
 
-	merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Agriculture.dta" // ag data
-		drop _merge
+	use "${crdes_long_data}\baseline_household_long.dta", clear // health data 
 	
-	merge m:1 hhid_village using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Community.dta" // community data
-		drop _merge 
+		drop if missing(hh_age_) & missing(hh_gender_) & missing(hh_ethnicity_)
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+	 	keep hhid individ hh_age_ hh_gender_  ///
+		hh_10_ hh_12_6_ hh_15_ hh_26_ hh_32_ hh_37_ 
+
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
 		
-	merge 1:1 hhid using "${asset}\PCA_asset_index_var.dta" // asset index var
-		drop _merge	 
+*-------------------*
+**#### Replace logic missings
+*-------------------*				
 		
-	merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta" // ecological data 
-		drop _merge
+	** hh_12_ 
+	** Skip pattern: ${hh_10} > 0
+		
+		replace hh_12_6_ = 0 if hh_10_ == 0
+
+	** hh_10
+	** Skip pattern: ${hh_10} > 0 and selected(${hh_12}, "6")	
+		
+		replace hh_15_ = 0 if hh_10_ == 0 
+		replace hh_15_ = 0 if hh_12_6_ == 0	
+				
+	** hh_37_
+	** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
+		
+		replace hh_32_ = 0 if hh_26_ == 0	// child module - hh_26 begins the module, so the missings come from adults 
+		replace hh_37_ = 0 if hh_32_ == 0		
+	
+	** replace if kids didn't answer these questions KRM - look into this
+		foreach var in hh_32_ hh_37_ {
+				replace `var' = 0 if missing(`var') & (hh_age_ >= 4 & hh_age_ <= 18)
+			}
+		
+				
+*-------------------*
+**#### Replace "I don't knows" with missings
+*-------------------*				
+		
+	** replace 2s for variables that have option "I don't know" 
+		*1 Yes
+		*0 No
+		*2 Don't know / Don't answer
+		
+
+		foreach var in hh_26_ hh_37_  ///
+	 {
+			replace `var' = .a if `var' == 2
+		}
+
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+
+*-------------*
+**#### hh_15
+*-------------*			
+		
+		*How did he use aquatic vegetation?
+* Creating binary variables for hh_15
+		foreach x in 1 2 3 4 5 99 {
+			gen hh_15_`x' = hh_15_ == `x'
+			replace hh_15_`x' = 0 if missing(hh_15_)
+		}
+
+	
+	tempfile household_roster
+		save `household_roster'
+		
+
 		
 		
-	 	keep hhid hh_age* hh_gender*  ///
-		hh_10_* hh_12_6_* hh_15_* hh_26* hh_32* hh_37* ///
+		
+
+*-----------------------------------------*
+**## Health Module
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_long_data}\baseline_health_long.dta", clear // health data 
+	
+		drop if missing(hh_age_) & missing(hh_gender_) & missing(hh_ethnicity_)
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+	 	keep hhid individ hh_age_ hh_gender_  ///
+		hh_10_ hh_12_6_ hh_15_ hh_26_ hh_32_ hh_37_ 
+
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+*-------------------*
+**#### Replace logic missings
+*-------------------*				
+		
+	** hh_12_ 
+	** Skip pattern: ${hh_10} > 0
+		
+		replace hh_12_6_ = 0 if hh_10_ == 0
+
+	** hh_10
+	** Skip pattern: ${hh_10} > 0 and selected(${hh_12}, "6")	
+		
+		replace hh_15_ = 0 if hh_10_ == 0 
+		replace hh_15_ = 0 if hh_12_6_ == 0	
+				
+	** hh_37_
+	** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
+		
+		replace hh_32_ = 0 if hh_26_ == 0	// child module - hh_26 begins the module, so the missings come from adults 
+		replace hh_37_ = 0 if hh_32_ == 0		
+	
+	** replace if kids didn't answer these questions KRM - look into this
+		foreach var in hh_32_ hh_37_ {
+				replace `var' = 0 if missing(`var') & (hh_age_ >= 4 & hh_age_ <= 18)
+			}
+		
+				
+*-------------------*
+**#### Replace "I don't knows" with missings
+*-------------------*				
+		
+	** replace 2s for variables that have option "I don't know" 
+		*1 Yes
+		*0 No
+		*2 Don't know / Don't answer
+		
+
+		foreach var in hh_26_ hh_37_  ///
+	 {
+			replace `var' = .a if `var' == 2
+		}
+
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+
+*-------------*
+**#### hh_15
+*-------------*			
+		
+		*How did he use aquatic vegetation?
+* Creating binary variables for hh_15
+		foreach x in 1 2 3 4 5 99 {
+			gen hh_15_`x' = hh_15_ == `x'
+			replace hh_15_`x' = 0 if missing(hh_15_)
+		}
+
+	
+	tempfile household_roster
+		save `household_roster'		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+/*
+
+
+
+	// merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Household_Roster.dta" // hh roster data
+	// 	drop _merge
+
+	// merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Standard_Of_Living.dta" // standard of living data
+	// 	drop _merge 
+		
+	// merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Beliefs.dta" // standard of living data
+	// 	drop _merge 
+
+	// merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Agriculture.dta" // ag data
+	// 	drop _merge
+	
+	// merge m:1 hhid_village using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Community.dta" // community data
+	// 	drop _merge 
+		
+	// merge 1:1 hhid using "${asset}\PCA_asset_index_var.dta" // asset index var
+	// 	drop _merge	 
+		
+	// merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta" // ecological data 
+	// 	drop _merge
+		
+
 		living_01  ///
 		health_5_2* health_5_3_* health_5_5* health_5_8* health_5_9* ///
 		beliefs_01* beliefs_02* beliefs_03* ///
@@ -194,12 +391,7 @@ drop health_5_3_o* hh_15_o*
 
 	
 	
-** hh_37_
-** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
-	
-	replace hh_32_ = 0 if hh_26_ == 0	
-	replace hh_37_ = 0 if hh_32_ == 0	
-	
+
 ** 	health_5_3_ 
 
 	* 1. Malaria
@@ -438,6 +630,7 @@ foreach var of varlist _all {
 		
 		
 		
+*/
 		
 		
 		

@@ -89,7 +89,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
      consent* ///
      start_survey*  ///
      start_identification* hh_region* hh_department* hh_commune* hh_district* ///
-    hh_head_index resp_index hh_arrondissement* hh_village* hh_numero* hh_phone* hh_head_name_complet* hh_name_complet_resp* ///
+     hh_arrondissement* hh_village* hh_numero* hh_phone* hh_head_name_complet* hh_name_complet_resp* ///
      hh_age_resp* hh_gender_resp* hh_date* hh_time* end_identification* ///
      start_hh_composition*  _household_roster* ///
      hh_first_name* hh_name* hh_surname* hh_full_name_calc* hh_gender* hh_age* ///

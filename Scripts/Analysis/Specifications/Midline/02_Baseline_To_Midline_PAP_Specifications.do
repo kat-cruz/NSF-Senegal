@@ -41,6 +41,88 @@ gen T_C_L = (trained_hh == 0 & treatment_arm == 3)
 gen T_C_T = (trained_hh == 1 & treatment_arm == 3)
 
 **************************************************
+* Balance Table
+**************************************************
+
+* variables for table
+local balancevars ///
+    baseline_avr baseline_compost_production /// Primary outcomes
+    baseline_months_soudure baseline_rcsi_annual /// Food security
+    baseline_schisto_symptoms baseline_schisto_count /// Health
+    baseline_work_days_lost baseline_days_per_worker /// Labor
+    baseline_any_enrolled baseline_avg_years_edu baseline_avg_attendance /// Education
+    baseline_community_rights baseline_private_rights baseline_disease_risk /// Beliefs
+	q_51 q4 living_01_bin /// Village infrastructure
+    asset_index_std /// Wealth
+    hh_age_h hh_gender_h hh_education_skills_5_h /// HH head characteristics
+    hh_numero /// HH size
+	walking_minutes_to_arm_0 walking_minutes_to_arm_1 /// 
+    walking_minutes_to_arm_2 walking_minutes_to_arm_3 // Spillover potential
+
+* LaTeX table
+file open balance using "$specifications/balance_table.tex", write replace
+
+* header
+file write balance "\begin{table}[htbp]" _n
+file write balance "\centering" _n
+file write balance "\caption{Balance Across Treatment Arms}" _n
+file write balance "\label{tab:balance}" _n
+file write balance "\begin{tabular}{lccccp{2cm}}" _n
+file write balance "\hline\hline" _n
+file write balance " & Control & Public & Private & Both & F-test \\" _n
+file write balance "Variable & Group & Health & Benefits & Messages & p-value \\" _n
+file write balance "\hline" _n
+
+foreach var of local balancevars {
+    * variable label
+    local varlabel: variable label `var'
+    if "`varlabel'" == "" local varlabel "`var'"
+    
+    * control group mean
+    sum `var' if treatment_arm == 0
+    local mean0 = r(mean)
+    local sd0 = r(sd)
+    
+    * treatment group means
+    forvalues t = 1/3 {
+        sum `var' if treatment_arm == `t'
+        local mean`t' = r(mean)
+        local sd`t' = r(sd)
+    }
+    
+    * F-test
+    reg `var' i.treatment_arm, r cluster(hhid_village)
+    test 1.treatment_arm 2.treatment_arm 3.treatment_arm
+    local pval = r(p)
+    
+    * row
+    file write balance "`varlabel' & "
+    file write balance %9.3f (`mean0') " & "
+    file write balance %9.3f (`mean1') " & "
+    file write balance %9.3f (`mean2') " & "
+    file write balance %9.3f (`mean3') " & "
+    file write balance %9.3f (`pval') " \\" _n
+    
+    * standard deviations row
+    file write balance "& ("
+    file write balance %9.3f (`sd0') ") & ("
+    file write balance %9.3f (`sd1') ") & ("
+    file write balance %9.3f (`sd2') ") & ("
+    file write balance %9.3f (`sd3') ") & \\" _n
+}
+
+* Table footer
+file write balance "\hline" _n
+file write balance "\end{tabular}" _n
+file write balance "\begin{tablenotes}" _n
+file write balance "\small" _n
+file write balance "\item Notes: Table reports means and standard deviations (in parentheses) for each variable by treatment arm. The last column shows p-values from F-tests of joint equality across treatment arms. Standard errors are clustered at the village level." _n
+file write balance "\end{tablenotes}" _n
+file write balance "\end{table}" _n
+
+file close balance
+
+**************************************************
 * Primary Outcomes
 **************************************************
 eststo clear

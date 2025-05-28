@@ -1,6 +1,6 @@
 *==============================================================================
 * Program: parasitological data frame analysis construction 
-* =============================================================================
+*=============================================================================
 
 * written by: Kateri Mouawad
 * Created: February 2025
@@ -50,24 +50,22 @@
 
 
 *^*^* Define project-specific paths
-	global data "$master\Output\Analysis\Human_Parasitology\Analysis_Data"
-	global crdes_data "${master}\Data\_CRDES_CleanData"
+
+	global crdes_data "${master}\Data\_CRDES_CleanData\Baseline\Deidentified"
 	global crdes_long_data "${master}\Output\Data_Processing\Construction"
 	global eco_data "${master}\Data\_Partner_CleanData\Ecological_Data"
 	global output "${master}\Output\Analysis\Human_Parasitology\Analysis_Data"
 	global asset "${master}\Output\Data_Processing\Construction"
 	global paras"${master}\Output\Analysis\Human_Parasitology\Analysis_Data"
-
-
-*global output "$master\Data_Management\_Partner_CleanData\Parasitological_Analysis_Data\Analysis_Data"
-
+	global tidy "${master}\Output\Analysis\Human_Parasitology\Analysis_Data\Tidy_data"
+	
 *<><<><><>><><<><><>>
 **# BEGIN BASELINE WORK
 *<><<><><>><><<><><>>
 
 
 *-----------------------------------------*
-**## Household roster module 
+**## HOUSEHOLD ROSTER MODULE 
 *-----------------------------------------*
 
 *-------------------*
@@ -82,10 +80,16 @@
 **### Keep pre-selected variables
 *-------------------*
 
-	 	keep hhid individ hh_age_ hh_gender_  ///
+	 	keep hhid individ hh_age_ hh_gender_ hh_main_activity_  ///
 		hh_10_ hh_12_6_ hh_15_ hh_26_ hh_32_ hh_37_ 
 
-
+*-------------------*
+**#### recode gender
+*-------------------*	
+		*^*^*  Recode hh_gender_ (change 2 to 0, leave others unchanged)
+		recode hh_gender_ (2=0)
+		
+		
 *-------------------*
 **### Check for missings
 *-------------------*		
@@ -141,6 +145,7 @@
 **### Begin variable creation
 *-------------------*				
 
+
 *-------------*
 **#### hh_15
 *-------------*			
@@ -150,19 +155,31 @@
 		foreach x in 1 2 3 4 5 99 {
 			gen hh_15_`x' = hh_15_ == `x'
 			replace hh_15_`x' = 0 if missing(hh_15_)
-		}
+		}		
+		
+		
+*-------------*
+**#### fishing
+*-------------*	
 
-	
-	tempfile household_roster
-		save `household_roster'
-		
+	 gen fishing = .
+	 replace fishing = 1 if hh_main_activity_ == 3
+	 replace fishing = 0 if hh_main_activity_ != 3
+	 
+*-------------------*
+**### Save data set 
+*-------------------*	
 
-		
-		
+/*
+	merge m:m individ using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+*/
+
+		save "$tidy\household_roster", replace 
 		
 
 *-----------------------------------------*
-**## Health Module
+**## HEALTH MODULE
 *-----------------------------------------*
 
 *-------------------*
@@ -171,14 +188,14 @@
 
 	use "${crdes_long_data}\baseline_health_long.dta", clear // health data 
 	
-		drop if missing(hh_age_) & missing(hh_gender_) & missing(hh_ethnicity_)
+		drop if missing(health_5_2_) & missing(healthgenre_) & missing(healthindex_)
 
 *-------------------*
 **### Keep pre-selected variables
 *-------------------*
 
-	 	keep hhid individ hh_age_ hh_gender_  ///
-		hh_10_ hh_12_6_ hh_15_ hh_26_ hh_32_ hh_37_ 
+	 	keep hhid individ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ ///
+		health_5_5_ health_5_8_ health_5_9_
 
 
 *-------------------*
@@ -189,33 +206,18 @@
 			quietly count if missing(`var')
 			display "`var': " r(N)
 		}
+	
 		
 *-------------------*
 **#### Replace logic missings
 *-------------------*				
 		
-	** hh_12_ 
-	** Skip pattern: ${hh_10} > 0
-		
-		replace hh_12_6_ = 0 if hh_10_ == 0
+	** health_5_3_ 
+	** Skip pattern: ${health_5_2} = 1
 
-	** hh_10
-	** Skip pattern: ${hh_10} > 0 and selected(${hh_12}, "6")	
-		
-		replace hh_15_ = 0 if hh_10_ == 0 
-		replace hh_15_ = 0 if hh_12_6_ == 0	
-				
-	** hh_37_
-	** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
-		
-		replace hh_32_ = 0 if hh_26_ == 0	// child module - hh_26 begins the module, so the missings come from adults 
-		replace hh_37_ = 0 if hh_32_ == 0		
-	
-	** replace if kids didn't answer these questions KRM - look into this
-		foreach var in hh_32_ hh_37_ {
-				replace `var' = 0 if missing(`var') & (hh_age_ >= 4 & hh_age_ <= 18)
-			}
-		
+			foreach var in health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ {
+				replace `var' = 0 if health_5_2_ == 0
+			}	
 				
 *-------------------*
 **#### Replace "I don't knows" with missings
@@ -227,63 +229,385 @@
 		*2 Don't know / Don't answer
 		
 
-		foreach var in hh_26_ hh_37_  ///
-	 {
+		foreach var in health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_  {
+			replace `var' = .a if health_5_2_ == 2
+		}
+		
+
+		foreach var in health_5_2_ health_5_5_ health_5_8_ health_5_9_ {
 			replace `var' = .a if `var' == 2
 		}
+		
+*-------------------*
+**### Save data set 
+*-------------------*				
 
+/*
+	merge m:m individ using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+*/
+
+			
+		save "$tidy\health_module.dta", replace 
+		
+*-----------------------------------------*
+**## STANDARD OF LIVING MODULE 
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_data}\Complete_Baseline_Standard_Of_Living.dta", clear // health data 
+	
+	*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+	 	keep hhid living_01
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
 *-------------------*
 **### Begin variable creation
 *-------------------*				
 
 *-------------*
-**#### hh_15
+**#### living_01_bin
 *-------------*			
 		
-		*How did he use aquatic vegetation?
-* Creating binary variables for hh_15
-		foreach x in 1 2 3 4 5 99 {
-			gen hh_15_`x' = hh_15_ == `x'
-			replace hh_15_`x' = 0 if missing(hh_15_)
-		}
+** living_01_bin
 
+	** main source of drinking water supply
+		** 1 = Interior tap
+		** 2 = Public tap
+		** 3 = Neighbor's tap
+		** 4 = Protected well
+		** 7 = Tanker truck service
+		** 8 = Water vendor
+
+
+		gen living_01_bin = 0
+			replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 | living_01 == 4 | living_01 == 7 | living_01 == 8
+			
+*-------------*
+**#### hhid_village
+*-------------*			
+			
+			gen hhid_village = substr(hhid, 1, 4)
+
+			
+*-------------------*
+**### Save data set 
+*-------------------*		
+
+/* 
+	merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+		
+	** drop individual level variables 
+		drop individ match_score identificant
+*/
+		
+				save "$tidy\standard_of_living_module.dta", replace 
+				
+*-----------------------------------------*
+**## BELIEFS MODULE
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_data}\Complete_Baseline_Beliefs.dta", clear // beliefs data 
 	
-	tempfile household_roster
-		save `household_roster'		
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+	 	keep hhid beliefs_01 beliefs_02 beliefs_03
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+	
+		
+** create a Binary Indicator
+		*If most responses are ≤2 (Agree/Strongly Agree) → use beliefs_var <= 2 as the binary indicator.
+		*If responses are more evenly spread, consider using ≤3 (including Neutral).
+		*If disagreement dominates, use beliefs_var >= 4 instead.
+
+*-------------*
+**#### beliefs_01_bin
+*-------------*		
+		
+		gen beliefs_01_bin = (beliefs_01 <= 2)  // 55.92% responded 1 or 2
+*-------------*
+**#### beliefs_02_bin
+*-------------*		
+		gen beliefs_02_bin = (beliefs_02 <= 2)  // 64.45% responded 1 or 2
+*-------------*
+**#### beliefs_03_bin
+*-------------*	
+		gen beliefs_03_bin = (beliefs_03 <= 2)  // 80.09% responded 1 or 2
+		
+*-------------*
+**#### hhid_village
+*-------------*			
+			
+			gen hhid_village = substr(hhid, 1, 4)
+
+*-------------------*
+**### Save data set 
+*-------------------*		
+/* 
+
+	merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+		
+	** drop individual level variables 
+		drop individ match_score identificant
+*/
+		
+			save "$tidy\beliefs_module.dta", replace 			
+		
+*-----------------------------------------*
+**## ECOLOGICAL DATA 
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${eco_data}\DISES_baseline_ecological data.dta", clear // eco data 
+	
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+	 keep hhid_village Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
+		
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+		** 3 villages missing humanwatercoontact
+					
+*-------------------*
+**### Save data set 
+*-------------------*		
+	
+/* 
+	merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)	
+	
+	** drop individual level variables 
+		drop individ match_score identificant	
+*/
+		
+				save "$tidy\eco_data.dta", replace 
+
+*-----------------------------------------*
+**## PARASITOLOGICAL DATA
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${paras}\01_baseline_paras_df.dta", clear // paras data 
+	
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+	 	keep hhid_village village_name identificant fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg
+
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+			
+	** None 
+
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+
+***  covert variables from string to numeric *** 
+		* written by MJD *
+		destring fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg, replace force 
+
+*-------------*
+**#### sh_inf
+*-------------*				
+		
+		*** count infection of s. haematobium *** 
+		gen sh_inf = 0 
+		replace sh_inf = 1 if fu_p1 > 0 & fu_p1 != .
+		replace sh_inf = 1 if fu_p2 > 0 & fu_p2 != . 
+
+*-------------*
+**#### sm_inf
+*-------------*	
+
+		gen sm_inf = 0 
+		replace sm_inf = 1 if p1_kato1_k1_epg > 0 & p1_kato1_k1_epg != . 
+		replace sm_inf = 1 if p1_kato2_k2_epg > 0 & p1_kato2_k2_epg != . 
+		replace sm_inf = 1 if p2_kato1_k1_epg > 0 & p2_kato1_k1_epg != . 
+		replace sm_inf = 1 if p2_kato2_k2_epg > 0 & p2_kato2_k2_epg != . 
+
+		*** summarize infection results by village *** 
+		bysort hhid_village: sum sh_inf sm_inf
+		  
+		*** summarize infection results overall ***
+		sum sh_inf sm_inf  
+
+		
+*-------------*
+**#### sh_egg_count
+*-------------*	
+	
+*** Calculate egg counts
+	
+		gen sh_egg_count = cond(fu_p1 > 0, fu_p1, fu_p2)
+	
+*-------------*
+**#### p1_avg
+*-------------*	
+
+		gen p1_avg = (p1_kato1_k1_epg + p1_kato2_k2_epg) / 2
+	
+*-------------*
+**#### p2_avg
+*-------------*	
+
+		gen p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2
+		
+*-------------*
+**#### sm_egg_count
+*-------------*	
+
+		gen sm_egg_count = cond(p1_avg > 0, p1_avg, p2_avg)
+	
+*-------------*
+**#### total_egg
+*-------------*	
+
+* Create total egg count
+
+		gen total_egg = sm_egg_count + sh_egg_count
+		
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+			
+		
+	keep hhid_village village_name identificant sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg	
+		
+*-------------------*
+**### Save data set 
+*-------------------*		
+	
+	
+/*
+	merge m:m identificant using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)	
+*/
+	
+				save "$tidy\paras_data.dta", replace 
+				
+		
+
+*-----------------------------------------*
+**## Matched Data & merge 
+*-----------------------------------------*		
+
+** 31 individuals in the health module and NOT in the household roster. Look into. 
+
+/* 
+**long dfs 
+		use "$crdes_long_data\baseline_household_long", clear
+			merge 1:1 individ using "$crdes_long_data\baseline_health_long"
+** og wide dfs 			
+		use "$crdes_data\Complete_Baseline_Household_Roster", clear
+			use "$crdes_data\Complete_Baseline_Health", clear
+** what i cleaned 			
+		use "$tidy\household_roster", clear // individual level data 
+		use "$tidy\health_module", clear
+*/
 		
 		
+		use "$tidy\household_roster", clear // individual level data 
+			merge 1:1 individ using "$tidy\health_module" 	 // individual level data 
+					keep if _merge != 3
+			
+			
+					 save "$tidy\indiv_level_data.dta", replace 
+					
+		use "$tidy\standard_of_living_module", clear
+			merge 1:1 hhid using "$tidy\beliefs_module", nogen // household level data 		
+						save "$tidy\hh_level_data.dta", replace 
+
+		use "$tidy\indiv_level_data.dta", clear
+			merge m:1 hhid using "$tidy\hh_level_data.dta", nogen
+			merge m:1 hhid_village using "$tidy\eco_data.dta"
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			*/
+			
+	** Now link parasitological data
+	
+			*merge m:1 individ using "${output}\child_matched_IDs_df", nogen
+/*						
 		
-		
-		
-		
-		
+		use `hh_data', clear
+			merge m:1 hhid_village using "$tidy\eco_data.dta", nogen
+			
+					use "$tidy\household_roster", clear // individual level data 
+			merge 1:1 individ using "$tidy\health_module", nogen 	 // individual level data 
+							tempfile indiv_data
+								save `indiv_data'
 		
 		
 /*
 
-
-
-	// merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Household_Roster.dta" // hh roster data
-	// 	drop _merge
-
-	// merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Standard_Of_Living.dta" // standard of living data
-	// 	drop _merge 
-		
-	// merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Beliefs.dta" // standard of living data
-	// 	drop _merge 
-
-	// merge 1:1 hhid using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Agriculture.dta" // ag data
-	// 	drop _merge
-	
-	// merge m:1 hhid_village using "${crdes_data}\Baseline\Deidentified\Complete_Baseline_Community.dta" // community data
-	// 	drop _merge 
-		
-	// merge 1:1 hhid using "${asset}\PCA_asset_index_var.dta" // asset index var
-	// 	drop _merge	 
-		
-	// merge m:1 hhid_village using "${eco_data}\DISES_baseline_ecological data.dta" // ecological data 
-	// 	drop _merge
-		
 
 		living_01  ///
 		health_5_2* health_5_3_* health_5_5* health_5_8* health_5_9* ///
@@ -502,53 +826,9 @@ foreach var of varlist _all {
 		tab `var'  // Look at percentiles
 		}
 
-** create a Binary Indicator
-		*If most responses are ≤2 (Agree/Strongly Agree) → use beliefs_var <= 2 as the binary indicator.
-		*If responses are more evenly spread, consider using ≤3 (including Neutral).
-		*If disagreement dominates, use beliefs_var >= 4 instead.
-		
-		gen beliefs_01_bin = (beliefs_01 <= 2)  // 55.92% responded 1 or 2
-		gen beliefs_02_bin = (beliefs_02 <= 2)  // 64.45% responded 1 or 2
-		gen beliefs_03_bin = (beliefs_03 <= 2)  // 80.09% responded 1 or 2
 
 
-** Create summarized variables with parasitological data
 
-***  covert variables from string to numeric *** 
-		* written by MJD *
-		destring fu_p1 fu_p2 p1_kato1_k1_pg p1_kato2_k2_peg p2_kato1_k1_epg p2_kato2_k2_epg, replace force 
-
-		*** count infection of s. haematobium *** 
-		gen sh_inf = 0 
-		replace sh_inf = 1 if fu_p1 > 0 & fu_p1 != .
-		replace sh_inf = 1 if fu_p2 > 0 & fu_p2 != . 
-
-		gen sm_inf = 0 
-		replace sm_inf = 1 if p1_kato1_k1_pg > 0 & p1_kato1_k1_pg != . 
-		replace sm_inf = 1 if p1_kato2_k2_peg > 0 & p1_kato2_k2_peg != . 
-		replace sm_inf = 1 if p2_kato1_k1_epg > 0 & p2_kato1_k1_epg != . 
-		replace sm_inf = 1 if p2_kato2_k2_epg > 0 & p2_kato2_k2_epg != . 
-
-		*** summarize infection results by village *** 
-		bysort village_id: sum sh_inf sm_inf
-		  
-		*** summarize infection results overall ***
-		sum sh_inf sm_inf  
-	
-	
-*** Calculate egg counts
-	
-
-	gen sh_egg_count = cond(fu_p1 > 0, fu_p1, fu_p2)
-
-	gen p1_avg = (p1_kato1_k1_pg + p1_kato2_k2_peg) / 2
-	gen p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2
-
-	gen sm_egg_count = cond(p1_avg > 0, p1_avg, p2_avg)
-
-* Create total egg count
-	gen total_egg = sm_egg_count + sh_egg_count
-	
 	
 
 **# Save final output		
@@ -576,7 +856,7 @@ foreach var of varlist _all {
 			Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator ///
 			sh_inf sm_inf sh_egg_count sm_egg_count total_egg 
 
-			
+				
 	
 	*** label variables:
 	
@@ -797,7 +1077,7 @@ sort village_id individual_id_crdes
 
 ***  covert variables from string to numeric *** 
 		* written by MJD *
-		destring fu_p1 fu_p2 p1_kato1_k1_pg p1_kato2_k2_peg p2_kato1_k1_epg p2_kato2_k2_epg, replace force 
+		destring fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg, replace force 
 
 		*** count infection of s. haematobium *** 
 		gen sh_inf = 0 
@@ -805,8 +1085,8 @@ sort village_id individual_id_crdes
 		replace sh_inf = 1 if fu_p2 > 0 & fu_p2 != . 
 
 		gen sm_inf = 0 
-		replace sm_inf = 1 if p1_kato1_k1_pg > 0 & p1_kato1_k1_pg != . 
-		replace sm_inf = 1 if p1_kato2_k2_peg > 0 & p1_kato2_k2_peg != . 
+		replace sm_inf = 1 if p1_kato1_k1_epg > 0 & p1_kato1_k1_epg != . 
+		replace sm_inf = 1 if p1_kato2_k2_epg > 0 & p1_kato2_k2_epg != . 
 		replace sm_inf = 1 if p2_kato1_k1_epg > 0 & p2_kato1_k1_epg != . 
 		replace sm_inf = 1 if p2_kato2_k2_epg > 0 & p2_kato2_k2_epg != . 
 
@@ -827,7 +1107,7 @@ order   village_id village_name individual_id_crdes hhid_crdes epls_ucad_id matc
 		living_01 living_02 living_03 living_04 ///
 		list_actifs list_actifscount wealthindex  ///
 		q_18 q_19 q_23 q_24 q_35_check q_39 q_49 q_46 q_51 ///
-		schisto_indicator fu_p1 fu_p2 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_pg pq_kato2_omega p1_kato2_k2_peg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 sh_inf sm_inf pzq_1 		pzq_2 ///
+		schisto_indicator fu_p1 fu_p2 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_epg pq_kato2_omega p1_kato2_k2_epg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 sh_inf sm_inf pzq_1 		pzq_2 ///
 	    Cerratophyllummassg Bulinus Biomph Humanwatercontact BegeningTimesampling Endsamplingtime Schistoinfection InfectedBulinus InfectedBiomphalaria
 
 

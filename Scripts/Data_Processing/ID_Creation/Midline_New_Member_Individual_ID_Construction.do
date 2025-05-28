@@ -60,7 +60,7 @@ tostring pull_hh_individ_*, replace
 keep hhid hhid_village add_new_* pull_hh_individ_* hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new hh_age_resp hh_gender_resp hh_full_name_calc_* hh_gender_* hh_age_* hh_phone hh_relation_with_* hh_relation_with_o_*
 
 
-*** 4. Create the variable individual which is the index of which person in the household the observation is (the j variable in Stata) ***
+*** create variable individual which is the index of which person in the household the observation is (the j variable in Stata) ***
 reshape long pull_hh_individ_ add_new_ hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_ hh_relation_with_o_, i(hhid_village hhid hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new hh_age_resp hh_gender_resp hh_phone) j(individual)
 
 *** drop if there is no individual ***

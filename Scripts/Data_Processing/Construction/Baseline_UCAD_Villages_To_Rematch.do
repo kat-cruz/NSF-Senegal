@@ -68,7 +68,7 @@
 *<><<><><>><><<><><>>
 
 
-/*
+
 use "$id\All_Villages.dta", clear
 
 rename hh_relation_with_ hh_relation_with
@@ -110,7 +110,7 @@ rename hhid_village villageid
 	*export excel using "$output\Village_Ndiayene_Sare_090B.xlsx", firstrow(variables) sheet("Ndiayene Sare (090B)")  
 
 restore 
-*/
+
 
 
 

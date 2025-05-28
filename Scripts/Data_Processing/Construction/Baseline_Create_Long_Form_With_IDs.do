@@ -13,6 +13,7 @@
 	
 	*^*^* This .do file outputs:
 	***							   baseline_household_long.dta
+	*** 						   baseline_health_long.dta
 
 
 
@@ -42,36 +43,13 @@
 	*** additional file paths ***
 	global data_clean "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 	global data_raw "$master\Data_Management\Data\_CRDES_RawData\Baseline"
-	global hhids "$master\Data_Management\Output\Data_Processing\ID_Creation\Baseline"
-	global data_deidentified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
-	global data_identified "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 	global long_out "$master\Data_Management\Output\Data_Processing\Construction"
-	*** I've created a data set that contains the resp and household head index for the balance tables along with the IDs
-	global balance_out "$master\Data_Management\Output\Analysis\Balance_Tables"
-		global respondent_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\respondent_index.dta"
-		global hh_head_index "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified\household_head_index.dta"
+
 
 	*** import complete data for geographic and preliminary information ***
-	use "$data_clean\DISES_Baseline_Complete_PII", clear 
+		use "$data_clean\DISES_Baseline_Complete_PII", clear 
 		
 		
-			
-/* 
-
-		*merge 1:1 hhid using "$hh_head_index", nogen
-		*merge 1:1 hhid using "$respondent_index", nogen
-			
-			forvalues i = 1/55 {
-			gen resp_index_`i' = (resp_index == `i')
-		}
-			
-			forvalues i = 1/55 {
-			gen hh_head_index_`i' = (hh_head_index == `i')
-		}
-	
-*/
-	
-	
 
 *-----------------------------------------*
 **# Household roster module
@@ -191,7 +169,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 	
 		
 	reshape long ///
-    hh_head_index_ resp_index_ hh_age_ hh_gender_  hh_ethnicity_ hh_ethnicity_o_ hh_relation_with_o_ ///
+      hh_age_ hh_gender_  hh_ethnicity_ hh_ethnicity_o_ hh_relation_with_o_ ///
 			hh_education_skills_ hh_education_skills_0_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_skills_o_ hh_education_level_o_ hh_education_level_  hh_education_year_achieve_   ///
 			hh_mother_live_ hh_relation_imam_ hh_relation_with_ hh_presence_winter_ hh_presence_dry_ hh_main_activity_ hh_main_activity_o_ hh_active_agri_ ///
 			hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_11_ hh_11_o_ ///
@@ -233,7 +211,8 @@ preserve
  
 keep hhid health*
 
-
+	drop health_5_13 health_5_14_a health_5_14_b health_5_14_c healthname*   
+	
 forvalues i = 1/55 {
 			tostring health_5_11_o_`i', replace 
 			tostring  health_5_3_`i', replace 
@@ -242,15 +221,14 @@ forvalues i = 1/55 {
 		}
 
 
-reshape long ///
-	hh_head_index_ resp_index_ ///
+reshape long /// 
 	health_5_2_ health_5_3_ ///
 	health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_  health_5_3_13_ health_5_3_14_ health_5_3_99_  ///
 	health_5_3_o_ health_5_4_ health_5_5_  ///
 	health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ ///
-	health_5_11_  health_5_11_o_ health_5_12_ health_5_13_ health_5_14_ ///
-	health_5_14_note_ health_5_14_a_ health_5_14_c_ ///
-	healthage_ healthindex_ healthgenre_ healthname_, ///
+	health_5_11_  health_5_11_o_ health_5_12_ health_5_14_ ///
+	health_5_14_note_   ///
+	healthage_ healthindex_ healthgenre_, ///
 			i(hhid) j(id)
 	
 				

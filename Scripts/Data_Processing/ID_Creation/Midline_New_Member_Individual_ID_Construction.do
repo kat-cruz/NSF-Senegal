@@ -1,4 +1,28 @@
-****** Midline New Members Individual ID Construction ***************************
+* MIDLINE NEW MEMBER INDIVIDUAL ID CONSTRUCTION
+* Authors: Alex Mills
+* Created: January 2024
+* Last modified: May 2025
+*
+* Purpose: This script constructs unique individual IDs for new household members 
+* added during the midline survey. It:
+*   1. Processes midline household roster data
+*   2. Merges with baseline individual IDs
+*   3. Generates new sequential IDs for added members
+*   4. Links respondent IDs across household members
+*   5. Creates separate files for complete roster and midline-only cases
+*
+* Input files:
+*   - DISES_Midline_Complete_PII.dta
+*   - All_Villages_With_Individual_IDs.dta (baseline)
+*
+* Output files:
+*   - All_Individual_IDs_Complete.dta (baseline + midline)
+*   - Midline_Individual_IDs.dta (midline only)
+*
+* Notes:
+*   - Handles special case of village code 132A -> 153A conversion
+*   - Maintains consistent ID structure across waves
+*   - Preserves baseline IDs while adding new members
 
 clear all
 set mem 100m
@@ -25,8 +49,6 @@ global baselineids "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Ident
 global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
 global corrected "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Midline"
 global clean "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
-
-// "C:\Users\admmi\Box\NSF Senegal\Data_Management\_CRDES_CleanData\Baseline\Identified\All_Villages_With_Individual_IDs.dta"
 
 use "$clean\DISES_Midline_Complete_PII.dta", clear
 
@@ -94,6 +116,13 @@ restore
 * merge this information back to all household members
 merge m:1 hhid using `resp_ids', update generate(_merge2)
 drop _merge2
+
+foreach var of varlist * {
+    capture confirm string variable `var'
+    if !_rc {
+        replace `var' = subinstr(`var', "132A", "153A", .)
+    }
+}
 
 * save complete dataset with all individual IDs (baseline and midline)
 save "$clean\All_Individual_IDs_Complete.dta", replace

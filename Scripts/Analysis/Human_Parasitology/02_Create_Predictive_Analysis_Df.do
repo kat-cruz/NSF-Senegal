@@ -552,9 +552,29 @@
 
 ** 31 individuals in the health module and NOT in the household roster. Look into. 
 
-/* 
-**long dfs 
+
 		use "$crdes_long_data\baseline_household_long", clear
+		*merge 1:1 individ using  "$crdes_long_data\baseline_health_long"
+		
+		
+				drop if hh_gender_ == . & hh_age_ == . 
+		
+						tempfile hh_roster
+							save `hh_roster'
+							
+				use "$crdes_long_data\baseline_health_long", clear		
+				drop if missing(health_5_2_) & missing(healthgenre_) & missing(healthindex_)
+							
+/* 
+		use "$crdes_long_data\baseline_health_long", clear
+			
+				
+*/
+		
+	
+		merge 1:1 individ using `hh_roster'
+/*
+		
 			merge 1:1 individ using "$crdes_long_data\baseline_health_long"
 ** og wide dfs 			
 		use "$crdes_data\Complete_Baseline_Household_Roster", clear
@@ -564,6 +584,9 @@
 		use "$tidy\health_module", clear
 */
 		
+		
+
+		** MERGE FAILS 
 		
 		use "$tidy\household_roster", clear // individual level data 
 			merge 1:1 individ using "$tidy\health_module" 	 // individual level data 

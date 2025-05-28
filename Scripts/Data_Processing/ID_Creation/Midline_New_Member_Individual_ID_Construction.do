@@ -1,4 +1,28 @@
-****** Midline New Members Individual ID Construction ***************************
+* MIDLINE NEW MEMBER INDIVIDUAL ID CONSTRUCTION
+* Authors: Alex Mills
+* Created: January 2024
+* Last modified: May 2025
+*
+* Purpose: This script constructs unique individual IDs for new household members 
+* added during the midline survey. It:
+*   1. Processes midline household roster data
+*   2. Merges with baseline individual IDs
+*   3. Generates new sequential IDs for added members
+*   4. Links respondent IDs across household members
+*   5. Creates separate files for complete roster and midline-only cases
+*
+* Input files:
+*   - DISES_Midline_Complete_PII.dta
+*   - All_Villages_With_Individual_IDs.dta (baseline)
+*
+* Output files:
+*   - All_Individual_IDs_Complete.dta (baseline + midline)
+*   - Midline_Individual_IDs.dta (midline only)
+*
+* Notes:
+*   - Handles special case of village code 132A -> 153A conversion
+*   - Maintains consistent ID structure across waves
+*   - Preserves baseline IDs while adding new members
 
 clear all
 set mem 100m
@@ -26,8 +50,6 @@ global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midli
 global corrected "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Midline"
 global clean "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
 
-// "C:\Users\admmi\Box\NSF Senegal\Data_Management\_CRDES_CleanData\Baseline\Identified\All_Villages_With_Individual_IDs.dta"
-
 use "$clean\DISES_Midline_Complete_PII.dta", clear
 
 tostring hh_relation_with_o*, replace 
@@ -38,7 +60,7 @@ tostring pull_hh_individ_*, replace
 keep hhid hhid_village add_new_* pull_hh_individ_* hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new hh_age_resp hh_gender_resp hh_full_name_calc_* hh_gender_* hh_age_* hh_phone hh_relation_with_* hh_relation_with_o_*
 
 
-*** 4. Create the variable individual which is the index of which person in the household the observation is (the j variable in Stata) ***
+*** create variable individual which is the index of which person in the household the observation is (the j variable in Stata) ***
 reshape long pull_hh_individ_ add_new_ hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_ hh_relation_with_o_, i(hhid_village hhid hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new hh_age_resp hh_gender_resp hh_phone) j(individual)
 
 *** drop if there is no individual ***
@@ -94,6 +116,13 @@ restore
 * merge this information back to all household members
 merge m:1 hhid using `resp_ids', update generate(_merge2)
 drop _merge2
+
+foreach var of varlist * {
+    capture confirm string variable `var'
+    if !_rc {
+        replace `var' = subinstr(`var', "132A", "153A", .)
+    }
+}
 
 * save complete dataset with all individual IDs (baseline and midline)
 save "$clean\All_Individual_IDs_Complete.dta", replace

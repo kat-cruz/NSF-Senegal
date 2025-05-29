@@ -87,6 +87,17 @@
 *-------------------* 
 
 		drop if hhid_village == ""
+		
+*-------------------*
+**### Create schisto_indicator 
+*-------------------* 
+
+		*** create indicator variable based on text variable ***
+
+	gen schisto_indicator = .
+		replace schisto_indicator = 1 if Schistoinfection == "1"
+		replace schisto_indicator = 0 if Schistoinfection == "0"
+
  
 *-------------------*
 **## UPDATE OLD VILLAGE IDS

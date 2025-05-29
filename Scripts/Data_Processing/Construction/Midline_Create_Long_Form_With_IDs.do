@@ -8,7 +8,7 @@
 * <><<><><>> Read Me  <><<><><>>
 
 	*^*^* This .do file processes:
-	*** 							DISES_Baseline_Complete_PII
+	*** 							DISES_Midline_Complete_PII
 	
 	
 	*^*^* This .do file outputs:
@@ -31,6 +31,7 @@
 **# SET FILE PATHS
 *-----------------------------------------*
 
+
 *^*^* Set base Box path for each user
 	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
 	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
@@ -44,7 +45,8 @@
 	global hhids "$master\Data_Management\Output\Data_Processing\ID_Creation\Midline"
 	global long_out "$master\Data_Management\Output\Data_Processing\Construction"
 	global ids "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified\Midline_Individual_IDs.dta"
-
+	global clean "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
+	
 
 	*** import complete data for geographic and preliminary information ***
 		use "$data\DISES_Midline_Complete_PII.dta", clear 
@@ -77,7 +79,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
      hh_arrondissement* hh_village* hh_numero* hh_phone* hh_head_name_complet* hh_name_complet_resp* ///
      hh_age_resp* hh_gender_resp* hh_date* hh_time* end_identification* ///
      start_hh_composition*  _household_roster* ///
-     hh_first_name* hh_name* hh_surname* hh_full_name_calc* hh_gender* hh_age* ///
+     hh_first_name* hh_name* hh_surname* hh_full_name_calc* pull_hh_full_name_calc* hh_gender* hh_age* pull_hh_age* pull_hh_gender* /// // identifiable info here 
      hh_ethnicity* hh_ethnicity_o* hh_relation_with* hh_relation_with_o* hh_education_skills* ///
      hh_education_level* hh_education_level_o* hh_education_year_achieve* hh_main_activity* hh_main_activity_o* ///
      hh_mother_live* hh_relation_imam* hh_presence_winter* hh_presence_dry* hh_active_agri* ///
@@ -171,7 +173,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 			tostring hh_education_skills_`i', replace 
 			tostring hh_main_activity_o_`i', replace 
 			tostring hh_relation_with_o_`i', replace 
-			 
+			tostring pull_hh_full_name_calc__`i', replace 
 		}
 		
 	tostring hh_11_o_* hh_12_o* hh_15_o_* hh_19_o* hh_20_o* hh_23_o* hh_29_o_* hh_12name* hh_20name* hh_47_oth_* hh_52* hh_46_o* hh_12_a_o* hh_full_name_calc_*, replace 
@@ -187,7 +189,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 		
 */
 	reshape long ///
-	   hh_full_name_calc_  /// // keep identifiable variables for now to merge in the individual IDs
+	   hh_full_name_calc_  pull_hh_full_name_calc__  pull_hh_age__  pull_hh_gender__ /// // keep identifiable variables for now to merge in the individual IDs
       hh_age_ hh_gender_  hh_ethnicity_ hh_ethnicity_o_ hh_relation_with_o_ ///
 			hh_education_skills_ hh_education_skills_0_ hh_education_skills_1_ hh_education_skills_2_ hh_education_skills_3_ hh_education_skills_4_ hh_education_skills_5_ hh_education_skills_o_ hh_education_level_o_ hh_education_level_  hh_education_year_achieve_   ///
 			hh_mother_live_ hh_relation_imam_ hh_relation_with_ hh_presence_winter_ hh_presence_dry_ hh_main_activity_ hh_main_activity_o_ hh_active_agri_ ///
@@ -213,22 +215,116 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 			i(hhid) j(id)
 	
 			*merge m:1 hhid using `indiv_data', nogen 
+		
+	
+					save "$long_out\delete_later", replace 
+
+*-----------------------------------------*
+**# Clean ID data frame 
+*-----------------------------------------*	
+
+** Here I clean the Midline_Individual_IDs data (IDs_no_merge_delete_later.dta is created below in this script)
+
+     use  "$ids", clear
+	  
+	  use "C:\Users\km978\Box\NSF Senegal\Data_Management\Data\_CRDES_CleanData\Midline\Identified\All_Individual_IDs_Complete.dta", clear
+	  	* Tag duplicates based on these variables
+			duplicates tag hhid hh_full_name_calc_ hh_gender_ hh_age_, generate(dup_tag)
 			
-			save "$long_out\delete_later", replace 
+			*keep if dup_tag != 0
+
+			* Drop duplicates, keeping only the first occurrence
+			duplicates drop hhid hh_full_name_calc_ hh_gender_ hh_age_, force
+			* Optionally, drop the tag variable if no longer needed
+			drop dup_tag
+			
+			drop _merge
+					
+
+		save "$long_out\dupids_from_id_list_delete_later.dta", replace
+
+		
+*-----------------------------------------*
+**# Under construction 
+*-----------------------------------------*					
+					
 			
 		use "$long_out\delete_later", clear 
 			
-			*** drop if there is no individual ***
-			drop if (hh_full_name_calc_ == "" | hh_full_name_calc_ == ".") & hh_gender_ == . & hh_age_ == . 
-
+ ** keep some identifying variables to see what's going on 
+ 
+			keep hhid hh_full_name_calc*  pull_hh_full_name_calc*  /// // keep identifiable variables for now to merge in the individual IDs
+			  hh_age* hh_gender*  hh_ethnicity_ pull_hh_age* pull_hh_gender*
+	  
+				
+** replace any missing values in hh_full_name_calc_ hh_age_ hh_gender_ to retain full list
+ 
+			replace hh_full_name_calc_ = pull_hh_full_name_calc__ if hh_full_name_calc_ == ""
+			replace hh_age_ = pull_hh_age__ if hh_age_ == .
+			replace hh_gender_ = pull_hh_gender__ if hh_gender_ == .
 			
-	
+** drop empty rows
+		
+				drop if (hh_full_name_calc_ == "" | hh_full_name_calc_ == ".") & hh_gender_ == . & hh_age_ == .  
+		 
+		 
+** remove dupliactes
+
+**			tag duplicates based on these variables which I'll be merging on 
+				duplicates tag hhid hh_full_name_calc_ hh_gender_ hh_age_, generate(dup_tag)
+			
+			*keep if dup_tag != 0
+
+**			drop duplicates, keeping only the first occurrence
+				duplicates drop hhid hh_full_name_calc_ hh_gender_ hh_age_, force
+				
+					drop dup_tag
+					
+** merge with ll_Individual_IDs_Complete.dta  that has been cleaned of duplicates 
+
+			merge 1:1 hhid hh_full_name_calc_ hh_gender_ hh_age_ using "$long_out\dupids_from_id_list_delete_later.dta"
+			
+				keep if _merge != 3
+				
+**	what is retained are all the names in the midline data that I don't see in the Midline_Individual_IDs data.
 
 
-	**## Create matching individ
+** review tomorrow 
+
+
+
+
+
+
+
+
+
+************IGNORE EVERYTHING HERE HAHAHAHAHAH************************
+
+	**## Merge in df with midline individual IDs
+		
+		*use "$long_out\IDs_no_merge_delete_later", clear
+/* 
+		
+** RUN THIS PORTION TO SEE WHATS WRONG
+		
+		use "$clean\All_Individual_IDs_Complete.dta", clear
+		drop _merge
 	
-			merge 1:1  hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_  using "$ids", nogen 
-			use  "$ids", clear
+	
+			merge m:m  hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_ using "$long_out\delete_later" 
+			
+			keep if _merge != 3
+				keep  hhid individ hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_ _merge pull_hh_full_name_calc__
+				
+				 sort hhid
+				
+*/
+					
+			
+		** merge is not working 
+				
+			*use  "$ids", clear
 			
 	*drop hh_head_name_complet_ hh_name_complet_resp_ hh_age_resp_ hh_gender_resp_ hh_phone_ hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_
 

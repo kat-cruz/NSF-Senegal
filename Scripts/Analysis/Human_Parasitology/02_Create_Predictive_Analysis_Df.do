@@ -25,550 +25,556 @@
 
 								* 02_child_infection_analysis_df.dta
 
-	*-----------------------------------------*
-	**# INITIATE SCRIPT
-	*-----------------------------------------*
-			
-		clear all
-		set mem 100m
-			set maxvar 30000
-			set matsize 11000
-		set more off
-
-	*-----------------------------------------*
-	**# SET FILE PATHS
-	*-----------------------------------------*
-
-	*<><<><><>><><<><><>>
-
-	*^*^* Set base Box path for each user
-		if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
-		if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal\Data_Management"
-		if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal\Data_Management"
-		if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
-		if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal\Data_Management"
-
-
-	*^*^* Define project-specific paths
-
-		global crdes_data "${master}\Data\_CRDES_CleanData\Baseline\Deidentified"
-		global crdes_long_data "${master}\Output\Data_Processing\Construction"
-		global eco_data "${master}\Data\_Partner_CleanData\Ecological_Data"
-		global asset "${master}\Output\Data_Processing\Construction"
-		global paras"${master}\Output\Analysis\Human_Parasitology\Analysis_Data"
-		global tidy "${master}\Output\Analysis\Human_Parasitology\Analysis_Data\Tidy_data"
+*-----------------------------------------*
+**# INITIATE SCRIPT
+*-----------------------------------------*
 		
-	*<><<><><>><><<><><>>
-	**# BEGIN BASELINE WORK
-	*<><<><><>><><<><><>>
+	clear all
+	set mem 100m
+		set maxvar 30000
+		set matsize 11000
+	set more off
+
+*-----------------------------------------*
+**# SET FILE PATHS
+*-----------------------------------------*
+
+*<><<><><>><><<><><>>
+
+*^*^* Set base Box path for each user
+	if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal\Data_Management"
+	if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal\Data_Management"
+	if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal\Data_Management"
+	if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal\Data_Management"
+	if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal\Data_Management"
 
 
-	*-----------------------------------------*
-	**## HOUSEHOLD ROSTER MODULE 
-	*-----------------------------------------*
+*^*^* Define project-specific paths
 
-	*-------------------*
-	**### Load in data 
-	*-------------------*
+	global crdes_base "${master}\Data\_CRDES_CleanData\Baseline\Deidentified"
+	global crdes_base_long "${master}\Output\Data_Processing\Construction"
+	global crdes_mid "${master}\Data\_CRDES_CleanData\Midline\Deidentified"
+	global crdes_mid_long "${master}\Output\Data_Processing\Construction"
+	global eco_data "${master}\Data\_Partner_CleanData\Ecological_Data"
+	global asset "${master}\Output\Data_Processing\Construction"
+	global paras"${master}\Output\Analysis\Human_Parasitology\Analysis_Data"
+	global tidy "${master}\Output\Analysis\Human_Parasitology\Analysis_Data\Tidy_data"
+	
+/* 
+*<><<><><>><><<><><>>
+**# BEGIN BASELINE WORK
+*<><<><><>><><<><><>>
 
-		use "${crdes_long_data}\baseline_household_long.dta", clear // health data 
+
+*-----------------------------------------*
+**## HOUSEHOLD ROSTER MODULE 
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_base_long}\baseline_household_long.dta", clear // health data 
+	
+		drop if missing(hh_age_) & missing(hh_gender_) & missing(hh_ethnicity_)
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid individ hh_age_ hh_gender_ hh_main_activity_  ///
+		hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_ 
+	
+	** removed hh_15_
 		
-			drop if missing(hh_age_) & missing(hh_gender_) & missing(hh_ethnicity_)
-
-	*-------------------*
-	**### Keep pre-selected variables
-	*-------------------*
-
-			keep hhid individ hh_age_ hh_gender_ hh_main_activity_  ///
-			hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_ 
+*-------------------*
+**#### recode gender
+*-------------------*	
+		*^*^*  Recode hh_gender_ (change 2 to 0, leave others unchanged)
+		recode hh_gender_ (2=0)
 		
-		** removed hh_15_
-			
-	*-------------------*
-	**#### recode gender
-	*-------------------*	
-			*^*^*  Recode hh_gender_ (change 2 to 0, leave others unchanged)
-			recode hh_gender_ (2=0)
-			
-			
-	*-------------------*
-	**### Check for missings
-	*-------------------*		
-
-			foreach var of varlist _all {
-				quietly count if missing(`var')
-				display "`var': " r(N)
-			}
-			
-	*-------------------*
-	**#### Replace logic missings
-	*-------------------*				
-			
-		** hh_12_ 
-		** Skip pattern: ${hh_10} > 0
-			
-			replace hh_12_6_ = 0 if hh_10_ == 0
-
-		** hh_10
-		** Skip pattern: ${hh_10} > 0 and selected(${hh_12}, "6")	
-			
-	/* 
-			replace hh_15_ = 0 if hh_10_ == 0 
-			replace hh_15_ = 0 if hh_12_6_ == 0	
-	*/
-					
-		** hh_37_
-		** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
-			
-			replace hh_32_ = 0 if hh_26_ == 0	// child module - hh_26 begins the module, so the missings come from adults 
-			replace hh_37_ = 0 if hh_32_ == 0		
 		
-		** replace if kids didn't answer these questions KRM - look into this
-			foreach var in hh_32_ hh_37_ {
-					replace `var' = 0 if missing(`var') & (hh_age_ >= 4 & hh_age_ <= 18)
-				}
-			
-					
-	*-------------------*
-	**#### Replace "I don't knows" with missings
-	*-------------------*				
-			
-		** replace 2s for variables that have option "I don't know" 
-			*1 Yes
-			*0 No
-			*2 Don't know / Don't answer
-			
+*-------------------*
+**### Check for missings
+*-------------------*		
 
-			foreach var in hh_26_ hh_37_  ///
-		 {
-				replace `var' = .a if `var' == 2
-			}
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+*-------------------*
+**#### Replace logic missings
+*-------------------*				
+		
+	** hh_12_ 
+	** Skip pattern: ${hh_10} > 0
+		
+		replace hh_12_6_ = 0 if hh_10_ == 0
 
-	*-------------------*
-	**### Begin variable creation
-	*-------------------*				
-
-
-	/* 
-	*-------------*
-	**#### hh_15
-	*-------------*			
-			
-			*How did he use aquatic vegetation?
-	* Creating binary variables for hh_15
-			foreach x in 1 2 3 4 5 99 {
-				gen hh_15_`x' = hh_15_ == `x'
-				replace hh_15_`x' = 0 if missing(hh_15_)
-			}				
-				drop hh_15_
+	** hh_10
+	** Skip pattern: ${hh_10} > 0 and selected(${hh_12}, "6")	
+		
+/* 
+		replace hh_15_ = 0 if hh_10_ == 0 
+		replace hh_15_ = 0 if hh_12_6_ == 0	
+*/
 				
-	*/
-
-
-	*-------------*
-	**#### fishing
-	*-------------*	
-
-		 gen fishing = .
-		 replace fishing = 1 if hh_main_activity_ == 3
-		 replace fishing = 0 if hh_main_activity_ != 3
-		 
-	*-------------------*
-	**### Save data set 
-	*-------------------*	
-
-	/*
-		merge m:m individ using "${output}\child_matched_IDs_df", nogen 
-			keep if !missing(match_score)
-	*/
-
-			save "$tidy\household_roster", replace 
-			
-
-	*-----------------------------------------*
-	**## HEALTH MODULE
-	*-----------------------------------------*
-
-	*-------------------*
-	**### Load in data 
-	*-------------------*
-
-		use "${crdes_long_data}\baseline_health_long.dta", clear // health data 
+	** hh_37_
+	** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
 		
-			drop if missing(health_5_2_) & missing(healthgenre_) & missing(healthindex_)
-
-	*-------------------*
-	**### Keep pre-selected variables
-	*-------------------*
-
-			keep hhid individ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ ///
-			health_5_5_ health_5_8_ health_5_9_ ///
-			healthindex_ healthgenre_ // filter variables - will drop at the end
-			
-
-
-	*-------------------*
-	**### Check for missings
-	*-------------------*		
-
-			foreach var of varlist _all {
-				quietly count if missing(`var')
-				display "`var': " r(N)
+		replace hh_32_ = 0 if hh_26_ == 0	// child module - hh_26 begins the module, so the missings come from adults 
+		replace hh_37_ = 0 if hh_32_ == 0		
+	
+	** replace if kids didn't answer these questions KRM - look into this
+		foreach var in hh_32_ hh_37_ {
+				replace `var' = 0 if missing(`var') & (hh_age_ >= 4 & hh_age_ <= 18)
 			}
 		
-			
-	*-------------------*
-	**#### Replace logic missings
-	*-------------------*				
-			
-		** health_5_3_ 
-		** Skip pattern: ${health_5_2} = 1
-
-				foreach var in health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ {
-					replace `var' = 0 if health_5_2_ == 0
-				}	
-					
-	*-------------------*
-	**#### Replace "I don't knows" with missings
-	*-------------------*				
-			
-		** replace 2s for variables that have option "I don't know" 
-			*1 Yes
-			*0 No
-			*2 Don't know / Don't answer
-			
-
-			foreach var in health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_  {
-				replace `var' = .a if health_5_2_ == 2
-			}
-			
-
-			foreach var in health_5_2_ health_5_5_ health_5_8_ health_5_9_ {
-				replace `var' = .a if `var' == 2
-			}
-			
-	*-------------------*
-	**### Save data set 
-	*-------------------*				
-
-	/*
-		merge m:m individ using "${output}\child_matched_IDs_df", nogen 
-			keep if !missing(match_score)
-	*/
-
 				
-			save "$tidy\health_module.dta", replace 
-			
-	*-----------------------------------------*
-	**## STANDARD OF LIVING MODULE 
-	*-----------------------------------------*
-
-	*-------------------*
-	**### Load in data 
-	*-------------------*
-
-		use "${crdes_data}\Complete_Baseline_Standard_Of_Living.dta", clear // health data 
+*-------------------*
+**#### Replace "I don't knows" with missings
+*-------------------*				
 		
-		*-------------------*
-	**### Keep pre-selected variables
-	*-------------------*
-
-			keep hhid living_01
-
-	*-------------------*
-	**### Check for missings
-	*-------------------*		
-
-			foreach var of varlist _all {
-				quietly count if missing(`var')
-				display "`var': " r(N)
-			}
-			
-	*-------------------*
-	**### Begin variable creation
-	*-------------------*				
-
-	*-------------*
-	**#### living_01_bin
-	*-------------*			
-			
-	** living_01_bin
-
-		** main source of drinking water supply
-			** 1 = Interior tap
-			** 2 = Public tap
-			** 3 = Neighbor's tap
-			** 4 = Protected well
-			** 7 = Tanker truck service
-			** 8 = Water vendor
-
-
-			gen living_01_bin = 0
-				replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 | living_01 == 4 | living_01 == 7 | living_01 == 8
-				
-				
-				drop living_01
-				
-	*-------------*
-	**#### hhid_village
-	*-------------*			
-				
-				gen hhid_village = substr(hhid, 1, 4)
-
-				
-	*-------------------*
-	**### Save data set 
-	*-------------------*		
-
-	/* 
-		merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
-			keep if !missing(match_score)
-			
-		** drop individual level variables 
-			drop individ match_score identificant
-	*/
-			
-					save "$tidy\standard_of_living_module.dta", replace 
-					
-	*-----------------------------------------*
-	**## BELIEFS MODULE
-	*-----------------------------------------*
-
-	*-------------------*
-	**### Load in data 
-	*-------------------*
-
-		use "${crdes_data}\Complete_Baseline_Beliefs.dta", clear // beliefs data 
+	** replace 2s for variables that have option "I don't know" 
+		*1 Yes
+		*0 No
+		*2 Don't know / Don't answer
 		
-	*-------------------*
-	**### Keep pre-selected variables
-	*-------------------*
 
-			keep hhid beliefs_01 beliefs_02 beliefs_03
+		foreach var in hh_26_ hh_37_  ///
+	 {
+			replace `var' = .a if `var' == 2
+		}
 
-	*-------------------*
-	**### Check for missings
-	*-------------------*		
+*-------------------*
+**### Begin variable creation
+*-------------------*				
 
-			foreach var of varlist _all {
-				quietly count if missing(`var')
-				display "`var': " r(N)
-			}
-			
-	*-------------------*
-	**### Begin variable creation
-	*-------------------*				
+
+/* 
+*-------------*
+**#### hh_15
+*-------------*			
 		
+		*How did he use aquatic vegetation?
+* Creating binary variables for hh_15
+		foreach x in 1 2 3 4 5 99 {
+			gen hh_15_`x' = hh_15_ == `x'
+			replace hh_15_`x' = 0 if missing(hh_15_)
+		}				
+			drop hh_15_
 			
-	** create a Binary Indicator
-			*If most responses are ≤2 (Agree/Strongly Agree) → use beliefs_var <= 2 as the binary indicator.
-			*If responses are more evenly spread, consider using ≤3 (including Neutral).
-			*If disagreement dominates, use beliefs_var >= 4 instead.
+*/
 
-	*-------------*
-	**#### beliefs_01_bin
-	*-------------*		
-			
-			gen beliefs_01_bin = (beliefs_01 <= 2)  // 55.92% responded 1 or 2
-	*-------------*
-	**#### beliefs_02_bin
-	*-------------*		
-			gen beliefs_02_bin = (beliefs_02 <= 2)  // 64.45% responded 1 or 2
-	*-------------*
-	**#### beliefs_03_bin
-	*-------------*	
-			gen beliefs_03_bin = (beliefs_03 <= 2)  // 80.09% responded 1 or 2
-			
-	*-------------*
-	**#### hhid_village
-	*-------------*			
+
+*-------------*
+**#### fishing
+*-------------*	
+
+	 gen fishing = .
+	 replace fishing = 1 if hh_main_activity_ == 3
+	 replace fishing = 0 if hh_main_activity_ != 3
+		drop hh_main_activity_
+	 
+*-------------------*
+**### Save data set 
+*-------------------*	
+
+/*
+	merge m:m individ using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+*/
+
+		save "$tidy\household_roster", replace 
+		
+
+*-----------------------------------------*
+**## HEALTH MODULE
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_base_long}\baseline_health_long.dta", clear // health data 
+	
+		drop if missing(health_5_2_) & missing(healthgenre_) & missing(healthindex_)
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid individ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ ///
+		health_5_5_ health_5_8_ health_5_9_ ///
+		healthindex_ healthgenre_ // filter variables - will drop at the end
+		
+
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+	
+		
+*-------------------*
+**#### Replace logic missings
+*-------------------*				
+		
+	** health_5_3_ 
+	** Skip pattern: ${health_5_2} = 1
+
+			foreach var in health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ {
+				replace `var' = 0 if health_5_2_ == 0
+			}	
 				
+*-------------------*
+**#### Replace "I don't knows" with missings
+*-------------------*				
+		
+	** replace 2s for variables that have option "I don't know" 
+		*1 Yes
+		*0 No
+		*2 Don't know / Don't answer
+		
+
+		foreach var in health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_  {
+			replace `var' = .a if health_5_2_ == 2
+		}
+		
+
+		foreach var in health_5_2_ health_5_5_ health_5_8_ health_5_9_ {
+			replace `var' = .a if `var' == 2
+		}
+		
+*-------------------*
+**### Save data set 
+*-------------------*				
+
+/*
+	merge m:m individ using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+*/
+
+			
+		save "$tidy\health_module.dta", replace 
+		
+*-----------------------------------------*
+**## STANDARD OF LIVING MODULE 
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_base_data}\Complete_Baseline_Standard_Of_Living.dta", clear // health data 
+	
+	*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid living_01
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+
+*-------------*
+**#### living_01_bin
+*-------------*			
+		
+** living_01_bin
+
+	** main source of drinking water supply
+		** 1 = Interior tap
+		** 2 = Public tap
+		** 3 = Neighbor's tap
+		** 4 = Protected well
+		** 7 = Tanker truck service
+		** 8 = Water vendor
+
+
+		gen living_01_bin = 0
+			replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 | living_01 == 4 | living_01 == 7 | living_01 == 8
+			
+			
+			drop living_01
+			
+*-------------*
+**#### hhid_village
+*-------------*			
+			
 			gen hhid_village = substr(hhid, 1, 4)
 
-	*-------------------*
-	**### Save data set 
-	*-------------------*		
-	/* 
-
-		merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
-			keep if !missing(match_score)
 			
-		** drop individual level variables 
-			drop individ match_score identificant
-	*/
+*-------------------*
+**### Save data set 
+*-------------------*		
+
+/* 
+	merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+		
+	** drop individual level variables 
+		drop individ match_score identificant
+*/
+		
+				save "$tidy\standard_of_living_module.dta", replace 
+				
+*-----------------------------------------*
+**## BELIEFS MODULE
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_base_data}\Complete_Baseline_Beliefs.dta", clear // beliefs data 
 	
-	drop beliefs_01 beliefs_02 beliefs_03
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid beliefs_01 beliefs_02 beliefs_03
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+	
+		
+** create a Binary Indicator
+		*If most responses are ≤2 (Agree/Strongly Agree) → use beliefs_var <= 2 as the binary indicator.
+		*If responses are more evenly spread, consider using ≤3 (including Neutral).
+		*If disagreement dominates, use beliefs_var >= 4 instead.
+
+*-------------*
+**#### beliefs_01_bin
+*-------------*		
+		
+		gen beliefs_01_bin = (beliefs_01 <= 2)  // 55.92% responded 1 or 2
+*-------------*
+**#### beliefs_02_bin
+*-------------*		
+		gen beliefs_02_bin = (beliefs_02 <= 2)  // 64.45% responded 1 or 2
+*-------------*
+**#### beliefs_03_bin
+*-------------*	
+		gen beliefs_03_bin = (beliefs_03 <= 2)  // 80.09% responded 1 or 2
+		
+*-------------*
+**#### hhid_village
+*-------------*			
 			
-				save "$tidy\beliefs_module.dta", replace 			
-			
-	*-----------------------------------------*
-	**## ECOLOGICAL DATA 
-	*-----------------------------------------*
+		gen hhid_village = substr(hhid, 1, 4)
 
-	*-------------------*
-	**### Load in data 
-	*-------------------*
+*-------------------*
+**### Save data set 
+*-------------------*		
+/* 
 
-		use "${eco_data}\DISES_baseline_ecological data.dta", clear // eco data 
+	merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
 		
-	*-------------------*
-	**### Keep pre-selected variables
-	*-------------------*
+	** drop individual level variables 
+		drop individ match_score identificant
+*/
 
-		 keep hhid_village Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
-			
-	*-------------------*
-	**### Check for missings
-	*-------------------*		
-
-			foreach var of varlist _all {
-				quietly count if missing(`var')
-				display "`var': " r(N)
-			}
-			
-			** 3 villages missing humanwatercoontact
-						
-	*-------------------*
-	**### Save data set 
-	*-------------------*		
+drop beliefs_01 beliefs_02 beliefs_03
 		
-	/* 
-		merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
-			keep if !missing(match_score)	
+			save "$tidy\beliefs_module.dta", replace 			
 		
-		** drop individual level variables 
-			drop individ match_score identificant	
-	*/
-			
-					save "$tidy\eco_data.dta", replace 
+*-----------------------------------------*
+**## ECOLOGICAL DATA 
+*-----------------------------------------*
 
-	*-----------------------------------------*
-	**## PARASITOLOGICAL DATA
-	*-----------------------------------------*
+*-------------------*
+**### Load in data 
+*-------------------*
 
-	*-------------------*
-	**### Load in data 
-	*-------------------*
+	use "${eco_data}\DISES_baseline_ecological data.dta", clear // eco data 
+	
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
 
-		use "${paras}\01_baseline_paras_df.dta", clear // paras data 
+	 keep hhid_village Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
 		
+*-------------------*
+**### Check for missings
+*-------------------*		
 
-	*-------------------*
-	**### Keep pre-selected variables
-	*-------------------*
-
-			keep hhid_village village_name identificant fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg
-
-
-	*-------------------*
-	**### Check for missings
-	*-------------------*		
-
-			foreach var of varlist _all {
-				quietly count if missing(`var')
-				display "`var': " r(N)
-			}
-				
-		** None 
-
-	*-------------------*
-	**### Begin variable creation
-	*-------------------*				
-
-	***  covert variables from string to numeric *** 
-			* written by MJD *
-			destring fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg, replace force 
-
-	*-------------*
-	**#### sh_inf
-	*-------------*				
-			
-			*** count infection of s. haematobium *** 
-			gen sh_inf = 0 
-			replace sh_inf = 1 if fu_p1 > 0 & fu_p1 != .
-			replace sh_inf = 1 if fu_p2 > 0 & fu_p2 != . 
-
-	*-------------*
-	**#### sm_inf
-	*-------------*	
-
-			gen sm_inf = 0 
-			replace sm_inf = 1 if p1_kato1_k1_epg > 0 & p1_kato1_k1_epg != . 
-			replace sm_inf = 1 if p1_kato2_k2_epg > 0 & p1_kato2_k2_epg != . 
-			replace sm_inf = 1 if p2_kato1_k1_epg > 0 & p2_kato1_k1_epg != . 
-			replace sm_inf = 1 if p2_kato2_k2_epg > 0 & p2_kato2_k2_epg != . 
-
-			*** summarize infection results by village *** 
-			bysort hhid_village: sum sh_inf sm_inf
-			  
-			*** summarize infection results overall ***
-			sum sh_inf sm_inf  
-
-			
-	*-------------*
-	**#### sh_egg_count
-	*-------------*	
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
 		
-	*** Calculate egg counts
-		
-			gen sh_egg_count = cond(fu_p1 > 0, fu_p1, fu_p2)
-		
-	*-------------*
-	**#### p1_avg
-	*-------------*	
-
-			gen p1_avg = (p1_kato1_k1_epg + p1_kato2_k2_epg) / 2
-		
-	*-------------*
-	**#### p2_avg
-	*-------------*	
-
-			gen p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2
-			
-	*-------------*
-	**#### sm_egg_count
-	*-------------*	
-
-			gen sm_egg_count = cond(p1_avg > 0, p1_avg, p2_avg)
-		
-	*-------------*
-	**#### total_egg
-	*-------------*	
-
-	* Create total egg count
-
-			gen total_egg = sm_egg_count + sh_egg_count
-			
-	*-------------------*
-	**### Keep pre-selected variables
-	*-------------------*
-				
-			
-		keep hhid_village village_name identificant sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg	
-			
-	*-------------------*
-	**### Save data set 
-	*-------------------*		
-		
-		
-	/*
-		merge m:m identificant using "${output}\child_matched_IDs_df", nogen 
-			keep if !missing(match_score)	
-	*/
-		
-					save "$tidy\paras_data.dta", replace 
+		** 3 villages missing humanwatercoontact
 					
+*-------------------*
+**### Save data set 
+*-------------------*		
+	
+/* 
+	merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)	
+	
+	** drop individual level variables 
+		drop individ match_score identificant	
+*/
+		
+				save "$tidy\eco_data.dta", replace 
 
-	*-----------------------------------------*
-	**## Prepare to export main df
-	*-----------------------------------------*		
+*-----------------------------------------*
+**## PARASITOLOGICAL DATA
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${paras}\01_baseline_paras_df.dta", clear // paras data 
+	
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid_village village_name identificant fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg
+
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+			
+	** None 
+
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+
+***  covert variables from string to numeric *** 
+		* written by MJD *
+		destring fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg, replace force 
+
+*-------------*
+**#### sh_inf
+*-------------*				
+		
+		*** count infection of s. haematobium *** 
+		gen sh_inf = 0 
+		replace sh_inf = 1 if fu_p1 > 0 & fu_p1 != .
+		replace sh_inf = 1 if fu_p2 > 0 & fu_p2 != . 
+
+*-------------*
+**#### sm_inf
+*-------------*	
+
+		gen sm_inf = 0 
+		replace sm_inf = 1 if p1_kato1_k1_epg > 0 & p1_kato1_k1_epg != . 
+		replace sm_inf = 1 if p1_kato2_k2_epg > 0 & p1_kato2_k2_epg != . 
+		replace sm_inf = 1 if p2_kato1_k1_epg > 0 & p2_kato1_k1_epg != . 
+		replace sm_inf = 1 if p2_kato2_k2_epg > 0 & p2_kato2_k2_epg != . 
+
+		*** summarize infection results by village *** 
+		bysort hhid_village: sum sh_inf sm_inf
+		  
+		*** summarize infection results overall ***
+		sum sh_inf sm_inf  
+
+		
+*-------------*
+**#### sh_egg_count
+*-------------*	
+	
+*** Calculate egg counts
+	
+		gen sh_egg_count = cond(fu_p1 > 0, fu_p1, fu_p2)
+	
+*-------------*
+**#### p1_avg
+*-------------*	
+
+		gen p1_avg = (p1_kato1_k1_epg + p1_kato2_k2_epg) / 2
+	
+*-------------*
+**#### p2_avg
+*-------------*	
+
+		gen p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2
+		
+*-------------*
+**#### sm_egg_count
+*-------------*	
+
+		gen sm_egg_count = cond(p1_avg > 0, p1_avg, p2_avg)
+	
+*-------------*
+**#### total_egg
+*-------------*	
+
+* Create total egg count
+
+		gen total_egg = sm_egg_count + sh_egg_count
+		
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+			
+		
+	keep hhid_village village_name identificant sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg	
+		
+*-------------------*
+**### Save data set 
+*-------------------*		
+	
+	
+/*
+	merge m:m identificant using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)	
+*/
+	
+				save "$tidy\paras_data.dta", replace 
 				
-	*-------------------*
-	**### Merge data frames
-	*-------------------*
+
+*-----------------------------------------*
+**## Prepare to export main df
+*-----------------------------------------*		
+			
+*-------------------*
+**### Merge data frames
+*-------------------*
+
+
+**	bring in CRDES survey individual level FIRST and merge 
 
 		use "$tidy\household_roster", clear
-			*merge 1:1 individ using  "$crdes_long_data\baseline_health_long"
 			
 					*drop if missing(hh_full_name_calc_) | missing(hh_gender_) | missing(hh_age_)
 					drop if hh_gender_ == . & hh_age_ == . 
@@ -576,39 +582,48 @@
 							tempfile hh_roster
 								save `hh_roster'
 								
-			use "$tidy\health_module", clear		
+		use "$tidy\health_module", clear		
 					*drop if missing(health_5_2_) & missing(healthgenre_) & missing(healthindex_)
 						drop if missing(health_5_2_) | missing(healthgenre_) | missing(healthindex_)
 						
-					drop healthindex_ healthgenre_
+							drop healthindex_ healthgenre_
 
-			merge 1:1 individ using `hh_roster', nogen
-				
-						 save "$tidy\indiv_level_data.dta", replace 
-						
+					merge 1:1 individ using `hh_roster', nogen
+							 save "$tidy\indiv_level_data.dta", replace 
+								
+** now bring in CRDES survey household level data SECOND and merge
 
-			use "$tidy\standard_of_living_module", clear
-				merge 1:1 hhid using "$tidy\beliefs_module", nogen // household level data 		
+		use "$tidy\standard_of_living_module", clear
+			
+					merge 1:1 hhid using "$tidy\beliefs_module", nogen // household level data 		
+					merge 1:1 hhid using "$asset\PCA_asset_index_var.dta", nogen
+											
 							save "$tidy\hh_level_data.dta", replace 
+							
+** now merge the CRDES survey data together
 
-			use "$tidy\indiv_level_data.dta", clear
-				merge m:1 hhid using "$tidy\hh_level_data.dta", nogen
-		
-						save "$tidy\baseline_crdes_data", replace 
-
-			use "$paras\child_matched_IDs_df.dta", clear		
-				merge 1:1 identificant using "$tidy\paras_data.dta"
-				keep if _merge == 3
-					drop _merge
-				
-				merge 1:1 individ using "$tidy\baseline_crdes_data"
-				keep if _merge == 3
-					drop _merge
+		use "$tidy\indiv_level_data.dta", clear
+			
+					merge m:1 hhid using "$tidy\hh_level_data.dta", nogen
 					
-				merge m:1 hhid_village using "$tidy\eco_data"
-				keep if _merge == 3
-					drop _merge
-				
+							save "$tidy\baseline_crdes_base_data", replace 
+							
+** now bring in child matched IDs the link in the parasitological data and survey data
+
+		use "$paras\child_matched_IDs_df.dta", clear		
+			
+					merge 1:1 identificant using "$tidy\paras_data.dta" // merge in paras data
+						keep if _merge == 3
+							drop _merge
+					
+					merge 1:1 individ using "$tidy\baseline_crdes_base_data" // merge in CRDES data
+						keep if _merge == 3
+							drop _merge
+					
+					merge m:1 hhid_village using "$tidy\eco_data" // merge in eco data
+						keep if _merge == 3
+							drop _merge
+						
 				
 			
 *-------------------*
@@ -617,11 +632,12 @@
 	
 
 		order hhid_village village_name hhid individ identificant match_score  ///
-		hh_age_ hh_gender_ fishing hh_main_activity_ ///
+		hh_age_ hh_gender_ fishing  ///
 		hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_  ///
 		health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ health_5_5_ health_5_8_ health_5_9_ ///
 		living_01_bin ///
 		beliefs_01_bin beliefs_02_bin beliefs_03_bin ///
+		asset_index asset_index_std ///
 		sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg schisto_indicator ///
 		Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator 
 
@@ -630,46 +646,51 @@
 *-------------------*			
 	
 	
-			label variable hhid_village "Village ID"
-			label variable village_name "Village name"
-			
-			label variable hh_age_ "Individual's age"
-			label variable hh_gender_ "Individual's gender"
-/*
-			label variable hh_age_resp "Household respondent's age"
-			label variable hh_gender_resp "Household respondent's gender"
+		label variable hhid_village "Village ID"
+		label variable village_name "Village name"
+		
+		label variable hh_age_ "Individual's age"
+		label variable hh_gender_ "Individual's gender"
+		label variable fishing  "Indicator if individual selected fishing as maing household activity"
+		
+/*			
+		label variable hh_age_resp "Household respondent's age"
+		label variable hh_gender_resp "Household respondent's gender"
 */
 
-			label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
-			label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
-			label variable hh_32 "Attends school during the 2023/2024 academic year"
-			label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 0=No, asked to children)"
-			
+		label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
+		label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
+		label variable hh_32 "Attends school during the 2023/2024 academic year"
+		label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 0=No, asked to children)"
+		
 
-			label variable health_5_2 "Fell ill in the last 12 months (skip 5.4 if no)"
-			label variable health_5_3_1 "Suffered from Malaria"
-			label variable health_5_3_2 "Suffered from Bilharzia"
-			label variable health_5_3_3 "Suffered from Diarrhea"
-			label variable health_5_3_6 "Suffered from Skin issues"
-			label variable health_5_3_9 "Suffered from Stomach ache"
-			label variable health_5_5 "Received medication for schistosomiasis treatment in last 12 months"
-			label variable health_5_8 "Had blood in urine in the last 12 months"
-			label variable health_5_9 "Had blood in stool in the last 12 months"
+		label variable health_5_2 "Fell ill in the last 12 months (skip 5.4 if no)"
+		label variable health_5_3_1 "Suffered from Malaria"
+		label variable health_5_3_2 "Suffered from Bilharzia"
+		label variable health_5_3_3 "Suffered from Diarrhea"
+		label variable health_5_3_6 "Suffered from Skin issues"
+		label variable health_5_3_9 "Suffered from Stomach ache"
+		label variable health_5_5 "Received medication for schistosomiasis treatment in last 12 months"
+		label variable health_5_8 "Had blood in urine in the last 12 months"
+		label variable health_5_9 "Had blood in stool in the last 12 months"
 
 
-	
-			label variable living_01_bin "Indicator for selected tap water as main source of drinking water"
-			label variable beliefs_01_bin "Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
-			label variable beliefs_02_bin "Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
-			label variable beliefs_03_bin "Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
-			label variable hh_12_6_ "Harvest aquatic vegetation"
-			
-			label variable schisto_indicator "Indicator for presence of schistosomiasis infection"
-			label variable sh_inf "Indicator for Schistosoma haematobium infection"
-			label variable sm_inf "Indicator for Schistosoma mansoni infection"
-			label variable sh_egg_count "Egg count for Schistosoma haematobium"
-			label variable sm_egg_count "Egg count for Schistosoma mansoni"
-			label variable total_egg "Total schistosome egg count"
+
+		label variable living_01_bin "Indicator for selected tap water as main source of drinking water"
+		label variable beliefs_01_bin "Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+		label variable beliefs_02_bin "Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+		label variable beliefs_03_bin "Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+		label variable hh_12_6_ "Harvest aquatic vegetation"
+		
+		label variable schisto_indicator "Indicator for presence of schistosomiasis infection"
+		label variable sh_inf "Indicator for Schistosoma haematobium infection"
+		label variable sm_inf "Indicator for Schistosoma mansoni infection"
+		label variable sh_egg_count "Egg count for Schistosoma haematobium"
+		label variable sm_egg_count "Egg count for Schistosoma mansoni"
+		label variable p1_avg "Average EPG from P1 (Kato-Katz slide 1 and 2)"
+		label variable p2_avg "Average EPG from P2 (Kato-Katz slide 1 and 2)"
+		label variable total_egg "Total schistosome egg count"
+		
 
 /* 
 		
@@ -683,38 +704,717 @@
 *-------------------*		
 	
 
-** 31 individuals in the health module and NOT in the household roster. Look into. 
-
-
-	
 		
-		save "$output\02_baseline_analysis_df.dta", replace 
+				save "$paras\02_baseline_analysis_df.dta", replace 
 			
-			
+	
 */
 			
 			
-			
-			
-			
-			
-			
-			*/
-			
-	** Now link parasitological data
+*<><<><><>><><<><><>>
+**# BEGIN MIDLINE WORK
+*<><<><><>><><<><><>>
+
+/* 
+
+*-----------------------------------------*
+**## HOUSEHOLD ROSTER MODULE 
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_base_long}\baseline_household_long.dta", clear // health data 
 	
-			*merge m:1 individ using "${output}\child_matched_IDs_df", nogen
-/*						
+		drop if missing(hh_age_) & missing(hh_gender_) & missing(hh_ethnicity_)
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid individ hh_age_ hh_gender_ hh_main_activity_  ///
+		hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_ 
+	
+	** removed hh_15_
 		
-		use `hh_data', clear
-			merge m:1 hhid_village using "$tidy\eco_data.dta", nogen
+*-------------------*
+**#### recode gender
+*-------------------*	
+		*^*^*  Recode hh_gender_ (change 2 to 0, leave others unchanged)
+		recode hh_gender_ (2=0)
+		
+		
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+*-------------------*
+**#### Replace logic missings
+*-------------------*				
+		
+	** hh_12_ 
+	** Skip pattern: ${hh_10} > 0
+		
+		replace hh_12_6_ = 0 if hh_10_ == 0
+
+	** hh_10
+	** Skip pattern: ${hh_10} > 0 and selected(${hh_12}, "6")	
+		
+/* 
+		replace hh_15_ = 0 if hh_10_ == 0 
+		replace hh_15_ = 0 if hh_12_6_ == 0	
+*/
+				
+	** hh_37_
+	** ${hh_32} = 1 and then ${hh_26} = 1 (hh_32 is conditional on hh_26)
+		
+		replace hh_32_ = 0 if hh_26_ == 0	// child module - hh_26 begins the module, so the missings come from adults 
+		replace hh_37_ = 0 if hh_32_ == 0		
+	
+	** replace if kids didn't answer these questions KRM - look into this
+		foreach var in hh_32_ hh_37_ {
+				replace `var' = 0 if missing(`var') & (hh_age_ >= 4 & hh_age_ <= 18)
+			}
+		
+				
+*-------------------*
+**#### Replace "I don't knows" with missings
+*-------------------*				
+		
+	** replace 2s for variables that have option "I don't know" 
+		*1 Yes
+		*0 No
+		*2 Don't know / Don't answer
+		
+
+		foreach var in hh_26_ hh_37_  ///
+	 {
+			replace `var' = .a if `var' == 2
+		}
+
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+
+
+/* 
+*-------------*
+**#### hh_15
+*-------------*			
+		
+		*How did he use aquatic vegetation?
+* Creating binary variables for hh_15
+		foreach x in 1 2 3 4 5 99 {
+			gen hh_15_`x' = hh_15_ == `x'
+			replace hh_15_`x' = 0 if missing(hh_15_)
+		}				
+			drop hh_15_
 			
-					use "$tidy\household_roster", clear // individual level data 
-			merge 1:1 individ using "$tidy\health_module", nogen 	 // individual level data 
-							tempfile indiv_data
-								save `indiv_data'
+*/
+
+
+*-------------*
+**#### fishing
+*-------------*	
+
+	 gen fishing = .
+	 replace fishing = 1 if hh_main_activity_ == 3
+	 replace fishing = 0 if hh_main_activity_ != 3
+		drop hh_main_activity_
+	 
+*-------------------*
+**### Save data set 
+*-------------------*	
+
+/*
+	merge m:m individ using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+*/
+
+		save "$tidy\household_roster", replace 
 		
+
+*-----------------------------------------*
+**## HEALTH MODULE
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_long_data}\baseline_health_long.dta", clear // health data 
+	
+		drop if missing(health_5_2_) & missing(healthgenre_) & missing(healthindex_)
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid individ health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ ///
+		health_5_5_ health_5_8_ health_5_9_ ///
+		healthindex_ healthgenre_ // filter variables - will drop at the end
 		
+
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+	
+		
+*-------------------*
+**#### Replace logic missings
+*-------------------*				
+		
+	** health_5_3_ 
+	** Skip pattern: ${health_5_2} = 1
+
+			foreach var in health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ {
+				replace `var' = 0 if health_5_2_ == 0
+			}	
+				
+*-------------------*
+**#### Replace "I don't knows" with missings
+*-------------------*				
+		
+	** replace 2s for variables that have option "I don't know" 
+		*1 Yes
+		*0 No
+		*2 Don't know / Don't answer
+		
+
+		foreach var in health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_  {
+			replace `var' = .a if health_5_2_ == 2
+		}
+		
+
+		foreach var in health_5_2_ health_5_5_ health_5_8_ health_5_9_ {
+			replace `var' = .a if `var' == 2
+		}
+		
+*-------------------*
+**### Save data set 
+*-------------------*				
+
+/*
+	merge m:m individ using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+*/
+
+			
+		save "$tidy\health_module.dta", replace 
+		
+*/
+
+
+*-----------------------------------------*
+**## STANDARD OF LIVING MODULE 
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_mid}\Complete_Midline_Standard_Of_Living.dta", clear // standard of living 
+	
+	*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid living_01
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+
+*-------------*
+**#### living_01_bin
+*-------------*			
+		
+** living_01_bin
+
+	** main source of drinking water supply
+		** 1 = Interior tap
+		** 2 = Public tap
+		** 3 = Neighbor's tap
+		** 4 = Protected well
+		** 7 = Tanker truck service
+		** 8 = Water vendor
+
+
+		gen living_01_bin = 0
+			replace living_01_bin = 1 if living_01 == 1 |living_01 == 2 | living_01 == 3 | living_01 == 4 | living_01 == 7 | living_01 == 8
+			
+			
+			drop living_01
+			
+*-------------*
+**#### hhid_village
+*-------------*			
+			
+			gen hhid_village = substr(hhid, 1, 4)
+					order hhid_village
+				
+*-------------------*
+**### Save data set 
+*-------------------*		
+
+/* 
+	merge m:m hhid using "${output}\child_matched_IDs_df", nogen 
+		keep if !missing(match_score)
+		
+	** drop individual level variables 
+		drop individ match_score identificant
+*/
+		
+				save "$tidy\mid_standard_of_living_module.dta", replace 
+				
+
+*-----------------------------------------*
+**## BELIEFS MODULE
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${crdes_mid}\Complete_Midline_Beliefs.dta", clear // beliefs data 
+	
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid beliefs_01 beliefs_02 beliefs_03
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+	
+		
+** create a Binary Indicator
+		*If most responses are ≤2 (Agree/Strongly Agree) → use beliefs_var <= 2 as the binary indicator.
+		*If responses are more evenly spread, consider using ≤3 (including Neutral).
+		*If disagreement dominates, use beliefs_var >= 4 instead.
+
+*-------------*
+**#### beliefs_01_bin
+*-------------*		
+		
+		gen beliefs_01_bin = (beliefs_01 <= 2)  // 55.92% responded 1 or 2
+*-------------*
+**#### beliefs_02_bin
+*-------------*		
+		gen beliefs_02_bin = (beliefs_02 <= 2)  // 64.45% responded 1 or 2
+*-------------*
+**#### beliefs_03_bin
+*-------------*	
+		gen beliefs_03_bin = (beliefs_03 <= 2)  // 80.09% responded 1 or 2
+		
+*-------------*
+**#### hhid_village
+*-------------*			
+			
+		gen hhid_village = substr(hhid, 1, 4)
+
+*-------------------*
+**### Save data set 
+*-------------------*		
+
+	drop beliefs_01 beliefs_02 beliefs_03
+		
+			save "$tidy\mid_beliefs_module.dta", replace 			
+
+			
+*-----------------------------------------*
+**## ECOLOGICAL DATA 
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${eco_data}\DISES_midline_ecological data.dta", clear // eco data 
+		use "${eco_data}\DISES_baseline_ecological data.dta", clear // eco data 
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+	rename  Cerratophyllummass Cerratophyllummassg
+	rename 	TotalBulinus Bulinus
+	rename 	Biomphalaria Biomph
+
+		keep hhid_village Cerratophyllummassg Bulinus Biomph Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
+		
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+		** 4 villages missing schisto_indicator due to dried up water point
+					
+*-------------------*
+**### Save data set 
+*-------------------*		
+	
+				save "$tidy\mid_eco_data.dta", replace 
+
+*-----------------------------------------*
+**## PARASITOLOGICAL DATA
+*-----------------------------------------*
+
+*-------------------*
+**### Load in data 
+*-------------------*
+
+	use "${paras}\01_midline_paras_df.dta", clear // paras data 
+	
+
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+
+		keep hhid_village village_name identificant fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg
+
+
+*-------------------*
+**### Check for missings
+*-------------------*		
+
+		foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+			
+	
+**		fu_p1: 75
+**		fu_p2: 91
+**		p1_kato1_k1_epg: 104
+**		p1_kato2_k2_epg: 104
+**		p2_kato1_k1_epg: 120
+**		p2_kato2_k2_epg: 120
+
+
+
+*-------------------*
+**### Begin variable creation
+*-------------------*				
+
+***  covert variables from string to numeric *** 
+		* written by MJD *
+		destring fu_p1 fu_p2 p1_kato1_k1_epg p1_kato2_k2_epg p2_kato1_k1_epg p2_kato2_k2_epg, replace force 
+
+*-------------*
+**#### sh_inf
+*-------------*				
+		
+		*** count infection of s. haematobium *** 
+		gen sh_inf = 0 
+		replace sh_inf = 1 if fu_p1 > 0 & fu_p1 != .
+		replace sh_inf = 1 if fu_p2 > 0 & fu_p2 != . 
+
+*-------------*
+**#### sm_inf
+*-------------*	
+
+		gen sm_inf = 0 
+		replace sm_inf = 1 if p1_kato1_k1_epg > 0 & p1_kato1_k1_epg != . 
+		replace sm_inf = 1 if p1_kato2_k2_epg > 0 & p1_kato2_k2_epg != . 
+		replace sm_inf = 1 if p2_kato1_k1_epg > 0 & p2_kato1_k1_epg != . 
+		replace sm_inf = 1 if p2_kato2_k2_epg > 0 & p2_kato2_k2_epg != . 
+
+		*** summarize infection results by village *** 
+		bysort hhid_village: sum sh_inf sm_inf
+		  
+		*** summarize infection results overall ***
+		sum sh_inf sm_inf  
+
+		
+*-------------*
+**#### sh_egg_count
+*-------------*	
+	
+*** Calculate egg counts
+	
+		gen sh_egg_count = cond(fu_p1 > 0, fu_p1, fu_p2)
+	
+*-------------*
+**#### p1_avg
+*-------------*	
+
+		gen p1_avg = (p1_kato1_k1_epg + p1_kato2_k2_epg) / 2
+	
+*-------------*
+**#### p2_avg
+*-------------*	
+
+		gen p2_avg = (p2_kato1_k1_epg + p2_kato2_k2_epg) / 2
+		
+*-------------*
+**#### sm_egg_count
+*-------------*	
+
+		gen sm_egg_count = cond(p1_avg > 0, p1_avg, p2_avg)
+	
+*-------------*
+**#### total_egg
+*-------------*	
+
+* Create total egg count
+
+		gen total_egg = sm_egg_count + sh_egg_count
+		
+*-------------------*
+**### Keep pre-selected variables
+*-------------------*
+			
+		
+	keep hhid_village village_name identificant sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg	
+		
+*-------------------*
+**### Save data set 
+*-------------------*		
+
+				save "$tidy\mid_paras_data.dta", replace 
+				
+
+*-----------------------------------------*
+**## Prepare to export main df
+*-----------------------------------------*		
+			
+*-------------------*
+**### Merge data frames
+*-------------------*
+
+
+**	bring in CRDES survey individual level FIRST and merge 
+
+		use "$tidy\household_roster", clear
+			
+					*drop if missing(hh_full_name_calc_) | missing(hh_gender_) | missing(hh_age_)
+					drop if hh_gender_ == . & hh_age_ == . 
+
+							tempfile hh_roster
+								save `hh_roster'
+								
+		use "$tidy\health_module", clear		
+					*drop if missing(health_5_2_) & missing(healthgenre_) & missing(healthindex_)
+						drop if missing(health_5_2_) | missing(healthgenre_) | missing(healthindex_)
+						
+							drop healthindex_ healthgenre_
+
+					merge 1:1 individ using `hh_roster', nogen
+							 save "$tidy\indiv_level_data.dta", replace 
+								
+** now bring in CRDES survey household level data SECOND and merge
+
+		use "$tidy\mid_standard_of_living_module", clear
+			
+					merge 1:1 hhid using "$tidy\mid_beliefs_module", nogen // household level data 		
+					merge 1:1 hhid using "$asset\PCA_asset_index_var.dta", nogen
+											
+							save "$tidy\mid_hh_level_data.dta", replace 
+							
+** now merge the CRDES survey data together
+
+		use "$tidy\indiv_level_data.dta", clear
+			
+					merge m:1 hhid using "$tidy\hh_level_data.dta", nogen
+					
+							save "$tidy\baseline_crdes_data", replace 
+							
+** now bring in child matched IDs the link in the parasitological data and survey data
+
+		use "$paras\child_matched_IDs_df.dta", clear		
+			
+					merge 1:1 identificant using "$tidy\paras_data.dta" // merge in paras data
+						keep if _merge == 3
+							drop _merge
+					
+					merge 1:1 individ using "$tidy\baseline_crdes_data" // merge in CRDES data
+						keep if _merge == 3
+							drop _merge
+					
+					merge m:1 hhid_village using "$tidy\eco_data" // merge in eco data
+						keep if _merge == 3
+							drop _merge
+						
+				
+			
+*-------------------*
+**### Order variables
+*-------------------*		
+	
+
+		order hhid_village village_name hhid individ identificant match_score  ///
+		hh_age_ hh_gender_ fishing  ///
+		hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_  ///
+		health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ health_5_5_ health_5_8_ health_5_9_ ///
+		living_01_bin ///
+		beliefs_01_bin beliefs_02_bin beliefs_03_bin ///
+		asset_index asset_index_std ///
+		sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg schisto_indicator ///
+		Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator 
+
+*-------------------*
+**### Label variables
+*-------------------*			
+	
+	
+		label variable hhid_village "Village ID"
+		label variable village_name "Village name"
+		
+		label variable hh_age_ "Individual's age"
+		label variable hh_gender_ "Individual's gender"
+		label variable fishing  "Indicator if individual selected fishing as maing household activity"
+		
+/*			
+		label variable hh_age_resp "Household respondent's age"
+		label variable hh_gender_resp "Household respondent's gender"
+*/
+
+		label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
+		label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
+		label variable hh_32 "Attends school during the 2023/2024 academic year"
+		label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 0=No, asked to children)"
+		
+
+		label variable health_5_2 "Fell ill in the last 12 months (skip 5.4 if no)"
+		label variable health_5_3_1 "Suffered from Malaria"
+		label variable health_5_3_2 "Suffered from Bilharzia"
+		label variable health_5_3_3 "Suffered from Diarrhea"
+		label variable health_5_3_6 "Suffered from Skin issues"
+		label variable health_5_3_9 "Suffered from Stomach ache"
+		label variable health_5_5 "Received medication for schistosomiasis treatment in last 12 months"
+		label variable health_5_8 "Had blood in urine in the last 12 months"
+		label variable health_5_9 "Had blood in stool in the last 12 months"
+
+
+
+		label variable living_01_bin "Indicator for selected tap water as main source of drinking water"
+		label variable beliefs_01_bin "Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+		label variable beliefs_02_bin "Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+		label variable beliefs_03_bin "Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
+		label variable hh_12_6_ "Harvest aquatic vegetation"
+		
+		label variable schisto_indicator "Indicator for presence of schistosomiasis infection"
+		label variable sh_inf "Indicator for Schistosoma haematobium infection"
+		label variable sm_inf "Indicator for Schistosoma mansoni infection"
+		label variable sh_egg_count "Egg count for Schistosoma haematobium"
+		label variable sm_egg_count "Egg count for Schistosoma mansoni"
+		label variable p1_avg "Average EPG from P1 (Kato-Katz slide 1 and 2)"
+		label variable p2_avg "Average EPG from P2 (Kato-Katz slide 1 and 2)"
+		label variable total_egg "Total schistosome egg count"
+		
+
+/* 
+		
+			label variable q_23 "Access to running drinking water for drinking (1 = Yes, 0 = No)"
+			label variable q_24 "Presence of tap water system if running water is available (1 = Yes, 0 = No)"
+*/
+			
+			
+*-------------------*
+**### save final data frame
+*-------------------*		
+	
+
+		
+				save "$paras\02_midline_analysis_df.dta", replace 
+			
+*-------------------*
+**## APPEND BASELINE & MIDLINE
+*-------------------*					
+/* 
+
+		use "$paras\02_baseline_analysis_df.dta", clear
+			append using "$paras\02_midline_analysis_df.dta"
+
+			save "$paras\03_mid_base_analysis_df.dta"	
+*/
+*/
+			
+				
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 /*
 
 

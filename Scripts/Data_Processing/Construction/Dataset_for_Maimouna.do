@@ -208,6 +208,6 @@ append using `maimounabaseline', force
 order hhid region hhid_village hh_* knowledge_* list_agri_equip* agri_* product_divers* cereals* aquatique* , first 
 
 *** save dataset *** 
-save "$maimouna\dises_data_for_maimouna.dta", replace 
+save "$maimouna/dises_data_for_maimouna.dta", replace 
 
-export delimited using "$maimouna\dises_data_for_maimouna.csv", replace 
+export delimited using "$maimouna/dises_data_for_maimouna.csv", replace 

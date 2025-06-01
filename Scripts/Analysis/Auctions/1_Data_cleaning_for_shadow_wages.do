@@ -9,7 +9,7 @@ set maxvar 20000
 
 **** Master file path  ****
 if "`c(username)'"=="mollydoruska" {
-                global master "/Users/mollydoruska\Box\NSF Senegal\Data_Management"
+                global master "/Users/mollydoruska/Library/CloudStorage/Box-Box/NSF Senegal/Data_Management"
 }
 else if "`c(username)'"=="kls329" {
                 global master "/Users/kls329\Box\NSF Senegal\Data_Management"
@@ -22,9 +22,9 @@ else if "`c(username)'"=="Kateri" {
 }
 
 *** additional file paths ***
-global data "$master\Data\_CRDES_CleanData\Baseline\Deidentified"
-global auctions "$master\Output\Analysis\Auctions_Shadow_Wages"
-global midline "$master\Data\_CRDES_CleanData\Midline\Deidentified"
+global data "$master/Data/_CRDES_CleanData/Baseline/Deidentified"
+global auctions "$master/Output/Analysis/Auctions_Shadow_Wages"
+global midline "$master/Data/_CRDES_CleanData/Midline/Deidentified"
 
 *** clean variables to use in shadow wage estimation *** 
 *** clean basic household roster data *** 

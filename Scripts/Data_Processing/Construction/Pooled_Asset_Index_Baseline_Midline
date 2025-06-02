@@ -1,0 +1,135 @@
+**************************************************
+* DISES Baseline to Midline Pooled Asset Index *
+* File Created By: Alexander Mills *
+* File Last Updated By: Alexander Mills *
+* Updates Tracked on Git *
+**************************************************
+
+*** This Do File PROCESSES: PUT ALL SCRIPTS HERE***
+*** This Do File CREATES:		
+
+*** Procedure: ***
+* 
+capture log close
+clear all
+set mem 100m
+set maxvar 30000
+set matsize 11000
+set more off
+
+**************************************************
+* SET FILE PATHS
+**************************************************
+
+disp "`c(username)'"
+
+* Set global path based on the username
+if "`c(username)'" == "admmi" global master "C:\Users\admmi\Box\NSF Senegal"
+if "`c(username)'" == "km978" global master "C:\Users\km978\Box\NSF Senegal"
+if "`c(username)'" == "socrm" global master "C:\Users\socrm\Box\NSF Senegal"
+
+*********************************************************
+* Program: PCA - Pooled Asset Index (Baseline + Midline)
+*********************************************************
+* baseline paths and setup
+global baseline "${master}\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
+global midline "${master}\Data_Management\Data\_CRDES_CleanData\Midline\Deidentified"
+global dataOutput "${master}\Data_Management\Output\Data_Processing\Construction"
+global tlu_var "${master}\Data_Management\Output\Analysis\Auctions_Shadow_Wages"
+
+* specific dataset globals
+global baseline_household "$baseline\Complete_Baseline_Household_Roster.dta"
+global baseline_agriculture "$baseline\Complete_Baseline_Agriculture.dta"
+global baseline_income "$baseline\Complete_Baseline_Income.dta"
+global baseline_standard "$baseline\Complete_Baseline_Standard_Of_Living.dta"
+
+global midline_household "$midline\Complete_Midline_Household_Roster.dta"
+global midline_agriculture "$midline\Complete_Midline_Agriculture.dta"
+global midline_income "$midline\Complete_Midline_Income.dta"
+global midline_standard "$midline\Complete_Midline_Standard_Of_Living.dta"
+
+* Create baseline dataset
+use "$baseline_household", clear
+merge 1:1 hhid using "$baseline_agriculture", nogen
+merge 1:1 hhid using "$baseline_income", nogen
+merge 1:1 hhid using "$baseline_standard", nogen
+merge 1:1 hhid using "$tlu_var\tlu_baseline.dta", nogen
+
+* Keep only needed vars following baseline protocol
+keep hhid hh_numero agri_6_6 agri_6_23* agri_6_5* ///
+     living_05* living_06* living_02* living_01* ///
+     list_actifs* TLU
+
+drop agri_6_23_o* living_01_o living_05_o living_06_o list_actifs_o 
+
+gen survey_round = 0
+tempfile baseline_assets
+save `baseline_assets'
+
+* Create midline dataset following same protocol
+use "$midline_household", clear
+merge 1:1 hhid using "$midline_agriculture", nogen
+merge 1:1 hhid using "$midline_income", nogen
+merge 1:1 hhid using "$midline_standard", nogen
+merge 1:1 hhid using "$tlu_var\tlu_midline.dta", nogen
+
+keep hhid hh_size_actual agri_6_6 agri_6_23* agri_6_5* ///
+     living_05* living_06* living_02* living_01* ///
+     list_actifs* TLU
+	 
+rename hh_size_actual hh_numero
+
+drop agri_6_23_o* living_01_o living_05_o living_06_o list_actifs_o
+
+gen survey_round = 1
+tempfile midline_assets
+save `midline_assets'
+
+* Append and create variables exactly as in baseline
+use `baseline_assets', clear
+append using `midline_assets'
+
+* Create binary indicators following baseline protocol exactly
+gen living_01_bin = 0
+replace living_01_bin = 1 if living_01==1 | living_01==2 | living_01==3 | living_01==4 | living_01==7 | living_01==8
+
+gen living_02_bin = 0
+replace living_02_bin = 1 if living_02==1
+
+gen living_05_bin = 0
+replace living_05_bin = 1 if living_05==3 | living_05==4 | living_05==5 | living_05==6 | living_05==7
+
+gen living_06_bin = 0
+replace living_06_bin = 1 if living_06==2 | living_06==3
+
+gen agri_6_5_bin = 0
+replace agri_6_5_bin = 1 if agri_6_5==2
+
+gen agri_6_23_bin = 0
+foreach var of varlist agri_6_23_1-agri_6_23_11 {
+    replace agri_6_23_bin = 1 if `var'==1
+}
+
+gen rooms_per_member = hh_numero/agri_6_6 if agri_6_6>0
+replace rooms_per_member = 0 if agri_6_6==0
+
+* Standardize continuous variables
+foreach var in rooms_per_member TLU {
+    egen z_`var' = std(`var')
+}
+
+* Run PCA exactly as in baseline
+pca list_actifs_* ///
+    living_01_bin living_02_bin living_05_bin living_06_bin ///
+    agri_6_5_bin agri_6_23_bin ///
+    z_TLU z_rooms_per_member, components(1)
+
+predict asset_index if e(sample), score
+egen asset_index_std = std(asset_index)
+
+* Save pooled dataset
+preserve
+    keep hhid survey_round asset_index asset_index_std
+    reshape wide asset_index asset_index_std, i(hhid) j(survey_round)
+    save "$dataOutput\pooled_asset_index_var.dta", replace
+restore

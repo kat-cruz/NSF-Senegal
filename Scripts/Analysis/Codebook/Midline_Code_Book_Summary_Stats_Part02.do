@@ -18,7 +18,6 @@ set mem 100m
 set maxvar 30000
 set matsize 11000
 set more off
-version 14.1
 
 **************************************************
 * SET FILE PATHS
@@ -49,7 +48,7 @@ global schoolprincipal "$survey\Complete_Midline_SchoolPrincipal"
 global schoolattendance "$survey\Complete_Midline_SchoolAttendance"
 
 **************************************************
-* Income Data Summary
+* household Data Summary
 **************************************************
 use "$household", clear
 tab hh_49

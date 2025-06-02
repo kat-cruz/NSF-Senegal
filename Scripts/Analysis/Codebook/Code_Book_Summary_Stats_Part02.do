@@ -2,7 +2,7 @@
 * DISES Baseline Data - Code used to assist with summary stats *
 * File Created By: Alexander Mills *
 * File Last Updated By: Alexander Mills *
-* File Last Updated On: October 2024 *
+* Updates tracked on Git *
 **************************************************
 
 *** This Do File PROCESSES: DISES_Baseline_Complete_PII.dta ***
@@ -17,7 +17,7 @@ set mem 100m
 set maxvar 30000
 set matsize 11000
 set more off
-version 14.1
+
 
 **************************************************
 * SET FILE PATHS
@@ -26,11 +26,11 @@ version 14.1
 disp "`c(username)'"
 
 * Set global path based on the username
-if "`c(username)'" == "admmi" global path "C:\\Users\\admmi\\Box\\Data Management"
-if "`c(username)'" == "km978" global path "C:\Users\km978\Box\Data Management"
+if "`c(username)'" == "admmi" global path "C:\Users\admmi\Box\NSF Senegal"
+if "`c(username)'" == "km978" global path "C:\Users\km978\Box\NSF Senegal"
 
 
-global survey "$master\Data Management\_CRDES_CleanData\Baseline\Deidentified"
+global survey "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Deidentified"
 
 global agriculture_df "survey\Complete_Baseline_Agriculture.dta"
 global beliefs_df "survey\Complete_Baseline_Beliefs.dta"
@@ -40,7 +40,7 @@ global beliefs_df "survey\Complete_Baseline_Beliefs.dta"
 **************************************************
 
 * Use Income data
-use "${path}\\_CRDES_CleanData\\Baseline\\Deidentified\\Complete_Baseline_Income.dta", clear
+use "$survey\Complete_Baseline_Income.dta", clear
 
 * Summarize agricultural income variables
 tabulate agri_income_01

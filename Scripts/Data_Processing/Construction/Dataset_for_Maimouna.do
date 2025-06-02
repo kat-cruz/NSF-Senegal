@@ -112,6 +112,10 @@ merge 1:1 hhid using `baselineprod'
 
 drop _merge 
 
+merge 1:1 hhid using "$data/household_head_index.dta" 
+
+drop _merge 
+
 gen round = 1 
 
 keep if region == "SAINT LOUIS" | region == "SAINT-LOUIS" | region == "Saint-Louis"
@@ -130,7 +134,7 @@ save `midlinegeo'
 *** import household roster data *** 
 use "$midlinedata/Complete_Midline_Household_Roster.dta", clear 
 
-keep hhid hhid_village hh_gender_* hh_age* hh_education_skills_5* hh_education_level_* hh_education_year_achieve_* hh_main_activity_* hh_12_1_* hh_12_2_* hh_12_3_* hh_12_4_* hh_12_5_* hh_12_6_* hh_12_7_* hh_12_8_* hh_12_a_* hh_12_o_* hh_15_* hh_16_* hh_17_* hh_23_1_* hh_23_2_* hh_23_3_* hh_23_4_* hh_23_5_* hh_23_99_* 
+keep hhid hhid_village hh_gender_* hh_age* hh_relation_with_* hh_education_skills_5* hh_education_level_* hh_education_year_achieve_* hh_main_activity_* hh_12_1_* hh_12_2_* hh_12_3_* hh_12_4_* hh_12_5_* hh_12_6_* hh_12_7_* hh_12_8_* hh_12_a_* hh_12_o_* hh_15_* hh_16_* hh_17_* hh_23_1_* hh_23_2_* hh_23_3_* hh_23_4_* hh_23_5_* hh_23_99_* 
 drop hh_education_level_o_* hh_15_o_* 
 
 tempfile midlinehh 

@@ -1,7 +1,7 @@
 *** Subset data for Maimouna Bobacar Salou *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: June 1, 2025 ***
+*** File Last Updated On: June 2, 2025 ***
 
 clear all 
 
@@ -34,14 +34,15 @@ use "$data/Complete_Baseline_Geographies.dta", clear
 
 keep hhid region 
 
+replace region = "SAINT LOUIS" if region == ""
+
 tempfile baselinegeo
 save `baselinegeo'
 
 *** import household roster data *** 
 use "$data/Complete_Baseline_Household_Roster.dta", clear 
 
-keep hhid hhid_village hh_gender_* hh_age* hh_education_skills_5* hh_education_level_* hh_education_year_achieve_* hh_main_activity_* hh_12_1_* hh_12_2_* hh_12_3_* hh_12_4_* hh_12_5_* hh_12_6_* hh_12_7_* hh_12_8_* hh_12_a_* hh_12_o_* hh_15_* hh_16_* hh_17_* hh_23_1_* hh_23_2_* hh_23_3_* hh_23_4_* hh_23_5_* hh_23_99_* hh_27_* hh_28_* 
-
+keep hhid hhid_village hh_gender_* hh_age* hh_education_skills_5* hh_education_level_* hh_education_year_achieve_* hh_main_activity_* hh_12_1_* hh_12_2_* hh_12_3_* hh_12_4_* hh_12_5_* hh_12_6_* hh_12_7_* hh_12_8_* hh_12_a_* hh_12_o_* hh_15_* hh_16_* hh_17_* hh_23_1_* hh_23_2_* hh_23_3_* hh_23_4_* hh_23_5_* hh_23_99_* 
 drop hh_education_level_o_* hh_15_o_* 
 
 tempfile baselinehh 
@@ -50,7 +51,7 @@ save `baselinehh'
 *** import knowledge data *** 
 use "$data/Complete_Baseline_Knowledge.dta", clear 
 
-keep hhid knowledge_23_6 knowledge_23_o 
+keep hhid knowledge_23_* 
 
 tempfile baselineknow
 save `baselineknow'
@@ -58,9 +59,9 @@ save `baselineknow'
 *** import agriculture data *** 
 use "$data/Complete_Baseline_Agriculture.dta", clear 
 
-keep hhid list_agri_equip_3 list_agri_equip_4 list_agri_equip_5 list_agri_equip_6 list_agri_equip_7 list_agri_equip_8 list_agri_equip_9 list_agri_equip_10 agri_6_10 agri_6_11 agri_6_12_* agri_6_26*
+keep hhid list_agri_equip_* agriindex_* agriname_* _agri_number_* agri_6_10 agri_6_11 agri_6_12_* agri_6_26* agri_6_27_1 agri_6_27_2 agri_6_27_3 agri_6_27_4 agri_6_27_5 agri_6_27_6 agri_6_27_7 agri_6_27_8 agri_6_27_9 agri_6_27_10 agri_6_27_11 
 
-drop agri_6_26_o_*
+drop agri_6_26_o_* list_agri_equipcount
 
 tempfile baselineag 
 save `baselineag'
@@ -68,7 +69,7 @@ save `baselineag'
 *** import income data ***
 use "$data/Complete_Baseline_Income.dta", clear  
 
-keep hhid agri_income_05 agri_income_06 product_divers_* 
+keep hhid agri_income_05 agri_income_06 product_divers_* agri_income_45_* agri_income_46_1_* agri_income_46_2_* agri_income_46_3_* agri_income_46_4_* agri_income_46_o_* 
 
 tempfile baselineincome 
 save `baselineincome'
@@ -113,6 +114,8 @@ drop _merge
 
 gen round = 1 
 
+keep if region == "SAINT LOUIS" | region == "SAINT-LOUIS" | region == "Saint-Louis"
+
 tempfile maimounabaseline
 save `maimounabaseline'
 
@@ -127,8 +130,7 @@ save `midlinegeo'
 *** import household roster data *** 
 use "$midlinedata/Complete_Midline_Household_Roster.dta", clear 
 
-keep hhid hhid_village hh_gender_* hh_age* hh_education_skills_5* hh_education_level_* hh_education_year_achieve_* hh_main_activity_* hh_12_1_* hh_12_2_* hh_12_3_* hh_12_4_* hh_12_5_* hh_12_6_* hh_12_7_* hh_12_8_* hh_12_a_* hh_12_o_* hh_15_* hh_16_* hh_17_* hh_23_1_* hh_23_2_* hh_23_3_* hh_23_4_* hh_23_5_* hh_23_99_* hh_27_* hh_28_* 
-
+keep hhid hhid_village hh_gender_* hh_age* hh_education_skills_5* hh_education_level_* hh_education_year_achieve_* hh_main_activity_* hh_12_1_* hh_12_2_* hh_12_3_* hh_12_4_* hh_12_5_* hh_12_6_* hh_12_7_* hh_12_8_* hh_12_a_* hh_12_o_* hh_15_* hh_16_* hh_17_* hh_23_1_* hh_23_2_* hh_23_3_* hh_23_4_* hh_23_5_* hh_23_99_* 
 drop hh_education_level_o_* hh_15_o_* 
 
 tempfile midlinehh 
@@ -137,7 +139,7 @@ save `midlinehh'
 *** import knowledge data *** 
 use "$midlinedata/Complete_Midline_Knowledge.dta", clear 
 
-keep hhid knowledge_23_6 knowledge_23_o 
+keep hhid knowledge_23_* 
 
 tempfile midlineknow
 save `midlineknow'
@@ -145,9 +147,9 @@ save `midlineknow'
 *** import agriculture data *** 
 use "$midlinedata/Complete_Midline_Agriculture.dta", clear 
 
-keep hhid list_agri_equip_3 list_agri_equip_4 list_agri_equip_5 list_agri_equip_6 list_agri_equip_7 list_agri_equip_8 list_agri_equip_9 list_agri_equip_10 agri_6_10 agri_6_11 agri_6_12_* agri_6_26*
+keep hhid list_agri_equip_* agriindex_* agriname_* _agri_number_* agri_6_10 agri_6_11 agri_6_12_* agri_6_26* agri_6_27_1 agri_6_27_2 agri_6_27_3 agri_6_27_4 agri_6_27_5 agri_6_27_6 agri_6_27_7 agri_6_27_8 agri_6_27_9
 
-drop agri_6_26_o_*
+drop agri_6_26_o_* list_agri_equipcount
 
 tempfile midlineag 
 save `midlineag'
@@ -155,7 +157,7 @@ save `midlineag'
 *** import income data ***
 use "$midlinedata/Complete_Midline_Income.dta", clear  
 
-keep hhid agri_income_05 agri_income_06 product_divers_* 
+keep hhid agri_income_05 agri_income_06 product_divers_* agri_income_45_* agri_income_46_1_* agri_income_46_2_* agri_income_46_3_* agri_income_46_4_* agri_income_46_o_* 
 
 tempfile midlineincome 
 save `midlineincome'
@@ -199,6 +201,8 @@ merge 1:1 hhid using `midlineprod'
 drop _merge 
 
 gen round = 2
+
+keep if region == "SAINT LOUIS" | region == "SAINT-LOUIS" | region == "Saint-Louis"
 
 *** append baseline and midline data ** 
 

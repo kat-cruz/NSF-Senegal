@@ -61,7 +61,7 @@ use "$data/Complete_Baseline_Agriculture.dta", clear
 
 keep hhid list_agri_equip_* agriindex_* agriname_* _agri_number_* agri_6_10 agri_6_11 agri_6_12_* agri_6_26* agri_6_27_1 agri_6_27_2 agri_6_27_3 agri_6_27_4 agri_6_27_5 agri_6_27_6 agri_6_27_7 agri_6_27_8 agri_6_27_9 agri_6_27_10 agri_6_27_11 
 
-drop agri_6_26_o_* list_agri_equipcount
+drop agri_6_26_o_* 
 
 tempfile baselineag 
 save `baselineag'
@@ -149,8 +149,7 @@ use "$midlinedata/Complete_Midline_Agriculture.dta", clear
 
 keep hhid list_agri_equip_* agriindex_* agriname_* _agri_number_* agri_6_10 agri_6_11 agri_6_12_* agri_6_26* agri_6_27_1 agri_6_27_2 agri_6_27_3 agri_6_27_4 agri_6_27_5 agri_6_27_6 agri_6_27_7 agri_6_27_8 agri_6_27_9
 
-drop agri_6_26_o_* list_agri_equipcount
-
+drop agri_6_26_o_* 
 tempfile midlineag 
 save `midlineag'
 

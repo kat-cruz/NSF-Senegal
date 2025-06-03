@@ -16,7 +16,7 @@ set more off
 **************************************************
 
 * Set base Box path for each user
-if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
+if "`c(username)'"=="mollydoruska" global master "/Users/mollydoruska/Library/CloudStorage/Box-Box/NSF Senegal"
 if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box"
 if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
@@ -25,8 +25,8 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 **************************** data file paths ****************************
 
-global data "$master\Data_Management\Data\_CRDES_RawData\Midline\Household_Survey_Data"
-global clean_data "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
+global data "$master/Data_Management/Data/_CRDES_RawData/Midline/Household_Survey_Data"
+global clean_data "$master/Data_Management/Data/_CRDES_CleanData/Midline/Identified"
 
 **************************** output file paths ****************************
 
@@ -45,7 +45,7 @@ global enum_observations "$master\Data_Management\Output\Data_Quality_Checks\Mid
 global individual_ids "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
 
 **************************** Import household data ****************************
-import delimited "$data\DISES_Enquête_ménage_midline_VF_WIDE_6Feb.csv", clear varnames(1) bindquote(strict)
+import delimited "$data/DISES_Enquête_ménage_midline_VF_WIDE_6Feb.csv", clear varnames(1) bindquote(strict)
 
 *** identify if lack of pull_hhid's is ongoing or just a first few days issue *** 
 keep submissiondate starttime endtime hhid_village sup sup_name enqu enqu_o hh_global_id fu_mem_id_* pull_hh_full_name_calc__* pull_hh_gender__* pull_hh_age__* pull_hh_individ_*

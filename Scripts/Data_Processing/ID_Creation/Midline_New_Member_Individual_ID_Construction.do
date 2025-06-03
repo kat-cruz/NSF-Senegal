@@ -50,18 +50,17 @@ global issues "$master/Data_Management/Output/Data_Quality_Checks/Midline/_Midli
 global corrected "$master/Data_Management/Output/Data_Processing/Checks/Corrections/Midline"
 global clean "$master/Data_Management/Data/_CRDES_CleanData/Midline/Identified"
 
+*** add missing IDs to main ID set *** 
 use "$clean/DISES_Midline_Complete_PII.dta", clear
 
 tostring hh_relation_with_o*, replace 
 tostring hh_full_name_calc*, replace
 tostring pull_hh_individ_*, replace
 
-
 keep hhid hhid_village add_new_* pull_hh_individ_* hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new hh_age_resp hh_gender_resp hh_full_name_calc_* hh_gender_* hh_age_* hh_phone hh_relation_with_* hh_relation_with_o_*
 
-
 *** create variable individual which is the index of which person in the household the observation is (the j variable in Stata) ***
-reshape long pull_hh_individ_ add_new_ hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_ hh_relation_with_o_, i(hhid_village hhid hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new hh_age_resp hh_gender_resp hh_phone) j(individual)
+reshape long pull_hh_individ_ pull_hh_full_name_calc__ pull_hh_age__ add_new_ hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_ hh_relation_with_o_, i(hhid_village hhid hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new hh_age_resp hh_gender_resp hh_phone) j(individual)
 
 *** drop if there is no individual ***
 drop if (hh_full_name_calc_ == "" | hh_full_name_calc_ == ".") & hh_gender_ == . & hh_age_ == . 

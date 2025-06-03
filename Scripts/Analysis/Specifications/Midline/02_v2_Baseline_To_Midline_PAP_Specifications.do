@@ -31,48 +31,67 @@ global distance_vector "walking_minutes_to_arm_0 walking_minutes_to_arm_1 walkin
 **************************************************
 
 * vars to check balance
-local balancevars baseline_avr_water_any baseline_avr_harvest_any baseline_avr_removal_any baseline_avr_recent_any ///
-    baseline_avr_harvest_kg baseline_avr_recent_kg baseline_fert_ag_any baseline_fert_specific_any baseline_compost_any baseline_waste_any baseline_fert_ag_count baseline_compost_plots baseline_waste_plots baseline_months_soudure baseline_rcsi_annual baseline_ipc_phase baseline_bilharzia_any baseline_meds_any baseline_diagnosed_any baseline_urine_any baseline_stool_any baseline_bilharzia_count baseline_meds_count baseline_diagnosed_count baseline_urine_count baseline_stool_count baseline_personal_risk baseline_hh_risk baseline_child_risk baseline_comm_land baseline_comm_water baseline_private_land baseline_comm_land_use baseline_comm_fish baseline_comm_harvest baseline_work_days_lost baseline_ag_workers baseline_total_ag_hours baseline_total_trade_hours baseline_total_wage_hours baseline_any_absence baseline_avg_attendance baseline_absence_count baseline_max_grade baseline_any_enrolled baseline_num_enrolled baseline_any_last_year baseline_full_attend ///
-q_51 q4 living_01_bin asset_index_std hh_age_h hh_gender_h hh_education_skills_5_h hh_numero ///
-walking_minutes_to_arm_0 walking_minutes_to_arm_1 walking_minutes_to_arm_2 walking_minutes_to_arm_3
+* group variables by category for balance tests
+local avr_vars "baseline_avr_water_any baseline_avr_harvest_any baseline_avr_removal_any baseline_avr_recent_any baseline_avr_harvest_kg baseline_avr_recent_kg"
+local comp_vars "baseline_fert_ag_any baseline_fert_specific_any baseline_compost_any baseline_waste_any baseline_fert_ag_count baseline_compost_plots baseline_waste_plots"
+local food_vars "baseline_months_soudure baseline_rcsi_annual"
+local health_vars "baseline_bilharzia_any baseline_meds_any baseline_diagnosed_any baseline_urine_any baseline_stool_any baseline_bilharzia_count baseline_meds_count baseline_diagnosed_count baseline_urine_count baseline_stool_count"
+local belief_vars "baseline_personal_risk baseline_hh_risk baseline_child_risk baseline_comm_land baseline_comm_water baseline_private_land baseline_comm_land_use baseline_comm_fish baseline_comm_harvest"
+local work_school_vars "baseline_work_days_lost baseline_ag_workers baseline_total_ag_hours baseline_total_trade_hours baseline_total_wage_hours baseline_any_absence baseline_avg_attendance baseline_absence_count baseline_max_grade baseline_any_enrolled baseline_num_enrolled baseline_any_last_year baseline_full_attend"
+local control_vars "q_51 q4 living_01_bin asset_index_std hh_age_h hh_gender_h hh_education_skills_5_h hh_numero walking_minutes_to_arm_0 walking_minutes_to_arm_1 walking_minutes_to_arm_2 walking_minutes_to_arm_3"
 
-* for latex table
+* create latex table
 file open balance using "$specifications/balance_table.tex", write replace
 
-* header
-file write balance "\begin{table}[htbp]" _n
-file write balance "\centering" _n
-file write balance "\caption{Balance Across Treatment Arms}" _n
-file write balance "\label{tab:balance}" _n
-file write balance "\begin{tabular}{lccccp{2cm}}" _n
-file write balance "\hline\hline" _n
+* set up document
+file write balance "\documentclass{article}" _n
+file write balance "\usepackage{longtable}" _n
+file write balance "\usepackage{booktabs}" _n
+file write balance "\begin{document}" _n
+
+* start longtable
+file write balance "\begin{longtable}{lccccp{2cm}}" _n
+file write balance "\caption{Balance Across Treatment Arms} \\" _n
+file write balance "\label{tab:balance} \\" _n
+file write balance "\toprule" _n
 file write balance " & Control & Public & Private & Both & F-test \\" _n
 file write balance "Variable & Group & Health & Benefits & Messages & p-value \\" _n
-file write balance "\hline" _n
+file write balance "\midrule" _n
+file write balance "\endfirsthead" _n
+file write balance "\multicolumn{6}{l}{Table \thetable{} continued} \\" _n
+file write balance "\toprule" _n
+file write balance " & Control & Public & Private & Both & F-test \\" _n
+file write balance "Variable & Group & Health & Benefits & Messages & p-value \\" _n
+file write balance "\midrule" _n
+file write balance "\endhead" _n
+file write balance "\midrule" _n
+file write balance "\multicolumn{6}{r}{continued on next page} \\" _n
+file write balance "\endfoot" _n
+file write balance "\bottomrule" _n 
+file write balance "\multicolumn{6}{p{0.8\textwidth}}{\footnotesize Notes: Table reports means and standard deviations (in parentheses) for each variable by treatment arm. The last column shows p-values from F-tests of joint equality across treatment arms. Standard errors are clustered at the village level. Analysis includes 2,029 households tracked from baseline to midline out of 2,080 baseline households.} \\" _n
+file write balance "\endlastfoot" _n
 
-foreach var of local balancevars {
-    * var label
+* panel headers and content
+file write balance "\multicolumn{6}{l}{\textbf{Panel A: Aquatic Vegetation Removal}} \\" _n
+foreach var of local avr_vars {
+    * same balance calculation code as before
     local varlabel: variable label `var'
     if "`varlabel'" == "" local varlabel "`var'"
     
-    * control group mean
-    sum `var' if treatment_arm == 0
+    qui sum `var' if treatment_arm == 0
     local mean0 = r(mean)
     local sd0 = r(sd)
     
-    * treatment group means
     forvalues t = 1/3 {
-        sum `var' if treatment_arm == `t'
+        qui sum `var' if treatment_arm == `t'
         local mean`t' = r(mean)
         local sd`t' = r(sd)
     }
     
-    * F-test
-    reg `var' i.treatment_arm, r cluster(hhid_village)
+    qui reg `var' i.treatment_arm, r cluster(hhid_village)
     test 1.treatment_arm 2.treatment_arm 3.treatment_arm
     local pval = r(p)
     
-    * write row
     file write balance "`varlabel' & "
     file write balance %9.3f (`mean0') " & "
     file write balance %9.3f (`mean1') " & "
@@ -80,7 +99,6 @@ foreach var of local balancevars {
     file write balance %9.3f (`mean3') " & "
     file write balance %9.3f (`pval') " \\" _n
     
-    * stdev row
     file write balance "& ("
     file write balance %9.3f (`sd0') ") & ("
     file write balance %9.3f (`sd1') ") & ("
@@ -88,14 +106,46 @@ foreach var of local balancevars {
     file write balance %9.3f (`sd3') ") & \\" _n
 }
 
-*  footer
-file write balance "\hline" _n
-file write balance "\end{tabular}" _n
-file write balance "\begin{tablenotes}" _n
-file write balance "\small" _n
-file write balance "\item Notes: Table reports means and standard deviations (in parentheses) for each variable by treatment arm. The last column shows p-values from F-tests of joint equality across treatment arms. Standard errors are clustered at the village level. Analysis includes 2,029 households tracked from baseline to midline out of 2,080 baseline households." _n
-file write balance "\end{tablenotes}" _n
-file write balance "\end{table}" _n
+* repeat for other panels
+file write balance "\midrule" _n
+file write balance "\multicolumn{6}{l}{\textbf{Panel B: Composting Activities}} \\" _n
+foreach var of local comp_vars {
+    * same balance code
+}
+
+file write balance "\midrule" _n 
+file write balance "\multicolumn{6}{l}{\textbf{Panel C: Food Security}} \\" _n
+foreach var of local food_vars {
+    * same balance code
+}
+
+file write balance "\midrule" _n
+file write balance "\multicolumn{6}{l}{\textbf{Panel D: Health Outcomes}} \\" _n
+foreach var of local health_vars {
+    * same balance code
+}
+
+file write balance "\midrule" _n
+file write balance "\multicolumn{6}{l}{\textbf{Panel E: Property Rights Beliefs}} \\" _n
+foreach var of local belief_vars {
+    * same balance code
+}
+
+file write balance "\midrule" _n
+file write balance "\multicolumn{6}{l}{\textbf{Panel F: Work and School}} \\" _n
+foreach var of local work_school_vars {
+    * same balance code
+}
+
+file write balance "\midrule" _n
+file write balance "\multicolumn{6}{l}{\textbf{Panel G: Control Variables}} \\" _n
+foreach var of local control_vars {
+    * same balance code
+}
+
+* close table and document
+file write balance "\end{longtable}" _n
+file write balance "\end{document}" _n
 
 file close balance
 
@@ -103,14 +153,16 @@ file close balance
 * 1.1.1: AVR Main Effects
 **************************************************
 
-* avr participation outcomes (binary indicators)
-local avr_outcomes "avr_water_any avr_harvest_any avr_removal_any avr_recent_any"
+* avr participation outcomes 
+local avr_outcomes "avr_water_any avr_harvest_any avr_removal_any avr_recent_any avr_harvest_kg avr_recent_kg"
 
 * labels
 local lab_water_any "Harvests from Water Sources"
 local lab_harvest_any "12-Month Vegetation Collection"
-local lab_removal_any "Removes Aquatic Vegetation"
+local lab_removal_any "Removes Aquatic Vegetation" 
 local lab_recent_any "7-Day Vegetation Collection"
+local lab_harvest_kg "12-Month Collection (kg)"
+local lab_recent_kg "7-Day Collection (kg)"
 
 * main effects (eq 1 and 2)
 eststo clear
@@ -132,31 +184,75 @@ foreach y of local avr_outcomes {
     estadd scalar p_13 = r(p)
     test 2.treatment_arm = 3.treatment_arm
     estadd scalar p_23 = r(p)
+	estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
 }
 
 * export main treatment effects (eq 1)
 esttab main_* using "$specifications/avr_main_effects.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Aquatic Vegetation Removal (AVR)}" ///
+        "\begin{tabular}{l*{6}{c}}") ///
+    posthead("\midrule" ///
+        "&\multicolumn{4}{c}{Binary Indicators}&\multicolumn{2}{c}{Collection Amount (kg)}\\\cmidrule(lr){2-5}\cmidrule(lr){6-7}") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Dependent variables include binary indicators and continuous measures (kg) for different types of AVR participation. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
     stats(baseline_control controls distance auction N r2, ///
         labels("Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_water_any'" "`lab_harvest_any'" "`lab_removal_any'" "`lab_recent_any'") ///
-    title("Treatment Effects on Aquatic Vegetation Removal (AVR)") ///
-    note("Dependent variables are binary indicators for different types of AVR participation. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Harvests from\\Water Sources}" ///
+            "\shortstack{12-Month\\Collection}" ///
+            "\shortstack{Removes\\Aquatic Veg.}" ///
+            "\shortstack{7-Day\\Collection}" ///
+            "\shortstack{12-Month\\Amount}" ///
+            "\shortstack{7-Day\\Amount}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
 * export treatment arm effects (eq 2)
 esttab arms_* using "$specifications/avr_treatment_arms.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Arm Effects on Aquatic Vegetation Removal (AVR)}" ///
+        "\begin{tabular}{l*{6}{c}}") ///
+    posthead("\midrule" ///
+        "&\multicolumn{4}{c}{Binary Indicators}&\multicolumn{2}{c}{Collection Amount (kg)}\\\cmidrule(lr){2-5}\cmidrule(lr){6-7}") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
     stats(p_12 p_13 p_23 baseline_control controls distance auction N r2, ///
         labels("P-value A=B" "P-value A=C" "P-value B=C" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_water_any'" "`lab_harvest_any'" "`lab_removal_any'" "`lab_recent_any'") ///
-    title("Treatment Arm Effects on Aquatic Vegetation Removal (AVR)") ///
-    note("Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Harvests from\\Water Sources}" ///
+            "\shortstack{12-Month\\Collection}" ///
+            "\shortstack{Removes\\Aquatic Veg.}" ///
+            "\shortstack{7-Day\\Collection}" ///
+            "\shortstack{12-Month\\Amount}" ///
+            "\shortstack{7-Day\\Amount}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************
 * 1.1.2: AVR Spillover Effects
@@ -181,6 +277,10 @@ foreach y of local avr_outcomes {
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     test local_control = treated
     estadd scalar p_diff = r(p)
+    estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
     
     * arm-specific spillovers
     eststo spill_arm_`y': reg midline_`y' T_A_L T_A_T T_B_L T_B_T T_C_L T_C_T baseline_`y' ///
@@ -201,35 +301,79 @@ foreach y of local avr_outcomes {
     estadd scalar p_LT_B = r(p)
     test T_C_L = T_C_T
     estadd scalar p_LT_C = r(p)
+    
+    estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
 }
 
 * export basic spillover results (Equation 3)
-esttab spill_* using "$specifications/avr_spillovers.tex", replace ///
+esttab spill_avr_* using "$specifications/avr_spillovers.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{AVR Spillover Effects}" ///
+        "\begin{tabular}{l*{6}{c}}") ///
+    posthead("\midrule" ///
+        "&\multicolumn{4}{c}{Binary Indicators}&\multicolumn{2}{c}{Collection Amount (kg)}\\\cmidrule(lr){2-5}\cmidrule(lr){6-7}") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Local control indicates untreated households in treatment villages. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(local_control treated) ///
+    order(local_control treated) ///
     stats(p_diff baseline_control controls distance auction N r2, ///
         labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_water_any'" "`lab_harvest_any'" "`lab_removal_any'" "`lab_recent_any'") ///
-    title("AVR Spillover Effects") ///
-    note("Local control indicates untreated households in treatment villages. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Harvests from\\Water Sources}" ///
+            "\shortstack{12-Month\\Collection}" ///
+            "\shortstack{Removes\\Aquatic Veg.}" ///
+            "\shortstack{7-Day\\Collection}" ///
+            "\shortstack{12-Month\\Amount}" ///
+            "\shortstack{7-Day\\Amount}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
 * export arm-specific spillover results 
-esttab spill_arm_* using "$specifications/avr_arm_spillovers.tex", replace ///
+esttab spill_arm_avr_* using "$specifications/avr_arm_spillovers.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{AVR Arm-Specific Spillover Effects}" ///
+        "\begin{tabular}{l*{6}{c}}") ///
+    posthead("\midrule" ///
+        "&\multicolumn{4}{c}{Binary Indicators}&\multicolumn{2}{c}{Collection Amount (kg)}\\\cmidrule(lr){2-5}\cmidrule(lr){6-7}") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} L indicates local control (untreated) households, T indicates treated households, by treatment arm (A=Public Health, B=Private Benefits, C=Both). All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
-    keep(T_*) ///
+    keep(T_A_L T_A_T T_B_L T_B_T T_C_L T_C_T) ///
+    order(T_A_L T_A_T T_B_L T_B_T T_C_L T_C_T) ///
     stats(p_L_AB p_L_AC p_L_BC p_LT_A p_LT_B p_LT_C N r2, ///
         labels("P-value L_A=L_B" "P-value L_A=L_C" "P-value L_B=L_C" ///
                "P-value L=T in A" "P-value L=T in B" "P-value L=T in C" "N" "R-squared") ///
         fmt(3 3 3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_water_any'" "`lab_harvest_any'" "`lab_removal_any'" "`lab_recent_any'") ///
-    title("AVR Arm-Specific Spillover Effects") ///
-    note("L indicates local control (untreated) households, T indicates treated households, by treatment arm (A=Public Health, B=Private Benefits, C=Both). Standard errors clustered at village level.")
-
-* clean
-drop local_control treated T_*_L T_*_T
+    collabels(none) ///
+    mlabels("\shortstack{Harvests from\\Water Sources}" ///
+            "\shortstack{12-Month\\Collection}" ///
+            "\shortstack{Removes\\Aquatic Veg.}" ///
+            "\shortstack{7-Day\\Collection}" ///
+            "\shortstack{12-Month\\Amount}" ///
+            "\shortstack{7-Day\\Amount}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
 **************************************************
 * 1.1.3: Changes in Pure Control Villages
@@ -257,6 +401,7 @@ foreach y in avr_water_any avr_harvest_any avr_removal_any avr_recent_any {
     eststo control_`y': reg `y' time $controls $distance_vector i.auction_village, ///
         vce(cluster hhid_village)
         
+    estadd local baseline_control "Yes"
     estadd local controls "Yes"
     estadd local distance "Yes"
     estadd local auction "Yes"
@@ -264,17 +409,34 @@ foreach y in avr_water_any avr_harvest_any avr_removal_any avr_recent_any {
     restore
 }
 
-* export results 
+* export results for pure control changes
 esttab control_* using "$specifications/avr_control_changes.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Changes in AVR Practices in Pure Control Villages}" ///
+        "\begin{tabular}{l*{4}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Sample restricted to pure control villages. Coefficient shows change from baseline to midline. All specifications include household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(time) ///
     stats(controls distance auction N r2, ///
         labels("Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_water_any'" "`lab_harvest_any'" "`lab_removal_any'" "`lab_recent_any'") ///
-    title("Changes in AVR Practices in Pure Control Villages") ///
-    note("Sample restricted to pure control villages. Coefficient shows change from baseline to midline. All specifications include household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Harvests from\\Water Sources}" ///
+            "\shortstack{12-Month\\Collection}" ///
+            "\shortstack{Removes\\Aquatic Veg.}" ///
+            "\shortstack{7-Day\\Collection}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************
 * 1.1.4: Compost Production Analysis
@@ -298,6 +460,10 @@ foreach y of local comp_extensive {
     estadd scalar p_13 = r(p)
     test 2.treatment_arm = 3.treatment_arm  // Private vs Both
     estadd scalar p_23 = r(p)
+	estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
 }
 
 * spillover effects (eq 3)
@@ -314,31 +480,66 @@ foreach y of local comp_extensive {
     estadd scalar p_diff = r(p)
     
     drop T_L T_T
+	
+	estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
 }
 
-* export treatment arm 
+* export treatment arm effects
 esttab arm_* using "$specifications/compost_arm_effects.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Arm Effects on Compost Activities}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 N r2, ///
-        labels("P-value Public=Private" "P-value Public=Both" "P-value Private=Both" "N" "R-squared") ///
-        fmt(3 3 3 %9.0f 3)) ///
+    stats(p_12 p_13 p_23 baseline_control controls distance auction N r2, ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
+        fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("Compost Production" "Waste Collection") ///
-    title("Treatment Arm Effects on Compost Activities") ///
-    note("Treatment arms: Public Health (A), Private Benefits (B), Both Messages (C). All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Compost\\Production}" ///
+            "\shortstack{Waste\\Collection}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
-* export spillover
+* export spillover effects
 esttab spill_* using "$specifications/compost_spillovers.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Spillover Effects on Compost Activities}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff N r2, ///
-        labels("P-value L=T" "N" "R-squared") ///
-        fmt(3 %9.0f 3)) ///
+    stats(p_diff baseline_control controls distance auction N r2, ///
+        labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
+        fmt(3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("Compost Production" "Waste Collection") ///
-    title("Spillover Effects on Compost Activities") ///
-    note("L indicates local control (untreated) households, T indicates treated households. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Compost\\Production}" ///
+            "\shortstack{Waste\\Collection}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************
 * 1.1.5: Private Benefits Spillovers for Composting
@@ -364,11 +565,18 @@ foreach y of local comp_outcomes {
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     test T_L = T_T
     estadd scalar p_diff = r(p)
+	estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
     restore
 }
 
 * arm-specific spillovers (eq 4)
 foreach y of local comp_outcomes {
+    * clean up any existing treatment indicators
+    cap drop T_*_L T_*_T
+    
     * gen arm-specific indicators
     foreach arm in B C {
         local armnum = cond("`arm'"=="B",2,3)
@@ -388,33 +596,70 @@ foreach y of local comp_outcomes {
     * test spillover differences across arms
     test T_B_L = T_C_L
     estadd scalar p_L_BC = r(p)
+
+    estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
     
+    * clean up after each iteration
     drop T_*_L T_*_T
 }
 
 * export private benefits spillover results
 esttab priv_* using "$specifications/compost_private_spillovers.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Private Benefits Spillovers on Compost Activities}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Sample restricted to control villages and those receiving private benefits information (arms B and C). L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff N r2, ///
-        labels("P-value L=T" "N" "R-squared") ///
-        fmt(3 %9.0f 3)) ///
+    stats(p_diff baseline_control controls distance auction N r2, ///
+        labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
+        fmt(3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("`labels'") ///
-    title("Private Benefits Spillovers on Compost Activities") ///
-    note("Sample restricted to control villages and those receiving private benefits information (arms B and C). L indicates local control (untreated) households, T indicates treated households. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Compost\\Production}" ///
+            "\shortstack{Waste\\Collection}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
-* export arm-specific private benefits results
+* export arm-specific private benefits results 
 esttab arms_* using "$specifications/compost_private_arms.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Arm-Specific Private Benefits Spillovers}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Compares spillovers between private benefits only (B) and both messages (C) arms. L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_*) ///
-    stats(p_B p_C p_L_BC N r2, ///
-        labels("P-value L=T in Private" "P-value L=T in Both" "P-value Private L=Both L" "N" "R-squared") ///
-        fmt(3 3 3 %9.0f 3)) ///
+    order(T_B_L T_B_T T_C_L T_C_T) ///
+    stats(p_B p_C p_L_BC baseline_control controls distance auction N r2, ///
+        labels("P-value L=T in Private" "P-value L=T in Both" "P-value Private L=Both L" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
+        fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("`labels'") ///
-    title("Arm-Specific Private Benefits Spillovers") ///
-    note("Compares spillovers between private benefits only (B) and both messages (C) arms. L indicates local control (untreated) households, T indicates treated households. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Compost\\Production}" ///
+            "\shortstack{Waste\\Collection}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************
 * 1.1.6: Total Factor Productivity and Profitability
@@ -452,42 +697,79 @@ foreach y of local food_outcomes {
 
 * export food security results
 esttab food_* using "$specifications/food_security.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Food Security Outcomes}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Lean season months measures self-reported soudure duration. Reduced CSI is composite index of coping strategies. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
     stats(p_12 p_13 p_23 baseline_control controls distance auction N r2, ///
-        labels("P-value Public=Private" "P-value Public=Both" "P-value Private=Both" ///
-               "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("`food_labels'") ///
-    title("Treatment Effects on Food Security Outcomes") ///
-    note("Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Lean season months measures self-reported soudure duration. Reduced CSI is composite index of coping strategies. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Lean Season\\Months}" ///
+            "\shortstack{Reduced CSI}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
-* additional of RCSI components
-eststo clear 
+* RCSI component regressions
+eststo clear
 foreach y of local rcsi_components {
     eststo rcsi_`y': reg midline_`y' i.treatment_arm baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     
-    test 1.treatment_arm = 2.treatment_arm
+    * test differences between arms
+    test 1.treatment_arm = 2.treatment_arm  // pub vs priv Benefits
     estadd scalar p_12 = r(p)
-    test 1.treatment_arm = 3.treatment_arm
+    test 1.treatment_arm = 3.treatment_arm  // pub vs both
     estadd scalar p_13 = r(p)
-    test 2.treatment_arm = 3.treatment_arm
+    test 2.treatment_arm = 3.treatment_arm  // priv vs both
     estadd scalar p_23 = r(p)
+    
+    estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
 }
 
-* export RCSI component results
+* export RCSI component results  
 esttab rcsi_* using "$specifications/food_security_components.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Coping Strategy Components}" ///
+        "\begin{tabular}{l*{4}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Decomposition of Reduced Coping Strategies Index (RCSI) into component measures. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 N r2, ///
-        labels("P-value Public=Private" "P-value Public=Both" "P-value Private=Both" "N" "R-squared") ///
-        fmt(3 3 3 %9.0f 3)) ///
+    stats(p_12 p_13 p_23 baseline_control controls distance auction N r2, ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
+        fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("Work-Related" "Asset Sales" "Migration" "Skip Meals") ///
-    title("Treatment Effects on Coping Strategy Components") ///
-    note("Decomposition of Reduced Coping Strategies Index (RCSI) into component measures. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Work-\\Related}" ///
+            "\shortstack{Asset\\Sales}" ///
+            "\shortstack{Migration}" ///
+            "\shortstack{Skip\\Meals}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************
 * 1.1.8: Schistosomiasis Analysis (Self-Reported)
@@ -531,29 +813,65 @@ foreach y of local schisto_outcomes {
     drop T_L T_T
 }
 
-* main treatment effects
+* export main treatment effects
 esttab main_* using "$specifications/schisto_main_effects.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Self-Reported Schistosomiasis Outcomes}" ///
+        "\begin{tabular}{l*{5}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Dependent variables are binary indicators for schistosomiasis-related conditions and symptoms. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
     stats(baseline_control controls distance auction N r2, ///
         labels("Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_bilharzia'" "`lab_meds'" "`lab_diagnosed'" "`lab_urine'" "`lab_stool'") ///
-    title("Treatment Effects on Self-Reported Schistosomiasis Outcomes") ///
-    note("Dependent variables are binary indicators for schistosomiasis-related conditions and symptoms. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Self-Reported\\Infection}" ///
+            "\shortstack{Medication\\Use}" ///
+            "\shortstack{Diagnosed\\Cases}" ///
+            "\shortstack{Urine\\Symptoms}" ///
+            "\shortstack{Stool\\Symptoms}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
-* spillover effects
+* export spillover effects
 esttab spill_* using "$specifications/schisto_spillovers.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Spillover Effects on Self-Reported Schistosomiasis Outcomes}" ///
+        "\begin{tabular}{l*{5}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
     stats(p_diff baseline_control controls distance auction N r2, ///
         labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_bilharzia'" "`lab_meds'" "`lab_diagnosed'" "`lab_urine'" "`lab_stool'") ///
-    title("Spillover Effects on Self-Reported Schistosomiasis Outcomes") ///
-    note("L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Self-Reported\\Infection}" ///
+            "\shortstack{Medication\\Use}" ///
+            "\shortstack{Diagnosed\\Cases}" ///
+            "\shortstack{Urine\\Symptoms}" ///
+            "\shortstack{Stool\\Symptoms}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************
 * 1.1.11: Property Rights Beliefs Analysis
@@ -596,6 +914,20 @@ foreach y of local belief_outcomes {
 
 * export property rights beliefs
 esttab belief_* using "$specifications/property_rights_beliefs.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Property Rights Beliefs}" ///
+        "\begin{tabular}{l*{6}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Compares beliefs about resource rights across treatment arms, with focus on private benefits messaging (arms B and C) versus public health only (arm A) and control. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
     stats(p_12 p_13 p_23 p_priv baseline_control controls distance auction N r2, ///
@@ -604,10 +936,14 @@ esttab belief_* using "$specifications/property_rights_beliefs.tex", replace ///
                "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(3 3 3 3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_comm_land'" "`lab_comm_water'" "`lab_private_land'" ///
-            "`lab_comm_land_use'" "`lab_comm_fish'" "`lab_comm_harvest'") ///
-    title("Treatment Effects on Property Rights Beliefs") ///
-    note("Compares beliefs about resource rights across treatment arms, with focus on private benefits messaging (arms B and C) versus public health only (arm A) and control. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Community\\Land Rights}" ///
+            "\shortstack{Community\\Water Rights}" ///
+            "\shortstack{Private\\Land Rights}" ///
+            "\shortstack{Community\\Land Use}" ///
+            "\shortstack{Fishing\\Rights}" ///
+            "\shortstack{Harvesting\\Rights}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************
 * 2.1.1: Work and School Days Lost Analysis
@@ -655,29 +991,61 @@ foreach y in work_days_lost any_absence absence_count {
     drop T_L T_T
 }
 
-* main treatment effects
+* export main treatment effects
 esttab main_* using "$specifications/work_school_main.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Work and School Days Lost}" ///
+        "\begin{tabular}{l*{3}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Work days lost and school absences are self-reported. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
     stats(baseline_control controls distance auction N r2, ///
         labels("Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("Work Days Lost" "Any School Absence" "Number of Absences") ///
-    title("Treatment Effects on Work and School Days Lost") ///
-    note("Work days lost and school absences are self-reported. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Work Days\\Lost}" ///
+            "\shortstack{Any School\\Absence}" ///
+            "\shortstack{Number of\\Absences}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
-* spillover effects
+* export spillover effects
 esttab spill_* using "$specifications/work_school_spillovers.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Spillover Effects on Work and School Days Lost}" ///
+        "\begin{tabular}{l*{3}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
     stats(p_diff baseline_control controls distance auction N r2, ///
         labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("Work Days Lost" "Any School Absence" "Number of Absences") ///
-    title("Spillover Effects on Work and School Days Lost") ///
-    note("L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Work Days\\Lost}" ///
+            "\shortstack{Any School\\Absence}" ///
+            "\shortstack{Number of\\Absences}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************
 * 2.1.2: Educational Outcomes Analysis
@@ -719,32 +1087,75 @@ foreach y in max_grade any_enrolled num_enrolled avg_attendance any_last_year fu
     * difference between local controls and treated
     test T_L = T_T
     estadd scalar p_diff = r(p)
+	
+    estadd local baseline_control "Yes"
+    estadd local controls "Yes"
+    estadd local distance "Yes"
+    estadd local auction "Yes"
     
     drop T_L T_T
 }
 
 * export main treatment effects
 esttab main_* using "$specifications/education_main.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Educational Outcomes}" ///
+        "\begin{tabular}{l*{6}{c}}") ///
+    posthead("\midrule" ///
+        "&\multicolumn{1}{c}{Attainment}&\multicolumn{2}{c}{Enrollment}&\multicolumn{3}{c}{Attendance}\\\cmidrule(lr){2-2}\cmidrule(lr){3-4}\cmidrule(lr){5-7}") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Outcomes include measures of attainment (highest grade), enrollment (any and number enrolled), and attendance measures. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
     stats(baseline_control controls distance auction N r2, ///
         labels("Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_max_grade'" "`lab_any_enrolled'" "`lab_num_enrolled'" ///
-            "`lab_avg_attendance'" "`lab_any_last_year'" "`lab_full_attend'") ///
-    title("Treatment Effects on Educational Outcomes") ///
-    note("Outcomes include measures of attainment (highest grade), enrollment, and attendance. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Highest\\Grade}" ///
+            "\shortstack{Any\\Enrollment}" ///
+            "\shortstack{Number\\Enrolled}" ///
+            "\shortstack{Average\\Attendance}" ///
+            "\shortstack{Attended\\Last Year}" ///
+            "\shortstack{Full\\Attendance}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 
-* spillover effects
+* export spillover effects
 esttab spill_* using "$specifications/education_spillovers.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Spillover Effects on Educational Outcomes}" ///
+        "\begin{tabular}{l*{6}{c}}") ///
+    posthead("\midrule" ///
+        "&\multicolumn{1}{c}{Attainment}&\multicolumn{2}{c}{Enrollment}&\multicolumn{3}{c}{Attendance}\\\cmidrule(lr){2-2}\cmidrule(lr){3-4}\cmidrule(lr){5-7}") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
     stats(p_diff baseline_control controls distance auction N r2, ///
         labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
         fmt(3 0 0 0 0 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    mlabels("`lab_max_grade'" "`lab_any_enrolled'" "`lab_num_enrolled'" ///
-            "`lab_avg_attendance'" "`lab_any_last_year'" "`lab_full_attend'") ///
-    title("Spillover Effects on Educational Outcomes") ///
-    note("L indicates local control (untreated) households, T indicates treated households. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level.")
+    collabels(none) ///
+    mlabels("\shortstack{Highest\\Grade}" ///
+            "\shortstack{Any\\Enrollment}" ///
+            "\shortstack{Number\\Enrolled}" ///
+            "\shortstack{Average\\Attendance}" ///
+            "\shortstack{Attended\\Last Year}" ///
+            "\shortstack{Full\\Attendance}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))

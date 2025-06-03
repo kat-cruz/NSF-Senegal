@@ -6,7 +6,7 @@
 **************************************************
 
 *** This Do File PROCESSES: PUT ALL SCRIPTS HERE***
-*** This Do File CREATES: ANCOVA regression outputs for the PAP specifcaitons on baseline to midline data
+*** This Do File CREATES: dataset for the PAP specifcaitons on baseline to midline data
 						
 *** Procedure: ***
 * 
@@ -112,12 +112,12 @@ preserve
     gen stream = living_01 == 10
     gen other_water = living_01 == 99
 
-    // collapse to village level - any household using each source
+* collapse to village level - any household using each source
     collapse (max) interior_tap public_tap neighbor_tap protected_well unprotected_well ///
         drill_hole tanker_service water_seller natural_source stream other_water, ///
         by(hhid_village)
     
-    // count total number of different water sources used in village
+* count total number of different water sources used in village
     egen num_water_access_points = rowtotal(interior_tap public_tap neighbor_tap ///
         protected_well unprotected_well drill_hole tanker_service water_seller ///
         natural_source stream other_water)
@@ -128,7 +128,7 @@ preserve
     save `village_water'
 restore
 
-// merge village-level water access back to main data
+* merge village-level water access back to main data
 merge m:1 hhid_village using `village_water', nogen
 
 label variable num_water_access_points "Number of different water sources used in village"
@@ -173,8 +173,6 @@ save `control_data', replace
 * MERGE IN ASSET INDEX *
 **************************************************
 use "$asset_index", clear
-
-
 
 tempfile asset_data
 save `asset_data', replace
@@ -268,23 +266,23 @@ merge m:1 hhid_village using "$baseline_community", nogen
 
 ******* 1.1.1, 1.1.2, 1.1.3 ************
 * AVR Self-reported participation (extensive margin)
-* Water interaction for AVR (from hh_12_6: "Harvest aquatic vegetation" activity)
+* water interaction for AVR (from hh_12_6: "Harvest aquatic vegetation" activity)
 egen baseline_avr_water_any = anymatch(hh_12_6_*), values(1)
 label var baseline_avr_water_any "Any HH member harvests vegetation (hh_12_6: water activities)"
 
-* Vegetation harvest (from hh_14: kg collected per week, 12mo avg)
+* vegetation harvest (from hh_14: kg collected per week, 12mo avg)
 egen baseline_avr_harvest_any = anymatch(hh_14_*), values(0/2000)
 label var baseline_avr_harvest_any "Any HH member collected vegetation (hh_14: 12mo collection)"
 
-* Vegetation removal (from hh_20_6: "Harvest aquatic vegetation" purpose)
+* vegetation removal (from hh_20_6: "Harvest aquatic vegetation" purpose)
 egen baseline_avr_removal_any = anymatch(hh_20_6_*), values(1)
 label var baseline_avr_removal_any "Any HH member removes vegetation (hh_20_6: removal activities)"
 
-* Recent harvest (from hh_22: kg collected in last 7 days)
+* recent harvest (from hh_22: kg collected in last 7 days)
 egen baseline_avr_recent_any = anymatch(hh_22_*), values(0/2000)
 label var baseline_avr_recent_any "Any HH member collected vegetation (hh_22: last 7 days)"
 
-* Quantity harvested (intensive margin)
+* quantity harvested (intensive margin)
 * 12-month average weekly harvest (from hh_14: kg/week)
 egen baseline_avr_harvest_kg = rowtotal(hh_14_*)
 label var baseline_avr_harvest_kg "Total HH vegetation harvest kg/week (hh_14: 12mo avg)"
@@ -294,40 +292,40 @@ egen baseline_avr_recent_kg = rowtotal(hh_22_*)
 label var baseline_avr_recent_kg "Total HH vegetation harvest kg (hh_22: last 7 days)"
 
 ******** 1.1.4, 1.1.5, 1.1.6 ***********
-* Fertilizer/Compost Use (Extensive Margin)
-* Use of fertilizer in agricultural activities (hh_15: selecting "2: Fertilizer")
+* fertilizer/compost use (Extensive Margin)
+* use of fertilizer in agricultural activities (hh_15: selecting "2: Fertilizer")
 drop hh_15_o*
 egen baseline_fert_ag_any = anymatch(hh_15_*), values(2)
 label var baseline_fert_ag_any "Any HH member using fertilizer (hh_15 = 2)"
 
-* Use of fertilizer in specified activities (hh_23_2)
-egen baseline_fert_specific_any = anymatch(hh_23_2*), values(2)
-label var baseline_fert_specific_any "Any HH member using fertilizer (hh_23_2 = 2)"
+* use of fertilizer in specified activities (hh_23_2)
+egen baseline_fert_specific_any = anymatch(hh_23_2*), values(1)
+label var baseline_fert_specific_any "Any HH member using fertilizer (hh_23_2 = 1)"
 
-* Use of compost on plots (agri_6_34_comp)
+* use of compost on plots (agri_6_34_comp)
 egen baseline_compost_any = anymatch(agri_6_34_comp*), values(1)
 label var baseline_compost_any "Any plot with compost use (agri_6_34_comp)"
 
-* Use of household waste on plots (agri_6_34)
+* use of household waste on plots (agri_6_34)
 egen baseline_waste_any = anymatch(agri_6_34*), values(1)
 label var baseline_waste_any "Any plot with household waste use (agri_6_34)"
 
-* Count Measures (Intensive Margin)
-* First create temporary indicators for fertilizer use
+* count measures (Intensive Margin)
+* create temporary indicators for fertilizer use
 forvalues i = 1/55 {
     gen temp_fert_base_`i' = (hh_15_`i' == 2)
     gen temp_fert_mid_`i' = (hh_15_`i' == 2)
 }
 
-* Number of HH members using fertilizer
+* num of HH members using fertilizer
 egen baseline_fert_ag_count = rowtotal(temp_fert_base_*)
 label var baseline_fert_ag_count "Number of HH members using fertilizer (hh_15 = 2)"
 
-* Drop temporary variables
+* dorp temps
 drop temp_fert_*
 
-* Number of plots using different inputs
-* First create temporary indicators for compost and waste
+* number of plots using different inputs
+* create temporary indicators for compost and waste
 forvalues i = 1/11 {
     cap gen temp_compost_base_`i' = (agri_6_34_comp_`i' == 1)
     cap gen temp_compost_mid_`i' = (agri_6_34_comp_`i' == 1)
@@ -341,11 +339,13 @@ egen baseline_waste_plots = rowtotal(temp_waste_base_*)
 label var baseline_compost_plots "Number of plots using compost (agri_6_34_comp)"
 label var baseline_waste_plots "Number of plots using household waste (agri_6_34)"
 
-* Drop temporary variables
+* drop temps
 drop temp_*
 
-* Keep relevant variables and merge
+* relevant variables and merge
 keep hhid ///
+	baseline_avr_water_any baseline_avr_harvest_any baseline_avr_removal_any 	baseline_avr_recent_any ///
+    baseline_avr_harvest_kg baseline_avr_recent_kg ///
     baseline_fert_ag_any ///
     baseline_fert_specific_any  ///
     baseline_compost_any  ///
@@ -370,14 +370,14 @@ save `combined_data', replace
 * variables: food01, food02, food03, food05, food06, food07, food08, food09, food11, food12
 use "$baseline_lean", clear
 
-* Binary indicators rather than frequency
-* Since we have yes/no responses for 12-month period rather than days/week
-* Using standard severity weights but adjusted for binary responses:
-*   - Less preferred food = 1
-*   - Borrow food/help = 2
-*   - Reduce portions = 1
-*   - Restrict adult consumption = 3
-*   - Reduce meals = 1
+* binary indicators rather than frequency
+* since we have yes/no responses for 12-month period rather than days/week
+* using standard severity weights but adjusted for binary responses:
+*   - less preferred food = 1
+*   - borrow food/help = 2
+*   - reduce portions = 1
+*   - restrict adult consumption = 3
+*   - reduce meals = 1
 
 * create weighted binary component scores
 gen baseline_rcsi_work = (food02==1) * 2     // Paid work (borrowing/help proxy)
@@ -390,7 +390,7 @@ egen baseline_rcsi_annual = rowtotal(baseline_rcsi_work baseline_rcsi_assets bas
 label var baseline_rcsi_annual "Annual Reduced Coping Strategies Score"
 
 * generate modified IPC Phase categories 
-* Note: These thresholds are adapted for annual binary measures
+* Note: these thresholds are adapted for annual binary measures
 gen baseline_ipc_phase = .
 replace baseline_ipc_phase = 1 if baseline_rcsi_annual <= 1    // No/minimal coping
 replace baseline_ipc_phase = 2 if baseline_rcsi_annual == 2    // Stress coping
@@ -422,24 +422,24 @@ save `combined_data', replace
 * variables: health_5_3, health_5_5, health_5_6, health_5_8, health_5_9	Individual level for child testing, household level for self-reported data	Individual level
 use "$baseline_health", clear
 
-* Individual-level prevalence (extensive margin)
+* individ-level prevalence (extensive margin)
 forvalues i = 1/55 {
-    * Bilharzia diagnosis (health_5_3_2: past 12 months)
+    * bilharzia diagnosis (health_5_3_2: past 12 months)
     cap gen bilharzia_`i' = (health_5_3_2_`i' == 1)
     
-    * Medication (health_5_5: received schisto meds)
+    * meds (health_5_5: received schisto meds)
     cap gen schisto_meds_`i' = (health_5_5_`i' == 1)
     
-    * Diagnosis history (health_5_6: ever diagnosed)
+    * diagnosis history (health_5_6: ever diagnosed)
     cap gen ever_diagnosed_`i' = (health_5_6_`i' == 1)
     
-    * Symptoms (health_5_8, health_5_9: blood in urine/stool)
+    * symptoms (health_5_8, health_5_9: blood in urine/stool)
     cap gen blood_urine_`i' = (health_5_8_`i' == 1)
     cap gen blood_stool_`i' = (health_5_9_`i' == 1)
 }
 
-* Household-level measures
-* Any member with condition/symptom
+* hh-level measures
+* any member with condition/symptom
 egen baseline_bilharzia_any = anymatch(bilharzia_*), values(1)
 label var baseline_bilharzia_any "Any HH member with bilharzia (health_5_3_2: 12mo)"
 
@@ -455,8 +455,8 @@ label var baseline_urine_any "Any HH member with blood in urine (health_5_8)"
 egen baseline_stool_any = anymatch(blood_stool_*), values(1)
 label var baseline_stool_any "Any HH member with blood in stool (health_5_9)"
 
-* Count measures (intensive margin)
-* Number of members with condition/symptom
+* count measures (intensive margin)
+* num of members with condition/symptom
 egen baseline_bilharzia_count = rowtotal(bilharzia_*)
 label var baseline_bilharzia_count "Number of HH members with bilharzia (health_5_3_2)"
 
@@ -472,16 +472,16 @@ label var baseline_urine_count "Number of HH members with blood in urine (health
 egen baseline_stool_count = rowtotal(blood_stool_*)
 label var baseline_stool_count "Number of HH members with blood in stool (health_5_9)"
 
-// Keep only the created variables and identifier
+// keep only the created variables and identifier
 keep hhid ///
     baseline_bilharzia_any baseline_meds_any baseline_diagnosed_any baseline_urine_any baseline_stool_any ///
     baseline_bilharzia_count baseline_meds_count baseline_diagnosed_count baseline_urine_count baseline_stool_count
 
-* Save as tempfile
+* tempfile
 tempfile schisto_outcomes
 save `schisto_outcomes'
 
-* Merge back into combined data
+* merge back
 use `combined_data', clear
 merge 1:1 hhid using `schisto_outcomes', keep(master match) nogen
 
@@ -492,46 +492,46 @@ save `combined_data', replace
 * variables: beliefs_01, beliefs_02, beliefs_03, beliefs_04, beliefs_05, beliefs_06, beliefs_07, beliefs_08, beliefs_09
 use "$baseline_beliefs", clear
 
-* 1. Disease Risk Beliefs (beliefs_01-03)
-* Personal risk (59.38% agree/strongly agree)
+* 1. disesase risk beliefs (beliefs_01-03)
+* personal risk (59.38% agree/strongly agree)
 gen baseline_personal_risk = (beliefs_01 <= 2)
 label var baseline_personal_risk "Likely/Very likely to get bilharzia (beliefs_01 <= 2)"
 
-* Household risk (65.58% agree/strongly agree)
+* household risk (65.58% agree/strongly agree)
 gen baseline_hh_risk = (beliefs_02 <= 2)
 label var baseline_hh_risk "Likely/Very likely HH member gets bilharzia (beliefs_02 <= 2)"
 
-* Child risk (76.97% agree/strongly agree)
+* child risk (76.97% agree/strongly agree)
 gen baseline_child_risk = (beliefs_03 <= 2)
 label var baseline_child_risk "Likely/Very likely child gets bilharzia (beliefs_03 <= 2)"
 
-* 2. Community Property Rights (beliefs_04-05)
-* Community land rights (85.38% agree/strongly agree)
+* 2. community property rights (beliefs_04-05)
+* community land rights (85.38% agree/strongly agree)
 gen baseline_comm_land = (beliefs_04 <= 2)
 label var baseline_comm_land "Agree: land belongs to community (beliefs_04 <= 2)"
 
-* Community water rights (90.43% agree/strongly agree)
+* community water rights (90.43% agree/strongly agree)
 gen baseline_comm_water = (beliefs_05 <= 2)
 label var baseline_comm_water "Agree: water belongs to community (beliefs_05 <= 2)"
 
-* 3. Private Use Rights (beliefs_06-09)
-* Private land use rights (90.82% agree/strongly agree)
+* 3. private Use Rights (beliefs_06-09)
+* private land use rights (90.82% agree/strongly agree)
 gen baseline_private_land = (beliefs_06 <= 2)
 label var baseline_private_land "Agree: right to products from own land (beliefs_06 <= 2)"
 
-* Community land use rights (67.50% agree/strongly agree)
+* community land use rights (67.50% agree/strongly agree)
 gen baseline_comm_land_use = (beliefs_07 <= 2)
 label var baseline_comm_land_use "Agree: right to products from community land (beliefs_07 <= 2)"
 
-* Fishing rights (83.46% agree/strongly agree)
+* fishing rights (83.46% agree/strongly agree)
 gen baseline_comm_fish = (beliefs_08 <= 2)
 label var baseline_comm_fish "Agree: right to products from fishing (beliefs_08 <= 2)"
 
-* Harvesting rights (77.40% agree/strongly agree)
+* harvesting rights (77.40% agree/strongly agree)
 gen baseline_comm_harvest = (beliefs_09 <= 2)
 label var baseline_comm_harvest "Agree: right to products from harvesting (beliefs_09 <= 2)"
 
-// Keep only created belief variables and identifier
+* only created belief variables and identifier
 keep hhid ///
     baseline_personal_risk  ///
     baseline_hh_risk  ///
@@ -543,11 +543,11 @@ keep hhid ///
     baseline_comm_fish  ///
     baseline_comm_harvest 
 
-* Save as tempfile
+* tempfile
 tempfile belief_outcomes
 save `belief_outcomes'
 
-* Merge back into combined data
+* back into combined data
 use `combined_data', clear
 merge 1:1 hhid using `belief_outcomes', keep(master match) nogen
 
@@ -561,7 +561,7 @@ use "$baseline_health", clear
 * merge in household roster for work/school info
 merge 1:1 hhid using "$baseline_household", nogen
 
-* 1. Work Loss Measures
+* 1. work loss measures
 * Days lost to illness (health_5_4)
 forvalues i = 1/55 {
     cap gen health_5_4_`i'_days = health_5_4_`i'
@@ -569,28 +569,28 @@ forvalues i = 1/55 {
     cap replace health_5_4_`i'_days = . if health_5_4_`i' > 31
 }
 
-* Work participation by type
+* work participation by type
 forvalues i = 1/55 {
-    * Agricultural work (hh_03, hh_04)
+    * ag work (hh_03, hh_04)
     gen baseline_ag_work_any_`i' = (hh_03_`i' == 1)
     gen baseline_ag_hours_`i' = hh_04_`i'
     label var baseline_ag_hours_`i' "Agricultural work hours (hh_04)"
     
-    * Trade work (hh_08)
+    * trade work (hh_08)
     gen baseline_trade_hours_`i' = hh_08_`i'
     label var baseline_trade_hours_`i' "Trade work hours (hh_08)"
     
-    * Wage work (hh_09)
+    * wage work (hh_09)
     gen baseline_wage_hours_`i' = hh_09_`i'
     label var baseline_wage_hours_`i' "Wage work hours (hh_09)"
 }
 
-* Household-level work measures
-* Total days lost
+* hh-level work measures
+* total days lost
 egen baseline_work_days_lost = rowtotal(health_5_4_*_days)
 label var baseline_work_days_lost "Total work days lost to illness (health_5_4)"
 
-* Agricultural participation
+* ag participation
 egen baseline_ag_workers = rowtotal(baseline_ag_work_any_*)
 label var baseline_ag_workers "Number of agricultural workers (hh_03)"
 
@@ -602,31 +602,31 @@ label var baseline_total_ag_hours "Total HH agricultural hours (hh_04)"
 label var baseline_total_trade_hours "Total HH trade hours (hh_08)"
 label var baseline_total_wage_hours "Total HH wage hours (hh_09)"
 
-* 2. School Loss Measures
+* 2. school loss measures
 forvalues i = 1/55 {
-    * School absence (hh_37)
+    * school absence (hh_37)
     gen baseline_school_absence_`i' = (hh_37_`i' == 1)
     label var baseline_school_absence_`i' "Missed week+ school due illness (hh_37)"
     
-    * School attendance (hh_38)
+    * school attendance (hh_38)
     gen baseline_school_days_`i' = hh_38_`i' if inrange(hh_38_`i', 0, 7)
     label var baseline_school_days_`i' "Days attended school last week (hh_38)"
 }
 
-* Household-level school measures
-* Any child missing school
+* hh-level school measures
+* any child missing school
 egen baseline_any_absence = anymatch(baseline_school_absence_*), values(1)
 label var baseline_any_absence "Any child missed week+ school (hh_37)"
 
-* Average attendance
+* avg attendance
 egen baseline_avg_attendance = rowmean(baseline_school_days_*)
 label var baseline_avg_attendance "Average school days attended (hh_38)"
 
-* Count of children missing school
+* count of children missing school
 egen baseline_absence_count = rowtotal(baseline_school_absence_*)
 label var baseline_absence_count "Number of children missing school (hh_37)"
 
-* Keep relevant variables
+* relevant variables
 keep hhid baseline_work_days_lost baseline_ag_workers ///
     baseline_total_ag_hours baseline_total_trade_hours baseline_total_wage_hours ///
     baseline_any_absence baseline_avg_attendance baseline_absence_count
@@ -634,7 +634,7 @@ keep hhid baseline_work_days_lost baseline_ag_workers ///
 tempfile work_school_outcomes
 save `work_school_outcomes'
 
-* Merge back into combined data
+* back into combined data
 use `combined_data', clear
 merge 1:1 hhid using `work_school_outcomes', keep(master match) nogen
 
@@ -646,28 +646,28 @@ save `combined_data', replace
 * Education Outcomes
 use "$baseline_household", clear
 
-* 1. Educational Attainment (hh_29)
+* 1. educ attainment (hh_29)
 forvalues i = 1/55 {
-    * Years of education completed
+    * years of education completed
     gen edu_years_`i' = .
     replace edu_years_`i' = hh_29_`i' if inrange(hh_29_`i', 1, 13)
     replace edu_years_`i' = 14 if hh_29_`i' == 14 // University
 }
 
-* Highest grade completed in household
+* highest grade completed in household
 egen baseline_max_grade = rowmax(edu_years_*)
 label var baseline_max_grade "Highest grade completed in HH (hh_29)"
 
-* 2. School Participation - Extensive Margin
+* 2. school participation - extensive margin
 forvalues i = 1/55 {
-    * Current enrollment (hh_32)
+    * current enrollment (hh_32)
     gen enrolled_`i' = (hh_32_`i' == 1) if !missing(hh_32_`i')
     
-    * Last year attendance (hh_30) 
+    * last year attendance (hh_30) 
     gen last_year_`i' = (hh_30_`i' == 1) if !missing(hh_30_`i')
 }
 
-* Enrollment measures
+* enrollment measures
 egen baseline_any_enrolled = anymatch(enrolled_*), values(1)
 label var baseline_any_enrolled "Any member currently enrolled (hh_32)"
 
@@ -677,28 +677,28 @@ label var baseline_num_enrolled "Number currently enrolled"
 egen baseline_any_last_year = anymatch(last_year_*), values(1)
 label var baseline_any_last_year "Any member attended last year (hh_30)"
 
-* 3. School Participation - Intensive Margin (hh_38)
+* 3. school participation - intensive margin (hh_38)
 forvalues i = 1/55 {
     gen attend_days_`i' = hh_38_`i' if inrange(hh_38_`i', 0, 7)
 }
 
-* Attendance measures 
+* attendance measures 
 egen baseline_avg_attendance = rowmean(attend_days_*)
 label var baseline_avg_attendance "Average days attended last week (hh_38)"
 
 egen baseline_full_attend = anymatch(attend_days_*), values(7)
 label var baseline_full_attend "Any member perfect attendance"
 
-* Keep education outcomes
+* keep educ outcomes
 keep hhid baseline_max_grade baseline_any_enrolled baseline_num_enrolled ///
     baseline_any_last_year baseline_avg_attendance baseline_full_attend
 
 
-* Save as tempfile
+* tempfile
 tempfile education_outcomes
 save `education_outcomes'
 
-* Merge back into combined data
+* back into combined data
 use `combined_data', clear
 merge 1:1 hhid using `education_outcomes', keep(master match) nogen
 
@@ -721,23 +721,23 @@ merge m:1 hhid_village using "$midline_community", nogen
 
 ******* 1.1.1, 1.1.2, 1.1.3 ************
 * AVR Self-reported participation (extensive margin)
-* Water interaction for AVR (from hh_12_6: "Harvest aquatic vegetation" activity)
+* water interaction for AVR (from hh_12_6: "Harvest aquatic vegetation" activity)
 egen midline_avr_water_any = anymatch(hh_12_6_*), values(1)
 label var midline_avr_water_any "Any HH member harvests vegetation (hh_12_6: water activities)"
 
-* Vegetation harvest (from hh_14: kg collected per week, 12mo avg)
+* vegetation harvest (from hh_14: kg collected per week, 12mo avg)
 egen midline_avr_harvest_any = anymatch(hh_14_*), values(0/2000)
 label var midline_avr_harvest_any "Any HH member collected vegetation (hh_14: 12mo collection)"
 
-* Vegetation removal (from hh_20_6: "Harvest aquatic vegetation" purpose)
+* vegetation removal (from hh_20_6: "Harvest aquatic vegetation" purpose)
 egen midline_avr_removal_any = anymatch(hh_20_6_*), values(1)
 label var midline_avr_removal_any "Any HH member removes vegetation (hh_20_6: removal activities)"
 
-* Recent harvest (from hh_22: kg collected in last 7 days)
+* recent harvest (from hh_22: kg collected in last 7 days)
 egen midline_avr_recent_any = anymatch(hh_22_*), values(0/2000)
 label var midline_avr_recent_any "Any HH member collected vegetation (hh_22: last 7 days)"
 
-* Quantity harvested (intensive margin)
+* quantity harvested (intensive margin)
 * 12-month average weekly harvest (from hh_14: kg/week)
 egen midline_avr_harvest_kg = rowtotal(hh_14_*)
 label var midline_avr_harvest_kg "Total HH vegetation harvest kg/week (hh_14: 12mo avg)"
@@ -747,40 +747,40 @@ egen midline_avr_recent_kg = rowtotal(hh_22_*)
 label var midline_avr_recent_kg "Total HH vegetation harvest kg (hh_22: last 7 days)"
 
 ******** 1.1.4, 1.1.5, 1.1.6 ***********
-* Fertilizer/Compost Use (Extensive Margin)
-* Use of fertilizer in agricultural activities (hh_15: selecting "2: Fertilizer")
+* fertilizer/compost use (Extensive Margin)
+* use of fertilizer in agricultural activities (hh_15: selecting "2: Fertilizer")
 drop hh_15_o*
 egen midline_fert_ag_any = anymatch(hh_15_*), values(2)
 label var midline_fert_ag_any "Any HH member using fertilizer (hh_15 = 2)"
 
-* Use of fertilizer in specified activities (hh_23_2)
-egen midline_fert_specific_any = anymatch(hh_23_2*), values(2)
-label var midline_fert_specific_any "Any HH member using fertilizer (hh_23_2 = 2)"
+* use of fertilizer in specified activities (hh_23_2)
+egen midline_fert_specific_any = anymatch(hh_23_2*), values(1)
+label var midline_fert_specific_any "Any HH member using fertilizer (hh_23_2 = 1)"
 
-* Use of compost on plots (agri_6_34_comp)
+* use of compost on plots (agri_6_34_comp)
 egen midline_compost_any = anymatch(agri_6_34_comp*), values(1)
 label var midline_compost_any "Any plot with compost use (agri_6_34_comp)"
 
-* Use of household waste on plots (agri_6_34)
+* use of household waste on plots (agri_6_34)
 egen midline_waste_any = anymatch(agri_6_34*), values(1)
 label var midline_waste_any "Any plot with household waste use (agri_6_34)"
 
-* Count Measures (Intensive Margin)
-* First create temporary indicators for fertilizer use
+* count measures (Intensive Margin)
+* create temporary indicators for fertilizer use
 forvalues i = 1/55 {
     gen temp_fert_base_`i' = (hh_15_`i' == 2)
     gen temp_fert_mid_`i' = (hh_15_`i' == 2)
 }
 
-* Number of HH members using fertilizer
+* num of HH members using fertilizer
 egen midline_fert_ag_count = rowtotal(temp_fert_base_*)
 label var midline_fert_ag_count "Number of HH members using fertilizer (hh_15 = 2)"
 
-* Drop temporary variables
+* dorp temps
 drop temp_fert_*
 
-* Number of plots using different inputs
-* First create temporary indicators for compost and waste
+* number of plots using different inputs
+* create temporary indicators for compost and waste
 forvalues i = 1/11 {
     cap gen temp_compost_base_`i' = (agri_6_34_comp_`i' == 1)
     cap gen temp_compost_mid_`i' = (agri_6_34_comp_`i' == 1)
@@ -794,11 +794,13 @@ egen midline_waste_plots = rowtotal(temp_waste_base_*)
 label var midline_compost_plots "Number of plots using compost (agri_6_34_comp)"
 label var midline_waste_plots "Number of plots using household waste (agri_6_34)"
 
-* Drop temporary variables
+* drop temps
 drop temp_*
 
-* Keep relevant variables and merge
+* relevant variables and merge
 keep hhid ///
+	midline_avr_water_any midline_avr_harvest_any midline_avr_removal_any 	midline_avr_recent_any ///
+    midline_avr_harvest_kg midline_avr_recent_kg ///
     midline_fert_ag_any ///
     midline_fert_specific_any  ///
     midline_compost_any  ///
@@ -823,14 +825,14 @@ save `combined_data', replace
 * variables: food01, food02, food03, food05, food06, food07, food08, food09, food11, food12
 use "$midline_lean", clear
 
-* Binary indicators rather than frequency
-* Since we have yes/no responses for 12-month period rather than days/week
-* Using standard severity weights but adjusted for binary responses:
-*   - Less preferred food = 1
-*   - Borrow food/help = 2
-*   - Reduce portions = 1
-*   - Restrict adult consumption = 3
-*   - Reduce meals = 1
+* binary indicators rather than frequency
+* since we have yes/no responses for 12-month period rather than days/week
+* using standard severity weights but adjusted for binary responses:
+*   - less preferred food = 1
+*   - borrow food/help = 2
+*   - reduce portions = 1
+*   - restrict adult consumption = 3
+*   - reduce meals = 1
 
 * create weighted binary component scores
 gen midline_rcsi_work = (food02==1) * 2     // Paid work (borrowing/help proxy)
@@ -843,7 +845,7 @@ egen midline_rcsi_annual = rowtotal(midline_rcsi_work midline_rcsi_assets midlin
 label var midline_rcsi_annual "Annual Reduced Coping Strategies Score"
 
 * generate modified IPC Phase categories 
-* Note: These thresholds are adapted for annual binary measures
+* Note: these thresholds are adapted for annual binary measures
 gen midline_ipc_phase = .
 replace midline_ipc_phase = 1 if midline_rcsi_annual <= 1    // No/minimal coping
 replace midline_ipc_phase = 2 if midline_rcsi_annual == 2    // Stress coping
@@ -875,24 +877,24 @@ save `combined_data', replace
 * variables: health_5_3, health_5_5, health_5_6, health_5_8, health_5_9	Individual level for child testing, household level for self-reported data	Individual level
 use "$midline_health", clear
 
-* Individual-level prevalence (extensive margin)
+* individ-level prevalence (extensive margin)
 forvalues i = 1/55 {
-    * Bilharzia diagnosis (health_5_3_2: past 12 months)
+    * bilharzia diagnosis (health_5_3_2: past 12 months)
     cap gen bilharzia_`i' = (health_5_3_2_`i' == 1)
     
-    * Medication (health_5_5: received schisto meds)
+    * meds (health_5_5: received schisto meds)
     cap gen schisto_meds_`i' = (health_5_5_`i' == 1)
     
-    * Diagnosis history (health_5_6: ever diagnosed)
+    * diagnosis history (health_5_6: ever diagnosed)
     cap gen ever_diagnosed_`i' = (health_5_6_`i' == 1)
     
-    * Symptoms (health_5_8, health_5_9: blood in urine/stool)
+    * symptoms (health_5_8, health_5_9: blood in urine/stool)
     cap gen blood_urine_`i' = (health_5_8_`i' == 1)
     cap gen blood_stool_`i' = (health_5_9_`i' == 1)
 }
 
-* Household-level measures
-* Any member with condition/symptom
+* hh-level measures
+* any member with condition/symptom
 egen midline_bilharzia_any = anymatch(bilharzia_*), values(1)
 label var midline_bilharzia_any "Any HH member with bilharzia (health_5_3_2: 12mo)"
 
@@ -908,8 +910,8 @@ label var midline_urine_any "Any HH member with blood in urine (health_5_8)"
 egen midline_stool_any = anymatch(blood_stool_*), values(1)
 label var midline_stool_any "Any HH member with blood in stool (health_5_9)"
 
-* Count measures (intensive margin)
-* Number of members with condition/symptom
+* count measures (intensive margin)
+* num of members with condition/symptom
 egen midline_bilharzia_count = rowtotal(bilharzia_*)
 label var midline_bilharzia_count "Number of HH members with bilharzia (health_5_3_2)"
 
@@ -925,16 +927,16 @@ label var midline_urine_count "Number of HH members with blood in urine (health_
 egen midline_stool_count = rowtotal(blood_stool_*)
 label var midline_stool_count "Number of HH members with blood in stool (health_5_9)"
 
-// Keep only the created variables and identifier
+// keep only the created variables and identifier
 keep hhid ///
     midline_bilharzia_any midline_meds_any midline_diagnosed_any midline_urine_any midline_stool_any ///
     midline_bilharzia_count midline_meds_count midline_diagnosed_count midline_urine_count midline_stool_count
 
-* Save as tempfile
+* tempfile
 tempfile schisto_outcomes
 save `schisto_outcomes'
 
-* Merge back into combined data
+* merge back
 use `combined_data', clear
 merge 1:1 hhid using `schisto_outcomes', keep(master match) nogen
 
@@ -945,46 +947,46 @@ save `combined_data', replace
 * variables: beliefs_01, beliefs_02, beliefs_03, beliefs_04, beliefs_05, beliefs_06, beliefs_07, beliefs_08, beliefs_09
 use "$midline_beliefs", clear
 
-* 1. Disease Risk Beliefs (beliefs_01-03)
-* Personal risk 
+* 1. disesase risk beliefs (beliefs_01-03)
+* personal risk (59.38% agree/strongly agree)
 gen midline_personal_risk = (beliefs_01 <= 2)
 label var midline_personal_risk "Likely/Very likely to get bilharzia (beliefs_01 <= 2)"
 
-* Household risk 
+* household risk (65.58% agree/strongly agree)
 gen midline_hh_risk = (beliefs_02 <= 2)
 label var midline_hh_risk "Likely/Very likely HH member gets bilharzia (beliefs_02 <= 2)"
 
-* Child risk 
+* child risk (76.97% agree/strongly agree)
 gen midline_child_risk = (beliefs_03 <= 2)
 label var midline_child_risk "Likely/Very likely child gets bilharzia (beliefs_03 <= 2)"
 
-* 2. Community Property Rights (beliefs_04-05)
-* Community land rights
+* 2. community property rights (beliefs_04-05)
+* community land rights (85.38% agree/strongly agree)
 gen midline_comm_land = (beliefs_04 <= 2)
 label var midline_comm_land "Agree: land belongs to community (beliefs_04 <= 2)"
 
-* Community water rights 
+* community water rights (90.43% agree/strongly agree)
 gen midline_comm_water = (beliefs_05 <= 2)
 label var midline_comm_water "Agree: water belongs to community (beliefs_05 <= 2)"
 
-* 3. Private Use Rights (beliefs_06-09)
-* Private land use rights 
+* 3. private Use Rights (beliefs_06-09)
+* private land use rights (90.82% agree/strongly agree)
 gen midline_private_land = (beliefs_06 <= 2)
 label var midline_private_land "Agree: right to products from own land (beliefs_06 <= 2)"
 
-* Community land use rights 
+* community land use rights (67.50% agree/strongly agree)
 gen midline_comm_land_use = (beliefs_07 <= 2)
 label var midline_comm_land_use "Agree: right to products from community land (beliefs_07 <= 2)"
 
-* Fishing rights
+* fishing rights (83.46% agree/strongly agree)
 gen midline_comm_fish = (beliefs_08 <= 2)
 label var midline_comm_fish "Agree: right to products from fishing (beliefs_08 <= 2)"
 
-* Harvesting rights
+* harvesting rights (77.40% agree/strongly agree)
 gen midline_comm_harvest = (beliefs_09 <= 2)
 label var midline_comm_harvest "Agree: right to products from harvesting (beliefs_09 <= 2)"
 
-// Keep only created belief variables and identifier
+* only created belief variables and identifier
 keep hhid ///
     midline_personal_risk  ///
     midline_hh_risk  ///
@@ -996,11 +998,11 @@ keep hhid ///
     midline_comm_fish  ///
     midline_comm_harvest 
 
-* Save as tempfile
+* tempfile
 tempfile belief_outcomes
 save `belief_outcomes'
 
-* Merge back into combined data
+* back into combined data
 use `combined_data', clear
 merge 1:1 hhid using `belief_outcomes', keep(master match) nogen
 
@@ -1014,7 +1016,7 @@ use "$midline_health", clear
 * merge in household roster for work/school info
 merge 1:1 hhid using "$midline_household", nogen
 
-* 1. Work Loss Measures
+* 1. work loss measures
 * Days lost to illness (health_5_4)
 forvalues i = 1/55 {
     cap gen health_5_4_`i'_days = health_5_4_`i'
@@ -1022,28 +1024,28 @@ forvalues i = 1/55 {
     cap replace health_5_4_`i'_days = . if health_5_4_`i' > 31
 }
 
-* Work participation by type
+* work participation by type
 forvalues i = 1/55 {
-    * Agricultural work (hh_03, hh_04)
+    * ag work (hh_03, hh_04)
     gen midline_ag_work_any_`i' = (hh_03_`i' == 1)
     gen midline_ag_hours_`i' = hh_04_`i'
     label var midline_ag_hours_`i' "Agricultural work hours (hh_04)"
     
-    * Trade work (hh_08)
+    * trade work (hh_08)
     gen midline_trade_hours_`i' = hh_08_`i'
     label var midline_trade_hours_`i' "Trade work hours (hh_08)"
     
-    * Wage work (hh_09)
+    * wage work (hh_09)
     gen midline_wage_hours_`i' = hh_09_`i'
     label var midline_wage_hours_`i' "Wage work hours (hh_09)"
 }
 
-* Household-level work measures
-* Total days lost
+* hh-level work measures
+* total days lost
 egen midline_work_days_lost = rowtotal(health_5_4_*_days)
 label var midline_work_days_lost "Total work days lost to illness (health_5_4)"
 
-* Agricultural participation
+* ag participation
 egen midline_ag_workers = rowtotal(midline_ag_work_any_*)
 label var midline_ag_workers "Number of agricultural workers (hh_03)"
 
@@ -1055,31 +1057,31 @@ label var midline_total_ag_hours "Total HH agricultural hours (hh_04)"
 label var midline_total_trade_hours "Total HH trade hours (hh_08)"
 label var midline_total_wage_hours "Total HH wage hours (hh_09)"
 
-* 2. School Loss Measures
+* 2. school loss measures
 forvalues i = 1/55 {
-    * School absence (hh_37)
+    * school absence (hh_37)
     gen midline_school_absence_`i' = (hh_37_`i' == 1)
     label var midline_school_absence_`i' "Missed week+ school due illness (hh_37)"
     
-    * School attendance (hh_38)
+    * school attendance (hh_38)
     gen midline_school_days_`i' = hh_38_`i' if inrange(hh_38_`i', 0, 7)
     label var midline_school_days_`i' "Days attended school last week (hh_38)"
 }
 
-* Household-level school measures
-* Any child missing school
+* hh-level school measures
+* any child missing school
 egen midline_any_absence = anymatch(midline_school_absence_*), values(1)
 label var midline_any_absence "Any child missed week+ school (hh_37)"
 
-* Average attendance
+* avg attendance
 egen midline_avg_attendance = rowmean(midline_school_days_*)
 label var midline_avg_attendance "Average school days attended (hh_38)"
 
-* Count of children missing school
+* count of children missing school
 egen midline_absence_count = rowtotal(midline_school_absence_*)
 label var midline_absence_count "Number of children missing school (hh_37)"
 
-* Keep relevant variables
+* relevant variables
 keep hhid midline_work_days_lost midline_ag_workers ///
     midline_total_ag_hours midline_total_trade_hours midline_total_wage_hours ///
     midline_any_absence midline_avg_attendance midline_absence_count
@@ -1087,7 +1089,7 @@ keep hhid midline_work_days_lost midline_ag_workers ///
 tempfile work_school_outcomes
 save `work_school_outcomes'
 
-* Merge back into combined data
+* back into combined data
 use `combined_data', clear
 merge 1:1 hhid using `work_school_outcomes', keep(master match) nogen
 
@@ -1099,28 +1101,28 @@ save `combined_data', replace
 * Education Outcomes
 use "$midline_household", clear
 
-* 1. Educational Attainment (hh_29)
+* 1. educ attainment (hh_29)
 forvalues i = 1/55 {
-    * Years of education completed
+    * years of education completed
     gen edu_years_`i' = .
     replace edu_years_`i' = hh_29_`i' if inrange(hh_29_`i', 1, 13)
     replace edu_years_`i' = 14 if hh_29_`i' == 14 // University
 }
 
-* Highest grade completed in household
+* highest grade completed in household
 egen midline_max_grade = rowmax(edu_years_*)
 label var midline_max_grade "Highest grade completed in HH (hh_29)"
 
-* 2. School Participation - Extensive Margin
+* 2. school participation - extensive margin
 forvalues i = 1/55 {
-    * Current enrollment (hh_32)
+    * current enrollment (hh_32)
     gen enrolled_`i' = (hh_32_`i' == 1) if !missing(hh_32_`i')
     
-    * Last year attendance (hh_30) 
+    * last year attendance (hh_30) 
     gen last_year_`i' = (hh_30_`i' == 1) if !missing(hh_30_`i')
 }
 
-* Enrollment measures
+* enrollment measures
 egen midline_any_enrolled = anymatch(enrolled_*), values(1)
 label var midline_any_enrolled "Any member currently enrolled (hh_32)"
 
@@ -1130,30 +1132,37 @@ label var midline_num_enrolled "Number currently enrolled"
 egen midline_any_last_year = anymatch(last_year_*), values(1)
 label var midline_any_last_year "Any member attended last year (hh_30)"
 
-* 3. School Participation - Intensive Margin (hh_38)
+* 3. school participation - intensive margin (hh_38)
 forvalues i = 1/55 {
     gen attend_days_`i' = hh_38_`i' if inrange(hh_38_`i', 0, 7)
 }
 
-* Attendance measures 
+* attendance measures 
 egen midline_avg_attendance = rowmean(attend_days_*)
 label var midline_avg_attendance "Average days attended last week (hh_38)"
 
 egen midline_full_attend = anymatch(attend_days_*), values(7)
 label var midline_full_attend "Any member perfect attendance"
 
-* Keep education outcomes
+* keep educ outcomes
 keep hhid midline_max_grade midline_any_enrolled midline_num_enrolled ///
     midline_any_last_year midline_avg_attendance midline_full_attend
 
-* Save as tempfile
+
+* tempfile
 tempfile education_outcomes
 save `education_outcomes'
 
-* Merge back into combined data
+* back into combined data
 use `combined_data', clear
 merge 1:1 hhid using `education_outcomes', keep(master match) nogen
 
 save `combined_data', replace
+
+drop gpd_datalatitude gpd_datalongitude
+
+* save final dataset to specifications folder
+save "$specifications/v2_baseline_to_midline_pap_specifications.dta", replace
+
 
 

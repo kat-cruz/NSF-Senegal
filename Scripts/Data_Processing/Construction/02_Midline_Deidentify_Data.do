@@ -33,8 +33,7 @@ save `individs'
 *** merge midline individual IDs into the PII data to save for deidentified hh roster 
 use "$data_identified/DISES_Midline_Complete_PII", clear 
 
-keep hhid pull_hh_individ_* add_new_* hh_full_name_calc_* hh_gender_* hh_age_* hh_relation_with_* 
-
+keep hhid pull_hh_individ_* add_new_* hh_full_name_calc_* hh_gender_* hh_age_* hh_relation_with_*
 drop hh_age_resp hh_gender_resp hh_relation_with_o_*
 
 forvalues i = 1/57 {
@@ -53,6 +52,8 @@ drop _merge
 rename individ individ_ 
 
 keep hhid individualindex individ_ 
+
+drop if individualindex == . 
 
 reshape wide individ_, i(hhid) j(individualindex)
 

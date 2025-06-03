@@ -31,7 +31,7 @@ global midline "$master/Data/_CRDES_CleanData/Midline/Deidentified"
 *** baseline data *** 
 
 *** import household roster data *** 
-use "$data\Complete_Baseline_Household_Roster", clear   
+use "$data/Complete_Baseline_Household_Roster", clear   
 
 *** keep only needed data and reshape to long *** 
 keep hhid hhid_village hh_01_* hh_02_* hh_03_* hh_04_* hh_05_* hh_06_* hh_07_* hh_08_* hh_09_* hh_10_* hh_14_* hh_15_* hh_16_* hh_17_* hh_18_* hh_22_* hh_23_* hh_24_* hh_25_* hh_gender_* hh_age_* hh_education_level_* hh_relation_with_* 
@@ -93,12 +93,12 @@ gen fertilizer_hours_7days_pc = chore_hours / members
 gen feed_hours_7days_pc = chore_hours / members
 
 *** save cleaned main household roster data set ***
-save "$auctions\main_hh_baseline.dta", replace 
+save "$auctions/main_hh_baseline.dta", replace 
   
 *** clean hh_13 (12 month recall) on water time use data *** 
 
 *** import household roster data *** 
-use "$data\Complete_Baseline_Household_Roster", clear   
+use "$data/Complete_Baseline_Household_Roster", clear   
 
 *** keep 12 month recall time in water data *** 
 keep hhid hh_10* hh_12index* hh_13_*
@@ -170,12 +170,12 @@ replace play_12mo_act = 0 if play_12mo_act == .
 collapse (max) fetch_water_hh_12mo_act water_livestock_12mo_act fetch_water_ag_12mo_act wash_clothes_12mo_act dishes_12mo_act harvest_veg_12mo_act swim_12mo_act play_12mo_act, by(hhid)
 
 *** save dataset *** 
-save "$auctions\water_time_12month.dta", replace 
+save "$auctions/water_time_12month.dta", replace 
 
 *** clean hh_21 (7 day recall) on water time use data *** 
 
 *** import household roster data *** 
-use "$data\Complete_Baseline_Household_Roster", clear   
+use "$data/Complete_Baseline_Household_Roster", clear   
 
 *** keep 7 day recall time in water data *** 
 keep hhid hh_18* hh_20index* hh_21_*
@@ -247,10 +247,10 @@ replace play_7d_act = 0 if play_7d_act == .
 collapse (max) fetch_water_hh_7d_act water_livestock_7d_act fetch_water_ag_7d_act wash_clothes_7d_act dishes_7d_act harvest_veg_7d_act swim_7d_act play_7d_act, by(hhid)
 
 *** save dataset *** 
-save "$auctions\water_time_7days.dta", replace 
+save "$auctions/water_time_7days.dta", replace 
 
 *** import agricultural plot level data *** 
-use "$data\Complete_Baseline_Agriculture", clear   
+use "$data/Complete_Baseline_Agriculture", clear   
 
 *** keep key variables to reshape to the plot level *** 
 keep hhid agri_6_18_* agri_6_20_* agri_6_21_* agri_6_22_* agri_6_30_* agri_6_31_* agri_6_34_comp_* agri_6_34_* agri_6_35_* agri_6_36_* agri_6_37_* agri_6_38_a_* agri_6_38_a_code_* agri_6_39_a_* agri_6_39_a_code_* agri_6_40_a_* agri_6_40_a_code_* agri_6_41_a_* agri_6_41_a_code_*   
@@ -337,12 +337,12 @@ gen manure_other_source = (agri_6_31_ == 99)
 collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage, by(hhid)
 
 *** save clean plot level data *** 
-save "$auctions\plot_level_ag.dta", replace 
+save "$auctions/plot_level_ag.dta", replace 
 
 *** clean agriculture equipment data *** 
 
 *** import agricultural plot level data *** 
-use "$data\Complete_Baseline_Agriculture", clear   
+use "$data/Complete_Baseline_Agriculture", clear   
 
 *** keep variables related to agricultural equipment *** 
 keep hhid agriindex_* _agri_number_* 
@@ -385,12 +385,12 @@ replace kadiandou = 0 if kadiandou == .
 replace fanting = 0 if fanting == . 
 replace other = 0 if other == . 
  
-save "$auctions\assets.dta", replace 
+save "$auctions/assets.dta", replace 
  
 *** clean non-standard unit data on compost use *** 
 
 *** import agricultural plot level data *** 
-use "$data\Complete_Baseline_Agriculture", clear   
+use "$data/Complete_Baseline_Agriculture", clear   
 
 keep hhid agri_6_32_* agri_6_33_*
 
@@ -402,7 +402,7 @@ drop if agri_6_32_ == . & agri_6_33_ == . & agri_6_33_o_ == .
 gen hhid_village = substr(hhid, 1, 4)
 
 *** merge in non-standard unit measures ***
-merge m:1 hhid_village using "$midline\Complete_Midline_Community.dta"
+merge m:1 hhid_village using "$midline/Complete_Midline_Community.dta"
 
 drop if _merge == 2 
 
@@ -417,12 +417,12 @@ keep hhid plot manure_kgs
 
 collapse (sum) manure_kgs, by(hhid)
 
-save "$auctions\manure_use.dta", replace 
+save "$auctions/manure_use.dta", replace 
 
 *** clean number of plots data *** 
 
 *** import agricultural plot level data *** 
-use "$data\Complete_Baseline_Agriculture", clear   
+use "$data/Complete_Baseline_Agriculture", clear   
 
 keep hhid agri_6_14 agri_6_15
 
@@ -430,10 +430,10 @@ replace agri_6_14 = . if agri_6_14 == 2
 
 replace agri_6_15 = 0 if agri_6_14 == 0
 
-save "$auctions\number_of_plots.dta", replace  
+save "$auctions/number_of_plots.dta", replace  
 
 *** clean production data *** 
-use "$data\Complete_Baseline_Production.dta", clear   
+use "$data/Complete_Baseline_Production.dta", clear   
 
 rename cereals_01_1 rice_hectares 
 replace rice_hectares = 0 if cereals_consumption_1 == 0 
@@ -598,10 +598,10 @@ replace lentil_prod = . if lentil_prod == -9
 
 keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cowpea_hectares cowpea_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod farines_05_1 farines_05_2 farines_05_3 farines_05_4 farines_05_5 legumes_05_2 legumes_05_4 legumes_05_5 legumineuses_05_2 legumineuses_05_3 legumineuses_05_4 
 
-save "$auctions\production.dta", replace 
+save "$auctions/production.dta", replace 
 
 *** import income module data *** 
-use "$data\Complete_Baseline_Income.dta", clear  
+use "$data/Complete_Baseline_Income.dta", clear  
 
 *** clean household level income data *** 
 keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_12* agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
@@ -631,10 +631,10 @@ replace agri_income_12_1 = . if agri_income_12_1 == -9
 *** calculate total income from livestock sales *** 
 egen tot_livestock_sales = rowtotal(agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_o)
 
-save "$auctions\income.dta", replace 
+save "$auctions/income.dta", replace 
 
 *** import income module data *** 
-use "$data\Complete_Baseline_Income.dta", clear  
+use "$data/Complete_Baseline_Income.dta", clear  
 
 *** clean milk production data *** 
 keep hhid sale_animalesindex_* agri_income_11_* agri_income_12_* agri_income_13_* agri_income_14_* 
@@ -659,11 +659,11 @@ gen milk_sales = agri_income_14_ / tot_animal_products
 *** create household level milk production *** 
 collapse (sum) milk_sales, by(hhid)
 
-save "$auctions\milk_sales_baseline.dta", replace 
+save "$auctions/milk_sales_baseline.dta", replace 
 
 *** calculate TLUs ***
 *** import income module data *** 
-use "$data\Complete_Baseline_Income.dta", clear  
+use "$data/Complete_Baseline_Income.dta", clear  
 
 *** keep livestock holding data *** 
 keep hhid speciesindex* agri_income_07* 
@@ -687,7 +687,7 @@ replace TLU = 0.01*agri_income_07_ if speciesindex_ == 8
 
 collapse (sum) TLU, by(hhid) 
 
-merge 1:1 hhid using "$data\Complete_Baseline_Income.dta"
+merge 1:1 hhid using "$data/Complete_Baseline_Income.dta"
 
 replace TLU = 0 if _merge == 2 
 
@@ -702,16 +702,16 @@ replace TLU = TLU + 1*agri_income_07_o if species_o == "Vaches l"
 
 keep hhid TLU 
 
-save "$auctions\tlu_baseline.dta", replace 
+save "$auctions/tlu_baseline.dta", replace 
 
 *** merge together entire household dataset *** 
-use "$auctions\main_hh_baseline.dta", clear 
+use "$auctions/main_hh_baseline.dta", clear 
 
-merge 1:1 hhid using "$auctions\water_time_12month.dta" 
+merge 1:1 hhid using "$auctions/water_time_12month.dta" 
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\water_time_7days.dta"
+merge 1:1 hhid using "$auctions/water_time_7days.dta"
 
 replace fetch_water_hh_7d_act = 0 if _merge == 1 
 replace water_livestock_7d_act = 0 if _merge == 1 
@@ -724,7 +724,7 @@ replace play_7d_act = 0 if _merge == 1
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\assets.dta"
+merge 1:1 hhid using "$auctions/assets.dta"
 
 replace plow = 0 if _merge == 1
 replace harrow = 0 if _merge == 1
@@ -743,19 +743,19 @@ replace other = 0 if _merge == 1
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\number_of_plots.dta"
+merge 1:1 hhid using "$auctions/number_of_plots.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\production.dta"
+merge 1:1 hhid using "$auctions/production.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\income.dta"
+merge 1:1 hhid using "$auctions/income.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\milk_sales_baseline.dta"
+merge 1:1 hhid using "$auctions/milk_sales_baseline.dta"
 
 gen any_milk_sales = _merge == 3 
 
@@ -763,22 +763,22 @@ replace milk_sales = 0 if _merge == 1
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\tlu_baseline.dta"
+merge 1:1 hhid using "$auctions/tlu_baseline.dta"
 
 drop _merge
 
 *** bring in community price data *** 
 gen hhid_village = substr(hhid, 1, 4)
 
-merge m:1 hhid_village using "$data\Complete_Baseline_Community.dta"
+merge m:1 hhid_village using "$data/Complete_Baseline_Community.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\plot_level_ag.dta"
+merge 1:1 hhid using "$auctions/plot_level_ag.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\manure_use.dta"
+merge 1:1 hhid using "$auctions/manure_use.dta"
 
 replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
 
@@ -877,11 +877,11 @@ egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
 keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
 
-save "$auctions\shadow_wage_baseline.dta", replace 
+save "$auctions/shadow_wage_baseline.dta", replace 
 
 *** midline data ***
 *** import household roster data *** 
-use "$midline\Complete_Midline_Household_Roster", clear   
+use "$midline/Complete_Midline_Household_Roster", clear   
 
 *** keep only needed data and reshape to long *** 
 keep hhid hhid_village hh_01_* hh_02_* hh_03_* hh_04_* hh_05_* hh_06_* hh_07_* hh_08_* hh_09_* hh_10_* hh_14_* hh_15_* hh_16_* hh_17_* hh_18_* hh_22_* hh_23_* hh_24_* hh_25_* hh_gender_* hh_age_* hh_education_level_* hh_relation_with_* 
@@ -950,12 +950,12 @@ gen fertilizer_hours_7days_pc = chore_hours / members
 gen feed_hours_7days_pc = chore_hours / members
 
 *** save cleaned main household roster data set ***
-save "$auctions\main_hh_midline.dta", replace 
+save "$auctions/main_hh_midline.dta", replace 
   
 *** clean hh_13 (12 month recall) on water time use data *** 
 
 *** import household roster data *** 
-use "$midline\Complete_Midline_Household_Roster", clear   
+use "$midline/Complete_Midline_Household_Roster", clear   
 
 *** keep 12 month recall time in water data *** 
 keep hhid hh_10* hh_12index* hh_13_*
@@ -1027,12 +1027,12 @@ replace play_12mo_act = 0 if play_12mo_act == .
 collapse (max) fetch_water_hh_12mo_act water_livestock_12mo_act fetch_water_ag_12mo_act wash_clothes_12mo_act dishes_12mo_act harvest_veg_12mo_act swim_12mo_act play_12mo_act, by(hhid)
 
 *** save dataset *** 
-save "$auctions\water_time_12month_midline.dta", replace 
+save "$auctions/water_time_12month_midline.dta", replace 
 
 *** clean hh_21 (7 day recall) on water time use data *** 
 
 *** import household roster data *** 
-use "$midline\Complete_Midline_Household_Roster", clear   
+use "$midline/Complete_Midline_Household_Roster", clear   
 
 *** keep 7 day recall time in water data *** 
 keep hhid hh_18* hh_20index* hh_21_*
@@ -1104,10 +1104,10 @@ replace play_7d_act = 0 if play_7d_act == .
 collapse (max) fetch_water_hh_7d_act water_livestock_7d_act fetch_water_ag_7d_act wash_clothes_7d_act dishes_7d_act harvest_veg_7d_act swim_7d_act play_7d_act, by(hhid)
 
 *** save dataset *** 
-save "$auctions\water_time_7days_midline.dta", replace 
+save "$auctions/water_time_7days_midline.dta", replace 
 
 *** import agricultural plot level data *** 
-use "$midline\Complete_Midline_Agriculture", clear   
+use "$midline/Complete_Midline_Agriculture", clear   
 
 *** keep key variables to reshape to the plot level *** 
 keep hhid agri_6_18_* agri_6_20_* agri_6_21_* agri_6_22_* agri_6_30_* agri_6_31_* agri_6_34_comp_* agri_6_34_* agri_6_35_* agri_6_36_* agri_6_37_* agri_6_38_a_* agri_6_38_a_code_* agri_6_39_a_* agri_6_39_a_code_* agri_6_40_a_* agri_6_40_a_code_* agri_6_41_a_* agri_6_41_a_code_*   
@@ -1198,12 +1198,12 @@ gen manure_other_source = (agri_6_31_ == 99)
 collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage, by(hhid)
 
 *** save clean plot level data *** 
-save "$auctions\plot_level_ag_midline.dta", replace 
+save "$auctions/plot_level_ag_midline.dta", replace 
 
 *** clean agriculture equipment data *** 
 
 *** import agricultural plot level data *** 
-use "$midline\Complete_Midline_Agriculture", clear   
+use "$midline/Complete_Midline_Agriculture", clear   
 
 *** keep variables related to agricultural equipment *** 
 keep hhid agriindex_* _agri_number_* 
@@ -1248,12 +1248,12 @@ replace fanting = 0 if fanting == .
 replace solarplanels = 0 if solarplanels == . 
 replace other = 0 if other == . 
  
-save "$auctions\assets_midline.dta", replace 
+save "$auctions/assets_midline.dta", replace 
  
 *** clean non-standard unit data on compost use *** 
 
 *** import agricultural plot level data *** 
-use "$midline\Complete_Midline_Agriculture", clear   
+use "$midline/Complete_Midline_Agriculture", clear   
 
 keep hhid agri_6_32_* agri_6_33_*
 
@@ -1265,7 +1265,7 @@ drop if agri_6_32_ == . & agri_6_33_ == . & agri_6_33_o_ == .
 gen hhid_village = substr(hhid, 1, 4)
 
 *** merge in non-standard unit measures ***
-merge m:1 hhid_village using "$midline\Complete_Midline_Community.dta"
+merge m:1 hhid_village using "$midline/Complete_Midline_Community.dta"
 
 drop if _merge == 2 
 
@@ -1281,12 +1281,12 @@ keep hhid plot manure_kgs
 *** collapse to household level *** 
 collapse (sum) manure_kgs, by(hhid)
 
-save "$auctions\manure_use_midline.dta", replace 
+save "$auctions/manure_use_midline.dta", replace 
 
 *** clean number of plots data *** 
 
 *** import agricultural plot level data *** 
-use "$midline\Complete_Midline_Agriculture", clear   
+use "$midline/Complete_Midline_Agriculture", clear   
 
 keep hhid agri_6_14 agri_6_15
 
@@ -1294,10 +1294,10 @@ replace agri_6_14 = . if agri_6_14 == 2
 
 replace agri_6_15 = 0 if agri_6_14 == 0
 
-save "$auctions\number_of_plots_midline.dta", replace  
+save "$auctions/number_of_plots_midline.dta", replace  
 
 *** clean production data *** 
-use "$midline\Complete_Midline_Production.dta", clear   
+use "$midline/Complete_Midline_Production.dta", clear   
 
 rename cereals_01_1 rice_hectares 
 replace rice_hectares = 0 if cereals_consumption_1 == 0 
@@ -1492,10 +1492,10 @@ rename legumineuses_05_4 lentil_price
 
 keep hhid rice_hectares rice_prod maize_hectares maize_prod millet_hectares millet_prod sorghum_hectares sorghum_prod cowpea_hectares cowpea_prod cassava_hectares cassava_prod sweetpotato_hectares sweetpotato_prod potato_hectares potato_prod yam_hectares yam_prod taro_hectares taro_prod tomato_hectares tomato_prod carrot_hectares carrot_prod onion_hectares onion_prod cucumber_hectares cucumber_prod pepper_hectares pepper_prod peanut_hectares peanut_prod bean_hectares bean_prod pea_hectares pea_prod lentil_hectares lentil_prod cassava_price sweetpotato_price yam_price carrot_price cucumber_price pepper_price bean_price pea_price lentil_price
 
-save "$auctions\production_midline.dta", replace 
+save "$auctions/production_midline.dta", replace 
 
 *** import income module data *** 
-use "$midline\Complete_Midline_Income.dta", clear  
+use "$midline/Complete_Midline_Income.dta", clear  
 
 *** clean household level income data *** 
 keep hhid agri_income_01 agri_income_02 agri_income_03 agri_income_04 agri_income_05 agri_income_06 agri_income_12_* agri_income_15 agri_income_16 agri_income_17 agri_income_18 agri_income_19  
@@ -1524,10 +1524,10 @@ replace agri_income_16 = . if agri_income_16 == -9
 *** calculate total income from livestock sales *** 
 egen tot_livestock_sales = rowtotal(agri_income_12_1 agri_income_12_2 agri_income_12_3 agri_income_12_4 agri_income_12_5 agri_income_12_6 agri_income_12_o)
 
-save "$auctions\income_midline.dta", replace 
+save "$auctions/income_midline.dta", replace 
 
 *** import income module data *** 
-use "$midline\Complete_Midline_Income.dta", clear  
+use "$midline/Complete_Midline_Income.dta", clear  
 
 *** clean milk production data *** 
 keep hhid sale_animalesindex_* agri_income_11_* agri_income_12_* agri_income_13_* agri_income_14_* 
@@ -1552,11 +1552,11 @@ gen milk_sales = agri_income_14_ / tot_animal_products
 *** create household level milk production *** 
 collapse (sum) milk_sales, by(hhid)
 
-save "$auctions\milk_sales_midline.dta", replace 
+save "$auctions/milk_sales_midline.dta", replace 
 
 *** calculate TLUs ***
 *** import income module data *** 
-use "$midline\Complete_Midline_Income.dta", clear  
+use "$midline/Complete_Midline_Income.dta", clear  
 
 *** keep livestock holding data *** 
 keep hhid speciesindex* agri_income_07* 
@@ -1582,7 +1582,7 @@ replace TLU = 0.01*agri_income_07_ if speciesindex_ == 8
 
 collapse (sum) TLU, by(hhid) 
 
-merge 1:1 hhid using "$midline\Complete_Midline_Income.dta"
+merge 1:1 hhid using "$midline/Complete_Midline_Income.dta"
 
 replace TLU = 0 if _merge == 2 
 
@@ -1594,16 +1594,16 @@ replace TLU = TLU + 1*agri_income_07_o if species_o == "VÃCHE"
 
 keep hhid TLU 
 
-save "$auctions\tlu_midline.dta", replace 
+save "$auctions/tlu_midline.dta", replace 
 
 *** merge together entire household dataset *** 
-use "$auctions\main_hh_midline.dta", clear 
+use "$auctions/main_hh_midline.dta", clear 
 
-merge 1:1 hhid using "$auctions\water_time_12month_midline.dta" 
+merge 1:1 hhid using "$auctions/water_time_12month_midline.dta" 
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\water_time_7days_midline.dta"
+merge 1:1 hhid using "$auctions/water_time_7days_midline.dta"
 
 replace fetch_water_hh_7d_act = 0 if _merge == 1 
 replace water_livestock_7d_act = 0 if _merge == 1 
@@ -1616,7 +1616,7 @@ replace play_7d_act = 0 if _merge == 1
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\assets_midline.dta"
+merge 1:1 hhid using "$auctions/assets_midline.dta"
 
 replace plow = 0 if _merge == 1
 replace harrow = 0 if _merge == 1
@@ -1636,19 +1636,19 @@ replace other = 0 if _merge == 1
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\number_of_plots_midline.dta"
+merge 1:1 hhid using "$auctions/number_of_plots_midline.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\production_midline.dta"
+merge 1:1 hhid using "$auctions/production_midline.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\income_midline.dta"
+merge 1:1 hhid using "$auctions/income_midline.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\milk_sales_midline.dta"
+merge 1:1 hhid using "$auctions/milk_sales_midline.dta"
 
 gen any_milk_sales = _merge == 3 
 
@@ -1656,22 +1656,22 @@ replace milk_sales = 0 if _merge == 1
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\tlu_midline.dta"
+merge 1:1 hhid using "$auctions/tlu_midline.dta"
 
 drop _merge
 
 *** bring in community price data *** 
 gen hhid_village = substr(hhid, 1, 4)
 
-merge m:1 hhid_village using "$midline\Complete_Midline_Community.dta"
+merge m:1 hhid_village using "$midline/Complete_Midline_Community.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\plot_level_ag_midline.dta"
+merge 1:1 hhid using "$auctions/plot_level_ag_midline.dta"
 
 drop _merge 
 
-merge 1:1 hhid using "$auctions\manure_use_midline.dta"
+merge 1:1 hhid using "$auctions/manure_use_midline.dta"
 
 replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
 
@@ -1757,26 +1757,26 @@ egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
 keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
 
-save "$auctions\shadow_wage_midline.dta", replace 
+save "$auctions/shadow_wage_midline.dta", replace 
 
 *** create histogram of number of plots at baseline and midline *** 
-use "$auctions\number_of_plots.dta", clear 
+use "$auctions/number_of_plots.dta", clear 
 
 gen year = 2024 
 
-append using "$auctions\number_of_plots_midline.dta" 
+append using "$auctions/number_of_plots_midline.dta" 
 
 replace year = 2025 if year == . 
 
 twoway (histogram agri_6_15 if year == 2024, color(gray%50) width(0.5)) (histogram agri_6_15 if year == 2025, fcolor(none) lcolor(red) width(0.5)), legend(order(1 "Baseline" 2 "Midline") cols(2) position(6)) xtitle("Number of Plots")
-graph export "$auctions\hist_number_of_plots.eps", as(eps) replace
+graph export "$auctions/hist_number_of_plots.eps", as(eps) replace
 
 *** append data together *** 
-use "$auctions\shadow_wage_baseline.dta", clear 
+use "$auctions/shadow_wage_baseline.dta", clear 
 
 gen year = 2024 
 
-append using "$auctions\shadow_wage_midline"
+append using "$auctions/shadow_wage_midline"
 
 replace year = 2025 if year == . 
 
@@ -1893,7 +1893,7 @@ label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
 
 estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU_1 agri_income_01 daily_wage_1 ag_wage 
 
-esttab using "$auctions\household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+esttab using "$auctions/household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
 *** create indicator variables *** 
 gen manure = (agri_6_30_ > 0)
@@ -1914,7 +1914,12 @@ twoway scatter TLU manure if agri_6_14 == 1
 twoway scatter TLU agri_6_30_ if agri_6_14 == 1
 
 reg manure TLU if agri_6_14 == 1
+eststo manure 
+
 reg agri_6_30_ TLU if agri_6_14 == 1
+eststo plots 
+
+esttab manure plots using "$auctions/corr_manure_tlu.tex", se star(* 0.1 ** 0.05 *** 0.01) replace 
 
 *** save clean dataset *** 
-save "$auctions\complete_data_clean.dta", replace 
+save "$auctions/complete_data_clean.dta", replace 

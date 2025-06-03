@@ -25,13 +25,13 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 **************************** data file paths ****************************
 
-global data "$master\Data_Management\_CRDES_RawData\Midline\Household_Survey_Data"
+global data "$master\Data_Management\Data\_CRDES_RawData\Midline\Household_Survey_Data"
 global clean_data "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
 
 **************************** output file paths ****************************
 
 global village_observations "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Village_Observations"
-global household_roster "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Household_Roster"
+global household_roster "$master\Data_Management\Output\Data_Processing\Checks\Midline\Midline_Household_Roster\_Archive"
 global knowledge "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Knowledge"
 global health "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Health" 
 global agriculture_inputs "$master\Data_Management\Output\Data_Quality_Checks\Midline\Midline_Agriculture_Inputs"
@@ -156,12 +156,11 @@ save "$clean_data\individual_ids_for_missing_in_midline_hh_roster_wide.dta"
 
 *** identify potential duplicate household members in baseline data *** 
 use "$individual_ids\All_Villages_With_Individual_IDs.dta", clear
-
 bysort hhid hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_: gen dup = _N
 
 keep if dup > 1 
 
-save "$individual_ids\Potential_Duplicate_HH_Members_Baseline.dta"
+*save "$individual_ids\Potential_Duplicate_HH_Members_Baseline.dta"
 
 *** merge in midline individual IDs to see what happened with these individuals at midline ***
 use "$clean_data\Midline_Individual_IDs.dta", clear 

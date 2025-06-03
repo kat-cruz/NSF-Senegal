@@ -67,11 +67,10 @@ drop if (hh_full_name_calc_ == "" | hh_full_name_calc_ == ".") & hh_gender_ == .
 
 rename pull_hh_individ_ individ
 
-*** merge w/ the baseline id's
-merge m:1 hhid individ using "$baselineids/All_Villages_With_Individual_IDs.dta"
+gen indiv_index = substr(individ,7,2) 
 
 * sort data by household ID and individual index
-sort hhid indiv_index
+sort hhid individual 
 
 * create a temporary variable to identify maximum index per household
 by hhid: egen max_index = max(real(indiv_index))
@@ -79,15 +78,16 @@ by hhid: egen max_index = max(real(indiv_index))
 * replace missing values with appropriate new values
 * first create a counter for new individuals within each household
 gen new_member_count = 0 if indiv_index != ""
-by hhid: replace new_member_count = sum(_merge == 1) if _merge == 1
+by hhid: replace new_member_count = sum(indiv_index == "") if indiv_index == ""
 
 * generate new index values
 gen new_index = ""
-replace new_index = string(max_index + new_member_count) if indiv_index == "" & _merge == 1
+replace new_index = string(max_index + new_member_count) if indiv_index == ""
+replace new_index = string(individual) if new_index == "."
 replace new_index = "0" + new_index if length(new_index) == 1 & new_index != ""
 
 * update the indiv_index
-replace indiv_index = new_index if indiv_index == "" & _merge == 1
+replace indiv_index = new_index if indiv_index == "" 
 
 * generate the full individual ID by concatenating household ID and individual index
 replace individ = hhid + indiv_index if individ == ""
@@ -123,9 +123,15 @@ foreach var of varlist * {
     }
 }
 
+drop if inlist(hhid, "133A19", "133A03", "133A20", "133A02", "133A05", "133A11")
+
+* save midline ID dataset *
+save "$clean/Midline_Individual_IDs.dta", replace
+
+*** merge w/ the baseline id's
+merge 1:1 hhid individ using "$baselineids/All_Villages_With_Individual_IDs.dta"
+
+drop if inlist(hhid, "133A19", "133A03", "133A20", "133A02", "133A05", "133A11")
+
 * save complete dataset with all individual IDs (baseline and midline)
 save "$clean/All_Individual_IDs_Complete.dta", replace
-
-* save the midline-only dataset
-drop if _merge == 2
-save "$clean/Midline_Individual_IDs.dta", replace

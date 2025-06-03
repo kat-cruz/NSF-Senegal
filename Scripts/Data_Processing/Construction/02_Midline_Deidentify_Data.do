@@ -114,7 +114,7 @@ keep hhid start_health_status _health_roster_count healthindex* healthage* healt
 order hhid, first 
 
 *** save health data ***
-save "$data_deidentified.Complete_Midline_Health", replace 
+save "$data_deidentified/Complete_Midline_Health", replace 
 
 *** import complete agriculture data *** 
 use "$data_identified/DISES_Midline_Complete_PII", clear 

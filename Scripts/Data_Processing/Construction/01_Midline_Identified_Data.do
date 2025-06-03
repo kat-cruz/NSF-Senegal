@@ -52,6 +52,9 @@ use "$clean/individual_ids_for_missing_in_midline_hh_roster_wide.dta", clear
 keep hh_global_id pull_hh_individ_*
 
 rename hh_global_id hhid 
+forvalues i = 1/27 {
+	rename pull_hh_individ_`i' hh_individ_`i' 
+}
 
 tempfile missingindivids 
 save `missingindivids'
@@ -220,11 +223,14 @@ Indicated that they merged but they are both included seperately in the data
 use "$clean/DISES_Complete_Midline_Retained.dta", clear
 append using "$clean/DISES_Complete_Midline_Replacements.dta", force  
 append using "$clean/DISES_Complete_Midline_Merged.dta", force  
-save "$clean/DISES_Midline_Complete_PII.dta", replace
 
 merge 1:1 hhid using `missingindivids'
 
-drop _merge 
+forvalues i = 1/27 {
+	replace pull_hh_individ_`i' = hh_individ_`i' if _merge == 3
+}
+
+drop _merge hh_individ_*
 
 save "$clean/DISES_Midline_Complete_PII.dta", replace
 

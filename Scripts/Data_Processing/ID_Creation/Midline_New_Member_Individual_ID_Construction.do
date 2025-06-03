@@ -35,7 +35,7 @@ set more off
 **************************************************
 
 * Set base Box path for each user
-if "`c(username)'"=="socrm" global master "C:\Users\socrm\Box\NSF Senegal"
+if "`c(username)'"=="mollydoruska" global master "/Users/mollydoruska/Library/CloudStorage/Box-Box/NSF Senegal"
 if "`c(username)'"=="kls329" global master "C:\Users\kls329\Box\NSF Senegal"
 if "`c(username)'"=="km978" global master "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'"=="Kateri" global master "C:\Users\Kateri\Box\NSF Senegal"
@@ -43,14 +43,14 @@ if "`c(username)'"=="admmi" global master "C:\Users\admmi\Box\NSF Senegal"
 
 **************************** Data file paths ****************************
 
-global data "$master\Data_Management\Data\_CRDES_RawData\Midline\Household_Survey_Data"
-global replacement "$master\Data_Management\Data\_CRDES_RawData\Midline\Replacement_Survey_Data"
-global baselineids "$master\Data_Management\Data\_CRDES_CleanData\Baseline\Identified"
-global issues "$master\Data_Management\Output\Data_Quality_Checks\Midline\_Midline_Original_Issues_Output"
-global corrected "$master\Data_Management\Output\Data_Processing\Checks\Corrections\Midline"
-global clean "$master\Data_Management\Data\_CRDES_CleanData\Midline\Identified"
+global data "$master/Data_Management/Data/_CRDES_RawData/Midline/Household_Survey_Data"
+global replacement "$master/Data_Management/Data/_CRDES_RawData/Midline/Replacement_Survey_Data"
+global baselineids "$master/Data_Management/Data/_CRDES_CleanData/Baseline/Identified"
+global issues "$master/Data_Management/Output/Data_Quality_Checks/Midline/_Midline_Original_Issues_Output"
+global corrected "$master/Data_Management/Output/Data_Processing/Checks/Corrections/Midline"
+global clean "$master/Data_Management/Data/_CRDES_CleanData/Midline/Identified"
 
-use "$clean\DISES_Midline_Complete_PII.dta", clear
+use "$clean/DISES_Midline_Complete_PII.dta", clear
 
 tostring hh_relation_with_o*, replace 
 tostring hh_full_name_calc*, replace
@@ -69,7 +69,7 @@ drop if (hh_full_name_calc_ == "" | hh_full_name_calc_ == ".") & hh_gender_ == .
 rename pull_hh_individ_ individ
 
 *** merge w/ the baseline id's
-merge m:1 hhid individ using "$baselineids\All_Villages_With_Individual_IDs.dta"
+merge m:1 hhid individ using "$baselineids/All_Villages_With_Individual_IDs.dta"
 
 * sort data by household ID and individual index
 sort hhid indiv_index
@@ -125,8 +125,8 @@ foreach var of varlist * {
 }
 
 * save complete dataset with all individual IDs (baseline and midline)
-save "$clean\All_Individual_IDs_Complete.dta", replace
+save "$clean/All_Individual_IDs_Complete.dta", replace
 
 * save the midline-only dataset
 drop if _merge == 2
-save "$clean\Midline_Individual_IDs.dta", replace
+save "$clean/Midline_Individual_IDs.dta", replace

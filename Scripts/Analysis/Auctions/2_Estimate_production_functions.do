@@ -233,9 +233,9 @@ esttab quad_re quad_fe quad_re_notlu quad_fe_notlu using "$auctions/quad_prods.t
 *** summarize estiamte marginal products of labor *** 
 sum mpl*
 
-estpost sum mpl* 
+estpost summarize mpl* 
 
-esttab using "$auctions/mpl_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+esttab . using "$auctions/mpl_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
 *** calculate gap between marginal product of labor and daily wage *** 
 gen gap_quad_re = daily_wage_10  - mpl_quad_re if ag_wage == 1 
@@ -250,9 +250,9 @@ gen gap_leon_fe_notlu = daily_wage_10 - mpl_leon_fe_notlu if ag_wage == 1
 *** summarize gap between mpl and daily wage *** 
 sum gap* 
 
-estpost sum gap* 
+estpost summarize gap* 
 
-esttab using "$auctions/gap_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+esttab . using "$auctions/gap_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
 *** calculate land to labor ratio ***
 gen land_to_labor = prod_hect_1 / ag_hours_1

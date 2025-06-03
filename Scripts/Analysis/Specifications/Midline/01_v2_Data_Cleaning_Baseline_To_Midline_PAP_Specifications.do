@@ -649,7 +649,7 @@ use "$baseline_household", clear
 * 1. educ attainment (hh_29)
 forvalues i = 1/55 {
     * years of education completed
-    gen edu_years_`i' = .
+    gen edu_years_`i' = 0 if hh_29_`i' == 0  // No education
     replace edu_years_`i' = hh_29_`i' if inrange(hh_29_`i', 1, 13)
     replace edu_years_`i' = 14 if hh_29_`i' == 14 // University
 }
@@ -767,7 +767,7 @@ label var midline_waste_any "Any plot with household waste use (agri_6_34)"
 
 * count measures (Intensive Margin)
 * create temporary indicators for fertilizer use
-forvalues i = 1/55 {
+forvalues i = 1/57 {
     gen temp_fert_base_`i' = (hh_15_`i' == 2)
     gen temp_fert_mid_`i' = (hh_15_`i' == 2)
 }
@@ -878,7 +878,7 @@ save `combined_data', replace
 use "$midline_health", clear
 
 * individ-level prevalence (extensive margin)
-forvalues i = 1/55 {
+forvalues i = 1/57 {
     * bilharzia diagnosis (health_5_3_2: past 12 months)
     cap gen bilharzia_`i' = (health_5_3_2_`i' == 1)
     
@@ -948,41 +948,41 @@ save `combined_data', replace
 use "$midline_beliefs", clear
 
 * 1. disesase risk beliefs (beliefs_01-03)
-* personal risk (59.38% agree/strongly agree)
+* personal risk 
 gen midline_personal_risk = (beliefs_01 <= 2)
 label var midline_personal_risk "Likely/Very likely to get bilharzia (beliefs_01 <= 2)"
 
-* household risk (65.58% agree/strongly agree)
+* household risk
 gen midline_hh_risk = (beliefs_02 <= 2)
 label var midline_hh_risk "Likely/Very likely HH member gets bilharzia (beliefs_02 <= 2)"
 
-* child risk (76.97% agree/strongly agree)
+* child risk
 gen midline_child_risk = (beliefs_03 <= 2)
 label var midline_child_risk "Likely/Very likely child gets bilharzia (beliefs_03 <= 2)"
 
 * 2. community property rights (beliefs_04-05)
-* community land rights (85.38% agree/strongly agree)
+* community land rights
 gen midline_comm_land = (beliefs_04 <= 2)
 label var midline_comm_land "Agree: land belongs to community (beliefs_04 <= 2)"
 
-* community water rights (90.43% agree/strongly agree)
+* community water rights
 gen midline_comm_water = (beliefs_05 <= 2)
 label var midline_comm_water "Agree: water belongs to community (beliefs_05 <= 2)"
 
 * 3. private Use Rights (beliefs_06-09)
-* private land use rights (90.82% agree/strongly agree)
+* private land use rights 
 gen midline_private_land = (beliefs_06 <= 2)
 label var midline_private_land "Agree: right to products from own land (beliefs_06 <= 2)"
 
-* community land use rights (67.50% agree/strongly agree)
+* community land use rights
 gen midline_comm_land_use = (beliefs_07 <= 2)
 label var midline_comm_land_use "Agree: right to products from community land (beliefs_07 <= 2)"
 
-* fishing rights (83.46% agree/strongly agree)
+* fishing rights 
 gen midline_comm_fish = (beliefs_08 <= 2)
 label var midline_comm_fish "Agree: right to products from fishing (beliefs_08 <= 2)"
 
-* harvesting rights (77.40% agree/strongly agree)
+* harvesting rights 
 gen midline_comm_harvest = (beliefs_09 <= 2)
 label var midline_comm_harvest "Agree: right to products from harvesting (beliefs_09 <= 2)"
 
@@ -1018,14 +1018,14 @@ merge 1:1 hhid using "$midline_household", nogen
 
 * 1. work loss measures
 * Days lost to illness (health_5_4)
-forvalues i = 1/55 {
+forvalues i = 1/57 {
     cap gen health_5_4_`i'_days = health_5_4_`i'
     cap replace health_5_4_`i'_days = . if health_5_4_`i' < 0
     cap replace health_5_4_`i'_days = . if health_5_4_`i' > 31
 }
 
 * work participation by type
-forvalues i = 1/55 {
+forvalues i = 1/57 {
     * ag work (hh_03, hh_04)
     gen midline_ag_work_any_`i' = (hh_03_`i' == 1)
     gen midline_ag_hours_`i' = hh_04_`i'
@@ -1058,7 +1058,7 @@ label var midline_total_trade_hours "Total HH trade hours (hh_08)"
 label var midline_total_wage_hours "Total HH wage hours (hh_09)"
 
 * 2. school loss measures
-forvalues i = 1/55 {
+forvalues i = 1/57 {
     * school absence (hh_37)
     gen midline_school_absence_`i' = (hh_37_`i' == 1)
     label var midline_school_absence_`i' "Missed week+ school due illness (hh_37)"
@@ -1101,20 +1101,23 @@ save `combined_data', replace
 * Education Outcomes
 use "$midline_household", clear
 
-* 1. educ attainment (hh_29)
-forvalues i = 1/55 {
-    * years of education completed
-    gen edu_years_`i' = .
+* 1. education attainment 
+forvalues i = 1/57 {
+    * for non-enrolled: use completed education (hh_29)
+    gen edu_years_`i' = 0 if hh_29_`i' == 0  
     replace edu_years_`i' = hh_29_`i' if inrange(hh_29_`i', 1, 13)
-    replace edu_years_`i' = 14 if hh_29_`i' == 14 // University
+    replace edu_years_`i' = 14 if hh_29_`i' == 14
+    
+    * for currently enrolled: use current grade (hh_35)
+    replace edu_years_`i' = hh_35_`i' if hh_32_`i' == 1 & inrange(hh_35_`i', 1, 14)
 }
 
-* highest grade completed in household
+* highest grade in household
 egen midline_max_grade = rowmax(edu_years_*)
-label var midline_max_grade "Highest grade completed in HH (hh_29)"
+label var midline_max_grade "Highest grade completed/current in HH (hh_29/hh_35)"
 
 * 2. school participation - extensive margin
-forvalues i = 1/55 {
+forvalues i = 1/57 {
     * current enrollment (hh_32)
     gen enrolled_`i' = (hh_32_`i' == 1) if !missing(hh_32_`i')
     
@@ -1133,7 +1136,7 @@ egen midline_any_last_year = anymatch(last_year_*), values(1)
 label var midline_any_last_year "Any member attended last year (hh_30)"
 
 * 3. school participation - intensive margin (hh_38)
-forvalues i = 1/55 {
+forvalues i = 1/57 {
     gen attend_days_`i' = hh_38_`i' if inrange(hh_38_`i', 0, 7)
 }
 

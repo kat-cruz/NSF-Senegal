@@ -51,8 +51,9 @@
 	*** import complete data for geographic and preliminary information ***
 		use "$data\DISES_Midline_Complete_PII.dta", clear 
 		
+		*(use "C:\Users\km978\Box\NSF Senegal\Data_Management\Data\_CRDES_CleanData\Midline\Deidentified\Complete_Midline_Household_Roster.dta", clear
 	
-	
+/* 
 
 *-----------------------------------------*
 **# Household roster module
@@ -215,7 +216,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 			i(hhid) j(id)
 	
 			*merge m:1 hhid using `indiv_data', nogen 
-		
+		merge m:1 hhid hh_full_name_calc_ hh_gender_ hh_age_ using "C:\Users\km978\Box\NSF Senegal\Data_Management\Data\_CRDES_CleanData\Midline\Identified\All_Individual_IDs_Complete.dta", force nogen
 	
 					save "$long_out\delete_later", replace 
 
@@ -227,7 +228,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 
      use  "$ids", clear
 	  
-	  use "C:\Users\km978\Box\NSF Senegal\Data_Management\Data\_CRDES_CleanData\Midline\Identified\All_Individual_IDs_Complete.dta", clear
+	 * use "C:\Users\km978\Box\NSF Senegal\Data_Management\Data\_CRDES_CleanData\Midline\Identified\All_Individual_IDs_Complete.dta", clear
 	  	* Tag duplicates based on these variables
 			duplicates tag hhid hh_full_name_calc_ hh_gender_ hh_age_, generate(dup_tag)
 			
@@ -282,7 +283,8 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 					
 ** merge with ll_Individual_IDs_Complete.dta  that has been cleaned of duplicates 
 
-			merge 1:1 hhid hh_full_name_calc_ hh_gender_ hh_age_ using "$long_out\dupids_from_id_list_delete_later.dta"
+			merge 1:1 hhid hh_full_name_calc_ hh_gender_ hh_age_ using "$long_out\dupids_from_id_list_delete_later.dta"  
+			*merge 1:m hhid hh_full_name_calc_ hh_gender_ hh_age_ using  "$ids", nogen 
 			
 				keep if _merge != 3
 				
@@ -304,7 +306,7 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 	**## Merge in df with midline individual IDs
 		
 		*use "$long_out\IDs_no_merge_delete_later", clear
-/* 
+/ 
 		
 ** RUN THIS PORTION TO SEE WHATS WRONG
 		
@@ -337,45 +339,61 @@ keep starttime* endtime* deviceid* devicephonenum* username* device_info* durati
 *-----------------------------------------*
 **# Health roster module
 *-----------------------------------------*	
-		/*
-preserve 		
+		
+*preserve 		
+ */
+  
+/*
+ preserve 
  
-keep hhid health*
+ use  "C:\Users\km978\Box\NSF Senegal\Data_Management\Data\_CRDES_CleanData\Midline\Identified\Midline_Individual_IDs.dta", clear 
+ drop _merge
+ tempfile Midline_Individual_IDs
+ save `Midline_Individual_IDs'
+ 
+ restore 
+ 
+*/
+keep hhid_village hhid health* ///
+ hh_full_name_calc* hh_gender* hh_age* add_new* hh_relation_with_*  // identifiable info here 
 
-	drop health_5_13 health_5_14_a health_5_14_b health_5_14_c healthname*   
+	drop health_5_13 health_5_14_a health_5_14_b health_5_14_c healthname* hh_age_resp hh_gender_resp hh_relation_with_o*
 	
-forvalues i = 1/55 {
+forvalues i = 1/57 {
 			tostring health_5_11_o_`i', replace 
 			tostring  health_5_3_`i', replace 
 			tostring health_5_3_o_`i', replace 
-			 
+			tostring  hh_full_name_calc_`i', replace 
 		}
 
 
 reshape long /// 
+	hh_full_name_calc_  hh_relation_with_ hh_age_  hh_gender_ add_new_ ///
+	health_add_new_ health_still_member_ ///
 	health_5_2_ health_5_3_ ///
 	health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_4_ health_5_3_5_ health_5_3_6_ health_5_3_7_ health_5_3_8_ health_5_3_9_ health_5_3_10_ health_5_3_11_ health_5_3_12_  health_5_3_13_ health_5_3_14_ health_5_3_99_  ///
 	health_5_3_o_ health_5_4_ health_5_5_  ///
-	health_5_6_ health_5_7_ health_5_8_ health_5_9_ health_5_10_ ///
+	health_5_6_ health_5_7_ health_5_7_1_ health_5_8_ health_5_9_ health_5_10_ ///
 	health_5_11_  health_5_11_o_ health_5_12_ health_5_14_ ///
 	health_5_14_note_   ///
 	healthage_ healthindex_ healthgenre_, ///
-			i(hhid) j(id)
-	
-				
-				
+			i(hhid hhid_village) j(id)
+			
+		drop if (hh_full_name_calc_ == "" | hh_full_name_calc_ == ".") & hh_gender_ == . & hh_age_ == . 
+
+		drop if inlist(hhid, "133A19", "133A03", "133A20", "133A02", "133A05", "133A11")
 		
-	**## Create matching individ
-			tostring hhid, replace format("%12.0f")
-			tostring id, gen(str_id) format("%02.0f")
-			gen str individ = hhid + str_id
-			format individ %15s				
+		
+		merge m:m hhid_village hhid add_new_ hh_full_name_calc_ hh_gender_ hh_age_ hh_relation_with_ using "C:\Users\km978\Box\NSF Senegal\Data_Management\Data\_CRDES_CleanData\Midline\Identified\Midline_Individual_IDs.dta"
 				
-						
-	save "$long_out\baseline_health_long.dta", replace 	
+		drop if inlist(hhid, "133A19", "133A03", "133A20", "133A02", "133A05", "133A11")
+				
+			drop hh_full_name_calc_ hh_relation_with_ hh_age_ hh_gender_ add_new_ hh_head_name_complet hh_name_complet_resp hh_name_complet_resp_new hh_age_resp hh_gender_resp hh_phone individual pull_hh_full_name_calc__ pull_hh_age__ hh_relation_with_o_ indiv_index hh_name_complet_resp_new_individ _merge
+					
+	save "$long_out\midline_health_long.dta", replace 	
 	
 				
-restore 				
+*restore 				
 				
 */
 

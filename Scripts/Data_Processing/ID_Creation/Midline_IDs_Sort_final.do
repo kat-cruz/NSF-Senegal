@@ -175,15 +175,13 @@
 	restore 
 	
 	use `mindline_IDs_in_data', clear
-	append using `extra_midline_IDs'
+	*append using `extra_midline_IDs'
 	append using `new_members'
 
 *-----------------------------------------*
 **## Case 01) Keep all midline members that already have correct IDs
 *-----------------------------------------*	
-/*
-
-/* 
+/
 	gen  midline_name = hh_full_name_calc_
 		gen  midline_individ = individ
 */
@@ -256,14 +254,9 @@
 			
 			
 			 
-			
-*/ 
-			
-			
-
 				
 				
-/*				
+		
 	
 *-------------------*
 **###Bring in baseline IDs for sorting 

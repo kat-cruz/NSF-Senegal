@@ -209,7 +209,7 @@ restore
 		
 preserve 		
  
-keep hhid health*
+keep hhid_village hhid health*
 
 	drop health_5_13 health_5_14_a health_5_14_b health_5_14_c healthname*   
 	
@@ -229,7 +229,7 @@ reshape long ///
 	health_5_11_  health_5_11_o_ health_5_12_ health_5_14_ ///
 	health_5_14_note_   ///
 	healthage_ healthindex_ healthgenre_, ///
-			i(hhid) j(id)
+			i(hhid hhid_village) j(id)
 	
 				
 				

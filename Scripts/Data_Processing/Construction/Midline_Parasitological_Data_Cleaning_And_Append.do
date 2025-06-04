@@ -90,10 +90,10 @@
 
 
 	global cleandata_ucad_base "$master\Data_Management\Data\_Partner_CleanData\Parasitological_Data\UCAD_Data\Baseline"
-	global cleandata_ucad_mid "$master\Data_Management\Data\_Partner_CleanData\Parasitological_Data\UCAD_Data\Midline"
+	global cleandata_ucad_mid "$master\Data_Management\Data\_Partner_CleanData\Parasitological_Data\UCAD_Data\Midline\Midline_Cleaned_Parasitology_Data"
 
 	global cleandata_epls_base "$master\Data_Management\Data\_Partner_CleanData\Parasitological_Data\EPLS_Data\Baseline"
-	global cleandata_epls_mid "$master\Data_Management\Data\_Partner_CleanData\Parasitological_Data\EPLS_Data\Midline"
+	global cleandata_epls_mid "$master\Data_Management\Data\_Partner_CleanData\Parasitological_Data\EPLS_Data\Midline\Midline_Cleaned_Parasitology_Data"
 	
 	global rawdata_ucad_mid "$master\Data_Management\Data\_Partner_RawData\Parasitological_Data\UCAD_Data\Midline"
 	global rawdata_ucad_base "$master\Data_Management\Data\_Partner_RawData\Parasitological_Data\UCAD_Data\Baseline"
@@ -3389,12 +3389,12 @@
 			tempfile _013B_ages
 				save `_013B_ages'
 				
-	restore
+	restore 
 		
 		
 	** merge in ages 
 			
-		merge 1:1 initiales identificant sex_hp using `_013B_ages', nogen 
+		merge 1:1 initiales identificant sex_hp using `_013B_ages'
 		
 			replace notes = sex_hp in 53
 			replace notes = sex_hp in 56/58
@@ -3413,6 +3413,11 @@
 			order hhid_village	
 			
 		order age_hp, before(grade)
+		
+		**KRM - FIX DUPLICATE IDS BY DROPPING ID FROM CONSENT FORM. STILL NEED TO CONFIRM SEX
+		
+		drop if _merge == 2 & identificant == "3/MI/2/04"
+		drop _merge 
 
 	save "$cleandata_epls_mid\minguene_boye_013B_midline_df", replace 		
 	
@@ -3909,8 +3914,7 @@
 *<><<><><>><><<><><>>
 **# APPEND EPLS DATA
 *<><<><><>><><<><><>>
-	
-	
+
 	use "$cleandata_epls_mid\thilla_023A_midline_df.dta", clear
 		append using "$cleandata_epls_mid\syer_120B_midline_df.dta"
 		append using "$cleandata_epls_mid\ndiakhaye_011B_midline_df.dta"
@@ -3949,9 +3953,9 @@
 	
 
  use "$cleandata_epls_mid\complete_midline_epls_parasitology_df.dta", clear
- 
- append using "$cleandata_ucad_mid\complete_midline_ucad_parasitology_df.dta"
-
+	append using "$cleandata_ucad_mid\complete_midline_ucad_parasitology_df.dta"
+	
+		gen round = 1
 
 	save "$dataexport\complete_midline_parasitology_df.dta", replace 
 		export excel using "$dataexport/complete_midline_parasitology_df.xlsx", firstrow(variables) replace
@@ -3959,3 +3963,15 @@
 	
 	
 *** end of .do file
+
+
+
+
+
+
+
+
+
+
+
+

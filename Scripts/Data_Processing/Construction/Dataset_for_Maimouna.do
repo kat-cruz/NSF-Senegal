@@ -214,6 +214,11 @@ append using `maimounabaseline', force
 *** reorder variables *** 
 order hhid region hhid_village hh_* knowledge_* list_agri_equip* agri_* product_divers* cereals* aquatique* , first 
 
+ds, has(type string)
+foreach x in `r(varlist)' {
+    replace `x' = subinstr(`x', `"`=char(10)'"', "", .)
+    }
+
 *** save dataset *** 
 save "$maimouna/dises_data_for_maimouna.dta", replace 
 

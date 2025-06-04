@@ -11,9 +11,9 @@ output: html_document
 
 ```{r}
 
-packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr", 
-              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", 
-              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "quarto")
+packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr",
+              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", "haven",
+              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich")
 
 # Install any missing packages
 new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
@@ -25,31 +25,31 @@ invisible(lapply(packages, library, character.only = TRUE))
 
 ```
 
-
-## Define paths and load data 
-
 ```{r}
-# Define the file paths
 proj_paths <- list(
   projects = "C:/Users/Kateri/Box/NSF Senegal",
   alternative_projects = "C:/Users/km978/Box/NSF Senegal"
 )
 
-# Check if the Kateri path exists and resolve the project path accordingly
-if (file.exists(proj_paths$projects)) {
-  proj <- kwb.utils::resolve(list(
-    projects = proj_paths$projects,
-    p1 = "<projects>/Data_Management/Output/Analysis/Human_Parasitology/Analysis_Data"
-  ))
+# Choose the correct project root based on availability
+proj_root <- if (file.exists(proj_paths$projects)) {
+  proj_paths$projects
 } else {
-  proj <- kwb.utils::resolve(list(
-    projects = proj_paths$alternative_projects,
-    p1 = "<projects>/Data_Management/Output/Analysis/Human_Parasitology/Analysis_Data"
-  ))
+  proj_paths$alternative_projects
 }
 
+# Define project subpaths manually using file.path for cross-platform safety
+proj <- list(
+  p1 = file.path(proj_root, "Data_Management", "Output", "Analysis", "Human_Parasitology", "Analysis_Data")
+)
 
-file_path_infection_df <- file.path(proj$p1, "02_child_infection_analysis_df.dta")
+# Full path to Stata file
+file_path_infection_df <- file.path(proj$p1, "03_mid_base_analysis_df.dta")
+
+# Load required library
+library(haven)
+
+# Read the dataset
 infection_df <- read_dta(file_path_infection_df)
 
 infection_df
@@ -57,11 +57,59 @@ infection_df
 ```
 
 
-# compute summary stats 
+
+
+
+
+
+
+
+
+
+## Define paths and load data 
 
 ```{r}
 
+# 
+# # Define the file paths
+# proj_paths <- list(
+#   projects = "C:/Users/Kateri/Box/NSF Senegal",
+#   alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+# )
+# 
+# # Check if the Kateri path exists and resolve the project path accordingly
+# if (file.exists(proj_paths$projects)) {
+#   proj <- kwb.utils::resolve(list(
+#     projects = proj_paths$projects,
+#     p1 = "<projects>/Data_Management/Output/Analysis/Human_Parasitology/Analysis_Data"
+#   ))
+# } else {
+#   proj <- kwb.utils::resolve(list(
+#     projects = proj_paths$alternative_projects,
+#     p1 = "<projects>/Data_Management/Output/Analysis/Human_Parasitology/Analysis_Data"
+#   ))
+# }
+# 
+# 
+# file_path_infection_df <- file.path(proj$p1, "02_baseline_analysis_df.dta")
+# infection_df <- read_dta(file_path_infection_df)
+# 
+# infection_df
 
+```
+
+
+# compute summary stats 
+
+```{r}
+# Create a dataframe with variable names and their labels
+# labels <- tibble(
+#   variable = names(infection_df),
+#   label = sapply(infection_df, function(x) attr(x, "label"))
+# )
+# 
+# print(labels)         
+         
 summary_stats <- function(data, exclude = NULL) {
   # Remove excluded columns
   if (!is.null(exclude)) {
@@ -71,25 +119,59 @@ summary_stats <- function(data, exclude = NULL) {
   # Keep only numeric columns
   data_numeric <- data[ , sapply(data, is.numeric)]
 
-  # Compute summary statistics, rounding Mean and SD
+  # Extract variable labels
+  labels <- sapply(data_numeric, function(x) attr(x, "label"))
+
+  # Compute summary statistics
   summary_df <- data.frame(
+    Question = labels,
     Variable = names(data_numeric),
     N = sapply(data_numeric, function(x) sum(!is.na(x))),
     Mean = round(sapply(data_numeric, function(x) mean(x, na.rm = TRUE)), 2),
     SD = round(sapply(data_numeric, function(x) sd(x, na.rm = TRUE)), 2),
-    row.names = NULL
+    row.names = NULL,
+    stringsAsFactors = FALSE
   )
 
   return(summary_df)
 }
 
 
-summary_stats(infection_df, exclude = c("village_id", "village_name", "hhid", "individual_id_crde", "match_score", "epls_or_ucad", "epls_ucad_id"))
+
+# summary_stats <- function(data, exclude = NULL) {
+#   # Remove excluded columns
+#   if (!is.null(exclude)) {
+#     data <- data[ , !(names(data) %in% exclude)]
+#   }
+# 
+#   # Keep only numeric columns
+#   data_numeric <- data[ , sapply(data, is.numeric)]
+# 
+#   # Compute summary statistics, rounding Mean and SD
+#   summary_df <- data.frame(
+#     Variable = names(data_numeric),
+#     N = sapply(data_numeric, function(x) sum(!is.na(x))),
+#     Mean = round(sapply(data_numeric, function(x) mean(x, na.rm = TRUE)), 2),
+#     SD = round(sapply(data_numeric, function(x) sd(x, na.rm = TRUE)), 2),
+#     row.names = NULL
+#   )
+# 
+#   return(summary_df)
+# }
+
+
+summary_stats(infection_df, exclude = c("village_id", "village_name", "hhid", "individ", "identificant","match_score" ))
 
 
 ```
 
 
+#Run 
+
+
+```{r}
+
+```
 
 
 

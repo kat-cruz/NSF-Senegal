@@ -170,10 +170,6 @@ foreach y of local avr_outcomes {
     * main treatment effect (eq 1)
     eststo main_`y': reg midline_`y' trained_hh baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
     
     * treatment arm effects (eq 2)
     eststo arms_`y': reg midline_`y' i.treatment_arm baseline_`y' ///
@@ -184,10 +180,6 @@ foreach y of local avr_outcomes {
     estadd scalar p_13 = r(p)
     test 2.treatment_arm = 3.treatment_arm
     estadd scalar p_23 = r(p)
-	estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * export main treatment effects (eq 1)
@@ -209,9 +201,9 @@ esttab main_* using "$specifications/avr_main_effects.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
-    stats(baseline_control controls distance auction N r2, ///
-        labels("Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(0 0 0 0 %9.0f 3)) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -241,9 +233,9 @@ esttab arms_* using "$specifications/avr_treatment_arms.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 baseline_control controls distance auction N r2, ///
-        labels("P-value A=B" "P-value A=C" "P-value B=C" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
+    stats(p_12 p_13 p_23 N r2, ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -277,10 +269,6 @@ foreach y of local avr_outcomes {
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     test local_control = treated
     estadd scalar p_diff = r(p)
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
     
     * arm-specific spillovers
     eststo spill_arm_`y': reg midline_`y' T_A_L T_A_T T_B_L T_B_T T_C_L T_C_T baseline_`y' ///
@@ -301,11 +289,6 @@ foreach y of local avr_outcomes {
     estadd scalar p_LT_B = r(p)
     test T_C_L = T_C_T
     estadd scalar p_LT_C = r(p)
-    
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * export basic spillover results (Equation 3)
@@ -328,9 +311,9 @@ esttab spill_avr_* using "$specifications/avr_spillovers.tex", replace ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(local_control treated) ///
     order(local_control treated) ///
-    stats(p_diff baseline_control controls distance auction N r2, ///
-        labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 0 0 0 0 %9.0f 3)) ///
+    stats(p_diff N r2, ///
+        labels("P-value L=T" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -400,13 +383,8 @@ foreach y in avr_water_any avr_harvest_any avr_removal_any avr_recent_any {
     * estimate change over time
     eststo control_`y': reg `y' time $controls $distance_vector i.auction_village, ///
         vce(cluster hhid_village)
-        
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
-    
-    restore
+		
+	restore
 }
 
 * export results for pure control changes
@@ -427,9 +405,9 @@ esttab control_* using "$specifications/avr_control_changes.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(time) ///
-    stats(controls distance auction N r2, ///
-        labels("Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(0 0 0 %9.0f 3)) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -460,10 +438,6 @@ foreach y of local comp_extensive {
     estadd scalar p_13 = r(p)
     test 2.treatment_arm = 3.treatment_arm  // Private vs Both
     estadd scalar p_23 = r(p)
-	estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * spillover effects (eq 3)
@@ -480,11 +454,6 @@ foreach y of local comp_extensive {
     estadd scalar p_diff = r(p)
     
     drop T_L T_T
-	
-	estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * export treatment arm effects
@@ -505,9 +474,9 @@ esttab arm_* using "$specifications/compost_arm_effects.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 baseline_control controls distance auction N r2, ///
-        labels("P-value A=B" "P-value A=C" "P-value B=C" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
+    stats(p_12 p_13 p_23 N r2, ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Compost\\Production}" ///
@@ -532,9 +501,9 @@ esttab spill_* using "$specifications/compost_spillovers.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff baseline_control controls distance auction N r2, ///
-        labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 0 0 0 0 %9.0f 3)) ///
+    stats(p_diff N r2, ///
+        labels("P-value L=T" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Compost\\Production}" ///
@@ -565,10 +534,6 @@ foreach y of local comp_outcomes {
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     test T_L = T_T
     estadd scalar p_diff = r(p)
-	estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
     restore
 }
 
@@ -597,11 +562,6 @@ foreach y of local comp_outcomes {
     test T_B_L = T_C_L
     estadd scalar p_L_BC = r(p)
 
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
-    
     * clean up after each iteration
     drop T_*_L T_*_T
 }
@@ -624,9 +584,9 @@ esttab priv_* using "$specifications/compost_private_spillovers.tex", replace //
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff baseline_control controls distance auction N r2, ///
-        labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 0 0 0 0 %9.0f 3)) ///
+    stats(p_diff N r2, ///
+        labels("P-value L=T" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Compost\\Production}" ///
@@ -652,9 +612,9 @@ esttab arms_* using "$specifications/compost_private_arms.tex", replace ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_*) ///
     order(T_B_L T_B_T T_C_L T_C_T) ///
-    stats(p_B p_C p_L_BC baseline_control controls distance auction N r2, ///
-        labels("P-value L=T in Private" "P-value L=T in Both" "P-value Private L=Both L" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
+    stats(p_B p_C p_L_BC N r2, ///
+        labels("P-value L=T in Private" "P-value L=T in Both" "P-value Private L=Both L" "N" "R-squared") ///
+        fmt(3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Compost\\Production}" ///
@@ -688,11 +648,6 @@ foreach y of local food_outcomes {
     estadd scalar p_13 = r(p)
     test 2.treatment_arm = 3.treatment_arm  // priv vs both
     estadd scalar p_23 = r(p)
-    
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * export food security results
@@ -713,9 +668,9 @@ esttab food_* using "$specifications/food_security.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 baseline_control controls distance auction N r2, ///
-        labels("P-value A=B" "P-value A=C" "P-value B=C" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
+    stats(p_12 p_13 p_23 N r2, ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Lean Season\\Months}" ///
@@ -735,11 +690,6 @@ foreach y of local rcsi_components {
     estadd scalar p_13 = r(p)
     test 2.treatment_arm = 3.treatment_arm  // priv vs both
     estadd scalar p_23 = r(p)
-    
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * export RCSI component results  
@@ -760,9 +710,9 @@ esttab rcsi_* using "$specifications/food_security_components.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 baseline_control controls distance auction N r2, ///
-        labels("P-value A=B" "P-value A=C" "P-value B=C" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 3 3 0 0 0 0 %9.0f 3)) ///
+    stats(p_12 p_13 p_23 N r2, ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Work-\\Related}" ///
@@ -778,23 +728,12 @@ esttab rcsi_* using "$specifications/food_security_components.tex", replace ///
 * schistosomiasis outcomes
 local schisto_outcomes "bilharzia_any meds_any diagnosed_any urine_any stool_any"
 
-* labels
-local lab_bilharzia "Self-Reported Infection"
-local lab_meds "Medication Use"
-local lab_diagnosed "Diagnosed Cases"
-local lab_urine "Urine Symptoms"
-local lab_stool "Stool Symptoms"
-
 * main treatment effects (eq 1)
 eststo clear
 foreach y of local schisto_outcomes {
     * village-level treatment effect
     eststo main_`y': reg midline_`y' trained_hh baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * spillover effects (eq 3)
@@ -831,9 +770,9 @@ esttab main_* using "$specifications/schisto_main_effects.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
-    stats(baseline_control controls distance auction N r2, ///
-        labels("Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(0 0 0 0 %9.0f 3)) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Self-Reported\\Infection}" ///
@@ -861,9 +800,9 @@ esttab spill_* using "$specifications/schisto_spillovers.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff baseline_control controls distance auction N r2, ///
-        labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 0 0 0 0 %9.0f 3)) ///
+    stats(p_diff N r2, ///
+        labels("P-value L=T" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Self-Reported\\Infection}" ///
@@ -879,14 +818,6 @@ esttab spill_* using "$specifications/schisto_spillovers.tex", replace ///
 
 * property rights belief outcomes
 local belief_outcomes "comm_land comm_water private_land comm_land_use comm_fish comm_harvest"
-
-* labels 
-local lab_comm_land "Community Land Rights"
-local lab_comm_water "Community Water Rights"
-local lab_private_land "Private Land Rights"
-local lab_comm_land_use "Community Land Use"
-local lab_comm_fish "Fishing Rights"
-local lab_comm_harvest "Harvesting Rights"
 
 * treatment arm effects on property rights beliefs
 eststo clear
@@ -905,11 +836,6 @@ foreach y of local belief_outcomes {
     * test private benefits arms jointly different from control
     test 2.treatment_arm 3.treatment_arm    // Private arms vs Control
     estadd scalar p_priv = r(p)
-    
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * export property rights beliefs
@@ -930,11 +856,10 @@ esttab belief_* using "$specifications/property_rights_beliefs.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 p_priv baseline_control controls distance auction N r2, ///
+    stats(p_12 p_13 p_23 p_priv N r2, ///
         labels("P-value Public=Private" "P-value Public=Both" "P-value Private=Both" ///
-               "P-value Private Arms=Control" "Baseline Control" "Controls" ///
-               "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 3 3 3 0 0 0 0 %9.0f 3)) ///
+               "P-value Private Arms=Control" "N" "R-squared") ///
+        fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Community\\Land Rights}" ///
@@ -944,7 +869,7 @@ esttab belief_* using "$specifications/property_rights_beliefs.tex", replace ///
             "\shortstack{Fishing\\Rights}" ///
             "\shortstack{Harvesting\\Rights}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-	
+		
 **************************************************
 * 2.1.1: Work and School Days Lost Analysis
 **************************************************
@@ -954,25 +879,11 @@ local work_outcomes "work_days_lost"                       // work days lost
 local labor_outcomes "ag_workers total_ag_hours total_trade_hours total_wage_hours"  // labor supply
 local school_outcomes "any_absence avg_attendance absence_count"  // school attendance
 
-* labels
-local lab_work_days "Work Days Lost"
-local lab_ag_workers "Agricultural Workers"
-local lab_ag_hours "Agricultural Hours"
-local lab_trade_hours "Trade Hours"
-local lab_wage_hours "Wage Hours"
-local lab_any_absence "Any School Absence"
-local lab_attendance "Average Attendance"
-local lab_absence_count "Number of Absences"
-
 * main treatment effects (eq 1)
 eststo clear
 foreach y in work_days_lost any_absence absence_count {
     eststo main_`y': reg midline_`y' trained_hh baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * spillover effects (eq 3)
@@ -1009,9 +920,9 @@ esttab main_* using "$specifications/work_school_main.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
-    stats(baseline_control controls distance auction N r2, ///
-        labels("Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(0 0 0 0 %9.0f 3)) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Work Days\\Lost}" ///
@@ -1037,9 +948,9 @@ esttab spill_* using "$specifications/work_school_spillovers.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff baseline_control controls distance auction N r2, ///
-        labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 0 0 0 0 %9.0f 3)) ///
+    stats(p_diff N r2, ///
+        labels("P-value L=T" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Work Days\\Lost}" ///
@@ -1056,23 +967,11 @@ local attainment "max_grade"                       // educational attainment
 local enrollment "any_enrolled num_enrolled"       // school participation (extensive)
 local attendance "avg_attendance any_last_year full_attend"  // school participation (intensive)
 
-* labels
-local lab_max_grade "Highest Grade"
-local lab_any_enrolled "Any Enrollment"
-local lab_num_enrolled "Number Enrolled"
-local lab_avg_attendance "Average Attendance"
-local lab_any_last_year "Attended Last Year"
-local lab_full_attend "Full Attendance"
-
 * main treatment effects (eq 1)
 eststo clear
 foreach y in max_grade any_enrolled num_enrolled avg_attendance any_last_year full_attend {
     eststo main_`y': reg midline_`y' trained_hh baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
 }
 
 * spillover effects (eq 3)
@@ -1087,11 +986,6 @@ foreach y in max_grade any_enrolled num_enrolled avg_attendance any_last_year fu
     * difference between local controls and treated
     test T_L = T_T
     estadd scalar p_diff = r(p)
-	
-    estadd local baseline_control "Yes"
-    estadd local controls "Yes"
-    estadd local distance "Yes"
-    estadd local auction "Yes"
     
     drop T_L T_T
 }
@@ -1115,9 +1009,9 @@ esttab main_* using "$specifications/education_main.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
-    stats(baseline_control controls distance auction N r2, ///
-        labels("Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(0 0 0 0 %9.0f 3)) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Highest\\Grade}" ///
@@ -1147,9 +1041,9 @@ esttab spill_* using "$specifications/education_spillovers.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff baseline_control controls distance auction N r2, ///
-        labels("P-value L=T" "Baseline Control" "Controls" "Distance Vector" "Auction FE" "N" "R-squared") ///
-        fmt(3 0 0 0 0 %9.0f 3)) ///
+    stats(p_diff N r2, ///
+        labels("P-value L=T" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Highest\\Grade}" ///
@@ -1158,4 +1052,300 @@ esttab spill_* using "$specifications/education_spillovers.tex", replace ///
             "\shortstack{Average\\Attendance}" ///
             "\shortstack{Attended\\Last Year}" ///
             "\shortstack{Full\\Attendance}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
+		
+**************************************************
+* Robustness
+* Winsorize Continuous Variables at 99th Percentile
+**************************************************
+
+* AVR continuous outcomes
+foreach var in avr_harvest_kg avr_recent_kg {
+    foreach period in baseline midline {
+        egen `period'_`var'_p99 = pctile(`period'_`var'), p(99)
+        gen `period'_`var'_w99 = `period'_`var'
+        replace `period'_`var'_w99 = `period'_`var'_p99 if `period'_`var' > `period'_`var'_p99 & !missing(`period'_`var')
+        drop `period'_`var'_p99
+    }
+}
+
+* edu continuous outcomes
+foreach var in max_grade avg_attendance {
+    foreach period in baseline midline {
+        egen `period'_`var'_p99 = pctile(`period'_`var'), p(99)
+        gen `period'_`var'_w99 = `period'_`var'
+        replace `period'_`var'_w99 = `period'_`var'_p99 if `period'_`var' > `period'_`var'_p99 & !missing(`period'_`var')
+        drop `period'_`var'_p99
+    }
+}
+
+* work/school continuous outcomes
+foreach var in work_days_lost total_ag_hours total_trade_hours total_wage_hours {
+    foreach period in baseline midline {
+        egen `period'_`var'_p99 = pctile(`period'_`var'), p(99)
+        gen `period'_`var'_w99 = `period'_`var'
+        replace `period'_`var'_w99 = `period'_`var'_p99 if `period'_`var' > `period'_`var'_p99 & !missing(`period'_`var')
+        drop `period'_`var'_p99
+    }
+}
+
+* food security continuous outcomes
+foreach var in months_soudure rcsi_annual {
+    foreach period in baseline midline {
+        egen `period'_`var'_p99 = pctile(`period'_`var'), p(99)
+        gen `period'_`var'_w99 = `period'_`var'
+        replace `period'_`var'_w99 = `period'_`var'_p99 if `period'_`var' > `period'_`var'_p99 & !missing(`period'_`var')
+        drop `period'_`var'_p99
+    }
+}
+
+* specifications again
+***************************
+* AVR with winsorized values 
+****************************
+eststo clear
+foreach y in avr_harvest_kg_w99 avr_recent_kg_w99 {
+    * extract shorter name for estimation storage
+    local shortname = cond(strpos("`y'","harvest"),"harv","recent")
+    
+    * main treatment effect
+    eststo w99_m_`shortname': reg midline_`y' trained_hh baseline_`y' ///
+        $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+    
+    * treatment arm effects
+    eststo w99_a_`shortname': reg midline_`y' i.treatment_arm baseline_`y' ///
+        $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+    test 1.treatment_arm = 2.treatment_arm
+    estadd scalar p_12 = r(p)
+    test 1.treatment_arm = 3.treatment_arm
+    estadd scalar p_13 = r(p)
+    test 2.treatment_arm = 3.treatment_arm
+    estadd scalar p_23 = r(p)
+}
+
+* export main effects with winsorized values
+esttab w99_m_* using "$specifications/avr_main_effects_winsor.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on AVR (Winsorized at 99th Percentile)}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Continuous outcomes Winsorized at 99th percentile. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
+    cells(b(star fmt(3)) se(par fmt(3))) ///
+    keep(trained_hh) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
+    star(* 0.10 ** 0.05 *** 0.01) ///
+    collabels(none) ///
+    mlabels("\shortstack{12-Month\\Amount}" ///
+            "\shortstack{7-Day\\Amount}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
+
+* export treatment arm effects with winsorized values
+esttab w99_a_* using "$specifications/avr_arms_effects_winsor.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Arm Effects on AVR (Winsorized at 99th Percentile)}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Continuous outcomes Winsorized at 99th percentile. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
+    cells(b(star fmt(3)) se(par fmt(3))) ///
+    keep(*.treatment_arm) ///
+    stats(p_12 p_13 p_23 N r2, ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 %9.0f 3)) ///
+    star(* 0.10 ** 0.05 *** 0.01) ///
+    collabels(none) ///
+    mlabels("\shortstack{12-Month\\Amount}" ///
+            "\shortstack{7-Day\\Amount}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
+
+**************************************
+* food security with Winsorized values 
+**************************************
+eststo clear
+foreach y in months_soudure_w99 rcsi_annual_w99 {
+    * extract shorter name for estimation storage
+    local shortname = cond(strpos("`y'","months"),"soudure","rcsi")
+    
+    eststo w99_`shortname': reg midline_`y' i.treatment_arm baseline_`y' ///
+        $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+    
+    * test differences between arms
+    test 1.treatment_arm = 2.treatment_arm  // pub vs priv Benefits
+    estadd scalar p_12 = r(p)
+    test 1.treatment_arm = 3.treatment_arm  // pub vs both
+    estadd scalar p_13 = r(p)
+    test 2.treatment_arm = 3.treatment_arm  // priv vs both
+    estadd scalar p_23 = r(p)
+}
+
+* export winsorized food security results
+esttab w99_* using "$specifications/food_security_winsor.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Food Security Outcomes (Winsorized at 99th Percentile)}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Outcomes Winsorized at 99th percentile. Lean season months measures self-reported soudure duration. Reduced CSI is composite index of coping strategies. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
+    cells(b(star fmt(3)) se(par fmt(3))) ///
+    keep(*.treatment_arm) ///
+    stats(p_12 p_13 p_23 N r2, ///
+        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 %9.0f 3)) ///
+    star(* 0.10 ** 0.05 *** 0.01) ///
+    collabels(none) ///
+    mlabels("\shortstack{Lean Season\\Months}" ///
+            "\shortstack{Reduced CSI}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
+
+*************************************************
+* work and school outcomes with winsorized values
+*************************************************
+eststo clear
+
+* work days lost (shortened names)
+foreach y in work_days_lost_w99 {
+    * extract shorter name for estimation storage
+    local shortname = "work"
+    
+    eststo w99_`shortname': reg midline_`y' trained_hh baseline_`y' ///
+        $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+}
+
+* export winsorized work results
+esttab w99_work using "$specifications/work_main_winsor.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Work Days Lost (Winsorized at 99th Percentile)}" ///
+        "\begin{tabular}{l*{1}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Continuous outcomes Winsorized at 99th percentile. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
+    cells(b(star fmt(3)) se(par fmt(3))) ///
+    keep(trained_hh) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
+    star(* 0.10 ** 0.05 *** 0.01) ///
+    collabels(none) ///
+    mlabels("\shortstack{Work Days\\Lost}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
+eststo clear
+
+* labor outcomes (shortened names)
+foreach y in total_ag_hours_w99 total_trade_hours_w99 total_wage_hours_w99 {
+    * extract shorter identifier
+    local shortname = substr("`y'", 7, 2)
+    
+    * store regression
+    eststo w99_`shortname': reg midline_`y' trained_hh baseline_`y' ///
+        $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+}
+
+* export winsorized labor results
+esttab w99_ag w99_tr w99_wa using "$specifications/labor_main_winsor.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Labor Supply (Winsorized at 99th Percentile)}" ///
+        "\begin{tabular}{l*{3}{c}}") ///
+    posthead("\midrule") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Hours worked Winsorized at 99th percentile. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
+    cells(b(star fmt(3)) se(par fmt(3))) ///
+    keep(trained_hh) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
+    star(* 0.10 ** 0.05 *** 0.01) ///
+    collabels(none) ///
+    mlabels("\shortstack{Agricultural\\Hours}" ///
+            "\shortstack{Trading\\Hours}" ///
+            "\shortstack{Wage\\Hours}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
+
+*******************************************
+* education outcomes with winsorized values
+*******************************************
+
+* main treatment effects with winsorized values
+eststo clear
+
+* attainment regression with shortened name
+foreach y in max_grade_w99 {
+    eststo w99_grade: reg midline_`y' trained_hh baseline_`y' ///
+        $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+}
+
+* attendance regression with shortened name
+foreach y in avg_attendance_w99 {
+    eststo w99_attend: reg midline_`y' trained_hh baseline_`y' ///
+        $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+}
+
+* export winsorized education results
+esttab w99_grade w99_attend using "$specifications/education_main_winsor.tex", replace ///
+    style(tex) booktabs ///
+    prehead("\begin{table}[htbp]\centering" ///
+        "\begin{threeparttable}" ///
+        "\caption{Treatment Effects on Educational Outcomes (Winsorized at 99th Percentile)}" ///
+        "\begin{tabular}{l*{2}{c}}") ///
+    posthead("\midrule" ///
+        "&\multicolumn{1}{c}{Attainment}&\multicolumn{1}{c}{Attendance}\\\cmidrule(lr){2-2}\cmidrule(lr){3-3}") ///
+    prefoot("\midrule") ///
+    postfoot("\bottomrule" ///
+        "\end{tabular}" ///
+        "\begin{tablenotes}\footnotesize" ///
+        "\item \textit{Notes:} Continuous outcomes Winsorized at 99th percentile. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\end{tablenotes}" ///
+        "\end{threeparttable}" ///
+        "\end{table}") ///
+    cells(b(star fmt(3)) se(par fmt(3))) ///
+    keep(trained_hh) ///
+    stats(N r2, ///
+        labels("N" "R-squared") ///
+        fmt(%9.0f 3)) ///
+    star(* 0.10 ** 0.05 *** 0.01) ///
+    collabels(none) ///
+    mlabels("\shortstack{Highest\\Grade}" ///
+            "\shortstack{Average\\Attendance}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))

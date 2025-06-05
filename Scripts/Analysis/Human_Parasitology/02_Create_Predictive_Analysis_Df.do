@@ -25,19 +25,18 @@
 
 								* 02_child_infection_analysis_df.dta
 
-*-----------------------------------------*
+*----------------------------------------*
 **# INITIATE SCRIPT
-*-----------------------------------------*
-		
+*----------------------------------------*		
 	clear all
 	set mem 100m
 		set maxvar 30000
 		set matsize 11000
 	set more off
 
-*-----------------------------------------*
+*----------------------------------------*
 **# SET FILE PATHS
-*-----------------------------------------*
+*----------------------------------------*
 
 *<><<><><>><><<><><>>
 
@@ -66,9 +65,9 @@
 *<><<><><>><><<><><>>
 
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R0 - Household Roster Module 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -152,23 +151,49 @@
 **#####Begin variable creation
 *-------------------*				
 
+*-------------*
+**##### Winsorize hh_10
+*-------------*	
+
+* Get detailed summary stats
+summarize hh_10_, detail
+
+* Display specific percentiles
+display "90th percentile: " r(p90)
+display "95th percentile: " r(p95)
+display "99th percentile: " r(p99)
 
 /* 
-*-------------*
-**##### hh_15
-*-------------*			
-		
-		*How did he use aquatic vegetation?
-* Creating binary variables for hh_15
-		foreach x in 1 2 3 4 5 99 {
-			gen hh_15_`x' = hh_15_ == `x'
-			replace hh_15_`x' = 0 if missing(hh_15_)
-		}				
-			drop hh_15_
+// Step 1: Generate mean and SD variables
+gen hh_10_mean = r(mean)
+gen hh_10_sd   = r(sd)
+
+summarize hh_10_, meanonly
+replace hh_10_mean = r(mean)
+replace hh_10_sd   = r(sd)
+
+// Step 2: Calculate 4σ and 6σ cutoffs
+gen hh_10_lower4 = hh_10_mean - 4 * hh_10_sd
+gen hh_10_upper4 = hh_10_mean + 4 * hh_10_sd
+
+gen hh_10_lower6 = hh_10_mean - 6 * hh_10_sd
+gen hh_10_upper6 = hh_10_mean + 6 * hh_10_sd
+
+// Step 3: Winsorize at 4σ
+gen hh_10_winsor4 = hh_10_
+replace hh_10_winsor4 = hh_10_lower4 if hh_10_ < hh_10_lower4
+replace hh_10_winsor4 = hh_10_upper4 if hh_10_ > hh_10_upper4
+
+// Step 4: Winsorize at 6σ
+gen hh_10_winsor6 = hh_10_
+replace hh_10_winsor6 = hh_10_lower6 if hh_10_ < hh_10_lower6
+replace hh_10_winsor6 = hh_10_upper6 if hh_10_ > hh_10_upper6
 			
 */
-
-
+					
+					
+					
+					
 *-------------*
 **##### fishing
 *-------------*	
@@ -183,12 +208,12 @@
 *-------------------*	
 
 
-		save "$tidy\household_roster", replace 
+		save "$tidy\base_household_roster", replace 
 		
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R0 - HEALTH MODULE 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -253,11 +278,11 @@
 *-------------------*				
 
 			
-		save "$tidy\health_module.dta", replace 
+		save "$tidy\base_health.dta", replace 
 		
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R0 - STANDARD OF LIVING MODULE 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -335,11 +360,11 @@
 		drop individ match_score identificant
 */
 		
-				save "$tidy\standard_of_living_module.dta", replace 
+				save "$tidy\base_standard_of_living.dta", replace 
 				
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R0 - BELIEFS MODULE
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -399,11 +424,11 @@
 
 drop beliefs_01 beliefs_02 beliefs_03
 		
-			save "$tidy\beliefs_module.dta", replace 	
+			save "$tidy\base_beliefs.dta", replace 	
 			
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R0 - COMMUNITY DATA 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -432,10 +457,10 @@ drop beliefs_01 beliefs_02 beliefs_03
 **#####Save data set 
 *-------------------*		
 	
-	save "$tidy\baseline_community.dta", replace 
-*-----------------------------------------*
+	save "$tidy\base_community.dta", replace 
+*----------------------------------------------------------------------------------*
 **### R0 - ASSET INDEX
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -459,8 +484,11 @@ drop beliefs_01 beliefs_02 beliefs_03
 		}
 		
 		** missings come from replaced/merged households 
+	
+		drop if missing(asset_index0)  & missing(asset_index_std0)
 		
-		drop if missing(asset_index0)  & missing(asset_index_std0) 
+		rename asset_index0 asset_index
+		rename asset_index_std0 asset_index_std
 		
 		** 31 dropped
 					
@@ -470,9 +498,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 	
 	save "$tidy\base_asset", replace 
 		
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R0 - ECOLOGICAL DATA 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -484,7 +512,7 @@ drop beliefs_01 beliefs_02 beliefs_03
 **#####Keep pre-selected variables
 *-------------------*
 
-	 keep hhid_village Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
+	 keep hhid_village Cerratophyllummassg Bulinus Biomph Humanwatercontact  InfectedBulinus  InfectedBiomphalaria schisto_indicator 
 		
 *-------------------*
 **#####Check for missings
@@ -496,17 +524,28 @@ drop beliefs_01 beliefs_02 beliefs_03
 		}
 		
 		** 3 villages missing humanwatercoontact
+		
+*-------------------*
+**#####Tidy up 
+*-------------------*	
+
+		destring Cerratophyllummassg, replace
+		destring Biomph, replace 
+		
+		replace Humanwatercontact = "50" if Humanwatercontact == "+50"
+			destring Humanwatercontact, replace 
+
 					
 *-------------------*
 **#####Save data set 
 *-------------------*		
 	
 	
-				save "$tidy\eco_data.dta", replace 
+				save "$tidy\base_eco.dta", replace 
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R0 - PARASITOLOGICAL DATA
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -565,7 +604,14 @@ drop beliefs_01 beliefs_02 beliefs_03
 		  
 		*** summarize infection results overall ***
 		sum sh_inf sm_inf  
-
+		
+		
+*-------------*
+**##### sm_sh_inf
+*-------------*	
+		
+		gen sm_sh_inf = (sm_inf == 1 | sh_inf == 1)
+		
 		
 *-------------*
 **##### sh_egg_count
@@ -606,24 +652,19 @@ drop beliefs_01 beliefs_02 beliefs_03
 *-------------------*
 			
 		
-	keep hhid_village village_name identificant sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg	
+	keep hhid_village village_name identificant sh_inf sm_inf sm_sh_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg	
 		
 *-------------------*
 **#####Save data set 
 *-------------------*		
 	
 	
-/*
-	merge m:m identificant using "${output}\child_matched_IDs_df", nogen 
-		keep if !missing(match_score)	
-*/
-	
-				save "$tidy\paras_data.dta", replace 
-				
+				save "$tidy\base_paras.dta", replace 
+		
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### Prepare to export main df
-*-----------------------------------------*		
+*----------------------------------------------------------------------------------*		
 			
 *-------------------*
 **#####Merge data frames
@@ -632,7 +673,7 @@ drop beliefs_01 beliefs_02 beliefs_03
 
 **	bring in CRDES survey individual level FIRST and merge 
 
-		use "$tidy\household_roster", clear
+		use "$tidy\base_household_roster", clear
 			
 					*drop if missing(hh_full_name_calc_) | missing(hh_gender_) | missing(hh_age_)
 					drop if hh_gender_ == . & hh_age_ == . 
@@ -640,37 +681,39 @@ drop beliefs_01 beliefs_02 beliefs_03
 							tempfile hh_roster
 								save `hh_roster'
 								
-		use "$tidy\health_module", clear		
+		use "$tidy\base_health", clear		
 					*drop if missing(health_5_2_) & missing(healthgenre_) & missing(healthindex_)
 						drop if missing(health_5_2_) | missing(healthgenre_) | missing(healthindex_)
 						
 							drop healthindex_ healthgenre_
 
 					merge 1:1 individ using `hh_roster', nogen
-							 save "$tidy\indiv_level_data.dta", replace 
+							 save "$tidy\base_indiv_level_data.dta", replace 
 								
 ** now bring in CRDES survey household level data SECOND and merge
 
-		use "$tidy\standard_of_living_module", clear
+		use "$tidy\base_standard_of_living", clear
 			
-					merge 1:1 hhid using "$tidy\beliefs_module", nogen // household level data 		
+					merge 1:1 hhid using "$tidy\base_beliefs", nogen // household level data 		
 					merge 1:1 hhid using "$tidy\base_asset.dta", nogen
 											
-							save "$tidy\hh_level_data.dta", replace 
+							save "$tidy\base_hh_level_data.dta", replace 
 							
 ** now merge the CRDES survey data together
 
-		use "$tidy\indiv_level_data.dta", clear
+		use "$tidy\base_indiv_level_data.dta", clear
 			
-					merge m:1 hhid using "$tidy\hh_level_data.dta", nogen
+					merge m:1 hhid using "$tidy\base_hh_level_data.dta", nogen
 					merge m:1 hhid_village using "$tidy\baseline_community.dta", nogen
 							save "$tidy\baseline_crdes_base_data", replace 
 							
 ** now bring in child matched IDs the link in the parasitological data and survey data
 
-		use "$paras\child_matched_IDs_df.dta", clear		
+		use "$paras\child_matched_IDs_df.dta", clear	
+			keep if round == 0
+				drop round
 			
-					merge 1:1 identificant using "$tidy\paras_data.dta" // merge in paras data
+					merge 1:1 identificant using "$tidy\base_paras.dta" // merge in paras data
 						keep if _merge == 3
 							drop _merge
 					
@@ -686,28 +729,30 @@ drop beliefs_01 beliefs_02 beliefs_03
 **#####Look at outliers 
 *-------------------*		
 
-	preserve 
-	
-		keep if hh_age_ < 4 | hh_age_ > 18
-			keep hhid_village village_name hhid individ match_score identificant hh_age_ hh_gender_
-	restore 
+		preserve 
+		
+			keep if hh_age_ < 4 | hh_age_ > 18
+				keep hhid_village village_name hhid individ match_score identificant hh_age_ hh_gender_
+				
+		restore 
 							
 				
 			
 *-------------------*
 **#####Order variables
 *-------------------*		
-	
+		gen round = 0
 
 		order hhid_village village_name hhid individ identificant match_score  ///
 		hh_age_ hh_gender_ fishing  ///
 		hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_  ///
 		health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ health_5_5_ health_5_8_ health_5_9_ ///
-		living_01_bin ///
+		living_01_bin living_04_bin ///
 		beliefs_01_bin beliefs_02_bin beliefs_03_bin ///
-		asset_index0 asset_index_std0 ///
-		sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg schisto_indicator ///
-		Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator 
+		asset_index asset_index_std ///
+		q_51 ///
+		sh_inf sm_inf sm_sh_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg schisto_indicator ///
+		Cerratophyllummassg Bulinus Biomph Humanwatercontact InfectedBulinus InfectedBiomphalaria schisto_indicator round
 
 *-------------------*
 **#####Label variables
@@ -722,12 +767,13 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable fishing  "Indicator if individual selected fishing as maing household activity"
 		
 		label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
+		label variable hh_12_6_ "Harvest aquatic vegetation"
 		label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
 		label variable hh_32 "Attends school during the 2023/2024 academic year"
 		label variable hh_37_ "Missed >1 week of school due to illness, past 12mo (children only)"
 	
 
-		label variable health_5_2 "Fell ill in the last 12 months (skip 5.4 if no)"
+		label variable health_5_2 "Fell ill in the last 12 months"
 		label variable health_5_3_1 "Suffered from Malaria"
 		label variable health_5_3_2 "Suffered from Bilharzia"
 		label variable health_5_3_3 "Suffered from Diarrhea"
@@ -739,16 +785,19 @@ drop beliefs_01 beliefs_02 beliefs_03
 
 
 		label variable living_01_bin "Indicator for selected tap water as main source of drinking water"
+		label variable living_04_bin "Indicator for latrine in home"
 		
 		label variable beliefs_01_bin "Prob. self gets bilharzia in next 12mo (1=Agree/Strongly agree)"
 		label variable beliefs_02_bin "Prob. HH member gets bilharzia in next 12mo (1=Agree/Strongly agree)"
 		label variable beliefs_03_bin "Prob. child gets bilharzia in next 12mo (1=Agree/Strongly agree)"
-
-		label variable hh_12_6_ "Harvest aquatic vegetation"
+		
+		label variable asset_index "PCA Asset index"
+		label variable asset_index_std "Standardized PCA Asset index"
 		
 		label variable schisto_indicator "Indicator for presence of schistosomiasis infection"
 		label variable sh_inf "Indicator for Schistosoma haematobium infection"
 		label variable sm_inf "Indicator for Schistosoma mansoni infection"
+		label variable sm_sh_inf "Indicator for Schistosoma manson OR haematobium infection"
 		label variable sh_egg_count "Egg count for Schistosoma haematobium"
 		label variable sm_egg_count "Egg count for Schistosoma mansoni"
 		label variable p1_avg "Average EPG from P1 (Kato-Katz slide 1 and 2)"
@@ -756,6 +805,8 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable total_egg "Total schistosome egg count" 			
 		
 		label variable q_51 "Distance to health facility"
+		label variable round "0 = Baseline, 1 = Midline"
+	
 
 		
 		
@@ -766,17 +817,16 @@ drop beliefs_01 beliefs_02 beliefs_03
 	
 
 				save "$paras\02_baseline_analysis_df.dta", replace 
-			
-			
-*<><<><><>><><<><><>>
+				
+	*<><<><><>><><<><><>>
 **# MIDLINE WORK
 *<><<><><>><><<><><>>
 
  
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R1 - HOUSEHOLD ROSTER MODULE 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **##### Load in data 
@@ -793,12 +843,18 @@ drop beliefs_01 beliefs_02 beliefs_03
 		hh_10* hh_12_6* hh_26* hh_32* hh_37*
 		drop hh_main_activity_o*
 		
+*-------------------*
+**#####reshape
+*-------------------*
 		reshape long individ_ hh_age_ hh_gender_ hh_main_activity_ hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_, i(hhid) j(id)
 
 	rename individ_ individ
 		drop if missing(individ) 
-		drop id hh_age_resp hh_gender_resp
+		drop id hh_age_resp hh_gender_resp hh_12_6
 		
+*-------------------*
+**#####dropped merged hhids
+*-------------------*		
 		
 		drop if inlist(hhid, "133A19", "133A03", "133A20", "133A02", "133A05", "133A11")
 
@@ -859,7 +915,47 @@ drop beliefs_01 beliefs_02 beliefs_03
 
 *-------------------*
 **##### Begin variable creation
-*-------------------*				
+*-------------------*	
+
+
+*-------------*
+**##### Winsorize hh_10
+*-------------*	
+
+* Get detailed summary stats
+summarize hh_10_, detail
+
+* Display specific percentiles
+display "90th percentile: " r(p90)
+display "95th percentile: " r(p95)
+display "99th percentile: " r(p99)
+
+
+/* 
+**  calculate mean and SD
+	summarize hh_10_, meanonly
+	local mu = r(mean)
+	local sd = r(sd)
+
+**  define cutoffs
+	local lower4 = `mu' - 4*`sd'
+	local upper4 = `mu' + 4*`sd'
+
+	local lower6 = `mu' - 6*`sd'
+	local upper6 = `mu' + 6*`sd'
+
+**  create Winsorized versions
+	gen hh_10_winsor4 = hh_10_
+	replace hh_10_winsor4 = `lower4' if hh_10_ < `lower4'
+	replace hh_10_winsor4 = `upper4' if hh_10_ > `upper4'
+
+	gen hh_10_winsor6 = hh_10_
+	replace hh_10_winsor6 = `lower6' if hh_10_ < `lower6'
+	replace hh_10_winsor6 = `upper6' if hh_10_ > `upper6'
+
+		drop hh_10_winsor6 hh_10_winsor4
+*/
+			
 *-------------*
 **##### fishing
 *-------------*	
@@ -894,9 +990,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 		save "$tidy\mid_household_roster", replace 
 		
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R1 - HEALTH MODULE
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -961,9 +1057,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 			
 		save "$tidy\mid_health_module.dta", replace 
 		
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R1 - STANDARD OF LIVING MODULE 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -1032,9 +1128,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 	save "$tidy\mid_standard_of_living_module.dta", replace 
 				
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R1 - BELIEFS MODULE
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -1095,9 +1191,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 		
 			save "$tidy\mid_beliefs_module.dta", replace
 				
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R1 - COMMUNITY DATA 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -1128,9 +1224,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 	
 	save "$tidy\mid_community.dta", replace 
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R1 - ASSET INDEX
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -1158,6 +1254,8 @@ drop beliefs_01 beliefs_02 beliefs_03
 		drop if missing(asset_index1)  & missing(asset_index_std1) 
 		
 		** 31 dropped
+		rename asset_index1 asset_index
+		rename asset_index_std1 asset_index_std
 					
 *-------------------*
 **#####Save data set 
@@ -1168,27 +1266,25 @@ drop beliefs_01 beliefs_02 beliefs_03
 
 
 			
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R1 - ECOLOGICAL DATA 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
 *-------------------*
 
 	use "${eco_data}\DISES_midline_ecological data.dta", clear // eco data 
-		*use "${eco_data}\DISES_baseline_ecological data.dta", clear // eco data 
-		
-				duplicates tag hhid_village, gen(actuallykillme)
-							tab actuallykillme
 
 *-------------------*
 **#####Keep pre-selected variables
 *-------------------*
 
+
 	rename  Cerratophyllummass Cerratophyllummassg
 	rename 	TotalBulinus Bulinus
 	rename 	Biomphalaria Biomph
+
 
 		keep hhid_village Cerratophyllummassg Bulinus Biomph Schistoinfection InfectedBulinus  InfectedBiomphalaria schisto_indicator 
 		
@@ -1202,6 +1298,32 @@ drop beliefs_01 beliefs_02 beliefs_03
 		}
 		
 		** 4 villages missing schisto_indicator due to dried up water point
+		
+*-------------------*
+**#####Tidy things up 
+*-------------------*	
+
+	foreach var in Cerratophyllummassg Bulinus Biomph Schistoinfection {
+			replace `var' = ".a" if `var' == "dried up"
+			replace `var' = ".a" if `var' == "NA"
+						
+			}
+		
+		destring Cerratophyllummassg Bulinus Biomph Schistoinfection, replace 
+		
+		replace schisto_indicator = .a if schisto_indicator == .
+
+*-------------------*
+**#####Collapse at village level
+*-------------------*			
+** 	Only ONE waterpoint was sampled at baseline, which is why we didn't need to collapse. 
+
+**	Collapse to one observation per village:
+
+		collapse ///
+			(mean) Cerratophyllummassg Bulinus Biomph InfectedBulinus InfectedBiomphalaria ///
+			(max) schisto_indicator ///
+			, by(hhid_village)
 					
 *-------------------*
 **#####Save data set 
@@ -1209,9 +1331,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 	
 				save "$tidy\mid_eco_data.dta", replace 
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### R1 - PARASITOLOGICAL DATA
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 
 *-------------------*
 **#####Load in data 
@@ -1277,8 +1399,13 @@ drop beliefs_01 beliefs_02 beliefs_03
 		bysort hhid_village: sum sh_inf sm_inf
 		  
 		*** summarize infection results overall ***
-		sum sh_inf sm_inf  
-
+		sum sh_inf sm_inf 
+		
+*-------------*
+**##### sm_sh_inf
+*-------------*	
+		
+		gen sm_sh_inf = (sm_inf == 1 | sh_inf == 1)
 		
 *-------------*
 **##### sh_egg_count
@@ -1319,7 +1446,7 @@ drop beliefs_01 beliefs_02 beliefs_03
 *-------------------*
 			
 		
-	keep hhid_village village_name identificant sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg	
+	keep hhid_village village_name identificant sh_inf sm_inf sm_sh_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg	
 		
 *-------------------*
 **#####Save data set 
@@ -1328,9 +1455,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 				save "$tidy\mid_paras_data.dta", replace 
 				
 
-*-----------------------------------------*
+*----------------------------------------------------------------------------------*
 **### Prepare to export main df
-*-----------------------------------------*		
+*----------------------------------------------------------------------------------*		
 			
 *-------------------*
 **#####Merge data frames
@@ -1373,7 +1500,7 @@ drop beliefs_01 beliefs_02 beliefs_03
 ** now bring in child matched IDs the link in the parasitological data and survey data
 
 		use "$paras\child_matched_IDs_df.dta", clear
-				
+				drop round
 					merge 1:1 identificant using "$tidy\mid_paras_data.dta" // merge in paras data
 						keep if _merge == 3
 							drop _merge
@@ -1387,26 +1514,23 @@ drop beliefs_01 beliefs_02 beliefs_03
 					merge m:1 hhid_village using "$tidy\mid_eco_data" // merge in eco data
 						keep if _merge == 3
 							drop _merge
-						
-				use "$tidy\mid_eco_data", clear 
-						duplicates tag hhid_village, gen(actuallykillme)
-							tab actuallykillme
-			
+				
 *-------------------*
 **#####Order variables
 *-------------------*		
 	
+	gen round = 1
 
 		order hhid_village village_name hhid individ identificant match_score  ///
 		hh_age_ hh_gender_ fishing  ///
 		hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_  ///
 		health_5_2_ health_5_3_1_ health_5_3_2_ health_5_3_3_ health_5_3_6_ health_5_3_9_ health_5_5_ health_5_8_ health_5_9_ ///
-		living_01_bin ///
+		living_01_bin living_04_bin ///
 		beliefs_01_bin beliefs_02_bin beliefs_03_bin ///
 		asset_index asset_index_std ///
-		sh_inf sm_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg schisto_indicator ///
+		sh_inf sm_inf sm_sh_inf sh_egg_count p1_avg p2_avg sm_egg_count total_egg  ///
 		q_51 ///
-		Cerratophyllummassg Bulinus Biomph Humanwatercontact Schistoinfection InfectedBulinus InfectedBiomphalaria schisto_indicator 
+		Cerratophyllummassg Bulinus Biomph InfectedBulinus InfectedBiomphalaria schisto_indicator round
 
 *-------------------*
 **#####Label variables
@@ -1421,12 +1545,13 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable fishing  "Indicator if individual selected fishing as maing household activity"
 		
 		label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
+		label variable hh_12_6_ "Harvest aquatic vegetation"
 		label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 2=No)"
 		label variable hh_32 "Attends school during the 2023/2024 academic year"
 		label variable hh_37_ "Missed >1 consecutive week of school due to illness in the past 12 months? (1=Yes, 0=No, asked to children)"
 		
 
-		label variable health_5_2 "Fell ill in the last 12 months (skip 5.4 if no)"
+		label variable health_5_2 "Fell ill in the last 12 months"
 		label variable health_5_3_1 "Suffered from Malaria"
 		label variable health_5_3_2 "Suffered from Bilharzia"
 		label variable health_5_3_3 "Suffered from Diarrhea"
@@ -1439,14 +1564,18 @@ drop beliefs_01 beliefs_02 beliefs_03
 
 
 		label variable living_01_bin "Indicator for selected tap water as main source of drinking water"
+		label variable living_04_bin "Indicator for latrine in home"
 		label variable beliefs_01_bin "Probability of contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
 		label variable beliefs_02_bin "Probability of household member contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
 		label variable beliefs_03_bin "Probability of a child contracting bilharzia in the next 12 months (1=Strongly agree/Agree)"
-		label variable hh_12_6_ "Harvest aquatic vegetation"
+		
+		label variable asset_index "PCA Asset index"
+		label variable asset_index_std "Standardized PCA Asset index"
 		
 		label variable schisto_indicator "Indicator for presence of schistosomiasis infection"
 		label variable sh_inf "Indicator for Schistosoma haematobium infection"
 		label variable sm_inf "Indicator for Schistosoma mansoni infection"
+		label variable sm_sh_inf "Indicator for Schistosoma manson OR haematobium infection"
 		label variable sh_egg_count "Egg count for Schistosoma haematobium"
 		label variable sm_egg_count "Egg count for Schistosoma mansoni"
 		label variable p1_avg "Average EPG from P1 (Kato-Katz slide 1 and 2)"
@@ -1454,15 +1583,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable total_egg "Total schistosome egg count"
 		
 		label variable q_51 "Distance to health facility"
+		label variable round "0 = Baseline, 1 = Midline"
 		
-
-/* 
 		
-			label variable q_23 "Access to running drinking water for drinking (1 = Yes, 0 = No)"
-			label variable q_24 "Presence of tap water system if running water is available (1 = Yes, 0 = No)"
-*/
-			
-			
 *-------------------*
 **#####save final data frame
 *-------------------*		
@@ -1479,13 +1602,16 @@ drop beliefs_01 beliefs_02 beliefs_03
 			append using "$paras\02_midline_analysis_df.dta"
 
 			save "$paras\03_mid_base_analysis_df.dta", replace 
+ 
 
-
+	use "$paras\03_mid_base_analysis_df.dta", clear
 			
-				
-			
-			
-			
+						foreach var of varlist _all {
+			quietly count if missing(`var')
+			display "`var': " r(N)
+		}
+		
+	
 			
 			
 			

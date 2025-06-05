@@ -1,0 +1,627 @@
+#INITIATE HERE - load packages
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr",
+#               "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", "haven", "caret",
+#               "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "glmnet", "multiwayvcov")
+
+packages <- c("dplyr", "readr", "tidyr", "stargazer",
+             "tidyverse", "kableExtra", "haven", "detectseparation",
+              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov")
+
+# install.packages("haven")
+# library("haven")
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages without printing any output
+invisible(lapply(packages, library, character.only = TRUE))
+
+
+```
+
+
+##Define project specific paths 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Choose the correct project root based on availability
+proj_root <- if (file.exists(proj_paths$projects)) {
+  proj_paths$projects
+} else {
+  proj_paths$alternative_projects
+}
+
+# Define project subpaths manually using file.path for cross-platform safety
+proj <- list(
+  p1 = file.path(proj_root, "Data_Management", "Output", "Analysis", "Human_Parasitology", "Analysis_Data")
+)
+
+# Full path to Stata file
+file_path_infection_df <- file.path(proj$p1, "03_mid_base_analysis_df.dta")
+
+# Read the dataset
+infection_df <- read_dta(file_path_infection_df)
+
+
+```
+
+### Subset data
+
+###### Analysis data
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+analysis_df <- infection_df %>%
+  select(-Humanwatercontact, -p2_avg, -q_51) %>%
+  na.omit()
+
+# nrow(analysis_df)
+# nrow(infection_df)
+
+
+```
+
+
+##### Training testing data
+
+Here we create Training and Testing data to perform prediction by subsetting 70% of the data as training observations, and 30% as testing. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Total number of observations
+n <- nrow(analysis_df)
+
+# Create a vector of shuffled row indices
+shuffled_indices <- sample(n)
+
+# Compute the number of training observations (70%)
+train_size <- floor(0.7 * n)
+
+# Indices for training and testing
+train_indices <- shuffled_indices[1:train_size]
+test_indices <- shuffled_indices[(train_size + 1):n]
+
+# Subset the dataframes
+train_df <- analysis_df[train_indices, ]
+test_df <- analysis_df[test_indices, ]
+
+# Check the sizes
+cat("Training set size:", nrow(train_df), "\n")
+cat("Testing set size:", nrow(test_df), "\n")
+
+```
+
+
+
+# Summary Stats
+•	Compute Summary Statistics: We will calculate descriptive statistics for the selected variables 
+**Variables:**
+
+- **N** (sample size)
+
+- **Min**
+
+- **Mean**
+
+- **Max**
+
+- **Standard Deviation (SD)**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+      
+
+
+summary_stats <- function(data, exclude = NULL) {
+  # Remove excluded columns
+  if (!is.null(exclude)) {
+    data <- data[ , !(names(data) %in% exclude)]
+  }
+
+  # Keep only numeric columns
+  data_numeric <- data[ , sapply(data, is.numeric)]
+
+  # Remove columns where all values are NA
+  data_numeric <- data_numeric[ , colSums(!is.na(data_numeric)) > 0, drop = FALSE]
+
+  # Extract variable labels (if present)
+  labels <- sapply(data_numeric, function(x) attr(x, "label"))
+
+ # Compute summary statistics
+  summary_df <- data.frame(
+    Question = labels,
+    Variable = names(data_numeric),
+    N = sapply(data_numeric, function(x) sum(!is.na(x))),
+    Min = round(sapply(data_numeric, function(x) min(x, na.rm = TRUE)), 2),
+    Mean = round(sapply(data_numeric, function(x) mean(x, na.rm = TRUE)), 2),
+    Max = round(sapply(data_numeric, function(x) max(x, na.rm = TRUE)), 2),
+    SD = round(sapply(data_numeric, function(x) sd(x, na.rm = TRUE)), 2),
+    row.names = NULL,
+    stringsAsFactors = FALSE
+  )
+
+  return(summary_df)
+}
+
+##on full set of data
+ paras_sum_stats <- summary_stats(infection_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
+```
+ 
+Here are the summary stats for the complete set of pre-selected variables, which includes rows with any missings.  
+ 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ 
+ kable(paras_sum_stats, format = "html", caption = "Summary Statistics for Infection Data") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+
+        # saveRDS(paras_sum_stats, file = "C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats")
+```  
+
+##### Analysis Data Summary Stats
+
+Here are the summary stats for the actual data I use to run the analysis, which drops rows with any missings, and I removed variables with high amounts of missings (Humanwatercontact, p2_avg) and q_51 since we'll be using q_51_W99 (winsorized at the 99th percentile)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}          
+ paras_sum_stats_ad <- summary_stats(analysis_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
+
+ 
+ kable(paras_sum_stats_ad, format = "html", caption = "Summary Statistics for Analysis Data") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+ 
+   # saveRDS(paras_sum_stats_ad, file = "C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats_ad")
+
+```
+
+# BEGIN ANALYSIS
+
+This Analysis portion is broken down into 3 parts for each of our outcome variables of interest: 
+
+• sh_inf (S. haematobium Infection indicator), constructed using the parasitological data by:
+
+  - **Equals 1 if egg count from either urine filtration (fu_p1 or fu_p2) is greater than 0; otherwise 0.     Indicates S. haematobium infection (urinary schistosomiasis).**
+
+• sm_inf (S. mansoni infection indicator), constructed using the parasitological data by:
+
+  - **Equals 1 if egg count from any of the four stool slides (p1_kato1_k1_pg, p1_kato2_k2_peg, p2_kato1_k1_epg,      p2_kato2_k2_epg) is greater than 0; otherwise 0. Indicates S. mansoni infection (intestinal     schistosomiasis).**
+
+
+• sm_sh_inf S. mansoni AND S. haematobium infection indicator),
+
+  - **constructed if sm_inf OR sh_inf = 1.**
+
+# SH_INF
+
+•	Run Lasso regression to determine which variables show the highest predictive power to help determine covariates. 
+
+
+### Lasso Regression
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+exclude_vars <- c("hhid_village", "village_name", "hhid", "individ", 
+                  "identificant", "match_score", "round", "sh_inf")  # Exclude outcome too
+
+# Grab all other column names
+sh_covariates <- setdiff(names(analysis_df), exclude_vars)
+
+  # Create predictor matrix
+  sh_x <- data.matrix(analysis_df[, sh_covariates])
+  sh_y <- analysis_df$sh_inf
+
+#perform k-fold cross-validation to find optimal lambda value
+sh1 <- cv.glmnet(sh_x, sh_y, family = "binomial", alpha = 1)
+
+sh1_best_lambda <- sh1$lambda.min
+
+#produce plot of test MSE by lambda value
+plot(sh1) 
+
+
+#find coefficients of best model
+sh1_best_model <- glmnet(sh_x, sh_y, alpha = 1, lambda = sh1_best_lambda)
+coef(sh1_best_model)
+
+
+# Extract coefficients at best lambda
+sh_mat <- coef(sh1_best_model, s = sh1_best_lambda)
+
+# Convert to named vector and find non-zero coefficients
+sh_vars_raw <- rownames(sh_mat)[sh_mat[, 1] != 0]
+
+# Remove intercept from selected vars
+sh_vars <- setdiff(sh_vars_raw, c("(Intercept)")) #confirm the precise variables we're interested in
+
+
+#print(sh_vars)
+
+kable(sh_vars, format = "html", caption = "Best Predictors for sh_inf") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+
+```
+
+### Logit Model
+
+A logistic regression model will be specified using the selected individual-level and community-level covariates.
+
+**Covariates:**
+
+- **Individual-level**: age, gender, self-reported health status (e.g., blood in stool/urine).
+- **Community-level**: village predictors (e.g., mass of submerged vegetation, snail prevalence, community survey data).
+
+
+```{r}
+
+sh_vars_final <- setdiff(names(analysis_df), exclude_vars)
+
+sh_y <- "sh_inf"
+# Build formula string
+sh_formula <- paste(sh_y, "~", paste(sh_vars, collapse = " + "))
+
+# Fit logistic regression model
+sh_model <- glm(as.formula(sh_formula), data = train_df, family = "binomial")
+
+#sh_cse <- vcovCL(sh_model, cluster = train_df$hhid_village)
+
+# Apply coeftest with clustered SE
+#sh_model_cse <- coeftest(sh_model, vcov. = sh_cse) KRM - commenting out as we don't need this for classification models
+
+print(sh_model)
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Install if you don't have it
+# library(detectseparation)
+# 
+# # Run detection on your logistic model formula and data
+# # Create model matrix and response
+# glm(as.formula(sh_formula), data = train_df, family = binomial("logit"), method ="detect_separation")
+# 
+# # Assume you have a data.frame called train_df and a vector of variable names: sh_vars
+# # And your outcome variable is called 'sh_inf'
+# 
+# problematic_vars <- c()
+# 
+# for (var in sh_vars) {
+#   # Build the formula for a single predictor
+#   f <- as.formula(paste("sh_inf ~", var))
+#   
+#   # Try to fit the model
+#   fit <- tryCatch(
+#     glm(f, data = train_df, family = binomial()),
+#     warning = function(w) w,
+#     error = function(e) e
+#   )
+#   
+#   # Check for convergence warnings or infinite coefficients
+#   if (inherits(fit, "warning") || inherits(fit, "error") ||
+#       any(is.infinite(coef(fit))) || !fit$converged) {
+#     cat("⚠️ Problem with variable:", var, "\n")
+#     problematic_vars <- c(problematic_vars, var)
+#   }
+# }
+# 
+# # Output
+# cat("\nVariables causing potential separation:\n")
+# print(problematic_vars)
+
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+# sh_vars_final <- setdiff(sh_vars, c("sh_egg_count", "sm_egg_count", "p1_avg"))
+# 
+# sh_y <- "sh_inf"
+# # Build formula string
+# sh_formula <- paste(sh_y, "~", paste(sh_vars_final, collapse = " + "))
+# 
+# # Fit logistic regression model
+# sh_model <- glm(as.formula(sh_formula), data = train_df, family = "binomial")
+# sh_cse <- vcovCL(sh_model, cluster = train_df$hhid_village)
+# 
+# # Apply coeftest with clustered SE
+# sh_model_cse <- coeftest(sh_model, vcov. = sh_cse)
+# sh_model_cse
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# problematic_vars <- c()
+# 
+# for (var in sh_vars_final) {
+#   # Build the formula for a single predictor
+#   f <- as.formula(paste("sh_inf ~", var))
+#   
+#   # Try to fit the model
+#   fit <- tryCatch(
+#     glm(f, data = train_df, family = binomial()),
+#     warning = function(w) w,
+#     error = function(e) e
+#   )
+#   
+#   # Check for convergence warnings or infinite coefficients
+#   if (inherits(fit, "warning") || inherits(fit, "error") ||
+#       any(is.infinite(coef(fit))) || !fit$converged) {
+#     cat("⚠️ Problem with variable:", var, "\n")
+#     problematic_vars <- c(problematic_vars, var)
+#   }
+# }
+# 
+# # Output
+# cat("\nVariables causing potential separation:\n")
+# print(problematic_vars)
+# 
+# 
+# problematic_vars <- c()
+# 
+# for (var in sh_vars_final) {
+#   # Formula with one predictor against all others
+#   other_vars <- setdiff(sh_vars_final, var)
+#   f <- as.formula(paste(var, "~", paste(other_vars, collapse = "+")))
+#   
+#   # Fit linear model
+#   fit <- tryCatch(
+#     lm(f, data = train_df),
+#     error = function(e) e
+#   )
+#   
+#   # Check if model fit failed or R^2 very high (collinearity)
+#   if (inherits(fit, "error")) {
+#     cat("⚠️ Error fitting", var, "\n")
+#     problematic_vars <- c(problematic_vars, var)
+#   } else {
+#     r2 <- summary(fit)$r.squared
+#     if (!is.na(r2) && r2 > 0.9) {  # threshold can be changed
+#       cat("⚠️ High collinearity detected for:", var, "(R^2 =", round(r2,3), ")\n")
+#       problematic_vars <- c(problematic_vars, var)
+#     }
+#   }
+# }
+# 
+# cat("\nVariables likely collinear:\n")
+# print(problematic_vars)
+# 
+# 
+
+```
+
+
+
+#### Prediction - all
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# test_probs <- predict(sh_model, newdata = test_df, type = "response")
+# 
+# head(test_probs)
+# 
+# # For example, classify as positive if prob > 0.5
+# threshold <- 0.5
+# test_pred_class <- ifelse(test_probs > threshold, 1, 0)
+# 
+# actual <- test_df$sh_inf
+# 
+# table(Predicted = test_pred_class, Actual = actual)
+
+
+```
+
+We will:
+
+- **Compute predicted probabilities** for each individual using the model.
+- **Threshold Selection**: Start with a 0.5 threshold for classifying individuals as infected (probability > 0.5) or uninfected (probability ≤ 0.5).
+- **Confusion Matrix**: Generate a 2x2 confusion matrix comparing predicted versus actual infections (infected vs. non-infected).
+  - **False Negative Rate (FNR)**: The proportion of actual infected individuals incorrectly predicted as uninfected.
+  - **False Positive Rate (FPR)**: The proportion of uninfected individuals incorrectly predicted as infected.
+- **Threshold Iteration**: Incrementally adjust the threshold (e.g., from 0.1 to 0.9) and recalculate the confusion matrix, FNR, and FPR at each step.
+- **Optimization**: Identify the threshold that minimizes the combined classification error (FNR + FPR).
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+test_probs <- predict(sh_model, newdata = test_df, type = "response")
+
+
+evaluate_thresholds <- function(test_probs, actual, thresholds = seq(0.1, 0.9, by = 0.1)) {
+  results <- data.frame()
+  
+  for (threshold in thresholds) {
+    pred_class <- ifelse(test_probs > threshold, 1, 0)
+    
+    TP <- sum(pred_class == 1 & actual == 1)
+    TN <- sum(pred_class == 0 & actual == 0)
+    FP <- sum(pred_class == 1 & actual == 0)
+    FN <- sum(pred_class == 0 & actual == 1)
+    
+    FPR <- ifelse((FP + TN) > 0, FP / (FP + TN), NA)
+    FNR <- ifelse((FN + TP) > 0, FN / (FN + TP), NA)
+    Sum_FPR_FNR <- FPR + FNR
+    
+    results <- rbind(results, data.frame(
+      Threshold = threshold,
+      TP = TP, TN = TN, FP = FP, FN = FN,
+      FPR = round(FPR, 3),
+      FNR = round(FNR, 3),
+      Sum_FPR_FNR = round(Sum_FPR_FNR, 3)
+    ))
+  }
+  
+  # Find threshold that minimizes FPR + FNR
+  min_row <- results[which.min(results$Sum_FPR_FNR), ]
+  attr(results, "best_threshold") <- min_row$Threshold
+  
+  return(results)
+}
+  
+
+results_df <- evaluate_thresholds(test_probs, test_df$sh_inf)
+
+kable(results_df, format = "html", caption = "Confusion Matrix for sh_inf at each threshold") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+
+
+# Best threshold (minimizing FPR + FNR)
+sh_best_threshold <- attr(results_df, "best_threshold")
+
+
+kable(sh_best_threshold, format = "html", caption = "Best threshold") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+##no variation - at any threshold, parasitological variables are able to nearly perfectly predict. 
+
+```
+
+
+#### Prediction - survey
+
+Regression output from running logit regression using ONLY survey variables. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+sh_y <- "sh_inf"
+
+sh_vars_survey <- c(
+  "hh_age_", "hh_gender_", "hh_10_w99", "hh_12_6_", 
+  "hh_37_", "health_5_3_1_", "health_5_3_3_", "health_5_3_6_", 
+  "health_5_3_9_", "health_5_5_", "health_5_8_", "health_5_9_", 
+  "living_01_bin", "living_04_bin", "beliefs_01_bin", "asset_index", 
+  "q_51_w99"
+)
+
+# Build formula string
+sh_formula_survey <- paste(sh_y, "~", paste(sh_vars_survey, collapse = " + "))
+
+# Fit logistic regression model
+sh_model2 <- glm(as.formula(sh_formula_survey), data = train_df, family = "binomial")
+# sh_cse <- vcovCL(sh_model2, cluster = train_df$hhid_village)
+# 
+# # Apply coeftest with clustered SE
+# sh_model_cse <- coeftest(sh_model2, vcov. = sh_cse)
+
+print(sh_model2)
+
+# See summary
+#summary(sh_model_cse)
+
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# test_probs <- predict(sh_model, newdata = test_df, type = "response")
+# 
+# head(test_probs)
+# 
+# # For example, classify as positive if prob > 0.5
+# threshold <- 0.5
+# test_pred_class <- ifelse(test_probs > threshold, 1, 0)
+# 
+# actual <- test_df$sh_inf
+# 
+# table(Predicted = test_pred_class, Actual = actual)
+
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+test_probs <- predict(sh_model2, newdata = test_df, type = "response")
+
+
+
+### Generalized to function 
+
+evaluate_thresholds <- function(test_probs, actual, thresholds = seq(0.1, 0.9, by = 0.1)) {
+  results <- data.frame()
+  
+  for (threshold in thresholds) {
+    pred_class <- ifelse(test_probs > threshold, 1, 0)
+    
+    TP <- sum(pred_class == 1 & actual == 1)
+    TN <- sum(pred_class == 0 & actual == 0)
+    FP <- sum(pred_class == 1 & actual == 0)
+    FN <- sum(pred_class == 0 & actual == 1)
+    
+    FPR <- ifelse((FP + TN) > 0, FP / (FP + TN), NA)
+    FNR <- ifelse((FN + TP) > 0, FN / (FN + TP), NA)
+    Sum_FPR_FNR <- FPR + FNR
+    
+    results <- rbind(results, data.frame(
+      Threshold = threshold,
+      TP = TP, TN = TN, FP = FP, FN = FN,
+      FPR = round(FPR, 3),
+      FNR = round(FNR, 3),
+      Sum_FPR_FNR = round(Sum_FPR_FNR, 3)
+    ))
+  }
+  
+  # Find threshold that minimizes FPR + FNR
+  min_row <- results[which.min(results$Sum_FPR_FNR), ]
+  attr(results, "best_threshold") <- min_row$Threshold
+  
+  return(results)
+}
+  
+
+results_df <- evaluate_thresholds(test_probs, test_df$sh_inf)
+print(results_df)
+
+# Best threshold (minimizing FPR + FNR)
+sh_best_threshold_survey <- attr(results_df, "best_threshold")
+
+kable(results_df, format = "html", caption = "Confusion Matrix for sh_inf at each threshold using only survey covariates") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+
+
+
+kable(sh_best_threshold_survey, format = "html", caption = "Survey Covariates Confusion Matrix Best Threshold") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+
+```
+
+
+##### Summarize and visualize the probababilities
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+### visulalize 
+
+summary(test_probs)
+hist(test_probs, breaks = 20, col = "skyblue", main = "Distribution of Predicted Probabilities")
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

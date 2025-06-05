@@ -16,9 +16,11 @@ output: html_document
 #               "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "glmnet", "multiwayvcov")
 
 packages <- c("dplyr", "readr", "tidyr",
-             "tidyverse", "kableExtra", 
+             "tidyverse", "kableExtra", "haven",
               "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov")
 
+# install.packages("haven")
+# library("haven")
 # Install any missing packages
 new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
 if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
@@ -52,9 +54,6 @@ proj <- list(
 
 # Full path to Stata file
 file_path_infection_df <- file.path(proj$p1, "03_mid_base_analysis_df.dta")
-
-# Load required library
-library(haven)
 
 # Read the dataset
 infection_df <- read_dta(file_path_infection_df)
@@ -109,7 +108,7 @@ summary_stats <- function(data, exclude = NULL) {
  
  paras_sum_stats
   
-  saveRDS(paras_sum_stats, file = "C:/Users/km978/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats")
+  saveRDS(paras_sum_stats, file = "C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats")
 
 ```
 
@@ -276,7 +275,6 @@ coef(sm_sh1_best_model)
 
 
 # 2.4 Model Specification
-##  sh_inf
 ### training testing data
 
 ```{r}
@@ -303,6 +301,7 @@ cat("Testing set size:", nrow(test_df), "\n")
 
 ```
 
+##  sh_inf
 
 ```{r}
 
@@ -358,54 +357,54 @@ table(Predicted = test_pred_class, Actual = actual)
 
 
 
-2.5 Classification and Model Selection
+#2.5 Classification and Model Selection
 ##  sh_inf
 
 
 ```{r}
 
-# 
-# compute_classification_summary <- function(actual, predicted_probs, thresholds) {
-#   summary_list <- list()
-#   
-#   for (t in thresholds) {
-#     preds <- ifelse(predicted_probs >= t, 1, 0)
-#     
-#     TP <- sum(preds == 1 & actual == 1)
-#     TN <- sum(preds == 0 & actual == 0)
-#     FP <- sum(preds == 1 & actual == 0)
-#     FN <- sum(preds == 0 & actual == 1)
-#     
-#     FPR <- ifelse((FP + TN) > 0, round(FP / (FP + TN), 3), NA)
-#     FNR <- ifelse((FN + TP) > 0, round(FN / (FN + TP), 3), NA)
-#     total_error <- round(FPR + FNR, 3)
-#     
-#     df <- data.frame(
-#       Metric = c("Threshold used for prediction",
-#                  "True Positives (actual = 1, predicted = 1)",
-#                  "True Negatives (actual = 0, predicted = 0)",
-#                  "False Positives (actual = 0, predicted = 1)",
-#                  "False Negatives (actual = 1, predicted = 0)",
-#                  "False Positive Rate = FP / (FP + TN)",
-#                  "False Negative Rate = FN / (FN + TP)",
-#                  "Sum of FPR and FNR (total classification error)"),
-#       Value = c(t, TP, TN, FP, FN, FPR, FNR, total_error)
-#     )
-#     
-#     summary_list[[paste0("Threshold_", t)]] <- df
-#   }
-#   
-#   return(summary_list)
-# }
-# 
-# 
-# thresholds <- seq(0.1, 0.9, by = 0.1)
-# actual <- analysis_df$sh_inf
-# predicted_probs <- predict(sh_model, type = "response")
-# 
-# threshold_summaries <- compute_classification_summary(actual, predicted_probs, thresholds)
-# 
-# threshold_summaries[["Threshold_0.5"]]
+
+compute_classification_summary <- function(actual, predicted_probs, thresholds) {
+  summary_list <- list()
+
+  for (t in thresholds) {
+    preds <- ifelse(predicted_probs >= t, 1, 0)
+
+    TP <- sum(preds == 1 & actual == 1)
+    TN <- sum(preds == 0 & actual == 0)
+    FP <- sum(preds == 1 & actual == 0)
+    FN <- sum(preds == 0 & actual == 1)
+
+    FPR <- ifelse((FP + TN) > 0, round(FP / (FP + TN), 3), NA)
+    FNR <- ifelse((FN + TP) > 0, round(FN / (FN + TP), 3), NA)
+    total_error <- round(FPR + FNR, 3)
+
+    df <- data.frame(
+      Metric = c("Threshold used for prediction",
+                 "True Positives (actual = 1, predicted = 1)",
+                 "True Negatives (actual = 0, predicted = 0)",
+                 "False Positives (actual = 0, predicted = 1)",
+                 "False Negatives (actual = 1, predicted = 0)",
+                 "False Positive Rate = FP / (FP + TN)",
+                 "False Negative Rate = FN / (FN + TP)",
+                 "Sum of FPR and FNR (total classification error)"),
+      Value = c(t, TP, TN, FP, FN, FPR, FNR, total_error)
+    )
+
+    summary_list[[paste0("Threshold_", t)]] <- df
+  }
+
+  return(summary_list)
+}
+
+
+thresholds <- seq(0.1, 0.9, by = 0.1)
+actual <- analysis_df$sh_inf
+predicted_probs <- predict(sh_model, type = "response")
+
+threshold_summaries <- compute_classification_summary(actual, predicted_probs, thresholds)
+
+threshold_summaries[["Threshold_0.5"]]
 
 ```
 

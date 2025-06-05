@@ -151,48 +151,7 @@
 **#####Begin variable creation
 *-------------------*				
 
-*-------------*
-**##### Winsorize hh_10
-*-------------*	
 
-* Get detailed summary stats
-summarize hh_10_, detail
-
-* Display specific percentiles
-display "90th percentile: " r(p90)
-display "95th percentile: " r(p95)
-display "99th percentile: " r(p99)
-
-/* 
-// Step 1: Generate mean and SD variables
-gen hh_10_mean = r(mean)
-gen hh_10_sd   = r(sd)
-
-summarize hh_10_, meanonly
-replace hh_10_mean = r(mean)
-replace hh_10_sd   = r(sd)
-
-// Step 2: Calculate 4σ and 6σ cutoffs
-gen hh_10_lower4 = hh_10_mean - 4 * hh_10_sd
-gen hh_10_upper4 = hh_10_mean + 4 * hh_10_sd
-
-gen hh_10_lower6 = hh_10_mean - 6 * hh_10_sd
-gen hh_10_upper6 = hh_10_mean + 6 * hh_10_sd
-
-// Step 3: Winsorize at 4σ
-gen hh_10_winsor4 = hh_10_
-replace hh_10_winsor4 = hh_10_lower4 if hh_10_ < hh_10_lower4
-replace hh_10_winsor4 = hh_10_upper4 if hh_10_ > hh_10_upper4
-
-// Step 4: Winsorize at 6σ
-gen hh_10_winsor6 = hh_10_
-replace hh_10_winsor6 = hh_10_lower6 if hh_10_ < hh_10_lower6
-replace hh_10_winsor6 = hh_10_upper6 if hh_10_ > hh_10_upper6
-			
-*/
-					
-					
-					
 					
 *-------------*
 **##### fishing
@@ -916,46 +875,7 @@ drop beliefs_01 beliefs_02 beliefs_03
 *-------------------*
 **##### Begin variable creation
 *-------------------*	
-
-
-*-------------*
-**##### Winsorize hh_10
-*-------------*	
-
-* Get detailed summary stats
-summarize hh_10_, detail
-
-* Display specific percentiles
-display "90th percentile: " r(p90)
-display "95th percentile: " r(p95)
-display "99th percentile: " r(p99)
-
-
-/* 
-**  calculate mean and SD
-	summarize hh_10_, meanonly
-	local mu = r(mean)
-	local sd = r(sd)
-
-**  define cutoffs
-	local lower4 = `mu' - 4*`sd'
-	local upper4 = `mu' + 4*`sd'
-
-	local lower6 = `mu' - 6*`sd'
-	local upper6 = `mu' + 6*`sd'
-
-**  create Winsorized versions
-	gen hh_10_winsor4 = hh_10_
-	replace hh_10_winsor4 = `lower4' if hh_10_ < `lower4'
-	replace hh_10_winsor4 = `upper4' if hh_10_ > `upper4'
-
-	gen hh_10_winsor6 = hh_10_
-	replace hh_10_winsor6 = `lower6' if hh_10_ < `lower6'
-	replace hh_10_winsor6 = `upper6' if hh_10_ > `upper6'
-
-		drop hh_10_winsor6 hh_10_winsor4
-*/
-			
+		
 *-------------*
 **##### fishing
 *-------------*	
@@ -1600,6 +1520,51 @@ display "99th percentile: " r(p99)
 
 		use "$paras\02_baseline_analysis_df.dta", clear
 			append using "$paras\02_midline_analysis_df.dta"
+		
+			
+*-------------------*
+**## Winsorize continuous values
+*-------------------*	
+
+
+
+* Get detailed summary stats
+summarize hh_10_, detail
+
+* Display specific percentiles
+display "90th percentile: " r(p90)
+display "95th percentile: " r(p95)
+display "99th percentile: " r(p99)
+			
+			
+**   hh_10
+egen hh_10_p99 = pctile(hh_10_), p(99)
+gen hh_10_w99 = hh_10_
+replace hh_10_w99 = hh_10_p99 if hh_10_ > hh_10_p99 & !missing(hh_10_)
+drop hh_10_p99
+
+order hh_10_w99, before(hh_10_)
+label variable hh_10_w99 "Hours per week spent within 1 meter of surface water source, Winsorized 99th"
+			
+* Get detailed summary stats
+summarize q_51, detail
+		
+* Display specific percentiles
+display "90th percentile: " r(q_51)
+display "95th percentile: " r(q_51)
+display "99th percentile: " r(q_51)			
+			
+**   q_51
+egen q_51_p99 = pctile(q_51), p(99)
+gen q_51_w99 = q_51
+replace q_51_w99 = q_51_p99 if q_51 > q_51_p99 & !missing(q_51)
+drop q_51_p99			
+			
+
+order q_51_w99, before(q_51)		
+order hh_10_w99, before(hh_10_)
+label variable hh_10_w99 "Distance to health facility, Winsorized 99th"
+				
 
 			save "$paras\03_mid_base_analysis_df.dta", replace 
  
@@ -1610,16 +1575,7 @@ display "99th percentile: " r(p99)
 			quietly count if missing(`var')
 			display "`var': " r(N)
 		}
-		
-	
-			
-			
-			
-			
-			
-			
-			
-			
+					
 			
 			
 			

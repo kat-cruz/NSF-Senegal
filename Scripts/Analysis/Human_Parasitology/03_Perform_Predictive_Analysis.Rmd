@@ -11,9 +11,13 @@ output: html_document
 
 ```{r}
 
-packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr",
-              "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", "haven", "caret",
-              "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "glmnet", "multiwayvcov")
+# packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr",
+#               "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", "haven", "caret",
+#               "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "glmnet", "multiwayvcov")
+
+packages <- c("dplyr", "readr", "tidyr",
+             "tidyverse", "kableExtra", 
+              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov")
 
 # Install any missing packages
 new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]

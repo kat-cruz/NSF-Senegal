@@ -87,7 +87,7 @@ global date = strofreal(date(c(current_date),"DMY"), "%tdYYNNDD")
 	
 	** keep variables that shouldn't change between baseline and midline 
 	
-		keep VillageID Villagename HHIDCRDES IndividualIDCRDES MatchScore EPLSorUCADID 
+		keep VillageID Villagename HHIDCRDES IndividualIDCRDES MatchScore EPLSorUCADID round
 
 	** Clean up the variable names 
 		rename VillageID hhid_village
@@ -264,25 +264,20 @@ global date = strofreal(date(c(current_date),"DMY"), "%tdYYNNDD")
 	
 	order hhid_village village_name identificant sex_hp age_hp fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_epg p1_kato2_omega p1_kato2_k2_epg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 pzq_1 pzq_2 data_source 
 	
+*-----------------------------------------*
+**### Update old EPLS IDs
+*-----------------------------------------*	
+ 
+ replace identificant = "3/KB/2/35" if identificant == "3/BK/1/47"
+ replace identificant = "3/KB/1/47" if identificant == "3/BK/2/35"
+
+*-----------------------------------------*
+**### Save df
+*-----------------------------------------*		
+	
 ** First, save the current dataset
 		save "${output}\01_baseline_paras_df", replace
 		
-/* 
-*-----------------------------------------*
-**### Merge in with child matched df
-*-----------------------------------------*
-		
-** Brind in Child Matched data frame to link to CRDES data 
-
-				merge 1:1 identificant using "${output}\child_matched_IDs_df", nogen 
-
-		order hhid_village village_name hhid individ match_score identificant sex_hp age_hp fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_epg p1_kato2_omega p1_kato2_k2_epg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 pzq_1 pzq_2 data_source 
-		
-*-----------------------------------------*
-**### save prepped infection df 
-*-----------------------------------------*
-		save "${output}\01.1_baseline_paras_matches_df.dta", replace
-*/
 
 		
 *<><<><><>><><<><><>>	
@@ -370,34 +365,7 @@ global date = strofreal(date(c(current_date),"DMY"), "%tdYYNNDD")
 		order hhid_village village_name numero initiales identificant grade sex_hp age_hp fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_epg p1_kato2_omega p1_kato2_k2_epg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 pzq_1 pzq_2 data_source 
 		
 				save "${output}\01_midline_paras_df", replace
-				
-/* 
-		
-*-----------------------------------------*
-**### Merge in with child matched df
-*-----------------------------------------*
-			
-	merge m:m identificant using "${output}\child_matched_IDs_df", nogen 
 
-		
-*-----------------------------------------*
-**### Rename & order 
-*-----------------------------------------*
-		drop numero
-	
-		order hhid_village village_name hhid individ identificant initiales match_score sex_hp age_hp grade fu_p1 omega_vivant_1 sm_fu_1 fu_p2 omega_vivant_2 sm_fu_2 p1_kato1_omega p1_kato1_k1_epg p1_kato2_omega p1_kato2_k2_epg sh_kk_1 p2_kato1_omega p2_kato1_k1_epg p2_kato2_omega p2_kato2_k2_epg sh_kk_2 pzq_1 pzq_2 data_source 
-		
-		
-*-----------------------------------------*
-**### save prepped infection df 
-*-----------------------------------------*	
-
-	save "${output}\01.1_midline_paras_matches_df.dta", replace
-	
-*/
-	
-	
-	
 	
 	
 	

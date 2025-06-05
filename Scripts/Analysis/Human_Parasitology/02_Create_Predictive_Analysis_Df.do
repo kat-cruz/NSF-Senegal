@@ -1563,11 +1563,12 @@ drop q_51_p99
 
 order q_51_w99, before(q_51)		
 order hh_10_w99, before(hh_10_)
-label variable hh_10_w99 "Distance to health facility, Winsorized 99th"
+label variable q_51_w99 "Distance to health facility, Winsorized 99th"
 				
 
 			save "$paras\03_mid_base_analysis_df.dta", replace 
  
+
 
 	use "$paras\03_mid_base_analysis_df.dta", clear
 			
@@ -1575,11 +1576,12 @@ label variable hh_10_w99 "Distance to health facility, Winsorized 99th"
 			quietly count if missing(`var')
 			display "`var': " r(N)
 		}
-					
+			 */		
 			
 			
 			
-			
+			keep if hh_age_ < 4 | hh_age_ > 18
+				keep hhid_village village_name hhid individ match_score identificant hh_age_ hh_gender_ round
 			
 			
 			

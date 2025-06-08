@@ -1,5 +1,5 @@
 **************************************************
-* DISES Plots of Baseline to Midline PAP Outcomes
+* DISES ANCOVA Regressions Baseline to Midline V2
 * Created by: Alexander Mills
 * Updates tracked on Git
 **************************************************

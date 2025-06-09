@@ -236,7 +236,7 @@ Here are the summary stats for the actual data I use to run the analysis. I firt
 
 :::
 
-### SH_INF Analysis
+### SH_SM_INF Analysis
 
 ::: {.panel-tabset}
 
@@ -265,12 +265,12 @@ The process includes the following steps:
 
 This approach helps reduce overfitting and identify a parsimonious set of variables that best predict infection status.
 
-Here is the following code chunk I run to perform the steps mentioned above: 
+Here is the following code chunk I run to perform the steps mentioned above: -->
 
 ```{r}
 
 
-exclude_vars <- c("hhid_village", "village_name", "hhid", "individ", 
+exclude_vars <- c("hhid_village", "village_name", "hhid", "individ",
                   "identificant", "match_score", "round", "sh_inf")  # Exclude outcome too
 
 # Grab all other column names
@@ -278,7 +278,7 @@ sh_covariates <- setdiff(names(analysis_df), exclude_vars)
 
   # Create predictor matrix
   sh_x <- data.matrix(analysis_df[, sh_covariates])
-  sh_y <- analysis_df$sh_inf
+  sh_y <- analysis_df$sh_sm_inf
 
 #perform k-fold cross-validation to find optimal lambda value
 sh1 <- cv.glmnet(sh_x, sh_y, family = "binomial", alpha = 1)
@@ -286,14 +286,14 @@ sh1 <- cv.glmnet(sh_x, sh_y, family = "binomial", alpha = 1)
 sh1_best_lambda <- sh1$lambda.min
 
 #produce plot of test MSE by lambda value
-plot(sh1) 
+plot(sh1)
 
 
 #find coefficients of best model
 sh1_best_model <- glmnet(sh_x, sh_y, alpha = 1, lambda = sh1_best_lambda)
 coef(sh1_best_model)
 
-#print regression table 
+#print regression table
 print(sh1_best_model)
 
 # Extract coefficients at best lambda
@@ -311,28 +311,28 @@ kable(sh_vars, format = "html", caption = "Best Predictors for sh_inf") %>%
 
 ```
 
-#### Logit Model
+<!-- #### Logit Model
 
-After identifying the most predictive covariates using Lasso regression, we proceed to fit a logistic regression model using the training dataset. This model estimates the probability of S. haematobium infection (`sh_inf`) based on the selected predictors.
+After identifying the most predictive covariates using Lasso regression, we proceed to fit a logistic regression model using the training dataset. This model estimates the probability of S. haematobium infection (`sh_inf`) based on the selected predictors. -->
 
 
 ```{r}
 
-sh_vars_final <- setdiff(names(analysis_df), exclude_vars)
-
-sh_y <- "sh_inf"
-# Build formula string
-sh_formula <- paste(sh_y, "~", paste(sh_vars, collapse = " + "))
-
-# Fit logistic regression model
-sh_model <- glm(as.formula(sh_formula), data = train_df, family = "binomial")
-
-#sh_cse <- vcovCL(sh_model, cluster = train_df$hhid_village)
-
-# Apply coeftest with clustered SE
-#sh_model_cse <- coeftest(sh_model, vcov. = sh_cse) KRM - commenting out as we don't need this for classification models
-
-print(sh_model)
+# sh_vars_final <- setdiff(names(analysis_df), exclude_vars)
+# 
+# sh_y <- "sh_inf"
+# # Build formula string
+# sh_formula <- paste(sh_y, "~", paste(sh_vars, collapse = " + "))
+# 
+# # Fit logistic regression model
+# sh_model <- glm(as.formula(sh_formula), data = train_df, family = "binomial")
+# 
+# #sh_cse <- vcovCL(sh_model, cluster = train_df$hhid_village)
+# 
+# # Apply coeftest with clustered SE
+# #sh_model_cse <- coeftest(sh_model, vcov. = sh_cse) KRM - commenting out as we don't need this for classification models
+# 
+# print(sh_model)
 
 ```
 

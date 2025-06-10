@@ -150,7 +150,7 @@ forvalues i = 1/55 {
     replace hh_gender_h = 1 if hh_head_index == `i' & hh_gender_`i' == 1
     replace hh_gender_h = 0 if hh_head_index == `i' & hh_gender_`i' == 2
 }
-label variable hh_gender_h "Household head gender"
+label variable hh_gender_h "Household head gender (1 = male, 0 = female)"
 
 * literacy of head
 gen hh_education_skills_5_h = 0

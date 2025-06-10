@@ -110,37 +110,205 @@ foreach var of local avr_vars {
 file write balance "\midrule" _n
 file write balance "\multicolumn{6}{l}{\textbf{Panel B: Composting Activities}} \\" _n
 foreach var of local comp_vars {
-    * same balance code
+    local varlabel: variable label `var'
+    if "`varlabel'" == "" local varlabel "`var'"
+    
+    qui sum `var' if treatment_arm == 0
+    local mean0 = r(mean)
+    local sd0 = r(sd)
+    
+    forvalues t = 1/3 {
+        qui sum `var' if treatment_arm == `t'
+        local mean`t' = r(mean)
+        local sd`t' = r(sd)
+    }
+    
+    qui reg `var' i.treatment_arm, r cluster(hhid_village)
+    test 1.treatment_arm 2.treatment_arm 3.treatment_arm
+    local pval = r(p)
+    
+    file write balance "`varlabel' & "
+    file write balance %9.3f (`mean0') " & "
+    file write balance %9.3f (`mean1') " & "
+    file write balance %9.3f (`mean2') " & "
+    file write balance %9.3f (`mean3') " & "
+    file write balance %9.3f (`pval') " \\" _n
+    
+    file write balance "& ("
+    file write balance %9.3f (`sd0') ") & ("
+    file write balance %9.3f (`sd1') ") & ("
+    file write balance %9.3f (`sd2') ") & ("
+    file write balance %9.3f (`sd3') ") & \\" _n
 }
 
 file write balance "\midrule" _n 
 file write balance "\multicolumn{6}{l}{\textbf{Panel C: Food Security}} \\" _n
 foreach var of local food_vars {
-    * same balance code
+    local varlabel: variable label `var'
+    if "`varlabel'" == "" local varlabel "`var'"
+    
+    qui sum `var' if treatment_arm == 0
+    local mean0 = r(mean)
+    local sd0 = r(sd)
+    
+    forvalues t = 1/3 {
+        qui sum `var' if treatment_arm == `t'
+        local mean`t' = r(mean)
+        local sd`t' = r(sd)
+    }
+    
+    qui reg `var' i.treatment_arm, r cluster(hhid_village)
+    test 1.treatment_arm 2.treatment_arm 3.treatment_arm
+    local pval = r(p)
+    
+    file write balance "`varlabel' & "
+    file write balance %9.3f (`mean0') " & "
+    file write balance %9.3f (`mean1') " & "
+    file write balance %9.3f (`mean2') " & "
+    file write balance %9.3f (`mean3') " & "
+    file write balance %9.3f (`pval') " \\" _n
+    
+    file write balance "& ("
+    file write balance %9.3f (`sd0') ") & ("
+    file write balance %9.3f (`sd1') ") & ("
+    file write balance %9.3f (`sd2') ") & ("
+    file write balance %9.3f (`sd3') ") & \\" _n
 }
 
 file write balance "\midrule" _n
 file write balance "\multicolumn{6}{l}{\textbf{Panel D: Health Outcomes}} \\" _n
 foreach var of local health_vars {
-    * same balance code
+    local varlabel: variable label `var'
+    if "`varlabel'" == "" local varlabel "`var'"
+    
+    qui sum `var' if treatment_arm == 0
+    local mean0 = r(mean)
+    local sd0 = r(sd)
+    
+    forvalues t = 1/3 {
+        qui sum `var' if treatment_arm == `t'
+        local mean`t' = r(mean)
+        local sd`t' = r(sd)
+    }
+    
+    qui reg `var' i.treatment_arm, r cluster(hhid_village)
+    test 1.treatment_arm 2.treatment_arm 3.treatment_arm
+    local pval = r(p)
+    
+    file write balance "`varlabel' & "
+    file write balance %9.3f (`mean0') " & "
+    file write balance %9.3f (`mean1') " & "
+    file write balance %9.3f (`mean2') " & "
+    file write balance %9.3f (`mean3') " & "
+    file write balance %9.3f (`pval') " \\" _n
+    
+    file write balance "& ("
+    file write balance %9.3f (`sd0') ") & ("
+    file write balance %9.3f (`sd1') ") & ("
+    file write balance %9.3f (`sd2') ") & ("
+    file write balance %9.3f (`sd3') ") & \\" _n
 }
 
 file write balance "\midrule" _n
 file write balance "\multicolumn{6}{l}{\textbf{Panel E: Property Rights Beliefs}} \\" _n
 foreach var of local belief_vars {
-    * same balance code
+    local varlabel: variable label `var'
+    if "`varlabel'" == "" local varlabel "`var'"
+    
+    qui sum `var' if treatment_arm == 0
+    local mean0 = r(mean)
+    local sd0 = r(sd)
+    
+    forvalues t = 1/3 {
+        qui sum `var' if treatment_arm == `t'
+        local mean`t' = r(mean)
+        local sd`t' = r(sd)
+    }
+    
+    qui reg `var' i.treatment_arm, r cluster(hhid_village)
+    test 1.treatment_arm 2.treatment_arm 3.treatment_arm
+    local pval = r(p)
+    
+    file write balance "`varlabel' & "
+    file write balance %9.3f (`mean0') " & "
+    file write balance %9.3f (`mean1') " & "
+    file write balance %9.3f (`mean2') " & "
+    file write balance %9.3f (`mean3') " & "
+    file write balance %9.3f (`pval') " \\" _n
+    
+    file write balance "& ("
+    file write balance %9.3f (`sd0') ") & ("
+    file write balance %9.3f (`sd1') ") & ("
+    file write balance %9.3f (`sd2') ") & ("
+    file write balance %9.3f (`sd3') ") & \\" _n
 }
 
 file write balance "\midrule" _n
 file write balance "\multicolumn{6}{l}{\textbf{Panel F: Work and School}} \\" _n
 foreach var of local work_school_vars {
-    * same balance code
+    local varlabel: variable label `var'
+    if "`varlabel'" == "" local varlabel "`var'"
+    
+    qui sum `var' if treatment_arm == 0
+    local mean0 = r(mean)
+    local sd0 = r(sd)
+    
+    forvalues t = 1/3 {
+        qui sum `var' if treatment_arm == `t'
+        local mean`t' = r(mean)
+        local sd`t' = r(sd)
+    }
+    
+    qui reg `var' i.treatment_arm, r cluster(hhid_village)
+    test 1.treatment_arm 2.treatment_arm 3.treatment_arm
+    local pval = r(p)
+    
+    file write balance "`varlabel' & "
+    file write balance %9.3f (`mean0') " & "
+    file write balance %9.3f (`mean1') " & "
+    file write balance %9.3f (`mean2') " & "
+    file write balance %9.3f (`mean3') " & "
+    file write balance %9.3f (`pval') " \\" _n
+    
+    file write balance "& ("
+    file write balance %9.3f (`sd0') ") & ("
+    file write balance %9.3f (`sd1') ") & ("
+    file write balance %9.3f (`sd2') ") & ("
+    file write balance %9.3f (`sd3') ") & \\" _n
 }
 
 file write balance "\midrule" _n
 file write balance "\multicolumn{6}{l}{\textbf{Panel G: Control Variables}} \\" _n
 foreach var of local control_vars {
-    * same balance code
+    local varlabel: variable label `var'
+    if "`varlabel'" == "" local varlabel "`var'"
+    
+    qui sum `var' if treatment_arm == 0
+    local mean0 = r(mean)
+    local sd0 = r(sd)
+    
+    forvalues t = 1/3 {
+        qui sum `var' if treatment_arm == `t'
+        local mean`t' = r(mean)
+        local sd`t' = r(sd)
+    }
+    
+    qui reg `var' i.treatment_arm, r cluster(hhid_village)
+    test 1.treatment_arm 2.treatment_arm 3.treatment_arm
+    local pval = r(p)
+    
+    file write balance "`varlabel' & "
+    file write balance %9.3f (`mean0') " & "
+    file write balance %9.3f (`mean1') " & "
+    file write balance %9.3f (`mean2') " & "
+    file write balance %9.3f (`mean3') " & "
+    file write balance %9.3f (`pval') " \\" _n
+    
+    file write balance "& ("
+    file write balance %9.3f (`sd0') ") & ("
+    file write balance %9.3f (`sd1') ") & ("
+    file write balance %9.3f (`sd2') ") & ("
+    file write balance %9.3f (`sd3') ") & \\" _n
 }
 
 * close table and document
@@ -171,8 +339,8 @@ foreach y of local avr_outcomes {
     eststo main_`y': reg midline_`y' trained_hh baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     
-    * treatment arm effects (eq 2)
-    eststo arms_`y': reg midline_`y' i.treatment_arm baseline_`y' ///
+    * treatment arm effects (eq 2) - explicitly set control as base
+    eststo arms_`y': reg midline_`y' ib0.treatment_arm baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     test 1.treatment_arm = 2.treatment_arm
     estadd scalar p_12 = r(p)
@@ -180,6 +348,10 @@ foreach y of local avr_outcomes {
     estadd scalar p_13 = r(p)
     test 2.treatment_arm = 3.treatment_arm
     estadd scalar p_23 = r(p)
+    
+    * Calculate control group mean for comparison
+    qui sum midline_`y' if treatment_arm==0
+    estadd scalar control_mean = r(mean)
 }
 
 * export main treatment effects (eq 1)
@@ -213,7 +385,7 @@ esttab main_* using "$specifications/avr_main_effects.tex", replace ///
             "\shortstack{12-Month\\Amount}" ///
             "\shortstack{7-Day\\Amount}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-
+		
 * export treatment arm effects (eq 2)
 esttab arms_* using "$specifications/avr_treatment_arms.tex", replace ///
     style(tex) booktabs ///
@@ -227,15 +399,16 @@ esttab arms_* using "$specifications/avr_treatment_arms.tex", replace ///
     postfoot("\bottomrule" ///
         "\end{tabular}" ///
         "\begin{tablenotes}\footnotesize" ///
-        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Point estimates show effects relative to control group. Control group means at midline shown below for comparison. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
         "\end{tablenotes}" ///
         "\end{threeparttable}" ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
-    keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 N r2, ///
-        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
-        fmt(3 3 3 %9.0f 3)) ///
+    keep(*treatment_arm) ///
+    drop(0.treatment_arm) ///
+    stats(control_mean p_12 p_13 p_23 N r2, ///
+        labels("Control Mean" "P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -245,7 +418,7 @@ esttab arms_* using "$specifications/avr_treatment_arms.tex", replace ///
             "\shortstack{12-Month\\Amount}" ///
             "\shortstack{7-Day\\Amount}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-	
+		
 **************************************************
 * 1.1.2: AVR Spillover Effects
 **************************************************
@@ -456,7 +629,13 @@ foreach y of local comp_extensive {
     drop T_L T_T
 }
 
-* export treatment arm effects
+*  store control means first
+foreach y of local comp_extensive {
+    qui sum midline_`y' if treatment_arm==0
+    estadd scalar control_mean = r(mean), replace: arm_`y'
+}
+
+* treatment arm effects with control means
 esttab arm_* using "$specifications/compost_arm_effects.tex", replace ///
     style(tex) booktabs ///
     prehead("\begin{table}[htbp]\centering" ///
@@ -468,21 +647,21 @@ esttab arm_* using "$specifications/compost_arm_effects.tex", replace ///
     postfoot("\bottomrule" ///
         "\end{tabular}" ///
         "\begin{tablenotes}\footnotesize" ///
-        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Control group means at midline shown below estimates for comparison. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
         "\end{tablenotes}" ///
         "\end{threeparttable}" ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
-    keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 N r2, ///
-        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
-        fmt(3 3 3 %9.0f 3)) ///
+    keep(*treatment_arm) ///
+    drop(0.treatment_arm) ///
+    stats(control_mean p_12 p_13 p_23 N r2, ///
+        labels("Control Mean" "P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Compost\\Production}" ///
             "\shortstack{Waste\\Collection}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-
 * export spillover effects
 esttab spill_* using "$specifications/compost_spillovers.tex", replace ///
     style(tex) booktabs ///
@@ -626,10 +805,6 @@ esttab arms_* using "$specifications/compost_private_arms.tex", replace ///
 **************************************************
 * wait until molly gets done with production functions
 
-**************************************************
-* 1.1.7: Food Security Analysis
-**************************************************
-
 * food security outcomes
 local food_outcomes "months_soudure rcsi_annual"     // main outcomes
 local rcsi_components "rcsi_work rcsi_assets rcsi_migrate rcsi_skip"  // RCSI components 
@@ -638,10 +813,15 @@ local food_labels "Lean Season Months" "Reduced CSI"
 * treatment arm effects on food security (eq 2)
 eststo clear
 foreach y of local food_outcomes {
+    * Run regression
     eststo food_`y': reg midline_`y' i.treatment_arm baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     
-    * test differences between arms
+    * Calculate and store control mean
+    qui sum midline_`y' if treatment_arm==0
+    estadd scalar control_mean = r(mean)
+    
+    * Test differences between arms
     test 1.treatment_arm = 2.treatment_arm  // pub vs priv Benefits
     estadd scalar p_12 = r(p)
     test 1.treatment_arm = 3.treatment_arm  // pub vs both
@@ -662,15 +842,15 @@ esttab food_* using "$specifications/food_security.tex", replace ///
     postfoot("\bottomrule" ///
         "\end{tabular}" ///
         "\begin{tablenotes}\footnotesize" ///
-        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Lean season months measures self-reported soudure duration. Reduced CSI is composite index of coping strategies. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Control group means at midline shown below estimates for comparison. Lean season months measures self-reported soudure duration. Reduced CSI is composite index of coping strategies. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
         "\end{tablenotes}" ///
         "\end{threeparttable}" ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
-    keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 N r2, ///
-        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
-        fmt(3 3 3 %9.0f 3)) ///
+    keep(1.treatment_arm 2.treatment_arm 3.treatment_arm) /// 
+    stats(control_mean p_12 p_13 p_23 N r2, ///
+        labels("Control Mean" "P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Lean Season\\Months}" ///
@@ -680,10 +860,15 @@ esttab food_* using "$specifications/food_security.tex", replace ///
 * RCSI component regressions
 eststo clear
 foreach y of local rcsi_components {
+    * Run regression
     eststo rcsi_`y': reg midline_`y' i.treatment_arm baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     
-    * test differences between arms
+    * Calculate and store control mean
+    qui sum midline_`y' if treatment_arm==0
+    estadd scalar control_mean = r(mean)
+    
+    * Test differences between arms
     test 1.treatment_arm = 2.treatment_arm  // pub vs priv Benefits
     estadd scalar p_12 = r(p)
     test 1.treatment_arm = 3.treatment_arm  // pub vs both
@@ -704,15 +889,15 @@ esttab rcsi_* using "$specifications/food_security_components.tex", replace ///
     postfoot("\bottomrule" ///
         "\end{tabular}" ///
         "\begin{tablenotes}\footnotesize" ///
-        "\item \textit{Notes:} Decomposition of Reduced Coping Strategies Index (RCSI) into component measures. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\item \textit{Notes:} Decomposition of Reduced Coping Strategies Index (RCSI) into component measures. Control group means at midline shown below estimates for comparison. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
         "\end{tablenotes}" ///
         "\end{threeparttable}" ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
-    keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 N r2, ///
-        labels("P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
-        fmt(3 3 3 %9.0f 3)) ///
+    keep(1.treatment_arm 2.treatment_arm 3.treatment_arm) ///
+    stats(control_mean p_12 p_13 p_23 N r2, ///
+        labels("Control Mean" "P-value A=B" "P-value A=C" "P-value B=C" "N" "R-squared") ///
+        fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Work-\\Related}" ///
@@ -720,7 +905,7 @@ esttab rcsi_* using "$specifications/food_security_components.tex", replace ///
             "\shortstack{Migration}" ///
             "\shortstack{Skip\\Meals}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-	
+
 **************************************************
 * 1.1.8: Schistosomiasis Analysis (Self-Reported)
 **************************************************
@@ -838,7 +1023,13 @@ foreach y of local belief_outcomes {
     estadd scalar p_priv = r(p)
 }
 
-* export property rights beliefs
+* calculate and store control means first
+foreach y of local belief_outcomes {
+    qui sum midline_`y' if treatment_arm==0
+    estadd scalar control_mean = r(mean), replace: belief_`y'
+}
+
+* export property rights beliefs with control means
 esttab belief_* using "$specifications/property_rights_beliefs.tex", replace ///
     style(tex) booktabs ///
     prehead("\begin{table}[htbp]\centering" ///
@@ -850,16 +1041,15 @@ esttab belief_* using "$specifications/property_rights_beliefs.tex", replace ///
     postfoot("\bottomrule" ///
         "\end{tabular}" ///
         "\begin{tablenotes}\footnotesize" ///
-        "\item \textit{Notes:} Compares beliefs about resource rights across treatment arms, with focus on private benefits messaging (arms B and C) versus public health only (arm A) and control. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Control group means at midline shown below estimates for comparison. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
         "\end{tablenotes}" ///
         "\end{threeparttable}" ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
-    keep(*.treatment_arm) ///
-    stats(p_12 p_13 p_23 p_priv N r2, ///
-        labels("P-value Public=Private" "P-value Public=Both" "P-value Private=Both" ///
-               "P-value Private Arms=Control" "N" "R-squared") ///
-        fmt(3 3 3 3 %9.0f 3)) ///
+    keep(1.treatment_arm 2.treatment_arm 3.treatment_arm) ///
+    stats(control_mean p_12 p_13 p_23 p_priv N r2, ///
+        labels("Control Mean" "P-value A=B" "P-value A=C" "P-value B=C" "P-value Private Arms=Control" "N" "R-squared") ///
+        fmt(3 3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Community\\Land Rights}" ///
@@ -869,7 +1059,7 @@ esttab belief_* using "$specifications/property_rights_beliefs.tex", replace ///
             "\shortstack{Fishing\\Rights}" ///
             "\shortstack{Harvesting\\Rights}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-		
+
 **************************************************
 * 2.1.1: Work and School Days Lost Analysis
 **************************************************

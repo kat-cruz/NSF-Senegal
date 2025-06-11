@@ -442,6 +442,7 @@ replace wage = wage_5 if wage < wage_5
 
 sort wage 
 
+preserve 
 gen mc_ton_of_compost = wage*9.356752746
 gen fixed_cost = (39.1583907*574.446) / 1000
 gen mc_kg_of_compost = mc_ton_of_compost / 1000
@@ -453,4 +454,19 @@ gen quantity = _n
 
 keep quantity tot_mc_compost
 
-save "$auctions/supply_curve_estimates", replace 
+save "$auctions/supply_curve_estimates_compost", replace 
+restore 
+
+preserve 
+gen kg_veg_cost = 387.75 / wage 
+gen g_veg_cost = kg_veg_cost / 1000 
+gen mc_animal_feed = 357.8*kg_veg_cost + 340.825 
+
+sort mc_animal_feed 
+
+gen quantity = _n 
+
+keep quantity mc_animal_feed
+
+save "$auctions/supply_curve_estimates_animalfeed", replace 
+restore 

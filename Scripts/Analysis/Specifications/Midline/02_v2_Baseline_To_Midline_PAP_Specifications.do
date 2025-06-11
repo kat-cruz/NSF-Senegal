@@ -1334,6 +1334,14 @@ esttab spill_* using "$specifications/education_spillovers.tex", replace ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 
 xxx
+
+**************************************************
+* Additional Specifications
+**************************************************
+* water interaction
+
+* child time usage
+
 **************************************************
 * Robustness
 * Winsorize Continuous Variables at 99th Percentile

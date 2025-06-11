@@ -932,7 +932,7 @@ egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hour
 
 egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members  
 
 tempfile shadow_wage_baseline
 save `shadow_wage_baseline'
@@ -1865,7 +1865,7 @@ egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hour
 
 egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage 
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members   
 
 tempfile shadow_wage_midline
 save `shadow_wage_midline'
@@ -1997,12 +1997,19 @@ label variable agri_6_34_ "Number of Plots that Used Household Waste"
 label variable fert_1 "Total Fertilizer Used (kgs)"
 label variable TLU_1 "Livestock Owned (TLU)"
 label variable agri_income_01 "Household Member Paid Work (1 = Yes)"
-label variable daily_wage_1 "Daily Wage for Paid Work (FCFA)"
+label variable daily_wage_10 "Daily Wage for Paid Work (FCFA)"
 label variable agri_income_15 "Has Hired Ag Labor (1 = Yes)"
 label variable agri_income_16 "Number of Hired Laborers"
 label variable ag_wage "Household Does Agriculture and Paid Work (1 = Yes)"
+label variable hhhead_female "Household Head Female (1 = Yes)"
+label variable hhhead_no_education "Household Head No Education (1 = Yes)"
+label variable hhhead_age "Household Head Age"
+label variable rice "Household Grows Rice"
+label variable crop_types "Number of Crops Grown"
+label variable members "Household Size"
+label variable child "Number of Children"
 
-estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU_1 agri_income_01 daily_wage_10 ag_wage 
+estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU_1 agri_income_01 daily_wage_10 ag_wage hhhead_age hhhead_female hhhead_no_education members child rice crop_types
 
 esttab using "$auctions/household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 

@@ -354,6 +354,12 @@ foreach y of local avr_outcomes {
     estadd scalar control_mean = r(mean)
 }
 
+* calc and store control means first
+foreach y of local avr_outcomes {
+    qui sum midline_`y' if trained_hh==0
+    estadd scalar control_mean = r(mean), replace: main_`y'
+}
+
 * export main treatment effects (eq 1)
 esttab main_* using "$specifications/avr_main_effects.tex", replace ///
     style(tex) booktabs ///
@@ -367,15 +373,15 @@ esttab main_* using "$specifications/avr_main_effects.tex", replace ///
     postfoot("\bottomrule" ///
         "\end{tabular}" ///
         "\begin{tablenotes}\footnotesize" ///
-        "\item \textit{Notes:} Dependent variables include binary indicators and continuous measures (kg) for different types of AVR participation. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\item \textit{Notes:} Dependent variables include binary indicators and continuous measures (kg) for different types of AVR participation. Control group means at midline shown below estimates for comparison. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
         "\end{tablenotes}" ///
         "\end{threeparttable}" ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
-    stats(N r2, ///
-        labels("N" "R-squared") ///
-        fmt(%9.0f 3)) ///
+    stats(control_mean N r2, ///
+        labels("Control Mean" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -427,7 +433,7 @@ esttab arms_* using "$specifications/avr_treatment_arms.tex", replace ///
 gen local_control = (treatment_arm != 0 & trained_hh == 0)
 gen treated = trained_hh
 
-* generate arm-specific spillover indicators
+* generate arm-specific spillover indicators first
 foreach arm in A B C {
     local armnum = cond("`arm'"=="A",1,cond("`arm'"=="B",2,3))
     gen T_`arm'_L = (treatment_arm == `armnum' & trained_hh == 0)
@@ -437,15 +443,26 @@ foreach arm in A B C {
 * spillover effects (Equation 3)
 eststo clear
 foreach y of local avr_outcomes {
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
     * basic spillovers
     eststo spill_`y': reg midline_`y' local_control treated baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+    
+    * Store control mean
+    estadd scalar control_mean = `cm'
+    
     test local_control = treated
     estadd scalar p_diff = r(p)
     
-    * arm-specific spillovers
+    * arm-specific spillovers 
     eststo spill_arm_`y': reg midline_`y' T_A_L T_A_T T_B_L T_B_T T_C_L T_C_T baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+    
+    * Store same control mean for arm-specific results
+    estadd scalar control_mean = `cm'
     
     * test equality across arms for local controls
     test T_A_L = T_B_L
@@ -484,9 +501,9 @@ esttab spill_avr_* using "$specifications/avr_spillovers.tex", replace ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(local_control treated) ///
     order(local_control treated) ///
-    stats(p_diff N r2, ///
-        labels("P-value L=T" "N" "R-squared") ///
-        fmt(3 %9.0f 3)) ///
+    stats(control_mean p_diff N r2, ///
+        labels("Control Mean" "P-value L=T" "N" "R-squared") ///
+        fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -517,10 +534,10 @@ esttab spill_arm_avr_* using "$specifications/avr_arm_spillovers.tex", replace /
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_A_L T_A_T T_B_L T_B_T T_C_L T_C_T) ///
     order(T_A_L T_A_T T_B_L T_B_T T_C_L T_C_T) ///
-    stats(p_L_AB p_L_AC p_L_BC p_LT_A p_LT_B p_LT_C N r2, ///
-        labels("P-value L_A=L_B" "P-value L_A=L_C" "P-value L_B=L_C" ///
+    stats(control_mean p_L_AB p_L_AC p_L_BC p_LT_A p_LT_B p_LT_C N r2, ///
+        labels("Control Mean" "P-value L_A=L_B" "P-value L_A=L_C" "P-value L_B=L_C" ///
                "P-value L=T in A" "P-value L=T in B" "P-value L=T in C" "N" "R-squared") ///
-        fmt(3 3 3 3 3 3 %9.0f 3)) ///
+        fmt(3 3 3 3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -553,12 +570,20 @@ foreach y in avr_water_any avr_harvest_any avr_removal_any avr_recent_any {
     replace `y' = `y'0 if time == 0
     drop `y'0
     
+    * Calculate baseline mean
+    qui sum `y' if time==0
+    local baseline_mean = r(mean)
+    
     * estimate change over time
     eststo control_`y': reg `y' time $controls $distance_vector i.auction_village, ///
         vce(cluster hhid_village)
-		
-	restore
+    
+    * store baseline mean
+    estadd scalar baseline_mean = `baseline_mean'
+        
+    restore
 }
+
 
 * export results for pure control changes
 esttab control_* using "$specifications/avr_control_changes.tex", replace ///
@@ -578,9 +603,9 @@ esttab control_* using "$specifications/avr_control_changes.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(time) ///
-    stats(N r2, ///
-        labels("N" "R-squared") ///
-        fmt(%9.0f 3)) ///
+    stats(baseline_mean N r2, ///
+        labels("Baseline Mean" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Harvests from\\Water Sources}" ///
@@ -615,12 +640,19 @@ foreach y of local comp_extensive {
 
 * spillover effects (eq 3)
 foreach y of local comp_extensive {
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
     * gen treatment indicators
     gen T_L = (treatment_arm != 0 & trained_hh == 0)  // local controls
     gen T_T = trained_hh                              // treat households
     
     eststo spill_`y': reg midline_`y' T_L T_T baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+    
+    * Store control mean
+    estadd scalar control_mean = `cm'
     
     * test difference between local controls and treated
     test T_L = T_T
@@ -680,10 +712,9 @@ esttab spill_* using "$specifications/compost_spillovers.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff N r2, ///
-        labels("P-value L=T" "N" "R-squared") ///
-        fmt(3 %9.0f 3)) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
+    stats(control_mean p_diff N r2, ///
+        labels("Control Mean" "P-value L=T" "N" "R-squared") ///
+        fmt(3 3 %9.0f 3)) ///
     collabels(none) ///
     mlabels("\shortstack{Compost\\Production}" ///
             "\shortstack{Waste\\Collection}", ///
@@ -705,12 +736,20 @@ foreach y of local comp_outcomes {
     preserve
     keep if inlist(treatment_arm, 0, 2, 3)  // control, private benefits, both
     
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
     * gen indicators
     gen T_L = (treatment_arm != 0 & trained_hh == 0)  // local controls
     gen T_T = trained_hh                              // Treated households
     
     eststo priv_`y': reg midline_`y' T_L T_T baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+    
+    * Store control mean
+    estadd scalar control_mean = `cm'
+    
     test T_L = T_T
     estadd scalar p_diff = r(p)
     restore
@@ -718,7 +757,11 @@ foreach y of local comp_outcomes {
 
 * arm-specific spillovers (eq 4)
 foreach y of local comp_outcomes {
-    * clean up any existing treatment indicators
+    * Calculate control mean first 
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
+    * clean up any existing treatment indicators first
     cap drop T_*_L T_*_T
     
     * gen arm-specific indicators
@@ -731,6 +774,9 @@ foreach y of local comp_outcomes {
     eststo arms_`y': reg midline_`y' T_B_L T_B_T T_C_L T_C_T baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     
+    * Store control mean
+    estadd scalar control_mean = `cm'
+    
     * test spillovers within private arms
     test T_B_L = T_B_T
     estadd scalar p_B = r(p)
@@ -741,7 +787,6 @@ foreach y of local comp_outcomes {
     test T_B_L = T_C_L
     estadd scalar p_L_BC = r(p)
 
-    * clean up after each iteration
     drop T_*_L T_*_T
 }
 
@@ -763,9 +808,9 @@ esttab priv_* using "$specifications/compost_private_spillovers.tex", replace //
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff N r2, ///
-        labels("P-value L=T" "N" "R-squared") ///
-        fmt(3 %9.0f 3)) ///
+    stats(control_mean p_diff N r2, ///
+        labels("Control Mean" "P-value L=T" "N" "R-squared") ///
+        fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Compost\\Production}" ///
@@ -791,15 +836,15 @@ esttab arms_* using "$specifications/compost_private_arms.tex", replace ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_*) ///
     order(T_B_L T_B_T T_C_L T_C_T) ///
-    stats(p_B p_C p_L_BC N r2, ///
-        labels("P-value L=T in Private" "P-value L=T in Both" "P-value Private L=Both L" "N" "R-squared") ///
-        fmt(3 3 3 %9.0f 3)) ///
+    stats(control_mean p_B p_C p_L_BC N r2, ///
+        labels("Control Mean" "P-value L=T in Private" "P-value L=T in Both" "P-value Private L=Both L" "N" "R-squared") ///
+        fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Compost\\Production}" ///
             "\shortstack{Waste\\Collection}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-	
+
 **************************************************
 * 1.1.6: Total Factor Productivity and Profitability
 **************************************************
@@ -916,13 +961,24 @@ local schisto_outcomes "bilharzia_any meds_any diagnosed_any urine_any stool_any
 * main treatment effects (eq 1)
 eststo clear
 foreach y of local schisto_outcomes {
-    * village-level treatment effect
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
+    * Run regression
     eststo main_`y': reg midline_`y' trained_hh baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+        
+    * Store control mean
+    estadd scalar control_mean = `cm'
 }
 
 * spillover effects (eq 3)
 foreach y of local schisto_outcomes {
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
     * gen treatment indicators
     gen T_L = (treatment_arm != 0 & trained_hh == 0)  // local controls
     gen T_T = trained_hh                              // treat households
@@ -930,13 +986,15 @@ foreach y of local schisto_outcomes {
     eststo spill_`y': reg midline_`y' T_L T_T baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     
+    * Store control mean
+    estadd scalar control_mean = `cm'
+    
     * test difference between local controls and treated
     test T_L = T_T
     estadd scalar p_diff = r(p)
     
     drop T_L T_T
 }
-
 * export main treatment effects
 esttab main_* using "$specifications/schisto_main_effects.tex", replace ///
     style(tex) booktabs ///
@@ -955,9 +1013,9 @@ esttab main_* using "$specifications/schisto_main_effects.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
-    stats(N r2, ///
-        labels("N" "R-squared") ///
-        fmt(%9.0f 3)) ///
+    stats(control_mean N r2, ///
+        labels("Control Mean" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Self-Reported\\Infection}" ///
@@ -985,9 +1043,9 @@ esttab spill_* using "$specifications/schisto_spillovers.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff N r2, ///
-        labels("P-value L=T" "N" "R-squared") ///
-        fmt(3 %9.0f 3)) ///
+    stats(control_mean p_diff N r2, ///
+        labels("Control Mean" "P-value L=T" "N" "R-squared") ///
+        fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Self-Reported\\Infection}" ///
@@ -1072,12 +1130,24 @@ local school_outcomes "any_absence avg_attendance absence_count"  // school atte
 * main treatment effects (eq 1)
 eststo clear
 foreach y in work_days_lost any_absence absence_count {
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
+    * Run regression
     eststo main_`y': reg midline_`y' trained_hh baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+        
+    * Store control mean
+    estadd scalar control_mean = `cm'
 }
 
 * spillover effects (eq 3)
 foreach y in work_days_lost any_absence absence_count {
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
     * gen treatment indicators
     gen T_L = (treatment_arm != 0 & trained_hh == 0)  // local controls
     gen T_T = trained_hh                              // treat households
@@ -1085,12 +1155,16 @@ foreach y in work_days_lost any_absence absence_count {
     eststo spill_`y': reg midline_`y' T_L T_T baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     
-    * difference between local controls and treated
+    * Store control mean
+    estadd scalar control_mean = `cm'
+    
+    * test difference between local controls and treated
     test T_L = T_T
     estadd scalar p_diff = r(p)
     
     drop T_L T_T
 }
+
 
 * export main treatment effects
 esttab main_* using "$specifications/work_school_main.tex", replace ///
@@ -1110,9 +1184,9 @@ esttab main_* using "$specifications/work_school_main.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
-    stats(N r2, ///
-        labels("N" "R-squared") ///
-        fmt(%9.0f 3)) ///
+    stats(control_mean N r2, ///
+        labels("Control Mean" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Work Days\\Lost}" ///
@@ -1138,16 +1212,16 @@ esttab spill_* using "$specifications/work_school_spillovers.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff N r2, ///
-        labels("P-value L=T" "N" "R-squared") ///
-        fmt(3 %9.0f 3)) ///
+    stats(control_mean p_diff N r2, ///
+        labels("Control Mean" "P-value L=T" "N" "R-squared") ///
+        fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Work Days\\Lost}" ///
             "\shortstack{Any School\\Absence}" ///
             "\shortstack{Number of\\Absences}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-	
+
 **************************************************
 * 2.1.2: Educational Outcomes Analysis
 **************************************************
@@ -1160,12 +1234,24 @@ local attendance "avg_attendance any_last_year full_attend"  // school participa
 * main treatment effects (eq 1)
 eststo clear
 foreach y in max_grade any_enrolled num_enrolled avg_attendance any_last_year full_attend {
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
+    * Run regression
     eststo main_`y': reg midline_`y' trained_hh baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
+        
+    * Store control mean
+    estadd scalar control_mean = `cm'
 }
 
 * spillover effects (eq 3)
 foreach y in max_grade any_enrolled num_enrolled avg_attendance any_last_year full_attend {
+    * Calculate control mean first
+    qui sum midline_`y' if treatment_arm==0
+    local cm = r(mean)
+    
     * gen treatment indicators
     gen T_L = (treatment_arm != 0 & trained_hh == 0)  // local controls
     gen T_T = trained_hh                              // treat households
@@ -1173,7 +1259,10 @@ foreach y in max_grade any_enrolled num_enrolled avg_attendance any_last_year fu
     eststo spill_`y': reg midline_`y' T_L T_T baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
     
-    * difference between local controls and treated
+    * Store control mean
+    estadd scalar control_mean = `cm'
+    
+    * test difference between local controls and treated
     test T_L = T_T
     estadd scalar p_diff = r(p)
     
@@ -1199,9 +1288,9 @@ esttab main_* using "$specifications/education_main.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(trained_hh) ///
-    stats(N r2, ///
-        labels("N" "R-squared") ///
-        fmt(%9.0f 3)) ///
+    stats(control_mean N r2, ///
+        labels("Control Mean" "N" "R-squared") ///
+        fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Highest\\Grade}" ///
@@ -1231,9 +1320,9 @@ esttab spill_* using "$specifications/education_spillovers.tex", replace ///
         "\end{table}") ///
     cells(b(star fmt(3)) se(par fmt(3))) ///
     keep(T_L T_T) ///
-    stats(p_diff N r2, ///
-        labels("P-value L=T" "N" "R-squared") ///
-        fmt(3 %9.0f 3)) ///
+    stats(control_mean p_diff N r2, ///
+        labels("Control Mean" "P-value L=T" "N" "R-squared") ///
+        fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Highest\\Grade}" ///
@@ -1243,7 +1332,8 @@ esttab spill_* using "$specifications/education_spillovers.tex", replace ///
             "\shortstack{Attended\\Last Year}" ///
             "\shortstack{Full\\Attendance}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
-		
+
+xxx
 **************************************************
 * Robustness
 * Winsorize Continuous Variables at 99th Percentile

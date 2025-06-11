@@ -402,6 +402,13 @@ graph export "$auctions/ai_land_labor.eps", as(eps) replace
 *** plot ratio of wage to mpl along land to labor ratio *** 
 twoway (scatter wage_ratio land_to_labor) (fpfit wage_ratio land_to_labor), xtitle("Land to Labor Ratio") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)
 
+*** plot allocative inefficiency along asset index *** 
+twoway (scatter ai_leon_re asset_index_std if ai_leon_re != .) (fpfit ai_leon_re asset_index_std if ai_leon_re != .), xtitle("Asset Index") ytitle("Allocative Inefficiency") legend(off) 
+graph export "$auctions/ai_asset.eps", as(eps) replace
+
+*** plot ratio of wage to mpl along asset index *** 
+twoway (scatter wage_ratio asset_index_std) (fpfit wage_ratio asset_index_std), xtitle("Asset Index") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)
+
 *** estiamte factors of allocative inefficiency *** 
 gen age2 = hhhead_age*hhhead_age 
 gen members2 = members*members

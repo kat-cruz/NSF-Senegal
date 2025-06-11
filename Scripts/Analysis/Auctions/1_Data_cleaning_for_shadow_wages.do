@@ -841,9 +841,13 @@ replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
 
 drop _merge 
 
-merge 1:1 hhid using "$asset_index/PCA_asset_index_var.dta"
+merge 1:1 hhid using "$asset_index/pooled_asset_index_var.dta"
+
+drop if _merge == 2 
 
 drop _merge 
+
+rename asset_index_std0 asset_index_std
 
 *** clean price data *** 
 rename q63_1 urea_price 
@@ -1790,6 +1794,14 @@ replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
 
 drop _merge 
 
+merge 1:1 hhid using "$asset_index/pooled_asset_index_var.dta"
+
+drop if _merge == 2 
+
+drop _merge 
+
+rename asset_index_std1 asset_index_std
+
 *** clean price data *** 
 rename q63_1 urea_price 
 rename q63_2 manure_price
@@ -1868,7 +1880,7 @@ egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hour
 
 egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members   
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std   
 
 tempfile shadow_wage_midline
 save `shadow_wage_midline'
@@ -2011,8 +2023,9 @@ label variable rice "Household Grows Rice"
 label variable crop_types "Number of Crops Grown"
 label variable members "Household Size"
 label variable child "Number of Children"
+label variable asset_index_std "Standardized Asset Index"
 
-estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU_1 agri_income_01 daily_wage_10 ag_wage hhhead_age hhhead_female hhhead_no_education members child rice crop_types
+estpost sum agri_6_14 agri_6_15 value_prod_1 prod_hect_1 ag_hours_1 fert_1 collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU_1 agri_income_01 daily_wage_10 ag_wage hhhead_age hhhead_female hhhead_no_education members child rice crop_types asset_index_std
 
 esttab using "$auctions/household_level_production_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 

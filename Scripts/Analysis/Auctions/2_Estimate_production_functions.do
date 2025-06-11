@@ -443,12 +443,14 @@ replace wage = wage_5 if wage < wage_5
 sort wage 
 
 gen mc_ton_of_compost = wage*9.356752746
+gen fixed_cost = (39.1583907*574.446) / 1000
 gen mc_kg_of_compost = mc_ton_of_compost / 1000
+gen tot_mc_compost = mc_kg_of_compost + fixed_cost
 
-sort mc_kg_of_compost
+sort tot_mc_compost
 
 gen quantity = _n 
 
-keep quantity mc_kg_of_compost 
+keep quantity tot_mc_compost
 
-export excel "$auctions/supply_curve_estimates.xlsx", replace 
+save "$auctions/supply_curve_estimates", replace 

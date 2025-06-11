@@ -1,5 +1,5 @@
 **************************************************
-* DISES ANCOVA Regressions Baseline to Midline V2
+* DISES ANCOVA Plots Baseline to Midline
 * Created by: Alexander Mills
 * Updates tracked on Git
 **************************************************
@@ -14,6 +14,7 @@ if "`c(username)'" == "km978" global master "C:\Users\km978\Box\NSF Senegal"
 if "`c(username)'" == "socrm" global master "C:\Users\socrm\Box\NSF Senegal"
 
 global specifications "$master\Data_Management\Output\Analysis\Specifications\Midline"
+global figures "$master\Data_Management\Output\Analysis\Specifications\Midline\Figures"
 
 * load specifications dataset
 use "$specifications/v2_baseline_to_midline_pap_specifications.dta", clear
@@ -22,9 +23,9 @@ use "$specifications/v2_baseline_to_midline_pap_specifications.dta", clear
 local avr_outcomes "avr_water_any avr_harvest_any avr_removal_any avr_recent_any avr_harvest_kg avr_recent_kg"
 
 * labels
-local lab_water_any "Harvests from Water Sources"
+local lab_water_any "Harvests Vegetation"
 local lab_harvest_any "12-Month Collection"
-local lab_removal_any "Removes Aquatic Vegetation" 
+local lab_removal_any "Removes Vegetation" 
 local lab_recent_any "7-Day Collection"
 local lab_harvest_kg "12-Month Collection (kg)"
 local lab_recent_kg "7-Day Collection (kg)"
@@ -32,6 +33,9 @@ local lab_recent_kg "7-Day Collection (kg)"
 * simple baseline to midline mean plots
 set scheme s2color
 
+*******************************************
+* AVR
+*******************************************
 * AVR outcomes plotting
 preserve 
 
@@ -60,12 +64,15 @@ collapse (mean) avr_*, by(time period)
 twoway (connected avr_water_any period, msymbol(O)) ///
        (connected avr_removal_any period, msymbol(D)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(.02).1, format(%4.3f)) ///
+    ylabel(0(.02).1, format(%3.2f)) ///
     xtitle("Survey Round") ytitle("Share of Households Participating") ///
     legend(order(1 "`lab_water_any'" 2 "`lab_removal_any'")) ///
     title("Household AVR Participation Over Time") ///
     subtitle("Mean household participation rates") ///
+    graphregion(margin(l=5 r=5 t=2 b=2)) ///
+    plotregion(margin(l=2 r=2 t=2 b=2)) ///
     name(binary, replace)
+graph export "$figures/avr_participation.png", replace width(1200)
 
 * plot continuous outcomes (kg)
 twoway connected avr_harvest_kg avr_recent_kg period, ///
@@ -74,16 +81,24 @@ twoway connected avr_harvest_kg avr_recent_kg period, ///
     legend(order(1 "`lab_harvest_kg'" 2 "`lab_recent_kg'")) ///
     title("Household AVR Collection Amounts Over Time") ///
     subtitle("Mean household collection in kilograms") ///
+    graphregion(margin(l=5 r=5 t=2 b=2)) ///
+    plotregion(margin(l=2 r=2 t=2 b=2)) ///
     name(continuous, replace)
+graph export "$figures/avr_collection.png", replace width(1200)
 
 restore
 
-* Define compost outcomes and labels
+**************************************
+* Composting
+**************************************
+
+* Define composting outcomes and labels
 local comp_outcomes "compost_any waste_any compost_plots waste_plots"
 local lab_compost_any "Produces Compost"
-local lab_waste_any "Collects Waste"
-local lab_compost_plots "Number of Plots w/ Compost"
-local lab_waste_plots "Number of Plots w/ Waste"
+local lab_waste_any "Collects Organic Waste"
+local lab_compost_plots "Plots Using Compost"
+local lab_waste_plots "Plots Using Organic Waste"
+
 
 * baseline to midline mean plots
 preserve 
@@ -107,33 +122,39 @@ foreach var of local comp_outcomes {
 }
 
 * means for each period
-collapse (mean) compost_* waste_*, by(time period)
+collapse (mean) *compost_* *waste_*, by(time period)
 
-* binary outcomes
+* binary composting adoption
 twoway connected compost_any waste_any period, ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(.2)1) ///
-    xtitle("Survey Round") ytitle("Share of Households Participating") ///
+    ylabel(0(.02).08, format(%3.2f)) /// 
+    xtitle("Survey Round") ytitle("Share of Households") ///
     legend(order(1 "`lab_compost_any'" 2 "`lab_waste_any'")) ///
-    title("Household Composting Activities Over Time") ///
-    subtitle("Mean household participation rates") ///
+    title("Household Composting Activities") ///
+    subtitle("Share of households producing compost and collecting organic waste") ///
     name(comp_binary, replace)
+	graph export "$figures/comp_binary.png", replace width(1200)
 
-* continuous outcomes (plots)
+* plot-level application
 twoway connected compost_plots waste_plots period, ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    xtitle("Survey Round") ytitle("Plots per Household") ///
-    legend(order(1 "Plots Using Compost" 2 "Plots Using Waste")) ///
-    title("Household Plot Usage for Composting") ///
-    subtitle("Average number of agricultural plots using compost/waste per household") ///
-    name(comp_continuous, replace)
-	
+    ylabel(0(.02).08, format(%3.2f)) /// 
+    xtitle("Survey Round") ytitle("Average Number of Plots") ///
+    legend(order(1 "`lab_compost_plots'" 2 "`lab_waste_plots'")) ///
+    title("Agricultural Application of Organic Inputs") ///
+    subtitle("Average number of plots using compost or organic waste as fertilizer") ///
+    name(comp_plots, replace)
+	graph export "$figures/comp_plots.png", replace width(1200)
 restore
+
+*******************************************
+* Food Security
+*******************************************
 
 * food security outcomes and labels
 local food_outcomes "months_soudure rcsi_annual"
 local lab_months_soudure "Lean Season Months"
-local lab_rcsi_annual "Reduced CSI"
+local lab_rcsi_annual "12-Month rCSI"
 
 * baseline to midline mean plots
 preserve 
@@ -166,17 +187,22 @@ twoway connected months_soudure rcsi_annual period, ///
     legend(order(1 "`lab_months_soudure'" 2 "`lab_rcsi_annual'")) ///
     title("Household Food Security Over Time") ///
     subtitle("Mean household lean season months and coping strategy index") ///
-    name(food_security, replace)
+    name(food_security, replace) 
+	graph export "$figures/food_security.png", replace width(1200)
 
 restore
 
+*****************************************
+* Schisto
+*****************************************
+
 * schisto outcomes and labels
 local schisto_outcomes "bilharzia_any meds_any diagnosed_any urine_any stool_any"
-local lab_bilharzia_any "Self-Reported Symptoms"
-local lab_meds_any "Took Medications"
-local lab_diagnosed_any "Diagnosed"
-local lab_urine_any "Urine Test"
-local lab_stool_any "Stool Test"
+local lab_bilharzia_any "Diagnosed in Past 12mo"       // from health_5_3_2
+local lab_meds_any "Received Schisto Medication"       // from health_5_5
+local lab_diagnosed_any "Ever Diagnosed"               // from health_5_6 
+local lab_urine_any "Blood in Urine"                  // from health_5_8
+local lab_stool_any "Blood in Stool"
 
 * baseline to midline mean plots
 preserve 
@@ -207,77 +233,93 @@ twoway (connected bilharzia_any period, msymbol(O)) ///
        (connected meds_any period, msymbol(D)) ///
        (connected diagnosed_any period, msymbol(T)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(.05).3, format(%3.2f)) ///
+    ylabel(0(.2)1, format(%3.2f)) ///
     xtitle("Survey Round") ytitle("Share of Households Reporting") ///
     legend(order(1 "`lab_bilharzia_any'" 2 "`lab_meds_any'" 3 "`lab_diagnosed_any'")) ///
     title("Schistosomiasis Symptoms and Treatment") ///
     subtitle("Mean household reporting rates") ///
     name(schisto_symptoms, replace)
+	graph export "$figures/schisto_symptoms.png", replace width(1200)
 
 * binary outcomes (testing)
 twoway (connected urine_any period, msymbol(O)) ///
        (connected stool_any period, msymbol(D)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(.05).3, format(%3.2f)) ///
-    xtitle("Survey Round") ytitle("Share of Households Tested") ///
+    ylabel(0(.2).8, format(%3.2f)) ///
+    xtitle("Survey Round") ytitle("Share of Households") ///
     legend(order(1 "`lab_urine_any'" 2 "`lab_stool_any'")) ///
-    title("Schistosomiasis Testing") ///
-    subtitle("Mean household testing rates") ///
+    title("Schistosomiasis Symptoms") ///
+    subtitle("Mean household symptom rates") ///
     name(schisto_testing, replace)
+	graph export "$figures/schisto_testing.png", replace width(1200)
 
 restore
 
-* property rights belief outcomes and labels
-local belief_outcomes "comm_land comm_water private_land comm_land_use comm_fish comm_harvest"
+**************************************
+* Property Rights
+**************************************
+
+* land and resource rights outcomes and labels
+local land_outcomes "comm_land private_land comm_land_use"
+local resource_outcomes "comm_water comm_fish comm_harvest"
 local lab_comm_land "Community Land Rights"
-local lab_comm_water "Water Rights"
 local lab_private_land "Private Land Rights"
 local lab_comm_land_use "Land Use Rights"
+local lab_comm_water "Water Rights"
 local lab_comm_fish "Fishing Rights"
 local lab_comm_harvest "Harvesting Rights"
 
-* baseline to midline mean plots
 preserve 
 
 * long dataset with baseline and midline values
 gen period = 1
 gen time = "Midline"
 
-foreach var of local belief_outcomes {
+* Generate variables for both outcome groups separately
+foreach var of local land_outcomes {
     gen `var' = midline_`var'
     gen `var'0 = baseline_`var'
 }
 
-expand 2
-bysort hhid: replace period = _n - 1
-replace time = "Baseline" if period == 0
-
-foreach var of local belief_outcomes {
-    replace `var' = `var'0 if period == 0
-    drop `var'0
+foreach var of local resource_outcomes {
+    gen `var' = midline_`var'
+    gen `var'0 = baseline_`var'
 }
 
 * means for each period
 collapse (mean) comm_* private_*, by(time period)
 
-* property rights beliefs
+* land rights beliefs
 twoway (connected comm_land period, msymbol(O)) ///
-       (connected comm_water period, msymbol(D)) ///
-       (connected private_land period, msymbol(T)) ///
-       (connected comm_land_use period, msymbol(S)) ///
-       (connected comm_fish period, msymbol(+)) ///
-       (connected comm_harvest period, msymbol(X)), ///
+       (connected private_land period, msymbol(D)) ///
+       (connected comm_land_use period, msymbol(T)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(.2)1, format(%2.1f)) ///
+    ylabel(0.5(.1)1, format(%2.1f)) ///
     xtitle("Survey Round") ytitle("Share Agreeing with Rights") ///
-    legend(order(1 "`lab_comm_land'" 2 "`lab_comm_water'" 3 "`lab_private_land'" ///
-           4 "`lab_comm_land_use'" 5 "`lab_comm_fish'" 6 "`lab_comm_harvest'") cols(2)) ///
-    title("Property Rights Beliefs Over Time") ///
-    subtitle("Mean household agreement rates") ///
-    name(property_rights, replace)
+    legend(order(1 "`lab_comm_land'" 2 "`lab_private_land'" ///
+           3 "`lab_comm_land_use'") cols(1)) ///
+    title("Land Rights Beliefs Over Time") ///
+    subtitle("Share of households agreeing with different land rights") ///
+   name(land_rights, replace)
+	graph export "$figures/land_rights.png", replace width(1200)
+
+* resource rights beliefs  
+twoway (connected comm_water period, msymbol(O)) ///
+       (connected comm_fish period, msymbol(D)) ///
+       (connected comm_harvest period, msymbol(T)), ///
+    xlabel(0 "Baseline" 1 "Midline") ///
+    ylabel(0.5(.1)1, format(%2.1f)) ///
+    xtitle("Survey Round") ytitle("Share Agreeing with Rights") ///
+    legend(order(1 "`lab_comm_water'" 2 "`lab_comm_fish'" ///
+           3 "`lab_comm_harvest'") cols(1)) ///
+    title("Natural Resource Rights Beliefs Over Time") ///
+    subtitle("Share of households agreeing with different resource rights") ///
+   name(resource_rights, replace)
+	graph export "$figures/resource_rights.png", replace width(1200)
 
 restore
 
+xxx
 * work, labor, and school outcomes and labels
 local work_outcomes "work_days_lost"
 local labor_outcomes "ag_workers total_ag_hours total_trade_hours total_wage_hours"

@@ -165,12 +165,12 @@ gen dm_hired_labor_equip_h2 = hired_labor_equip_h2 - hired_labor_equip_h2_mean
 *** estimate equations with random effects *** 
 egen hhid_num = group(hhid)
 
-xtset hhid_num year 
+xtset hhid_num round
 
 egen village_num = group(hhid_village)
 
 *** generalized quadratic production function *** 
-xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste i.year i.village_num if agri_6_14 == 1, re vce(cluster village_num)
+xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste i.round i.village_num if agri_6_14 == 1, re vce(cluster village_num)
 eststo quad_re
 predict quad_re 
 
@@ -187,7 +187,7 @@ gen mphired_quad_re = _b[dm_hired_labor] + 2*_b[dm_hired_labor_sq]*agri_income_1
 gen mpequip_quad_re = _b[dm_equip] + 2*_b[dm_equip_sq]*number_mech_equip + _b[dm_land_equip]*prod_hect_1 + _b[dm_hh_labor_equip]*ag_hours_1 + _b[dm_fert_equip]*fert_1 + _b[dm_TLU_equip]*TLU_1 + _b[dm_hired_labor_equip]*agri_income_16 if agri_6_14 == 1 & ag_hours_1 > 0
 
 *** generalized leontief production function *** 
-xtreg dm_value dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste i.year i.village_num if agri_6_14 == 1, re vce(cluster village_num)
+xtreg dm_value dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste i.round i.village_num if agri_6_14 == 1, re vce(cluster village_num)
 eststo leon_re 
 predict leon_re 
 
@@ -205,7 +205,7 @@ gen mpequip_leon_re = _b[dm_equip] + (1/2)*_b[dm_land_equip_h2]*(1/(sqrt(number_
 
 *** estimate equations with household fixed effects *** 
 *** generalized quadratic production function *** 
-xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num year hhid_num) vce(cluster village_num)
+xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num round hhid_num) vce(cluster village_num)
 eststo quad_fe 
 predict quad_fe 
 
@@ -222,7 +222,7 @@ gen mphired_quad_fe = _b[dm_hired_labor] + 2*_b[dm_hired_labor_sq]*agri_income_1
 gen mpequip_quad_fe = _b[dm_equip] + 2*_b[dm_equip_sq]*number_mech_equip + _b[dm_land_equip]*prod_hect_1 + _b[dm_hh_labor_equip]*ag_hours_1 + _b[dm_fert_equip]*fert_1 + _b[dm_TLU_equip]*TLU_1 + _b[dm_hired_labor_equip]*agri_income_16 if agri_6_14 == 1 & ag_hours_1 > 0
 
 *** generalized leontief production function *** 
-xtreg dm_value dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num year hhid_num) vce(cluster village_num)
+xtreg dm_value dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num round hhid_num) vce(cluster village_num)
 eststo leon_fe 
 predict leon_fe 
 
@@ -240,7 +240,7 @@ gen mpequip_leon_fe = _b[dm_equip] + (1/2)*_b[dm_land_equip_h2]*(1/(sqrt(number_
 
 *** do not include TLU varaibles *** 
 *** quadratic ***
-xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_hired_labor dm_fert_equip dm_hired_labor_equip manure compost hhwaste i.village_num i.year if agri_6_14 == 1, re vce(cluster village_num)
+xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_hired_labor dm_fert_equip dm_hired_labor_equip manure compost hhwaste i.village_num i.round if agri_6_14 == 1, re vce(cluster village_num)
 eststo quad_re_notlu 
 predict quad_re_notlu 
 
@@ -255,7 +255,7 @@ gen mphired_quad_re_notlu = _b[dm_hired_labor] + 2*_b[dm_hired_labor_sq]*agri_in
 gen mpequip_quad_re_notlu = _b[dm_equip] + 2*_b[dm_equip_sq]*number_mech_equip + _b[dm_land_equip]*prod_hect_1 + _b[dm_hh_labor_equip]*ag_hours_1 + _b[dm_fert_equip]*fert_1 + _b[dm_hired_labor_equip]*agri_income_16 if agri_6_14 == 1 & ag_hours_1 > 0
 
 *** generalized leontief production function *** 
-xtreg dm_value dm_land dm_hh_labor dm_fert dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste i.year i.village_num if agri_6_14 == 1, re vce(cluster village_num)
+xtreg dm_value dm_land dm_hh_labor dm_fert dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste i.round i.village_num if agri_6_14 == 1, re vce(cluster village_num)
 eststo leon_re_notlue 
 predict leon_re_notlu 
 
@@ -270,7 +270,7 @@ gen mphired_leon_re_notlu = _b[dm_hired_labor] + (1/2)*_b[dm_land_hired_labor_h2
 gen mpequip_leon_re_notlu = _b[dm_equip] + (1/2)*_b[dm_land_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(ag_hours_1)) + (1/2)*_b[dm_fert_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(agri_income_16)) if agri_6_14 == 1
 
 *** quadratic fixed effects ***
-xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_hired_labor dm_fert_equip dm_hired_labor_equip manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num year hhid_num) vce(cluster village_num)
+xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_hired_labor dm_fert_equip dm_hired_labor_equip manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num round hhid_num) vce(cluster village_num)
 eststo quad_fe_notlu 
 predict quad_fe_notlu 
 
@@ -285,7 +285,7 @@ gen mphired_quad_fe_notlu = _b[dm_hired_labor] + 2*_b[dm_hired_labor_sq]*agri_in
 gen mpequip_quad_fe_notlu = _b[dm_equip] + 2*_b[dm_equip_sq]*number_mech_equip + _b[dm_land_equip]*prod_hect_1 + _b[dm_hh_labor_equip]*ag_hours_1 + _b[dm_fert_equip]*fert_1 + _b[dm_hired_labor_equip]*agri_income_16 if agri_6_14 == 1 & ag_hours_1 > 0
 
 *** generalized leontief production function *** 
-xtreg dm_value dm_land dm_hh_labor dm_fert dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num year hhid_num) vce(cluster village_num)
+xtreg dm_value dm_land dm_hh_labor dm_fert dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num round hhid_num) vce(cluster village_num)
 eststo leon_fe_notlu 
 predict leon_fe_notlu 
 
@@ -300,9 +300,9 @@ gen mphired_leon_fe_notlu = _b[dm_hired_labor] + (1/2)*_b[dm_land_hired_labor_h2
 gen mpequip_leon_fe_notlu = _b[dm_equip] + (1/2)*_b[dm_land_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(ag_hours_1)) + (1/2)*_b[dm_fert_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(agri_income_16)) if agri_6_14 == 1
 
 *** no hh fixed effects or random effects *** 
-reg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste i.year i.village_num if agri_6_14 == 1, cluster(village_num)
+reg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste i.round i.village_num if agri_6_14 == 1, cluster(village_num)
 
-reg dm_value dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste i.year i.village_num if agri_6_14 == 1, cluster(village_num)
+reg dm_value dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste i.round i.village_num if agri_6_14 == 1, cluster(village_num)
 
 *** output basic regression results *** 
 esttab leon_re leon_fe leon_re_notlue leon_fe_notlu using "$auctions/leon_prods.tex", keep(dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
@@ -402,4 +402,53 @@ graph export "$auctions/ai_land_labor.eps", as(eps) replace
 *** plot ratio of wage to mpl along land to labor ratio *** 
 twoway (scatter wage_ratio land_to_labor) (fpfit wage_ratio land_to_labor), xtitle("Land to Labor Ratio") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)
 
+*** estiamte factors of allocative inefficiency *** 
+gen age2 = hhhead_age*hhhead_age 
+gen members2 = members*members
+gen child2 = child*child
 
+reg ai_leon_re hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types prod_hect_1 TLU_1, cluster(village_num) 
+
+*** predict ai for those who do not do wage labor *** 
+gen est_ai = _b[_cons] + _b[hhhead_no_education]*hhhead_no_education + _b[hhhead_female]*hhhead_female + _b[hhhead_age]*hhhead_age + _b[age2]*age2 + _b[members]*members + _b[members2]*members2 + _b[child]*child + _b[child2]*child2 + _b[rice]*rice + _b[crop_types]*crop_types + _b[prod_hect_1]*prod_hect_1 + _b[TLU_1]*TLU_1 if ag_hours_1 > 0 & ag_wage == 0 
+
+*** estimate factors of the gap *** 
+reg wage_ratio hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types prod_hect_1 TLU_1, cluster(village_num)
+
+*** predict wage ratio for those who do not do wage labor ***
+gen est_wage_ratio = _b[_cons] + _b[hhhead_no_education]*hhhead_no_education + _b[hhhead_female]*hhhead_female + _b[hhhead_age]*hhhead_age + _b[age2]*age2 + _b[members]*members + _b[members2]*members2 + _b[child]*child + _b[child2]*child2 + _b[rice]*rice + _b[crop_types]*crop_types + _b[prod_hect_1]*prod_hect_1 + _b[TLU_1]*TLU_1 if ag_hours_1 > 0 & ag_wage == 0 
+
+*** create variable of shadow wage *** 
+gen est_shadow_wage = exp(est_ai)*mpl_leon_re  
+gen est_shadow_wage_alt = est_wage_ratio*mpl_leon_re
+gen shadow_wage = exp(ai_leon_re)*mpl_leon_re
+gen shadow_wage_alt = wage_ratio*mpl_leon_re
+
+*** summarize shaodw wages *** 
+sum est_shadow_wage est_shadow_wage_alt shadow_wage shadow_wage_alt
+
+*** save just shadow wages to then use in auctions supply curve *** 
+keep daily_wage_10 est_shadow_wage 
+
+gen wage = daily_wage_10
+replace wage = est_shadow_wage if est_shadow_wage != . 
+
+drop if wage == . 
+
+drop if wage <= 0 
+
+egen wage_5 = pctile(wage), p(5)
+replace wage = wage_5 if wage < wage_5 
+
+sort wage 
+
+gen mc_ton_of_compost = wage*9.356752746
+gen mc_kg_of_compost = mc_ton_of_compost / 1000
+
+sort mc_kg_of_compost
+
+gen quantity = _n 
+
+keep quantity mc_kg_of_compost 
+
+export excel "$auctions/supply_curve_estimates.xlsx", replace 

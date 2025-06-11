@@ -12,19 +12,11 @@ execute:
 ---
 
 
-<!-- INITIATE HERE - load packages -->
-
 ## Analysis Overview
-### Prepared for: Dr. Chris Barrett, for Review June workshop materials meeting
-#### June 06, 2025
 ##### Data source: NSF-Senegal project, 
  - Baseline & Midline CRDES survey data
  - Baseline & Midline EPLS & UCAD parasitological data
  - Baseline & Midline Notre Dame Ecological Data
-
-**PLEASE NOTE**
-
-I would first like to confirm what I've done with outcome variable sh_inf before computing the rest of the outcome variables, which is why I'm only reporting on sh_inf today.
 
 
 This analysis proceeds in **three key steps** for each of the primary outcome variables of interest:
@@ -52,10 +44,12 @@ We focus on three infection indicators, constructed from parasitological data:
   Equals 1 if egg count from any of the four stool slides (`p1_kato1_k1_pg`, `p1_kato2_k2_peg`, `p2_kato1_k1_epg`, `p2_kato2_k2_epg`) is greater than 0; otherwise 0.  
   *Represents intestinal schistosomiasis.*
 
-- **`sm_sh_inf`: Co-infection indicator**  
+- **`sm_sh_inf`: Infection indicator**  
   Equals 1 if either `sh_inf` or `sm_inf` is equal to 1.  
   *Captures cases of either or both infections.*
   
+
+<!-- INITIATE HERE - load packages -->
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -66,7 +60,7 @@ We focus on three infection indicators, constructed from parasitological data:
 
 packages <- c("dplyr", "readr", "tidyr", "stargazer",
              "tidyverse", "kableExtra", "haven", "detectseparation",
-              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov")
+              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov", "hdm")
 
 # install.packages("haven")
 # library("haven")
@@ -81,7 +75,7 @@ invisible(lapply(packages, library, character.only = TRUE))
 ```
 
 
-Define project specific paths 
+<!-- Define project specific paths -->
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 proj_paths <- list(
@@ -107,6 +101,7 @@ file_path_infection_df <- file.path(proj$p1, "03_mid_base_analysis_df.dta")
 # Read the dataset
 infection_df <- read_dta(file_path_infection_df)
 
+colnames(infection_df)
 
 ```
 
@@ -115,7 +110,7 @@ infection_df <- read_dta(file_path_infection_df)
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 analysis_df <- infection_df %>%
-  select(-Humanwatercontact, -p2_avg, -q_51, -asset_index) %>%
+  select(-Humanwatercontact, -p2_avg, -q_51, -asset_index, -hh_10_) %>%
   na.omit()
 
 # nrow(analysis_df)
@@ -202,6 +197,8 @@ summary_stats <- function(data, exclude = NULL) {
 
 ##on full set of data
  paras_sum_stats <- summary_stats(infection_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
+ 
+ 
 ```
  
 
@@ -220,7 +217,8 @@ summary_stats <- function(data, exclude = NULL) {
 
 Here are the summary stats for the actual data I use to run the analysis. I firt removed variables with high amounts of missings (Humanwatercontact, p2_avg), and then dropped rows with any missings. I removed and q_51 since we'll be using q_51_W99 (winsorized at the 99th percentile) and asset_index since we'll be using asset_index_std (which is the standarized asset index).
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}          
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
  paras_sum_stats_ad <- summary_stats(analysis_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
 
  
@@ -243,45 +241,69 @@ Here are the summary stats for the actual data I use to run the analysis. I firt
 •	Run Lasso regression to determine which variables show the highest predictive power to help determine covariates. 
 
 
-#### Lasso Regression
+```{r}
 
-Overview:
+exclude_vars <- c("hhid_village", "village_name", "hhid", "individ",
+                  "identificant", "match_score", "round", "sh_inf", "sm_inf", "sh_egg_count","p1_avg", "sm_egg_count", "total_egg")  # Exclude outcome too
 
-To identify the most predictive variables for S. haematobium infection (`sh_inf`), we use **Lasso logistic regression** with **k-fold cross-validation**.
 
-The process includes the following steps:
+covariates <- setdiff(names(train_df), c(exclude_vars, "sm_sh_inf", "treatment_var"))
 
-1. **Prepare the data**: Exclude non-predictive columns (e.g., IDs, village names, outcome itself), and define the remaining columns as predictors.
+x <- data.matrix(train_df[, covariates])
+y <- train_df$sm_sh_inf          # binary outcome
+d <- data.matrix(train_df[, covariates])    # treatment variable — replace with your treatment variable name!
 
-2. **Create the predictor matrix (`sh_x`) and outcome vector (`sh_y`)**: These are formatted to be compatible with the `glmnet` package, which requires a numeric matrix of predictors and a vector outcome.
+# --- step 1: lasso logistic for d ~ x ---
+cv_d <- cv.glmnet(x, d, family = "binomial")
+lasso_d <- glmnet(x, d, family = "binomial", lambda = cv_d$lambda.min)
+selected_d <- which(coef(lasso_d)[-1] != 0)  # exclude intercept
 
-3. **Run cross-validated Lasso regression** using `cv.glmnet()`:
-   - This tests different values of the regularization parameter `lambda` to minimize prediction error.
-   - `alpha = 1` specifies that we are using Lasso (L1) regularization, which performs variable selection by shrinking some coefficients to zero.
+# --- step 2: lasso logistic for y ~ x ---
+cv_y <- cv.glmnet(x, y, family = "binomial")
+lasso_y <- glmnet(x, y, family = "binomial", lambda = cv_y$lambda.min)
+selected_y <- which(coef(lasso_y)[-1] != 0)
 
-4. **Select the best model**: The lambda that minimizes cross-validation error (`lambda.min`) is chosen as the optimal level of regularization.
+# --- step 3: union of selected variables ---
+selected_union <- sort(unique(c(selected_d, selected_y)))
 
-5. **Plot results**: A plot is generated showing cross-validation error across lambda values, which helps visualize how model performance changes with regularization strength.
+# --- step 4: final logistic regression: y ~ d + selected x ---
+x_selected <- x[, selected_union, drop = FALSE]
 
-This approach helps reduce overfitting and identify a parsimonious set of variables that best predict infection status.
+final_data <- data.frame(y = y, d = d, x_selected)
 
-Here is the following code chunk I run to perform the steps mentioned above: -->
+final_formula <- as.formula(paste("y ~ d +", paste(colnames(x_selected), collapse = "+")))
+final_model <- glm(final_formula, data = final_data, family = binomial())
+
+summary(final_model)
+
+
+kable(vars, format = "html", caption = "Double Selection Lasso Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+
+
+
+```
+
+
 
 ```{r}
+# 
+colnames(analysis_df)
 
 
 exclude_vars <- c("hhid_village", "village_name", "hhid", "individ",
-                  "identificant", "match_score", "round", "sh_inf")  # Exclude outcome too
+                  "identificant", "match_score", "round", "sh_inf", "sh_egg_count","p1_avg", "sm_egg_count", "total_egg")  # Exclude outcome too
 
 # Grab all other column names
-sh_covariates <- setdiff(names(analysis_df), exclude_vars)
+covariates <- setdiff(names(analysis_df), exclude_vars)
 
   # Create predictor matrix
-  sh_x <- data.matrix(analysis_df[, sh_covariates])
-  sh_y <- analysis_df$sh_sm_inf
+  x <- data.matrix(analysis_df[, sh_covariates])
+  y <- analysis_df$sm_sh_inf
 
 #perform k-fold cross-validation to find optimal lambda value
-sh1 <- cv.glmnet(sh_x, sh_y, family = "binomial", alpha = 1)
+sh1 <- cv.glmnet(x, y, family = "binomial", alpha = 1)
 
 sh1_best_lambda <- sh1$lambda.min
 
@@ -290,173 +312,26 @@ plot(sh1)
 
 
 #find coefficients of best model
-sh1_best_model <- glmnet(sh_x, sh_y, alpha = 1, lambda = sh1_best_lambda)
+sh1_best_model <- glmnet(x, y, alpha = 1, lambda = sh1_best_lambda)
 coef(sh1_best_model)
 
 #print regression table
 print(sh1_best_model)
 
 # Extract coefficients at best lambda
-sh_mat <- coef(sh1_best_model, s = sh1_best_lambda)
+mat <- coef(sh1_best_model, s = sh1_best_lambda)
 
 # Convert to named vector and find non-zero coefficients
-sh_vars_raw <- rownames(sh_mat)[sh_mat[, 1] != 0]
+vars_raw <- rownames(mat)[mat[, 1] != 0]
 
 # Remove intercept from selected vars
-sh_vars <- setdiff(sh_vars_raw, c("(Intercept)")) #confirm the precise variables we're interested in
+vars <- setdiff(vars_raw, c("(Intercept)")) #confirm the precise variables we're interested in
 
-kable(sh_vars, format = "html", caption = "Best Predictors for sh_inf") %>%
+kable(vars, format = "html", caption = "Best Predictors for inf") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
   scroll_box(width = "100%")
 
 ```
-
-<!-- #### Logit Model
-
-After identifying the most predictive covariates using Lasso regression, we proceed to fit a logistic regression model using the training dataset. This model estimates the probability of S. haematobium infection (`sh_inf`) based on the selected predictors. -->
-
-
-```{r}
-
-# sh_vars_final <- setdiff(names(analysis_df), exclude_vars)
-# 
-# sh_y <- "sh_inf"
-# # Build formula string
-# sh_formula <- paste(sh_y, "~", paste(sh_vars, collapse = " + "))
-# 
-# # Fit logistic regression model
-# sh_model <- glm(as.formula(sh_formula), data = train_df, family = "binomial")
-# 
-# #sh_cse <- vcovCL(sh_model, cluster = train_df$hhid_village)
-# 
-# # Apply coeftest with clustered SE
-# #sh_model_cse <- coeftest(sh_model, vcov. = sh_cse) KRM - commenting out as we don't need this for classification models
-# 
-# print(sh_model)
-
-```
-
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# Install if you don't have it
-# library(detectseparation)
-# 
-# # Run detection on your logistic model formula and data
-# # Create model matrix and response
-# glm(as.formula(sh_formula), data = train_df, family = binomial("logit"), method ="detect_separation")
-# 
-# # Assume you have a data.frame called train_df and a vector of variable names: sh_vars
-# # And your outcome variable is called 'sh_inf'
-# 
-# problematic_vars <- c()
-# 
-# for (var in sh_vars) {
-#   # Build the formula for a single predictor
-#   f <- as.formula(paste("sh_inf ~", var))
-#   
-#   # Try to fit the model
-#   fit <- tryCatch(
-#     glm(f, data = train_df, family = binomial()),
-#     warning = function(w) w,
-#     error = function(e) e
-#   )
-#   
-#   # Check for convergence warnings or infinite coefficients
-#   if (inherits(fit, "warning") || inherits(fit, "error") ||
-#       any(is.infinite(coef(fit))) || !fit$converged) {
-#     cat("⚠️ Problem with variable:", var, "\n")
-#     problematic_vars <- c(problematic_vars, var)
-#   }
-# }
-# 
-# # Output
-# cat("\nVariables causing potential separation:\n")
-# print(problematic_vars)
-
-
-```
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-
-# sh_vars_final <- setdiff(sh_vars, c("sh_egg_count", "sm_egg_count", "p1_avg"))
-# 
-# sh_y <- "sh_inf"
-# # Build formula string
-# sh_formula <- paste(sh_y, "~", paste(sh_vars_final, collapse = " + "))
-# 
-# # Fit logistic regression model
-# sh_model <- glm(as.formula(sh_formula), data = train_df, family = "binomial")
-# sh_cse <- vcovCL(sh_model, cluster = train_df$hhid_village)
-# 
-# # Apply coeftest with clustered SE
-# sh_model_cse <- coeftest(sh_model, vcov. = sh_cse)
-# sh_model_cse
-
-```
-
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-# problematic_vars <- c()
-# 
-# for (var in sh_vars_final) {
-#   # Build the formula for a single predictor
-#   f <- as.formula(paste("sh_inf ~", var))
-#   
-#   # Try to fit the model
-#   fit <- tryCatch(
-#     glm(f, data = train_df, family = binomial()),
-#     warning = function(w) w,
-#     error = function(e) e
-#   )
-#   
-#   # Check for convergence warnings or infinite coefficients
-#   if (inherits(fit, "warning") || inherits(fit, "error") ||
-#       any(is.infinite(coef(fit))) || !fit$converged) {
-#     cat("⚠️ Problem with variable:", var, "\n")
-#     problematic_vars <- c(problematic_vars, var)
-#   }
-# }
-# 
-# # Output
-# cat("\nVariables causing potential separation:\n")
-# print(problematic_vars)
-# 
-# 
-# problematic_vars <- c()
-# 
-# for (var in sh_vars_final) {
-#   # Formula with one predictor against all others
-#   other_vars <- setdiff(sh_vars_final, var)
-#   f <- as.formula(paste(var, "~", paste(other_vars, collapse = "+")))
-#   
-#   # Fit linear model
-#   fit <- tryCatch(
-#     lm(f, data = train_df),
-#     error = function(e) e
-#   )
-#   
-#   # Check if model fit failed or R^2 very high (collinearity)
-#   if (inherits(fit, "error")) {
-#     cat("⚠️ Error fitting", var, "\n")
-#     problematic_vars <- c(problematic_vars, var)
-#   } else {
-#     r2 <- summary(fit)$r.squared
-#     if (!is.na(r2) && r2 > 0.9) {  # threshold can be changed
-#       cat("⚠️ High collinearity detected for:", var, "(R^2 =", round(r2,3), ")\n")
-#       problematic_vars <- c(problematic_vars, var)
-#     }
-#   }
-# }
-# 
-# cat("\nVariables likely collinear:\n")
-# print(problematic_vars)
-# 
-# 
-
-```
-
 
 
 #### Prediction - all
@@ -493,82 +368,6 @@ We will:
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-test_probs <- predict(sh_model, newdata = test_df, type = "response")
-
-
-evaluate_thresholds <- function(test_probs, actual, thresholds = seq(0.1, 0.9, by = 0.1)) {
-  results <- data.frame()
-  
-  for (threshold in thresholds) {
-    pred_class <- ifelse(test_probs > threshold, 1, 0)
-    
-    TP <- sum(pred_class == 1 & actual == 1)
-    TN <- sum(pred_class == 0 & actual == 0)
-    FP <- sum(pred_class == 1 & actual == 0)
-    FN <- sum(pred_class == 0 & actual == 1)
-    
-    FPR <- ifelse((FP + TN) > 0, FP / (FP + TN), NA)
-    FNR <- ifelse((FN + TP) > 0, FN / (FN + TP), NA)
-    Sum_FPR_FNR <- FPR + FNR
-    
-    results <- rbind(results, data.frame(
-      Threshold = threshold,
-      TP = TP, TN = TN, FP = FP, FN = FN,
-      FPR = round(FPR, 3),
-      FNR = round(FNR, 3),
-      Sum_FPR_FNR = round(Sum_FPR_FNR, 3)
-    ))
-  }
-  
-  # Find threshold that minimizes FPR + FNR
-  min_row <- results[which.min(results$Sum_FPR_FNR), ]
-  attr(results, "best_threshold") <- min_row$Threshold
-  
-  return(results)
-}
-  
-
-results_df <- evaluate_thresholds(test_probs, test_df$sh_inf)
-
-kable(results_df, format = "html", caption = "Confusion Matrix for sh_inf at each threshold") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
-  scroll_box(width = "100%")
-
-
-# Best threshold (minimizing FPR + FNR)
-sh_best_threshold <- attr(results_df, "best_threshold")
-
-
-kable(sh_best_threshold, format = "html", caption = "Best threshold") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
-  scroll_box(width = "100%")
-##no variation - at any threshold, parasitological variables are able to nearly perfectly predict. 
-
-```
-
-##### Summarize and visualize the probababilities
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-### visulalize 
-
-summary(test_probs)
-hist(test_probs, breaks = 20, col = "skyblue", main = "Distribution of Predicted Probabilities")
-
-
-
-
-```
-
-
-
-
-
-#### Prediction - survey
-
-I included this section because we got very low variation when I include all our pre-selected co-variates. This is a regression output from running logit regression including ONLY survey variables. 
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
 sh_y <- "sh_inf"
 
 sh_vars_survey <- c(
@@ -593,24 +392,6 @@ print(sh_model2)
 
 # See summary
 #summary(sh_model_cse)
-
-
-```
-
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-# test_probs <- predict(sh_model, newdata = test_df, type = "response")
-# 
-# head(test_probs)
-# 
-# # For example, classify as positive if prob > 0.5
-# threshold <- 0.5
-# test_pred_class <- ifelse(test_probs > threshold, 1, 0)
-# 
-# actual <- test_df$sh_inf
-# 
-# table(Predicted = test_pred_class, Actual = actual)
 
 
 ```
@@ -689,6 +470,8 @@ hist(test_probs, breaks = 20, col = "skyblue", main = "Distribution of Predicted
 
 
 ```
+
+
 
 
 

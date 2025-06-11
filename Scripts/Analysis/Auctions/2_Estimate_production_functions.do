@@ -4,6 +4,7 @@
 *** File Last Updated On: May 9, 2025 ***
 
 clear all 
+set scheme s2color
 
 set maxvar 20000
 
@@ -172,12 +173,14 @@ egen village_num = group(hhid_village)
 *** generalized quadratic production function *** 
 xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste i.year i.village_num if agri_6_14 == 1, re vce(cluster village_num)
 eststo quad_re
+predict quad_re 
 
 gen mpl_quad_re = _b[dm_hh_labor] + 2*_b[dm_hh_labor_sq]*ag_hours_1 + _b[dm_land_hh_labor]*prod_hect_1 + _b[dm_hh_labor_fert]*fert_1 + _b[dm_hh_labor_TLU]*TLU_1 + _b[dm_hh_labor_hired_labor]*agri_income_16 + _b[dm_hh_labor_equip]*number_mech_equip if agri_6_14 == 1 & ag_hours_1 > 0
 
 *** generalized leontief production function *** 
 xtreg dm_value dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste i.year i.village_num if agri_6_14 == 1, re vce(cluster village_num)
 eststo leon_re 
+predict leon_re 
 
 gen mpl_leon_re = _b[dm_hh_labor] + (1/2)*_b[dm_land_hh_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_fert_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_TLU_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(TLU)) + (1/2)*_b[dm_hh_labor_hired_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(agri_income_16)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(number_mech_equip)) if agri_6_14 == 1 
 
@@ -185,38 +188,63 @@ gen mpl_leon_re = _b[dm_hh_labor] + (1/2)*_b[dm_land_hh_labor_h2]*(1/(sqrt(ag_ho
 *** generalized quadratic production function *** 
 xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num year hhid_num) vce(cluster village_num)
 eststo quad_fe 
+predict quad_fe 
 
 gen mpl_quad_fe = _b[dm_hh_labor] + 2*_b[dm_hh_labor_sq]*ag_hours_1 + _b[dm_land_hh_labor]*prod_hect_1 + _b[dm_hh_labor_fert]*fert_1 + _b[dm_hh_labor_TLU]*TLU_1 + _b[dm_hh_labor_hired_labor]*agri_income_16 + _b[dm_hh_labor_equip]*number_mech_equip if agri_6_14 == 1 & ag_hours_1 > 0
+
+gen mpland_quad_fe = _b[dm_land] + 2*_b[dm_land_sq]*prod_hect_1 + _b[dm_land_hh_labor]*ag_hours_1 + _b[dm_land_fert]*fert_1 + _b[dm_land_TLU]*TLU_1 + _b[dm_land_hired_labor]*agri_income_16 + _b[dm_land_equip]*number_mech_equip if agri_6_14 == 1 & ag_hours_1 > 0
+
+gen mpfert_quad_fe = _b[dm_fert] + 2*_b[dm_fert_sq]*fert_1 + _b[dm_land_fert]*prod_hect_1 + _b[dm_hh_labor_fert]*ag_hours_1 + _b[dm_fert_TLU]*TLU_1 + _b[dm_fert_hired_labor]*agri_income_16 + _b[dm_fert_equip]*number_mech_equip if agri_6_14 == 1 & ag_hours_1 > 0
+
+gen mptlu_quad_fe = _b[dm_TLU] + 2*_b[dm_TLU_sq]*TLU + _b[dm_land_TLU]*prod_hect_1 + _b[dm_hh_labor_TLU]*ag_hours_1 + _b[dm_fert_TLU]*fert_1 + _b[dm_TLU_hired_labor]*agri_income_16 + _b[dm_TLU_equip]*number_mech_equip if agri_6_14 == 1 & ag_hours_1 > 0
+
+gen mphired_quad_fe = _b[dm_hired_labor] + 2*_b[dm_hired_labor_sq]*agri_income_16 + _b[dm_land_hired_labor]*prod_hect_1 + _b[dm_hh_labor_hired_labor]*ag_hours_1 + _b[dm_fert_hired_labor]*fert_1 + _b[dm_TLU_hired_labor]*TLU_1 + _b[dm_hired_labor_equip]*number_mech_equip if agri_6_14 == 1 & ag_hours_1 > 0
+
+gen mpequip_quad_fe = _b[dm_equip] + 2*_b[dm_equip_sq]*number_mech_equip + _b[dm_land_equip]*prod_hect_1 + _b[dm_hh_labor_equip]*ag_hours_1 + _b[dm_fert_equip]*fert_1 + _b[dm_TLU_equip]*TLU_1 + _b[dm_hired_labor_equip]*agri_income_16 if agri_6_14 == 1 & ag_hours_1 > 0
 
 *** generalized leontief production function *** 
 xtreg dm_value dm_land dm_hh_labor dm_fert dm_TLU dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_TLU_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_TLU_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_TLU_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_TLU_hired_labor_h2 dm_TLU_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num year hhid_num) vce(cluster village_num)
 eststo leon_fe 
+predict leon_fe 
 
-gen mpl_leon_fe = _b[dm_hh_labor] + (1/2)*_b[dm_land_hh_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_fert_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_TLU_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(TLU)) + (1/2)*_b[dm_hh_labor_hired_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(agri_income_16)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(number_mech_equip)) if agri_6_14 == 1
+gen mpl_leon_fe = _b[dm_hh_labor] + (1/2)*_b[dm_land_hh_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_fert_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_TLU_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(TLU_1)) + (1/2)*_b[dm_hh_labor_hired_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(agri_income_16)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(number_mech_equip)) if agri_6_14 == 1
 
+gen mpland_leon_fe = _b[dm_land] + (1/2)*_b[dm_land_hh_labor_h2]*(1/(sqrt(prod_hect_1)))*(sqrt(ag_hours_1)) + (1/2)*_b[dm_land_fert_h2]*(1/(sqrt(prod_hect_1)))*(sqrt(fert_1)) + (1/2)*_b[dm_land_TLU_h2]*(1/(sqrt(prod_hect_1)))*(sqrt(TLU_1)) + (1/2)*_b[dm_land_hired_labor_h2]*(1/(sqrt(prod_hect_1)))*(sqrt(agri_income_16)) + (1/2)*_b[dm_land_equip_h2]*(1/(sqrt(prod_hect_1)))*(sqrt(number_mech_equip)) if agri_6_14 == 1
+
+gen mpfert_leon_fe = _b[dm_fert] + (1/2)*_b[dm_land_fert_h2]*(1/(sqrt(fert_1)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_fert_h2]*(1/(sqrt(fert_1)))*(sqrt(ag_hours_1)) + (1/2)*_b[dm_fert_TLU_h2]*(1/(sqrt(fert_1)))*(sqrt(TLU_1)) + (1/2)*_b[dm_fert_hired_labor_h2]*(1/(sqrt(fert_1)))*(sqrt(agri_income_16)) + (1/2)*_b[dm_fert_equip_h2]*(1/(sqrt(fert_1)))*(sqrt(number_mech_equip)) if agri_6_14 == 1
+
+gen mptlu_leon_fe = _b[dm_TLU] + (1/2)*_b[dm_land_TLU_h2]*(1/(sqrt(TLU_1)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_TLU_h2]*(1/(sqrt(TLU_1)))*(sqrt(ag_hours_1)) + (1/2)*_b[dm_fert_TLU_h2]*(1/(sqrt(TLU_1)))*(sqrt(fert_1)) + (1/2)*_b[dm_TLU_hired_labor_h2]*(1/(sqrt(TLU_1)))*(sqrt(agri_income_16)) + (1/2)*_b[dm_TLU_equip_h2]*(1/(sqrt(TLU_1)))*(sqrt(number_mech_equip)) if agri_6_14 == 1
+
+gen mphired_leon_fe = _b[dm_hired_labor] + (1/2)*_b[dm_land_hired_labor_h2]*(1/(sqrt(agri_income_16)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_hired_labor_h2]*(1/(sqrt(agri_income_16)))*(sqrt(ag_hours_1)) + (1/2)*_b[dm_TLU_hired_labor_h2]*(1/(sqrt(agri_income_16)))*(sqrt(TLU_1)) + (1/2)*_b[dm_fert_hired_labor_h2]*(1/(sqrt(agri_income_16)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(agri_income_16)))*(sqrt(number_mech_equip)) if agri_6_14 == 1
+
+gen mpequip_leon_fe = _b[dm_equip] + (1/2)*_b[dm_land_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(ag_hours_1)) + (1/2)*_b[dm_TLU_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(TLU_1)) + (1/2)*_b[dm_fert_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(number_mech_equip)))*(sqrt(agri_income_16)) if agri_6_14 == 1
 
 *** do not include TLU varaibles *** 
 *** quadratic ***
 xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_hired_labor dm_fert_equip dm_hired_labor_equip manure compost hhwaste i.village_num i.year if agri_6_14 == 1, re vce(cluster village_num)
 eststo quad_re_notlu 
+predict quad_re_notlu 
 
 gen mpl_quad_re_notlu = _b[dm_hh_labor] + 2*_b[dm_hh_labor_sq]*ag_hours_1 + _b[dm_land_hh_labor]*prod_hect_1 + _b[dm_hh_labor_fert]*fert_1 + _b[dm_hh_labor_hired_labor]*agri_income_16 + _b[dm_hh_labor_equip]*number_mech_equip if agri_6_14 == 1 & ag_hours_1 > 0
 
 *** generalized leontief production function *** 
 xtreg dm_value dm_land dm_hh_labor dm_fert dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste i.year i.village_num if agri_6_14 == 1, re vce(cluster village_num)
 eststo leon_re_notlue 
+predict leon_re_notlu 
 
 gen mpl_leon_re_notlu = _b[dm_hh_labor] + (1/2)*_b[dm_land_hh_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_fert_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_hired_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(agri_income_16)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(number_mech_equip)) if agri_6_14 == 1
 
 *** quadratic fixed effects ***
 xtreg dm_value dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_hired_labor dm_fert_equip dm_hired_labor_equip manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num year hhid_num) vce(cluster village_num)
 eststo quad_fe_notlu 
+predict quad_fe_notlu 
 
 gen mpl_quad_fe_notlu = _b[dm_hh_labor] + 2*_b[dm_hh_labor_sq]*ag_hours_1 + _b[dm_land_hh_labor]*prod_hect_1 + _b[dm_hh_labor_fert]*fert_1 + _b[dm_hh_labor_hired_labor]*agri_income_16 + _b[dm_hh_labor_equip]*number_mech_equi if agri_6_14 == 1 & ag_hours_1 > 0
 
 *** generalized leontief production function *** 
 xtreg dm_value dm_land dm_hh_labor dm_fert dm_hired_labor dm_equip dm_land_hh_labor_h2 dm_land_fert_h2 dm_land_hired_labor_h2 dm_land_equip_h2 dm_hh_labor_fert_h2 dm_hh_labor_hired_labor_h2 dm_hh_labor_equip_h2 dm_fert_hired_labor_h2 dm_fert_equip_h2 dm_hired_labor_equip_h2 manure compost hhwaste if agri_6_14 == 1, fe absorb(village_num year hhid_num) vce(cluster village_num)
 eststo leon_fe_notlu 
+predict leon_fe_notlu 
 
 gen mpl_leon_fe_notlu = _b[dm_hh_labor] + (1/2)*_b[dm_land_hh_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(prod_hect_1)) + (1/2)*_b[dm_hh_labor_fert_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(fert_1)) + (1/2)*_b[dm_hh_labor_hired_labor_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(agri_income_16)) + (1/2)*_b[dm_hh_labor_equip_h2]*(1/(sqrt(ag_hours_1)))*(sqrt(number_mech_equip)) if agri_6_14 == 1
 
@@ -231,64 +259,43 @@ esttab leon_re leon_fe leon_re_notlue leon_fe_notlu using "$auctions/leon_prods.
 esttab quad_re quad_fe quad_re_notlu quad_fe_notlu using "$auctions/quad_prods.tex", keep(dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
 
 *** summarize estiamte marginal products of labor *** 
-sum mpl*
+sum mpl* daily_wage_10
 
-estpost summarize mpl* 
+estpost summarize mpl* daily_wage_10
 
 esttab . using "$auctions/mpl_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
-*** calculate gap between marginal product of labor and daily wage *** 
-gen gap_quad_re = daily_wage_10  - mpl_quad_re if ag_wage == 1 
-gen gap_leon_re = daily_wage_10 - mpl_leon_re if ag_wage == 1 
-gen gap_quad_fe = daily_wage_10  - mpl_quad_fe if ag_wage == 1 
-gen gap_leon_fe = daily_wage_10 - mpl_leon_fe if ag_wage == 1 
-gen gap_quad_re_notlu = daily_wage_10  - mpl_quad_re_notlu if ag_wage == 1 
-gen gap_leon_re_notlu = daily_wage_10 - mpl_leon_re_notlu if ag_wage == 1 
-gen gap_quad_fe_notlu = daily_wage_10  - mpl_quad_fe_notlu if ag_wage == 1 
-gen gap_leon_fe_notlu = daily_wage_10 - mpl_leon_fe_notlu if ag_wage == 1 
+*** calculate elasticities *** 
+gen elas_quad_fe_land = (prod_hect_1*mpland_quad_fe)/quad_fe 
+gen elas_quad_fe_labor = (ag_hours_1*mpl_quad_fe)/quad_fe 
+gen elas_quad_fe_fert = (fert_1*mpfert_quad_fe)/quad_fe 
+gen elas_quad_fe_tlu = (TLU_1*mptlu_quad_fe)/quad_fe 
+gen elas_quad_fe_hired = (agri_income_16*mphired_quad_fe)/quad_fe 
+gen elas_quad_fe_equip = (number_mech_equip*mpequip_quad_fe)/quad_fe 
 
-*** summarize gap between mpl and daily wage *** 
-sum gap* 
+gen elas_leon_fe_land = (prod_hect_1*mpland_leon_fe)/leon_fe if agri_6_14 == 1 & ag_hours_1 > 0
+gen elas_leon_fe_labor = (ag_hours_1*mpl_leon_fe)/leon_fe if agri_6_14 == 1 & ag_hours_1 > 0
+gen elas_leon_fe_fert = (fert_1*mpfert_leon_fe)/leon_fe if agri_6_14 == 1 & ag_hours_1 > 0
+gen elas_leon_fe_tlu = (TLU_1*mptlu_leon_fe)/leon_fe if agri_6_14 == 1 & ag_hours_1 > 0
+gen elas_leon_fe_hired = (agri_income_16*mphired_leon_fe)/leon_fe if agri_6_14 == 1 & ag_hours_1 > 0
+gen elas_leon_fe_equip = (number_mech_equip*mpequip_leon_fe)/leon_fe if agri_6_14 == 1 & ag_hours_1 > 0
 
-estpost summarize gap* 
+*** calculate allocative inefficiency *** 
+gen ai_leon_fe = ln(daily_wage_10/mpl_leon_fe) if ag_wage == 1
 
-esttab . using "$auctions/gap_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+*** calculate wage to mpl ratio *** 
+gen wage_ratio = daily_wage_10 / mpl_leon_fe if ag_wage == 1 
 
 *** calculate land to labor ratio ***
 gen land_to_labor = prod_hect_1 / ag_hours_1
 
-*** plot gap between mpl and daily wage along land to labor ratio ***
-npregress kernel gap_quad_re land_to_labor if ag_wage == 1, reps(500) seed(1234)
+*** plot allocative inefficiency and wage ratio along land to labor ratio ***
+twoway (scatter ai_leon_fe land_to_labor if ai_leon_fe != .) (fpfit ai_leon_fe land_to_labor if ai_leon_fe != .), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) 
 
-npgraph
+*** plot ratio of wage to mpl along land to labor ratio *** 
+twoway (scatter wage_ratio land_to_labor) (fpfit wage_ratio land_to_labor), xtitle("Land to Labor Ratio") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)
 
-npregress kernel gap_quad_fe land_to_labor if ag_wage == 1, reps(500) seed(1234)
+*** calculate the shadow wage *** 
+gen shadow_wage = exp(ai_leon_fe)*mpl_leon_fe
 
-npgraph
-
-npregress kernel gap_quad_re_notlu land_to_labor if ag_wage == 1, reps(500) seed(1234)
-
-npgraph
-
-npregress kernel gap_quad_fe_notlu land_to_labor if ag_wage == 1, reps(500) seed(1234)
-
-npgraph
-
-npregress kernel gap_leon_re land_to_labor if ag_wage == 1, reps(500) seed(1234)
-
-npgraph
-
-npregress kernel gap_leon_fe land_to_labor if ag_wage == 1, reps(500) seed(1234)
-
-npgraph, xtitle("Land to Labor Ratio") ytitle("Gap") title("Mean function of the gap, Leontief with fixed effects")
-graph export "$auctions/gap_leon_fe.eps", as(eps) replace 
-
-npregress kernel gap_leon_re_notlu land_to_labor if ag_wage == 1, reps(500) seed(1234)
-
-npgraph
-
-npregress kernel gap_leon_fe_notlu land_to_labor if ag_wage == 1, reps(500) seed(1234)
-
-npgraph, xtitle("Land to Labor Ratio") ytitle("Gap") title("Mean function of the gap, Leontief with fixed effects and no TLU")
-graph export "$auctions/gap_leon_fe_notlu.eps", as(eps) replace 
-
+gen shadow_wage2 = (daily_wage_10/mpl_leon_fe)*mpl_leon_fe

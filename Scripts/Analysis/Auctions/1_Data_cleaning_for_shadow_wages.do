@@ -25,6 +25,7 @@ else if "`c(username)'"=="Kateri" {
 global data "$master/Data/_CRDES_CleanData/Baseline/Deidentified"
 global auctions "$master/Output/Analysis/Auctions_Shadow_Wages"
 global midline "$master/Data/_CRDES_CleanData/Midline/Deidentified"
+global asset_index "$master/Output/Data_Processing/Construction"
 
 *** clean variables to use in shadow wage estimation *** 
 *** clean basic household roster data *** 
@@ -838,6 +839,10 @@ drop _merge
 merge 1:1 hhid using `manure_use' 
 
 replace manure_kgs = 0 if _merge == 1 & agri_6_14 == 1
+
+drop _merge 
+
+merge 1:1 hhid using "$asset_index/PCA_asset_index_var.dta"
 
 drop _merge 
 

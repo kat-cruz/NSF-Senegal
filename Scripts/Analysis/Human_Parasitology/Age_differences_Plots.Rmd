@@ -1,0 +1,120 @@
+---
+title: "Untitled"
+author: "Kateri Mouawad"
+date: "2025-06-10"
+output: html_document
+---
+
+#INITIATE SCRIPT
+
+```{r}
+packages <- c("dplyr", "readr", "tidyr", "stargazer",
+             "tidyverse", "kableExtra", "haven", "detectseparation",
+              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov", "hdm")
+
+# install.packages("haven")
+# library("haven")
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages without printing any output
+invisible(lapply(packages, library, character.only = TRUE))
+
+```
+
+
+#File paths 
+
+```{r}
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Choose the correct project root based on availability
+proj_root <- if (file.exists(proj_paths$projects)) {
+  proj_paths$projects
+} else {
+  proj_paths$alternative_projects
+}
+
+# Define project subpaths manually using file.path for cross-platform safety
+proj <- list(
+  p1 = file.path(proj_root, "Data_Management", "Output", "Analysis", "Human_Parasitology", "Analysis_Data")
+)
+
+# Full path to Stata file
+file_path_infection_df <- file.path(proj$p1, "03_mid_base_analysis_df.dta")
+
+# Read the dataset
+infection_df <- read_dta(file_path_infection_df)
+
+colnames(infection_df)
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+analysis_df <- infection_df %>%
+  select(-Humanwatercontact, -p2_avg, -q_51, -asset_index, -hh_10_) %>%
+  na.omit()
+
+# nrow(analysis_df)
+# nrow(infection_df)
+
+
+```
+
+
+
+```{r}
+
+# Compute the difference
+analysis_df$age_diff <- analysis_df$hh_age_ - analysis_df$age_hp
+
+# Plot histogram
+hist(analysis_df$age_diff,
+     main = "Difference in Age: hh_age_ - age_hp",
+     xlab = "Age Difference",
+     col = "skyblue",
+     border = "white")
+
+
+
+
+```
+
+
+```{r}
+
+
+plot(analysis_df$age_hp, analysis_df$hh_age_,
+     xlab = "age_hp",
+     ylab = "hh_age_",
+     main = "Scatter Plot: hh_age_ vs. age_hp",
+     pch = 19, col = rgb(0.2, 0.4, 0.6, 0.5))
+abline(a = 0, b = 1, col = "red", lwd = 2, lty = 2)  # 1:1 line
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

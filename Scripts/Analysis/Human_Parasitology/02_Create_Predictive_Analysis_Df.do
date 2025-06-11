@@ -23,8 +23,8 @@
 		
 				** This .do file outputs:
 
-								* 02_child_infection_analysis_df.dta
-
+								* a lot of things (update later)
+								
 *----------------------------------------*
 **# INITIATE SCRIPT
 *----------------------------------------*		
@@ -1633,20 +1633,52 @@ restore
 **## data imputation
 *-------------------*	
 
+*** From the PAP:
+
+*** 	if outcome measure and treatment assignment are non-missing, keep observations with missing covariate values
+*** 	<10% missingness, impute with median/mean depending on distribution
+*** 	>10% missingness, include missingess dummy as additional covariate & impute with mean/median depending on distribution
 
 		
-		foreach var of varlist _all {
-			quietly count if missing(`var')
-			if r(N) > 0 {
-				local type : type `var'
-				display "`var' (`type'): " r(N) " missing"
-			}
+	foreach var of varlist _all {
+		quietly count if missing(`var')
+		if r(N) > 0 {
+			local type : type `var'
+			local miss = r(N)
+			quietly count
+			local total = r(N)
+			local rate = 100 * `miss' / `total'
+			display "`var' (`type'): " `miss' " missing (" %4.1f `rate' "%)"
 		}
-				
-				
-	** determine how to take care of the missings here
+	}
 
-			
+*** because these are all binary variables, we'll use the mode. All missingness is less than 10%, so no need to create missingess dummies. 	
+		
+foreach var of varlist hh_26_ hh_32_ hh_37_ health_5_5_ health_5_8_ health_5_9_ {
+
+
+***   check for missing values
+			quietly count if missing(`var')
+			if r(N) > 0 {     
+
+***   tabulate only non-missing values to get counts
+			quietly tabulate `var' if `var' < ., matcell(freqs) matrow(vals)
+*** identify which value has the higher count
+        local val1 = vals[1,1]
+        local val2 = vals[2,1]
+        local freq1 = freqs[1,1]
+        local freq2 = freqs[2,1]
+
+        local mode = cond(`freq1' > `freq2', `val1', `val2')
+
+***  display and impute
+        display "Imputing `var' with mode = `mode'"
+        quietly replace `var' = `mode' if missing(`var')
+    }
+}
+
+	
+
 *-------------------*
 **## Save final df
 *-------------------*	

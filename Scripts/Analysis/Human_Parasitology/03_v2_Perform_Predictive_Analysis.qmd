@@ -3,10 +3,11 @@ title: "Parasitological Analysis"
 format:
   html:
     self-contained: true
-    html-table-processing: none
     toc: false
-    code-fold: false
+    code-fold: true
+    code-summary: "Show the code"
     theme: default
+    output-file: "Parasitological_Analysisv2.html" #MAKE SURE TO UPDATE
 execute:
   echo: true
 ---
@@ -19,15 +20,12 @@ execute:
  - Baseline & Midline Notre Dame Ecological Data
 
 
-This analysis proceeds in **three key steps** for each of the primary outcome variables of interest:
+This analysis proceeds in **two steps** for each of the primary outcome variables of interest:
 
-1. **Variable Selection using Lasso Regression**  
+1. **Lasso-Logit Regression**  
    We first use Lasso regression to identify the most predictive covariates for each outcome. This helps reduce dimensionality and guard against overfitting.
 
-2. **Prediction Modeling with Logistic Regression**  
-   Using the covariates selected by Lasso, we fit a logistic regression model on the training dataset to estimate the probability of infection.
-
-3. **Evaluation using Confusion Matrices**  
+2. **Evaluation using Confusion Matrices**  
    We apply the fitted model to the test data and generate confusion matrices to assess predictive performance, including metrics such as sensitivity, specificity, and overall accuracy.
 
 ---
@@ -35,16 +33,16 @@ This analysis proceeds in **three key steps** for each of the primary outcome va
 ## Outcome Variables
 
 We focus on three infection indicators, constructed from parasitological data:
-
-- **`sh_inf`: S. haematobium infection indicator**  
+<!-- 
+-  **`sh_inf`: S. haematobium infection indicator**  
   Equals 1 if egg count from either urine filtration test (`fu_p1` or `fu_p2`) is greater than 0; otherwise 0.  
   *Represents urinary schistosomiasis.*
 
 - **`sm_inf`: S. mansoni infection indicator**  
   Equals 1 if egg count from any of the four stool slides (`p1_kato1_k1_pg`, `p1_kato2_k2_peg`, `p2_kato1_k1_epg`, `p2_kato2_k2_epg`) is greater than 0; otherwise 0.  
-  *Represents intestinal schistosomiasis.*
+  *Represents intestinal schistosomiasis.* -->
 
-- **`sm_sh_inf`: Infection indicator**  
+- **`sm_sh_inf`: Joint-Infection indicator**  
   Equals 1 if either `sh_inf` or `sm_inf` is equal to 1.  
   *Captures cases of either or both infections.*
   
@@ -60,7 +58,7 @@ We focus on three infection indicators, constructed from parasitological data:
 
 packages <- c("dplyr", "readr", "tidyr", "stargazer",
              "tidyverse", "kableExtra", "haven", "detectseparation",
-              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov", "hdm")
+              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov", "hdm", "fs", "xfun", "quarto")
 
 # install.packages("haven")
 # library("haven")
@@ -101,8 +99,6 @@ file_path_infection_df <- file.path(proj$p1, "03_mid_base_analysis_df.dta")
 # Read the dataset
 infection_df <- read_dta(file_path_infection_df)
 
-colnames(infection_df)
-
 ```
 
 
@@ -110,7 +106,7 @@ colnames(infection_df)
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 analysis_df <- infection_df %>%
-  select(-Humanwatercontact, -p2_avg, -q_51, -asset_index, -hh_10_) %>%
+  select(-p2_avg, -q_51, -asset_index, -hh_10_) %>%
   na.omit()
 
 # nrow(analysis_df)
@@ -125,7 +121,10 @@ analysis_df <- infection_df %>%
 
 Here we create Training and Testing data to perform prediction by subsetting 70% of the data as training observations, and 30% as testing. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
+# reproducibility 
+set.seed(20240611)
+
 # Total number of observations
 n <- nrow(analysis_df)
 
@@ -135,7 +134,7 @@ shuffled_indices <- sample(n)
 # Compute the number of training observations (70%)
 train_size <- floor(0.7 * n)
 
-# Indices for training and testing
+# indices for training and testing
 train_indices <- shuffled_indices[1:train_size]
 test_indices <- shuffled_indices[(train_size + 1):n]
 
@@ -152,15 +151,8 @@ cat("Testing set size:", nrow(test_df), "\n")
 
 ### Summary Stats
 
-::: {.panel-tabset}
 
-#### Full Data 
-
-These are the summary statistics I output when I include the full set of data I created in the data cleaning and construction process. This includes all numeric variables, and retains any missings. 
-
-Note the outlier in age - this is due to measurement error (this individual in baseline was reported to be age 3, adn in midline was reported to be 40). 
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
       
 
 
@@ -194,28 +186,30 @@ summary_stats <- function(data, exclude = NULL) {
 
   return(summary_df)
 }
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 ##on full set of data
- paras_sum_stats <- summary_stats(infection_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
- 
+ # paras_sum_stats <- summary_stats(infection_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
+ # 
  
 ```
  
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
  
- kable(paras_sum_stats, format = "html", caption = "Summary Statistics for Infection Data") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
-  scroll_box(width = "100%")
+ # kable(paras_sum_stats, format = "html", caption = "Summary Statistics for Infection Data") %>%
+ #  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+ #  scroll_box(width = "100%")
 
         # saveRDS(paras_sum_stats, file = "C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats")
 ```  
 
 
 
-#### Analysis Data
-
-Here are the summary stats for the actual data I use to run the analysis. I firt removed variables with high amounts of missings (Humanwatercontact, p2_avg), and then dropped rows with any missings. I removed and q_51 since we'll be using q_51_W99 (winsorized at the 99th percentile) and asset_index since we'll be using asset_index_std (which is the standarized asset index).
+Summary stats for the analysis data. I imputed per PAP, dropped p2_avg and rows with missings, and used winsorized/standardized versions of q_51, asset_index, and hh_10_.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -231,131 +225,64 @@ Here are the summary stats for the actual data I use to run the analysis. I firt
 ```
 
 
-
-:::
-
-### SH_SM_INF Analysis
+### sm_sh_inf Analysis
 
 ::: {.panel-tabset}
 
-•	Run Lasso regression to determine which variables show the highest predictive power to help determine covariates. 
+#### Model specification 
+
+
+This code runs a Lasso logistic regression with cross-validation to select key predictors of sm_sh_inf. It identifies the optimal lambda, fits the model, and extracts the non-zero (important) variables.
 
 
 ```{r}
 
 exclude_vars <- c("hhid_village", "village_name", "hhid", "individ",
-                  "identificant", "match_score", "round", "sh_inf", "sm_inf", "sh_egg_count","p1_avg", "sm_egg_count", "total_egg")  # Exclude outcome too
-
-
-covariates <- setdiff(names(train_df), c(exclude_vars, "sm_sh_inf", "treatment_var"))
-
-x <- data.matrix(train_df[, covariates])
-y <- train_df$sm_sh_inf          # binary outcome
-d <- data.matrix(train_df[, covariates])    # treatment variable — replace with your treatment variable name!
-
-# --- step 1: lasso logistic for d ~ x ---
-cv_d <- cv.glmnet(x, d, family = "binomial")
-lasso_d <- glmnet(x, d, family = "binomial", lambda = cv_d$lambda.min)
-selected_d <- which(coef(lasso_d)[-1] != 0)  # exclude intercept
-
-# --- step 2: lasso logistic for y ~ x ---
-cv_y <- cv.glmnet(x, y, family = "binomial")
-lasso_y <- glmnet(x, y, family = "binomial", lambda = cv_y$lambda.min)
-selected_y <- which(coef(lasso_y)[-1] != 0)
-
-# --- step 3: union of selected variables ---
-selected_union <- sort(unique(c(selected_d, selected_y)))
-
-# --- step 4: final logistic regression: y ~ d + selected x ---
-x_selected <- x[, selected_union, drop = FALSE]
-
-final_data <- data.frame(y = y, d = d, x_selected)
-
-final_formula <- as.formula(paste("y ~ d +", paste(colnames(x_selected), collapse = "+")))
-final_model <- glm(final_formula, data = final_data, family = binomial())
-
-summary(final_model)
-
-
-kable(vars, format = "html", caption = "Double Selection Lasso Results") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
-  scroll_box(width = "100%")
-
-
-
-```
-
-
-
-```{r}
-# 
-colnames(analysis_df)
-
-
-exclude_vars <- c("hhid_village", "village_name", "hhid", "individ",
-                  "identificant", "match_score", "round", "sh_inf", "sh_egg_count","p1_avg", "sm_egg_count", "total_egg")  # Exclude outcome too
+                  "identificant", "match_score", "round", "sh_inf", "sm_sh_inf", "sm_inf", "sh_egg_count","p1_avg", "sm_egg_count", "total_egg")  # Exclude outcome too
 
 # Grab all other column names
-covariates <- setdiff(names(analysis_df), exclude_vars)
+  covariates <- setdiff(names(train_df), exclude_vars)
 
   # Create predictor matrix
-  x <- data.matrix(analysis_df[, sh_covariates])
-  y <- analysis_df$sm_sh_inf
+  x <- data.matrix(train_df[, covariates])
+  y <- train_df$sm_sh_inf
 
 #perform k-fold cross-validation to find optimal lambda value
-sh1 <- cv.glmnet(x, y, family = "binomial", alpha = 1)
+  k_val <- cv.glmnet(x, y, family = "binomial", alpha = 1)
 
-sh1_best_lambda <- sh1$lambda.min
+    best_lambda <- k_val$lambda.min
 
 #produce plot of test MSE by lambda value
-plot(sh1)
+    plot(k_val)
 
 
 #find coefficients of best model
-sh1_best_model <- glmnet(x, y, alpha = 1, lambda = sh1_best_lambda)
-coef(sh1_best_model)
+  model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+      coef(model)
 
 #print regression table
-print(sh1_best_model)
+  print(model)
 
 # Extract coefficients at best lambda
-mat <- coef(sh1_best_model, s = sh1_best_lambda)
+  mat <- coef(model, s = best_lambda)
 
 # Convert to named vector and find non-zero coefficients
-vars_raw <- rownames(mat)[mat[, 1] != 0]
+  vars_raw <- rownames(mat)[mat[, 1] != 0]
 
 # Remove intercept from selected vars
-vars <- setdiff(vars_raw, c("(Intercept)")) #confirm the precise variables we're interested in
+  vars <- setdiff(vars_raw, c("(Intercept)")) #confirm the precise variables we're interested in
 
-kable(vars, format = "html", caption = "Best Predictors for inf") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
-  scroll_box(width = "100%")
+  kable(vars, format = "html", caption = "Best Predictors for Joint-Infection") %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+      scroll_box(width = "100%")
 
+  
 ```
 
 
 #### Prediction - all
 
-
-
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-# test_probs <- predict(sh_model, newdata = test_df, type = "response")
-# 
-# head(test_probs)
-# 
-# # For example, classify as positive if prob > 0.5
-# threshold <- 0.5
-# test_pred_class <- ifelse(test_probs > threshold, 1, 0)
-# 
-# actual <- test_df$sh_inf
-# 
-# table(Predicted = test_pred_class, Actual = actual)
-
-
-```
-
+<!--
 We will:
 
 - **Compute predicted probabilities** for each individual using the model.
@@ -365,45 +292,16 @@ We will:
   - **False Positive Rate (FPR)**: The proportion of uninfected individuals incorrectly predicted as infected.
 - **Threshold Iteration**: Incrementally adjust the threshold (e.g., from 0.1 to 0.9) and recalculate the confusion matrix, FNR, and FPR at each step.
 - **Optimization**: Identify the threshold that minimizes the combined classification error (FNR + FPR).
+-->
 
+The following output are the FPRs and FNRs using the logit-lasso coefficients. These are summarized in one confusion matrix. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-sh_y <- "sh_inf"
+```{r, message=FALSE, warning=FALSE}
 
-sh_vars_survey <- c(
-  "hh_age_", "hh_gender_", "hh_10_w99", "hh_12_6_", 
-  "hh_37_", "health_5_3_1_", "health_5_3_3_", "health_5_3_6_", 
-  "health_5_3_9_", "health_5_5_", "health_5_8_", "health_5_9_", "asset_index_std",
-  "living_01_bin", "living_04_bin", "beliefs_01_bin",  
-  "q_51_w99"
-)
+#get test data
+x_test <- data.matrix(test_df[, covariates])  # only predictors
 
-# Build formula string
-sh_formula_survey <- paste(sh_y, "~", paste(sh_vars_survey, collapse = " + "))
-
-# Fit logistic regression model
-sh_model2 <- glm(as.formula(sh_formula_survey), data = train_df, family = "binomial")
-# sh_cse <- vcovCL(sh_model2, cluster = train_df$hhid_village)
-# 
-# # Apply coeftest with clustered SE
-# sh_model_cse <- coeftest(sh_model2, vcov. = sh_cse)
-
-print(sh_model2)
-
-# See summary
-#summary(sh_model_cse)
-
-
-```
-
-
-The following output are the FPRs and FNRs using the previous regression coefficients. I summarize these all in one confusion matrix. 
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-test_probs <- predict(sh_model2, newdata = test_df, type = "response")
-
-
+test_probs <- predict(model, newx = as.matrix(x_test), type = "response")
 
 ### Generalized to function 
 
@@ -437,21 +335,18 @@ evaluate_thresholds <- function(test_probs, actual, thresholds = seq(0.1, 0.9, b
   
   return(results)
 }
-  
-
-results_df <- evaluate_thresholds(test_probs, test_df$sh_inf)
+ 
+  results_df <- evaluate_thresholds(test_probs, test_df$sm_sh_inf)
 #print(results_df)
 
 # Best threshold (minimizing FPR + FNR)
-sh_best_threshold_survey <- attr(results_df, "best_threshold")
+  best_threshold <- attr(results_df, "best_threshold")
 
-kable(results_df, format = "html", caption = "Confusion Matrix for sh_inf at each threshold using only survey covariates") %>%
+kable(results_df, format = "html", caption = "Confusion Matrix for sm_sh_inf at each threshold") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
   scroll_box(width = "100%")
 
-
-
-kable(sh_best_threshold_survey, format = "html", caption = "Survey Covariates Confusion Matrix Best Threshold") %>%
+kable(best_threshold, format = "html", caption = "Best Threshold") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
   scroll_box(width = "100%")
 
@@ -460,7 +355,7 @@ kable(sh_best_threshold_survey, format = "html", caption = "Survey Covariates Co
 
 ##### Summarize and visualize the probababilities
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 ### visulalize 
 
 summary(test_probs)
@@ -470,7 +365,6 @@ hist(test_probs, breaks = 20, col = "skyblue", main = "Distribution of Predicted
 
 
 ```
-
 
 
 

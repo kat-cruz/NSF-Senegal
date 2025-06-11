@@ -415,6 +415,9 @@ gen members2 = members*members
 gen child2 = child*child
 
 reg ai_leon_re hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types prod_hect_1 TLU_1, cluster(village_num) 
+eststo ai_factors 
+
+esttab ai_factors using "$auctions/ai_factors.tex", keep(hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types prod_hect_1 TLU_1) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
 
 *** predict ai for those who do not do wage labor *** 
 gen est_ai = _b[_cons] + _b[hhhead_no_education]*hhhead_no_education + _b[hhhead_female]*hhhead_female + _b[hhhead_age]*hhhead_age + _b[age2]*age2 + _b[members]*members + _b[members2]*members2 + _b[child]*child + _b[child2]*child2 + _b[rice]*rice + _b[crop_types]*crop_types + _b[prod_hect_1]*prod_hect_1 + _b[TLU_1]*TLU_1 if ag_hours_1 > 0 & ag_wage == 0 
@@ -433,6 +436,10 @@ gen shadow_wage_alt = wage_ratio*mpl_leon_re
 
 *** summarize shaodw wages *** 
 sum est_shadow_wage est_shadow_wage_alt shadow_wage shadow_wage_alt
+
+estpost summarize est_shadow_wage 
+
+esttab . using "$auctions/shadow_wage_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
 *** save just shadow wages to then use in auctions supply curve *** 
 keep daily_wage_10 est_shadow_wage 

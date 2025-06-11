@@ -755,8 +755,7 @@ replace TLU = TLU + 1*agri_income_07_o if species_o == "Vaches l"
 
 keep hhid TLU 
 
-tempfile tlu_baseline 
-save `tlu_baseline'
+save "$auctions/tlu_baseline.dta", replace 
 
 *** merge together entire household dataset *** 
 use `main_hh_baseline', clear 
@@ -821,7 +820,7 @@ replace milk_sales = 0 if _merge == 1
 
 drop _merge 
 
-merge 1:1 hhid using `tlu_baseline' 
+merge 1:1 hhid using "$auctions/tlu_baseline.dta" 
 
 drop _merge
 
@@ -1704,8 +1703,7 @@ replace TLU = TLU + 1*agri_income_07_o if species_o == "VÃCHE"
 
 keep hhid TLU 
 
-tempfile tlu_midline
-save `tlu_midline'
+save "$auctions/tlu_midline.dta", replace 
 
 *** merge together entire household dataset *** 
 use `main_hh_midline', clear 
@@ -1771,7 +1769,7 @@ replace milk_sales = 0 if _merge == 1
 
 drop _merge 
 
-merge 1:1 hhid using `tlu_midline' 
+merge 1:1 hhid using "$auctions/tlu_midline.dta"
 
 drop _merge
 

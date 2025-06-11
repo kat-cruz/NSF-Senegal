@@ -1,7 +1,7 @@
 *** Data cleaning for shadow wage estimation *** 
 *** File Created By: Molly Doruska ***
 *** File Last Updated By: Molly Doruska ***
-*** File Last Updated On: May 8, 2025 ***
+*** File Last Updated On: June 11, 2025 ***
 
 clear all 
 
@@ -73,8 +73,11 @@ replace hh_05_ = . if hh_05_ == -9
 replace hh_06_ = . if hh_06_ == -9 
 replace hh_07_ = . if hh_07_ == -9
 
+*** count children *** 
+gen child = (hh_age_ < 18)
+
 *** count household labor hours totals and per capita *** 
-collapse (sum) chore_hours = hh_01_ (sum) water_hours = hh_02_ (sum) ag_hours = hh_04_ (sum) planting_hours = hh_05_ (sum) growth_hours = hh_06_ (sum) harvest_hours = hh_07_ (sum) tradehh_hours = hh_08_ (sum) tradeoutside_hours = hh_09_ (sum) water_hours_12mo = hh_10_ (sum) veg_collected_12mo = hh_14_ (sum) fertilizer_hours_12mo = hh_16_ (sum) feed_hours_12mo = hh_17_ (sum) water_hours_7days = hh_18_ (sum) veg_collected_7days = hh_22_ (sum) fertilizer_hours_7days = hh_24_ (sum) feed_hours_7days = hh_25_ (count) members = hh_gender_ (mean) female household_head spouse no_education primary_education secondary_education tertiary_education technical_education other_education sell_veg_12mo fertilizer_veg_12mo biodigest_veg_12mo nothing_veg_12mo other_veg_12mo hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_14_ hh_16_ hh_17_ hh_18_ hh_22_ hh_23_1_ hh_23_2_ hh_23_3_ hh_23_4_ hh_23_5_ hh_23_99_ hh_24_ hh_25_ , by(hhid)
+collapse (sum) chore_hours = hh_01_ (sum) water_hours = hh_02_ (sum) ag_hours = hh_04_ (sum) planting_hours = hh_05_ (sum) growth_hours = hh_06_ (sum) harvest_hours = hh_07_ (sum) tradehh_hours = hh_08_ (sum) tradeoutside_hours = hh_09_ (sum) water_hours_12mo = hh_10_ (sum) veg_collected_12mo = hh_14_ (sum) fertilizer_hours_12mo = hh_16_ (sum) feed_hours_12mo = hh_17_ (sum) water_hours_7days = hh_18_ (sum) veg_collected_7days = hh_22_ (sum) fertilizer_hours_7days = hh_24_ (sum) feed_hours_7days = hh_25_ (count) members = hh_gender_ (mean) female household_head spouse no_education primary_education secondary_education tertiary_education technical_education other_education sell_veg_12mo fertilizer_veg_12mo biodigest_veg_12mo nothing_veg_12mo other_veg_12mo hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_14_ hh_16_ hh_17_ hh_18_ hh_22_ hh_23_1_ hh_23_2_ hh_23_3_ hh_23_4_ hh_23_5_ hh_23_99_ hh_24_ hh_25_ (sum) child, by(hhid)
 
 *** calculate per capita measures *** 
 gen chore_hours_pc = chore_hours / members 
@@ -95,6 +98,43 @@ gen feed_hours_7days_pc = chore_hours / members
 *** save cleaned main household roster data set ***
 tempfile main_hh_baseline 
 save `main_hh_baseline'
+
+*** clean household head variables - education, gender, age *** 
+use "$data/Complete_Baseline_Household_Roster", clear   
+
+*** keep only needed data and reshape to long *** 
+keep hhid hhid_village hh_gender_* hh_age_* hh_education_level_* 
+
+drop hh_age_resp hh_gender_resp hh_education_level_o_* 
+
+*** bring in household head index data *** 
+merge 1:1 hhid using "$data/household_head_index"
+
+drop _merge 
+
+reshape long hh_gender_ hh_age_ hh_education_level_ , i(hhid hhid_village) j(person)
+
+drop if hh_gender_ == . 
+
+*** keep only the household head *** 
+keep if person == hh_head_index 
+
+*** create indicator variables ***
+gen hhhead_female = (hh_gender_ == 2)
+gen hhhead_no_education = (hh_education_level_ == 0)
+gen hhhead_primary_education = (hh_education_level_ == 1)
+gen hhhead_secondary_education = (hh_education_level_ == 2)
+gen hhhead_tertiary_education = (hh_education_level_ == 3)
+gen hhhead_technical_education = (hh_education_level_ == 4)
+gen hhhaed_other_education = (hh_education_level_ == 99)
+
+rename hh_age_ hhhead_age 
+
+*** keep cleaned household head variables *** 
+keep hhid hhhead* 
+
+tempfile hhhead_baseline 
+save `hhhead_baseline'
 
 *** clean hh_13 (12 month recall) on water time use data *** 
 
@@ -336,8 +376,10 @@ gen manure_indirect_parking = (agri_6_31_ == 2)
 gen manure_purchase = (agri_6_31_ == 3)
 gen manure_other_source = (agri_6_31_ == 99)
 
+gen crop_types = rice + maize + millet + sorghum + cowpea + cassava + sweetpotato + potato + yam + taro + tomato + carrot + onion + cucumber + pepper + peanut + bean + pea + other
+
 *** collapse to household level *** 
-collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage, by(hhid)
+collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage (sum) crop_types, by(hhid)
 
 *** save clean plot level data *** 
 tempfile plot_level_ag
@@ -718,6 +760,10 @@ save `tlu_baseline'
 *** merge together entire household dataset *** 
 use `main_hh_baseline', clear 
 
+merge 1:1 hhid using `hhhead_baseline'
+
+drop _merge 
+
 merge 1:1 hhid using `water_time_12month' 
 
 drop _merge 
@@ -942,8 +988,11 @@ replace hh_09_ = . if hh_09_ == -9
 replace hh_16_ = . if hh_16_ == -9
 replace hh_24_ = . if hh_24_ == -9
 
+*** count children *** 
+gen child = (hh_age_ < 18)
+
 *** count household labor hours totals and per capita *** 
-collapse (sum) chore_hours = hh_01_ (sum) water_hours = hh_02_ (sum) ag_hours = hh_04_ (sum) planting_hours = hh_05_ (sum) growth_hours = hh_06_ (sum) harvest_hours = hh_07_ (sum) tradehh_hours = hh_08_ (sum) tradeoutside_hours = hh_09_ (sum) water_hours_12mo = hh_10_ (sum) veg_collected_12mo = hh_14_ (sum) fertilizer_hours_12mo = hh_16_ (sum) feed_hours_12mo = hh_17_ (sum) water_hours_7days = hh_18_ (sum) veg_collected_7days = hh_22_ (sum) fertilizer_hours_7days = hh_24_ (sum) feed_hours_7days = hh_25_ (count) members = hh_gender_ (mean) female household_head spouse no_education primary_education secondary_education tertiary_education technical_education other_education sell_veg_12mo fertilizer_veg_12mo biodigest_veg_12mo nothing_veg_12mo other_veg_12mo hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_14_ hh_16_ hh_17_ hh_18_ hh_22_ hh_23_1_ hh_23_2_ hh_23_3_ hh_23_4_ hh_23_5_ hh_23_99_ hh_24_ hh_25_ , by(hhid)
+collapse (sum) chore_hours = hh_01_ (sum) water_hours = hh_02_ (sum) ag_hours = hh_04_ (sum) planting_hours = hh_05_ (sum) growth_hours = hh_06_ (sum) harvest_hours = hh_07_ (sum) tradehh_hours = hh_08_ (sum) tradeoutside_hours = hh_09_ (sum) water_hours_12mo = hh_10_ (sum) veg_collected_12mo = hh_14_ (sum) fertilizer_hours_12mo = hh_16_ (sum) feed_hours_12mo = hh_17_ (sum) water_hours_7days = hh_18_ (sum) veg_collected_7days = hh_22_ (sum) fertilizer_hours_7days = hh_24_ (sum) feed_hours_7days = hh_25_ (count) members = hh_gender_ (mean) female household_head spouse no_education primary_education secondary_education tertiary_education technical_education other_education sell_veg_12mo fertilizer_veg_12mo biodigest_veg_12mo nothing_veg_12mo other_veg_12mo hh_01_ hh_02_ hh_03_ hh_04_ hh_05_ hh_06_ hh_07_ hh_08_ hh_09_ hh_10_ hh_14_ hh_16_ hh_17_ hh_18_ hh_22_ hh_23_1_ hh_23_2_ hh_23_3_ hh_23_4_ hh_23_5_ hh_23_99_ hh_24_ hh_25_ (sum) child, by(hhid)
 
 *** calculate per capita measures *** 
 gen chore_hours_pc = chore_hours / members 
@@ -964,6 +1013,38 @@ gen feed_hours_7days_pc = chore_hours / members
 *** save cleaned main household roster data set ***
 tempfile main_hh_midline
 save `main_hh_midline'
+
+*** clean household head variables - education, gender, age *** 
+use "$midline/Complete_Midline_Household_Roster", clear   
+
+*** keep only needed data and reshape to long *** 
+keep hhid hhid_village hh_gender_* hh_age_* hh_education_level_* hh_relation_with_*
+
+drop hh_age_resp hh_gender_resp hh_education_level_o_* hh_relation_with_o_*  
+
+reshape long hh_gender_ hh_age_ hh_education_level_ hh_relation_with_ , i(hhid hhid_village) j(person)
+
+drop if hh_gender_ == . 
+
+*** keep only the household head *** 
+keep if hh_relation_with_ == 1 
+
+*** create indicator variables ***
+gen hhhead_female = (hh_gender_ == 2)
+gen hhhead_no_education = (hh_education_level_ == 0)
+gen hhhead_primary_education = (hh_education_level_ == 1)
+gen hhhead_secondary_education = (hh_education_level_ == 2)
+gen hhhead_tertiary_education = (hh_education_level_ == 3)
+gen hhhead_technical_education = (hh_education_level_ == 4)
+gen hhhaed_other_education = (hh_education_level_ == 99)
+
+rename hh_age_ hhhead_age 
+
+*** keep cleaned household head variables *** 
+keep hhid hhhead* 
+
+tempfile hhhead_midline 
+save `hhhead_midline'
 
 *** clean hh_13 (12 month recall) on water time use data *** 
 
@@ -1209,8 +1290,10 @@ gen manure_indirect_parking = (agri_6_31_ == 2)
 gen manure_purchase = (agri_6_31_ == 3)
 gen manure_other_source = (agri_6_31_ == 99)
 
+gen crop_types = rice + maize + millet + sorghum + cowpea + cassava + sweetpotato + potato + yam + taro + tomato + carrot + onion + cucumber + pepper + peanut + bean + pea + other
+
 *** collapse to household level *** 
-collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage, by(hhid)
+collapse (sum) plot_size_ha (sum) urea_kgs (sum) phosphate_kgs (sum) npk_kgs (sum) other_kgs (sum) agri_6_30_ (sum) agri_6_34_comp_ (sum) agri_6_34_ (sum) agri_6_36_ (sum) rice (sum) collective_manage (sum) crop_types, by(hhid)
 
 *** save clean plot level data *** 
 tempfile plot_level_ag_midline
@@ -1621,6 +1704,10 @@ save `tlu_midline'
 
 *** merge together entire household dataset *** 
 use `main_hh_midline', clear 
+
+merge 1:1 hhid using `hhhead_midline'
+
+drop _merge 
 
 merge 1:1 hhid using `water_time_12month_midline' 
 

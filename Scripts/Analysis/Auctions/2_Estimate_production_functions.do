@@ -292,3 +292,10 @@ gen land_to_labor = prod_hect_1 / ag_hours_1
 *** plot allocative inefficiency and wage ratio along land to labor ratio ***
 twoway (scatter ai_leon_fe land_to_labor if ai_leon_fe != .) (fpfit ai_leon_fe land_to_labor if ai_leon_fe != .), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) 
 
+*** plot ratio of wage to mpl along land to labor ratio *** 
+twoway (scatter wage_ratio land_to_labor) (fpfit wage_ratio land_to_labor), xtitle("Land to Labor Ratio") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)
+
+*** calculate the shadow wage *** 
+gen shadow_wage = exp(ai_leon_fe)*mpl_leon_fe
+
+gen shadow_wage2 = (daily_wage_10/mpl_leon_fe)*mpl_leon_fe

@@ -310,9 +310,9 @@ esttab leon_re leon_fe leon_re_notlue leon_fe_notlu using "$auctions/leon_prods.
 esttab quad_re quad_fe quad_re_notlu quad_fe_notlu using "$auctions/quad_prods.tex", keep(dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
 
 *** summarize estiamte marginal products of labor *** 
-sum mpl_* daily_wage_10
+sum mpl_quad_re mpl_leon_re mpl_quad_fe mpl_leon_fe mpl_quad_re_notlu mpl_leon_re_notlu mpl_quad_fe_notlu mpl_leon_fe_notlu daily_wage_10
 
-estpost summarize mpl* daily_wage_10
+estpost summarize mpl_quad_re mpl_leon_re mpl_quad_fe mpl_leon_fe mpl_quad_re_notlu mpl_leon_re_notlu mpl_quad_fe_notlu mpl_leon_fe_notlu daily_wage_10
 
 esttab . using "$auctions/mpl_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
@@ -397,6 +397,7 @@ gen land_to_labor = prod_hect_1 / ag_hours_1
 
 *** plot allocative inefficiency and wage ratio along land to labor ratio ***
 twoway (scatter ai_leon_re land_to_labor if ai_leon_re != .) (fpfit ai_leon_re land_to_labor if ai_leon_re != .), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) 
+graph export "$auctions/ai_land_labor.eps", as(eps) replace
 
 *** plot ratio of wage to mpl along land to labor ratio *** 
 twoway (scatter wage_ratio land_to_labor) (fpfit wage_ratio land_to_labor), xtitle("Land to Labor Ratio") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)

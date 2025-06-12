@@ -259,67 +259,62 @@ restore
 * Property Rights
 **************************************
 
-* land and resource rights outcomes and labels
-local land_outcomes "comm_land private_land comm_land_use"
-local resource_outcomes "comm_water comm_fish comm_harvest"
+* property rights belief outcomes and labels
+local belief_outcomes "comm_land comm_water private_land comm_land_use comm_fish comm_harvest"
 local lab_comm_land "Community Land Rights"
+local lab_comm_water "Water Rights"
 local lab_private_land "Private Land Rights"
 local lab_comm_land_use "Land Use Rights"
-local lab_comm_water "Water Rights"
 local lab_comm_fish "Fishing Rights"
 local lab_comm_harvest "Harvesting Rights"
 
+* baseline to midline mean plots
 preserve 
 
 * long dataset with baseline and midline values
 gen period = 1
 gen time = "Midline"
 
-* Generate variables for both outcome groups separately
-foreach var of local land_outcomes {
+foreach var of local belief_outcomes {
     gen `var' = midline_`var'
     gen `var'0 = baseline_`var'
 }
 
-foreach var of local resource_outcomes {
-    gen `var' = midline_`var'
-    gen `var'0 = baseline_`var'
+expand 2
+bysort hhid: replace period = _n - 1
+replace time = "Baseline" if period == 0
+
+foreach var of local belief_outcomes {
+    replace `var' = `var'0 if period == 0
+    drop `var'0
 }
 
 * means for each period
 collapse (mean) comm_* private_*, by(time period)
 
-* land rights beliefs
+* property rights beliefs
 twoway (connected comm_land period, msymbol(O)) ///
-       (connected private_land period, msymbol(D)) ///
-       (connected comm_land_use period, msymbol(T)), ///
+       (connected comm_water period, msymbol(D)) ///
+       (connected private_land period, msymbol(T)) ///
+       (connected comm_land_use period, msymbol(S)) ///
+       (connected comm_fish period, msymbol(+)) ///
+       (connected comm_harvest period, msymbol(X)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0.5(.1)1, format(%2.1f)) ///
+    ylabel(0.5(.2)1, format(%2.1f)) ///
     xtitle("Survey Round") ytitle("Share Agreeing with Rights") ///
-    legend(order(1 "`lab_comm_land'" 2 "`lab_private_land'" ///
-           3 "`lab_comm_land_use'") cols(1)) ///
-    title("Land Rights Beliefs Over Time") ///
-    subtitle("Share of households agreeing with different land rights") ///
-   name(land_rights, replace)
-	graph export "$figures/land_rights.png", replace width(1200)
-
-* resource rights beliefs  
-twoway (connected comm_water period, msymbol(O)) ///
-       (connected comm_fish period, msymbol(D)) ///
-       (connected comm_harvest period, msymbol(T)), ///
-    xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0.5(.1)1, format(%2.1f)) ///
-    xtitle("Survey Round") ytitle("Share Agreeing with Rights") ///
-    legend(order(1 "`lab_comm_water'" 2 "`lab_comm_fish'" ///
-           3 "`lab_comm_harvest'") cols(1)) ///
-    title("Natural Resource Rights Beliefs Over Time") ///
-    subtitle("Share of households agreeing with different resource rights") ///
-   name(resource_rights, replace)
-	graph export "$figures/resource_rights.png", replace width(1200)
+    legend(order(1 "`lab_comm_land'" 2 "`lab_comm_water'" 3 "`lab_private_land'" ///
+           4 "`lab_comm_land_use'" 5 "`lab_comm_fish'" 6 "`lab_comm_harvest'") cols(2)) ///
+    title("Property Rights Beliefs Over Time") ///
+    subtitle("Mean household agreement rates") ///
+    name(property_rights, replace)
+	graph export "$figures/property_rights.png", replace width(1200)	
 
 restore
 
-xxx
+*************************************
+* work, labor, and school 
+*************************************
+
 * work, labor, and school outcomes and labels
 local work_outcomes "work_days_lost"
 local labor_outcomes "ag_workers total_ag_hours total_trade_hours total_wage_hours"
@@ -368,11 +363,13 @@ collapse (mean) work_* ag_* total_* any_* avg_* absence_*, by(time period)
 * work days lost
 twoway connected work_days_lost period, ///
     xlabel(0 "Baseline" 1 "Midline") ///
+	ylabel(0(2)10, format(%2.1f)) ///
     xtitle("Survey Round") ytitle("Days Lost per Household") ///
     legend(order(1 "`lab_work_days'")) ///
     title("Work Days Lost Over Time") ///
     subtitle("Mean household productivity loss") ///
     name(work_loss, replace)
+	graph export "$figures/work_loss.png", replace width(1200)	
 
 * labor supply outcomes
 twoway (connected ag_workers period, msymbol(O)) ///
@@ -386,6 +383,8 @@ twoway (connected ag_workers period, msymbol(O)) ///
     title("Household Labor Supply Over Time") ///
     subtitle("Mean household labor allocation across activities") ///
     name(labor_supply, replace)
+	graph export "$figures/labor_supply.png", replace width(1200)	
+	
 
 * school attendance outcomes
 twoway (connected any_absence period, msymbol(O)) ///
@@ -397,8 +396,13 @@ twoway (connected any_absence period, msymbol(O)) ///
     title("School Attendance Over Time") ///
     subtitle("Mean household school participation measures") ///
     name(school_attendance, replace)
+	graph export "$figures/school_attendance.png", replace width(1200)	
 
 restore
+
+******************************
+* education outcomes
+******************************
 
 * education outcomes and labels
 local attainment "max_grade"
@@ -445,11 +449,14 @@ collapse (mean) max_grade any_enrolled num_enrolled avg_attendance any_last_year
 * educational attainment
 twoway connected max_grade period, ///
     xlabel(0 "Baseline" 1 "Midline") ///
+	ylabel(0(2)10, format(%2.1f)) ///	
     xtitle("Survey Round") ytitle("Average Grade Level") ///
     legend(order(1 "`lab_max_grade'")) ///
     title("Educational Attainment Over Time") ///
     subtitle("Mean household maximum grade completed") ///
     name(educ_attainment, replace)
+	graph export "$figures/educ_attainment.png", replace width(1200)	
+
 
 * enrollment outcomes
 twoway (connected any_enrolled period, msymbol(O)) ///
@@ -460,6 +467,8 @@ twoway (connected any_enrolled period, msymbol(O)) ///
     title("School Enrollment Over Time") ///
     subtitle("Mean household enrollment measures") ///
     name(enrollment, replace)
+	graph export "$figures/enrollment.png", replace width(1200)	
+	
 
 * attendance outcomes
 twoway (connected avg_attendance period, msymbol(O)) ///
@@ -471,5 +480,6 @@ twoway (connected avg_attendance period, msymbol(O)) ///
     title("School Attendance Patterns Over Time") ///
     subtitle("Mean household attendance measures") ///
     name(attendance, replace)
+	graph export "$figures/attendance.png", replace width(1200)	
 
 restore

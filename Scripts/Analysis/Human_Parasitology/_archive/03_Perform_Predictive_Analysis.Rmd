@@ -1,0 +1,466 @@
+---
+title: "Parasitological_Predictive_Analysis"
+author: "Kateri Mouawad"
+date: "2025-02-21"
+output: html_document
+---
+
+#BEGIN HERE - load packages
+
+
+
+```{r}
+
+# packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr",
+#               "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", "haven", "caret",
+#               "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "glmnet", "multiwayvcov")
+
+packages <- c("dplyr", "readr", "tidyr",
+             "tidyverse", "kableExtra", "haven",
+              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov")
+
+# install.packages("haven")
+# library("haven")
+# Install any missing packages
+new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+# Load the required packages without printing any output
+invisible(lapply(packages, library, character.only = TRUE))
+
+
+```
+
+
+## Define project specific paths 
+
+```{r}
+proj_paths <- list(
+  projects = "C:/Users/Kateri/Box/NSF Senegal",
+  alternative_projects = "C:/Users/km978/Box/NSF Senegal"
+)
+
+# Choose the correct project root based on availability
+proj_root <- if (file.exists(proj_paths$projects)) {
+  proj_paths$projects
+} else {
+  proj_paths$alternative_projects
+}
+
+# Define project subpaths manually using file.path for cross-platform safety
+proj <- list(
+  p1 = file.path(proj_root, "Data_Management", "Output", "Analysis", "Human_Parasitology", "Analysis_Data")
+)
+
+# Full path to Stata file
+file_path_infection_df <- file.path(proj$p1, "03_mid_base_analysis_df.dta")
+
+# Read the dataset
+infection_df <- read_dta(file_path_infection_df)
+
+infection_df
+
+```
+
+
+
+
+
+# 2.2 Summary Statas
+
+```{r}
+      
+
+
+summary_stats <- function(data, exclude = NULL) {
+  # Remove excluded columns
+  if (!is.null(exclude)) {
+    data <- data[ , !(names(data) %in% exclude)]
+  }
+
+  # Keep only numeric columns
+  data_numeric <- data[ , sapply(data, is.numeric)]
+
+  # Remove columns where all values are NA
+  data_numeric <- data_numeric[ , colSums(!is.na(data_numeric)) > 0, drop = FALSE]
+
+  # Extract variable labels (if present)
+  labels <- sapply(data_numeric, function(x) attr(x, "label"))
+
+ # Compute summary statistics
+  summary_df <- data.frame(
+    Question = labels,
+    Variable = names(data_numeric),
+    N = sapply(data_numeric, function(x) sum(!is.na(x))),
+    Min = round(sapply(data_numeric, function(x) min(x, na.rm = TRUE)), 2),
+    Mean = round(sapply(data_numeric, function(x) mean(x, na.rm = TRUE)), 2),
+    Max = round(sapply(data_numeric, function(x) max(x, na.rm = TRUE)), 2),
+    SD = round(sapply(data_numeric, function(x) sd(x, na.rm = TRUE)), 2),
+    row.names = NULL,
+    stringsAsFactors = FALSE
+  )
+
+  return(summary_df)
+}
+
+
+ paras_sum_stats <- summary_stats(infection_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
+ 
+ paras_sum_stats
+  
+  saveRDS(paras_sum_stats, file = "C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats")
+
+```
+
+
+#2.3 Lasso Regression
+
+## analysis data
+
+```{r}
+
+analysis_df <- infection_df %>%
+  select(-Humanwatercontact, -p2_avg) %>%
+  na.omit()
+
+nrow(analysis_df)
+nrow(infection_df)
+
+
+```
+
+
+##2.3.1 - sh_inf
+### subset 
+
+```{r}
+# Remove rows with any NA
+
+# Define variables to exclude
+exclude_vars <- c("hhid_village", "village_name", "hhid", "individ", 
+                  "identificant", "match_score", "round", "sh_inf")  # Exclude outcome too
+
+# Grab all other column names
+sh_covariates <- setdiff(names(analysis_df), exclude_vars)
+
+```
+
+### regression
+
+```{r}
+
+# Create predictor matrix
+sh_x <- data.matrix(analysis_df[, sh_covariates])
+sh_y <- analysis_df$sh_inf
+
+#perform k-fold cross-validation to find optimal lambda value
+sh1 <- cv.glmnet(sh_x, sh_y, family = "binomial", alpha = 1)
+
+sh1_best_lambda <- sh1$lambda.min
+sh1_best_lambda
+
+#produce plot of test MSE by lambda value
+plot(sh1) 
+
+
+#find coefficients of best model
+sh1_best_model <- glmnet(sh_x, sh_y, alpha = 1, lambda = sh1_best_lambda)
+coef(sh1_best_model)
+
+
+```
+
+### best coefficients
+
+```{r}
+# Extract coefficients at best lambda
+sh_mat <- coef(sh1_best_model, s = sh1_best_lambda)
+
+# Convert to named vector and find non-zero coefficients
+sh_vars <- rownames(sh_mat)[sh_mat[, 1] != 0]
+
+# Remove intercept from selected vars
+sh_vars <- setdiff(sh_vars, c("(Intercept)", "sm_sh_inf", "sm_inf")) #confirm the precise variables we're interested in
+
+
+print(sh_vars)
+
+```
+
+
+##2.3.2 - sm_inf
+
+###subset
+
+```{r}
+
+# Define variables to exclude
+sm_exclude_vars <- c("hhid_village", "village_name", "hhid", "individ", "Humanwatercontact", "p2_avg", #Humanwatercontact was not carried over in midline, lot's of missings
+                  "identificant", "match_score", "round", "sm_inf")  # Exclude outcome too
+
+# Grab all other column names
+sm_covariate_vars <- setdiff(names(analysis_df), sm_exclude_vars)
+
+```
+
+### regression
+
+```{r}
+
+
+# Create predictor matrix
+x <- data.matrix(analysis_df[, sm_covariate_vars])
+y <- analysis_df$sm_inf
+
+#perform k-fold cross-validation to find optimal lambda value
+sm1 <- cv.glmnet(x, y, family = "binomial", alpha = 1)
+
+sm1_best_lambda <- sm1$lambda.min
+sm1_best_lambda
+
+#produce plot of test MSE by lambda value
+plot(sm1) 
+
+
+#find coefficients of best model
+sm1_best_model <- glmnet(x, y, alpha = 1, lambda = sm1_best_lambda)
+coef(sm1_best_model)
+
+
+```
+
+
+##2.3.3 - sm_sh_inf
+
+###subset
+
+```{r}
+
+# Define variables to exclude
+sm_sh_exclude_vars <- c("hhid_village", "village_name", "hhid", "individ", "Humanwatercontact", "p2_avg", #Humanwatercontact was not carried over in midline, lot's of missings
+                  "identificant", "match_score", "round", "sm_sh_inf")  # Exclude outcome too
+
+# Grab all other column names
+sm_sh_covariate_vars <- setdiff(names(analysis_df), sm_sh_exclude_vars)
+
+```
+
+### regression
+
+```{r}
+
+
+# Create predictor matrix
+x <- data.matrix(analysis_df[, sm_sh_covariate_vars])
+y <- analysis_df$sm_sh_inf
+
+#perform k-fold cross-validation to find optimal lambda value
+sm_sh1 <- cv.glmnet(x, y, family = "binomial", alpha = 1)
+
+sm_sh1_best_lambda <- sm_sh1$lambda.min
+sm_sh1_best_lambda
+
+#produce plot of test MSE by lambda value
+plot(sm1) 
+
+
+#find coefficients of best model
+sm_sh1_best_model <- glmnet(x, y, alpha = 1, lambda = sm_sh1_best_lambda)
+coef(sm_sh1_best_model)
+
+
+```
+
+
+
+
+# 2.4 Model Specification
+### training testing data
+
+```{r}
+# Total number of observations
+n <- nrow(analysis_df)
+
+# Create a vector of shuffled row indices
+shuffled_indices <- sample(n)
+
+# Compute the number of training observations (70%)
+train_size <- floor(0.7 * n)
+
+# Indices for training and testing
+train_indices <- shuffled_indices[1:train_size]
+test_indices <- shuffled_indices[(train_size + 1):n]
+
+# Subset the dataframes
+train_df <- analysis_df[train_indices, ]
+test_df <- analysis_df[test_indices, ]
+
+# Check the sizes
+cat("Training set size:", nrow(train_df), "\n")
+cat("Testing set size:", nrow(test_df), "\n")
+
+```
+
+##  sh_inf
+
+```{r}
+
+sh_y <- "sh_inf"
+# Build formula string
+sh_formula <- paste(sh_y, "~", paste(sh_vars, collapse = " + "))
+
+# Fit logistic regression model
+sh_model <- glm(as.formula(sh_formula), data = train_df, family = "binomial")
+sh_model_cse <- coeftest(sh_model, vcov = sh_clustered_vcov)
+
+print(sh_model_cse)
+
+# See summary
+summary(sh_model_cse)
+
+
+```
+
+```{r}
+
+
+test_probs <- predict(sh_model, newdata = test_df, type = "response")
+
+
+head(test_probs)
+
+
+
+# For example, classify as positive if prob > 0.5
+threshold <- 0.5
+test_pred_class <- ifelse(test_probs > threshold, 1, 0)
+
+actual <- test_df$sh_inf
+
+table(Predicted = test_pred_class, Actual = actual)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#2.5 Classification and Model Selection
+##  sh_inf
+
+
+```{r}
+
+
+compute_classification_summary <- function(actual, predicted_probs, thresholds) {
+  summary_list <- list()
+
+  for (t in thresholds) {
+    preds <- ifelse(predicted_probs >= t, 1, 0)
+
+    TP <- sum(preds == 1 & actual == 1)
+    TN <- sum(preds == 0 & actual == 0)
+    FP <- sum(preds == 1 & actual == 0)
+    FN <- sum(preds == 0 & actual == 1)
+
+    FPR <- ifelse((FP + TN) > 0, round(FP / (FP + TN), 3), NA)
+    FNR <- ifelse((FN + TP) > 0, round(FN / (FN + TP), 3), NA)
+    total_error <- round(FPR + FNR, 3)
+
+    df <- data.frame(
+      Metric = c("Threshold used for prediction",
+                 "True Positives (actual = 1, predicted = 1)",
+                 "True Negatives (actual = 0, predicted = 0)",
+                 "False Positives (actual = 0, predicted = 1)",
+                 "False Negatives (actual = 1, predicted = 0)",
+                 "False Positive Rate = FP / (FP + TN)",
+                 "False Negative Rate = FN / (FN + TP)",
+                 "Sum of FPR and FNR (total classification error)"),
+      Value = c(t, TP, TN, FP, FN, FPR, FNR, total_error)
+    )
+
+    summary_list[[paste0("Threshold_", t)]] <- df
+  }
+
+  return(summary_list)
+}
+
+
+thresholds <- seq(0.1, 0.9, by = 0.1)
+actual <- analysis_df$sh_inf
+predicted_probs <- predict(sh_model, type = "response")
+
+threshold_summaries <- compute_classification_summary(actual, predicted_probs, thresholds)
+
+threshold_summaries[["Threshold_0.5"]]
+
+```
+
+
+
+
+
+```{r}
+
+# Predict probabilities from your model
+# probs <- predict(sh_model, type = "response")
+# actual <- analysis_df$sh_inf
+# threshold <- 0.1
+# preds <- ifelse(probs >= threshold, 1, 0)
+# 
+# # Compute confusion matrix components
+# TP <- sum(preds == 1 & actual == 1)
+# TN <- sum(preds == 0 & actual == 0)
+# FP <- sum(preds == 1 & actual == 0)
+# FN <- sum(preds == 0 & actual == 1)
+# 
+# # Compute FPR and FNR
+# FPR <- FP / (FP + TN)
+# FNR <- FN / (FN + TP)
+# total_error <- round(FPR + FNR, 3)
+# # Print
+# annotated_results <- data.frame(
+#   Description = c(
+#     "Threshold used for prediction",
+#     "True Positives (actual = 1, predicted = 1)",
+#     "True Negatives (actual = 0, predicted = 0)",
+#     "False Positives (actual = 0, predicted = 1)",
+#     "False Negatives (actual = 1, predicted = 0)",
+#     "False Positive Rate = FP / (FP + TN)",
+#     "False Negative Rate = FN / (FN + TP)",
+#     "Sum of FPR and FNR (total classification error)"
+#   ),
+#   Value = c(threshold, TP, TN, FP, FN, FPR, FNR, total_error)
+# )
+# 
+# # View it
+# print(annotated_results)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

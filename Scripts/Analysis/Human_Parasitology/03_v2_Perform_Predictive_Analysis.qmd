@@ -7,7 +7,7 @@ format:
     code-fold: true
     code-summary: "Show the code"
     theme: default
-    output-file: "Parasitological_Analysisv2.html" #MAKE SURE TO UPDATE
+    output-file: "Parasitological_Analysisv3.html" #MAKE SURE TO UPDATE
 execute:
   echo: true
 ---
@@ -57,7 +57,7 @@ We focus on three infection indicators, constructed from parasitological data:
 #               "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "glmnet", "multiwayvcov")
 
 packages <- c("dplyr", "readr", "tidyr", "stargazer",
-             "tidyverse", "kableExtra", "haven", "detectseparation",
+             "tidyverse", "kableExtra", "haven", "detectseparation", "kableExtra",
               "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov", "hdm", "fs", "xfun", "quarto")
 
 # install.packages("haven")
@@ -106,7 +106,7 @@ infection_df <- read_dta(file_path_infection_df)
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 analysis_df <- infection_df %>%
-  select(-p2_avg, -q_51, -asset_index, -hh_10_) %>%
+  select(-p2_avg, -q_51, -asset_index, -hh_10_, -fishing) %>%
   na.omit()
 
 # nrow(analysis_df)
@@ -122,6 +122,7 @@ analysis_df <- infection_df %>%
 Here we create Training and Testing data to perform prediction by subsetting 70% of the data as training observations, and 30% as testing. 
 
 ```{r, message=FALSE, warning=FALSE}
+
 # reproducibility 
 set.seed(20240611)
 
@@ -145,6 +146,20 @@ test_df <- analysis_df[test_indices, ]
 # Check the sizes
 cat("Training set size:", nrow(train_df), "\n")
 cat("Testing set size:", nrow(test_df), "\n")
+
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+## reorder summary data
+
+sum_data <- analysis_df %>%
+  relocate(sh_inf:total_egg, .before = living_01_bin) %>%
+  relocate(age_hp, .before = hh_gender_) %>%
+  relocate(sex_hp, .before = hh_10_w99)
+
+
+head(sum_data)
+
 
 ```
 
@@ -211,18 +226,74 @@ summary_stats <- function(data, exclude = NULL) {
 
 Summary stats for the analysis data. I imputed per PAP, dropped p2_avg and rows with missings, and used winsorized/standardized versions of q_51, asset_index, and hh_10_.
 
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
- paras_sum_stats_ad <- summary_stats(analysis_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
+ paras_sum_stats_ad <- summary_stats(sum_data, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
 
- 
- kable(paras_sum_stats_ad, format = "html", caption = "Summary Statistics for Analysis Data") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
-  scroll_box(width = "100%")
+# kable(paras_sum_stats_ad, format = "html", caption = "Summary Statistics for Analysis Data") %>%
+#   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+#   scroll_box(width = "100%") %>%
+#   footnote(general = "Note: Baseline: 206 observations, Midline: 185 observations. Means are calculated from non-missing values.")
+
  
    # saveRDS(paras_sum_stats_ad, file = "C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats_ad")
 
 ```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+analysis_df %>% filter(round == 1) %>% nrow()
+analysis_df %>% filter(round == 2) %>% nrow()
+
+```
+
+
+```{r}
+# Add section and source labels based on variable ranges
+paras_sum_stats_ad <- paras_sum_stats_ad %>%
+  mutate(
+    section = case_when(
+      Variable %in% Variable[match("hh_age_", Variable):match("total_egg", Variable)] ~ "Individual-level Variables",
+      Variable %in% Variable[match("living_01_bin", Variable):match("asset_index_std", Variable)] ~ "Household-level Variables",
+      Variable %in% Variable[match("q_51_w99", Variable):match("InfectedBiomphalaria", Variable)] ~ "Community-level Variables",
+      TRUE ~ "Other"
+    ),
+    source = case_when(
+      Variable %in% Variable[match("hh_age_", Variable):match("asset_index_std", Variable)] ~ "CRDES Household Survey Data",
+      Variable == "q_51" | Variable == "q_51_w99" ~ "CRDES Community Survey Data",
+      Variable %in% Variable[match("sh_inf", Variable):match("sex_hp", Variable)] ~ "EPLS/UCAD Parasitological Data",
+      Variable %in% Variable[match("schisto_indicator", Variable):match("InfectedBiomphalaria", Variable)] ~ "Notre Dame Ecological Data",
+      TRUE ~ NA_character_
+    ),
+    row_id = row_number()
+  )
+
+# Prepare the base table (optional: you could keep section/source columns if you want to show them)
+kbl_base <- paras_sum_stats_ad %>% 
+  select(-section, -row_id) %>%
+  kbl(format = "html", caption = "Summary Statistics for Analysis Data, Baseline & Midline")
+
+# Add group_rows dynamically by section
+for (sec in unique(paras_sum_stats_ad$section)) {
+  rows <- paras_sum_stats_ad %>% filter(section == sec) %>% pull(row_id)
+  kbl_base <- kbl_base %>% group_rows(sec, min(rows), max(rows))
+}
+
+# Add styling and footnote
+kbl_base %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE, position = "left"
+  ) %>%
+  scroll_box(width = "100%") %>%
+  footnote(general = "Note: Baseline: 206 observations, Midline: 185 observations. Means are calculated from non-missing values.")
+
+```
+
+
+
 
 
 ### sm_sh_inf Analysis

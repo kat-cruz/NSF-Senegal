@@ -22,20 +22,22 @@ use "$specifications/v2_baseline_to_midline_pap_specifications.dta", clear
 * avr participation outcomes 
 local avr_outcomes "avr_water_any avr_harvest_any avr_removal_any avr_recent_any avr_harvest_kg avr_recent_kg"
 
+*******************************************
+* AVR
+*******************************************
+
 * labels
-local lab_water_any "Harvests Vegetation"
-local lab_harvest_any "12-Month Collection"
-local lab_removal_any "Removes Vegetation" 
-local lab_recent_any "7-Day Collection"
-local lab_harvest_kg "12-Month Collection (kg)"
-local lab_recent_kg "7-Day Collection (kg)"
+* AVR outcome labels based on survey questions
+local lab_water_any "Harvest Vegetation (12mo)"
+local lab_harvest_any "Collect Vegetation (12mo)"
+local lab_removal_any "Remove Vegetation (12mo)"
+local lab_recent_any "Harvest Vegetation (7-day)"
+local lab_harvest_kg "Avg. Amount (kg, 12mo)"
+local lab_recent_kg "Total Amount (kg, 7-day)"
 
 * simple baseline to midline mean plots
 set scheme s2color
 
-*******************************************
-* AVR
-*******************************************
 * AVR outcomes plotting
 preserve 
 
@@ -60,38 +62,35 @@ foreach var of local avr_outcomes {
 * calculate means for each period
 collapse (mean) avr_*, by(time period)
 
-* plot binary outcomes
+* plot participation outcomes (all binary measures)
 twoway (connected avr_water_any period, msymbol(O)) ///
-       (connected avr_removal_any period, msymbol(D)), ///
+       (connected avr_harvest_any period, msymbol(D)) ///
+       (connected avr_removal_any period, msymbol(T)) ///
+       (connected avr_recent_any period, msymbol(S)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
     ylabel(0(.02).1, format(%3.2f)) ///
     xtitle("Survey Round") ytitle("Share of Households Participating") ///
-    legend(order(1 "`lab_water_any'" 2 "`lab_removal_any'")) ///
+    legend(order(1 "`lab_water_any'" 2 "`lab_harvest_any'" ///
+           3 "`lab_removal_any'" 4 "`lab_recent_any'") cols(2)) ///
     title("Household AVR Participation Over Time") ///
     subtitle("Mean household participation rates") ///
-    graphregion(margin(l=5 r=5 t=2 b=2)) ///
-    plotregion(margin(l=2 r=2 t=2 b=2)) ///
-    name(binary, replace)
-graph export "$figures/avr_participation.png", replace width(1200)
+    name(participation, replace)
 
-* plot continuous outcomes (kg)
-twoway connected avr_harvest_kg avr_recent_kg period, ///
+* plot collection amounts (kg measures)
+twoway (connected avr_harvest_kg period, msymbol(O)) ///
+       (connected avr_recent_kg period, msymbol(D)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    xtitle("Survey Round") ytitle("Average Household Collection (kg)") ///
+    xtitle("Survey Round") ytitle("Average Collection (kg)") ///
     legend(order(1 "`lab_harvest_kg'" 2 "`lab_recent_kg'")) ///
-    title("Household AVR Collection Amounts Over Time") ///
-    subtitle("Mean household collection in kilograms") ///
-    graphregion(margin(l=5 r=5 t=2 b=2)) ///
-    plotregion(margin(l=2 r=2 t=2 b=2)) ///
-    name(continuous, replace)
-graph export "$figures/avr_collection.png", replace width(1200)
+    title("Collection Amounts") ///
+    name(amounts, replace)
 
 * Combine the plots side by side
-graph combine binary continuous, ///
-    title("Household Aquatic Vegetation Removal Over Time") ///
-    subtitle("Participation rates and collection amounts") ///
+graph combine participation amounts, ///
+    title("Aquatic Vegetation Removal Activities") ///
+    subtitle("Participation rates and collection amounts by recall period") ///
     rows(1) xsize(12) ysize(5)
-graph export "$figures/avr_combined.png", replace width(1600)
+graph export "$figures/avr_all_outcomes.png", replace width(1600)
 
 restore
 
@@ -101,10 +100,10 @@ restore
 
 * Define composting outcomes and labels
 local comp_outcomes "compost_any waste_any compost_plots waste_plots"
-local lab_compost_any "Produces Compost"
-local lab_waste_any "Collects Organic Waste"
-local lab_compost_plots "Plots Using Compost"
-local lab_waste_plots "Plots Using Organic Waste"
+local lab_compost_any "Uses Compost"
+local lab_waste_any "Uses Organic Waste"
+local lab_compost_plots "Plot(s) Using Compost"
+local lab_waste_plots "Plots(s) Using Organic Waste"
 
 
 * baseline to midline mean plots
@@ -131,33 +130,20 @@ foreach var of local comp_outcomes {
 * means for each period
 collapse (mean) *compost_* *waste_*, by(time period)
 
-* binary composting adoption
-twoway connected compost_any waste_any period, ///
+twoway (connected compost_any period, msymbol(O)) ///
+       (connected waste_any period, msymbol(D)) ///
+       (connected compost_plots period, msymbol(T)) ///
+       (connected waste_plots period, msymbol(S)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
     ylabel(0(.02).08, format(%3.2f)) /// 
     xtitle("Survey Round") ytitle("Share of Households") ///
-    legend(order(1 "`lab_compost_any'" 2 "`lab_waste_any'")) ///
-    title("Household Composting Activities") ///
-    subtitle("Share of households producing compost and collecting organic waste") ///
-    name(comp_binary, replace)
-	graph export "$figures/comp_binary.png", replace width(1200)
-
-* plot-level application
-twoway connected compost_plots waste_plots period, ///
-    xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(.02).08, format(%3.2f)) /// 
-    xtitle("Survey Round") ytitle("Average Number of Plots") ///
-    legend(order(1 "`lab_compost_plots'" 2 "`lab_waste_plots'")) ///
-    title("Agricultural Application of Organic Inputs") ///
-    subtitle("Average number of plots using compost or organic waste as fertilizer") ///
-    name(comp_plots, replace)
-	graph export "$figures/comp_plots.png", replace width(1200)
+    legend(order(1 "`lab_compost_any'" 2 "`lab_waste_any'" ///
+                 3 "`lab_compost_plots'" 4 "`lab_waste_plots'") cols(2)) ///
+    title("Household Organic Input Use in Agriculture") ///
+    subtitle("Self-reported compost and organic waste application on agricultural plots") ///
+    name(composting, replace)
+graph export "$figures/composting_outcomes.png", replace width(1200)
 	
-graph combine comp_binary comp_plots, ///
-    title("Household Composting Activities Over Time") ///
-    subtitle("Adoption rates and agricultural application") ///
-    rows(1) xsize(12) ysize(5)
-graph export "$figures/composting_combined.png", replace width(1600)	
 	
 restore
 
@@ -469,7 +455,7 @@ twoway (connected max_grade period, msymbol(O)) ///
        (connected any_last_year period, msymbol(+)) ///
        (connected full_attend period, msymbol(X)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(2)10, format(%2.1f)) ///
+    ylabel(0(2)8, format(%2.1f)) ///
     xtitle("Survey Round") ytitle("Education Measures") ///
     legend(order(1 "`lab_max_grade'" 2 "`lab_any_enrolled'" 3 "`lab_num_enrolled'" ///
            4 "`lab_avg_attendance'" 5 "`lab_any_last_year'" 6 "`lab_full_attend'") cols(2)) ///

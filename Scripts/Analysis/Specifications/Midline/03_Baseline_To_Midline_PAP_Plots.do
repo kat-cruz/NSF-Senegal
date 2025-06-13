@@ -86,6 +86,13 @@ twoway connected avr_harvest_kg avr_recent_kg period, ///
     name(continuous, replace)
 graph export "$figures/avr_collection.png", replace width(1200)
 
+* Combine the plots side by side
+graph combine binary continuous, ///
+    title("Household Aquatic Vegetation Removal Over Time") ///
+    subtitle("Participation rates and collection amounts") ///
+    rows(1) xsize(12) ysize(5)
+graph export "$figures/avr_combined.png", replace width(1600)
+
 restore
 
 **************************************
@@ -145,6 +152,13 @@ twoway connected compost_plots waste_plots period, ///
     subtitle("Average number of plots using compost or organic waste as fertilizer") ///
     name(comp_plots, replace)
 	graph export "$figures/comp_plots.png", replace width(1200)
+	
+graph combine comp_binary comp_plots, ///
+    title("Household Composting Activities Over Time") ///
+    subtitle("Adoption rates and agricultural application") ///
+    rows(1) xsize(12) ysize(5)
+graph export "$figures/composting_combined.png", replace width(1600)	
+	
 restore
 
 *******************************************
@@ -231,27 +245,18 @@ collapse (mean) bilharzia_* meds_* diagnosed_* urine_* stool_*, by(time period)
 * binary outcomes (symptoms and treatment)
 twoway (connected bilharzia_any period, msymbol(O)) ///
        (connected meds_any period, msymbol(D)) ///
-       (connected diagnosed_any period, msymbol(T)), ///
+       (connected diagnosed_any period, msymbol(T)) ///
+       (connected urine_any period, msymbol(S)) ///
+       (connected stool_any period, msymbol(+)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
     ylabel(0(.2)1, format(%3.2f)) ///
-    xtitle("Survey Round") ytitle("Share of Households Reporting") ///
-    legend(order(1 "`lab_bilharzia_any'" 2 "`lab_meds_any'" 3 "`lab_diagnosed_any'")) ///
-    title("Schistosomiasis Symptoms and Treatment") ///
-    subtitle("Mean household reporting rates") ///
-    name(schisto_symptoms, replace)
-	graph export "$figures/schisto_symptoms.png", replace width(1200)
-
-* binary outcomes (testing)
-twoway (connected urine_any period, msymbol(O)) ///
-       (connected stool_any period, msymbol(D)), ///
-    xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(.2).8, format(%3.2f)) ///
     xtitle("Survey Round") ytitle("Share of Households") ///
-    legend(order(1 "`lab_urine_any'" 2 "`lab_stool_any'")) ///
-    title("Schistosomiasis Symptoms") ///
-    subtitle("Mean household symptom rates") ///
-    name(schisto_testing, replace)
-	graph export "$figures/schisto_testing.png", replace width(1200)
+    legend(order(1 "`lab_bilharzia_any'" 2 "`lab_meds_any'" 3 "`lab_diagnosed_any'" ///
+           4 "`lab_urine_any'" 5 "`lab_stool_any'") cols(2)) ///
+    title("Schistosomiasis Outcomes Over Time") ///
+    subtitle("Household diagnosis, treatment, and symptoms") ///
+    name(schisto_all, replace)
+graph export "$figures/schisto_outcomes.png", replace width(1200)
 
 restore
 
@@ -317,86 +322,79 @@ restore
 
 * work, labor, and school outcomes and labels
 local work_outcomes "work_days_lost"
-local labor_outcomes "ag_workers total_ag_hours total_trade_hours total_wage_hours"
+local domestic_outcomes "total_chore_hours total_water_hours"
+local market_outcomes "ag_workers total_ag_hours total_trade_hours total_wage_hours"
 local school_outcomes "any_absence avg_attendance absence_count"
 
-*labels for each outcome
+* labels for each outcome
 local lab_work_days "Work Days Lost"
+local lab_chore_hours "Household Chores"
+local lab_water_hours "Water Collection"
 local lab_ag_workers "Agricultural Workers"
-local lab_ag_hours "Agricultural Hours"
-local lab_trade_hours "Trading Hours"
-local lab_wage_hours "Wage Work Hours"
+local lab_ag_hours "Agricultural Work"
+local lab_trade_hours "Trading Activities"
+local lab_wage_hours "Wage Employment"
 local lab_any_absence "Any School Absence"
 local lab_attendance "Average Attendance"
 local lab_absence_count "Number of Absences"
 
-* baseline to midline mean plots
-preserve 
+* Labor supply plots
+preserve
 
-* long dataset with baseline and midline values
+* Create long format dataset
 gen period = 1
 gen time = "Midline"
 
-* loops for each outcome group
-foreach var of local work_outcomes {
+* Generate variables with standardized names
+foreach var in total_chore_hours total_water_hours total_ag_hours total_trade_hours total_wage_hours {
     gen `var' = midline_`var'
     gen `var'0 = baseline_`var'
 }
 
-foreach var of local labor_outcomes {
-    gen `var' = midline_`var'
-    gen `var'0 = baseline_`var'
-}
-
-foreach var of local school_outcomes {
-    gen `var' = midline_`var'
-    gen `var'0 = baseline_`var'
-}
-
+* Expand to create baseline period
 expand 2
 bysort hhid: replace period = _n - 1
 replace time = "Baseline" if period == 0
 
-* means for each period
-collapse (mean) work_* ag_* total_* any_* avg_* absence_*, by(time period)
+* Replace baseline values
+foreach var in total_chore_hours total_water_hours total_ag_hours total_trade_hours total_wage_hours {
+    replace `var' = `var'0 if period == 0
+    drop `var'0
+}
 
-* work days lost
-twoway connected work_days_lost period, ///
-    xlabel(0 "Baseline" 1 "Midline") ///
-	ylabel(0(2)10, format(%2.1f)) ///
-    xtitle("Survey Round") ytitle("Days Lost per Household") ///
-    legend(order(1 "`lab_work_days'")) ///
-    title("Work Days Lost Over Time") ///
-    subtitle("Mean household productivity loss") ///
-    name(work_loss, replace)
-	graph export "$figures/work_loss.png", replace width(1200)	
+* Collapse to means
+collapse (mean) total_*, by(time period)
 
-* labor supply outcomes
-twoway (connected ag_workers period, msymbol(O)) ///
-       (connected total_ag_hours period, msymbol(D)) ///
-       (connected total_trade_hours period, msymbol(T)) ///
-       (connected total_wage_hours period, msymbol(S)), ///
+* Domestic labor plot
+twoway (connected total_chore_hours period, msymbol(O)) ///
+       (connected total_water_hours period, msymbol(D)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    xtitle("Survey Round") ytitle("Labor Supply Measures") ///
-    legend(order(1 "`lab_ag_workers'" 2 "`lab_ag_hours'" ///
-           3 "`lab_trade_hours'" 4 "`lab_wage_hours'") cols(2)) ///
+    ylabel(0(20)120, format(%2.0f)) ///
+    xtitle("Survey Round") ytitle("Hours per Week") ///
+    legend(order(1 "Household Chores" 2 "Water Collection") cols(1)) ///
+    title("Household Domestic Labor") ///
+    subtitle("Mean weekly hours in domestic activities") ///
+    name(domestic_labor, replace)
+graph export "$figures/domestic_labor.png", replace width(1200)
+
+* Market labor plot  
+twoway (connected total_ag_hours period, msymbol(O)) ///
+       (connected total_trade_hours period, msymbol(D)) ///
+       (connected total_wage_hours period, msymbol(T)), ///
+    xlabel(0 "Baseline" 1 "Midline") ///
+    ylabel(0(10)50, format(%2.0f)) ///
+    xtitle("Survey Round") ytitle("Hours per Week") ///
+    legend(order(1 "Agricultural Work" 2 "Trading Activities" 3 "Wage Employment") cols(1)) ///
+    title("Household Market Labor") ///
+    subtitle("Mean weekly hours in income-generating activities") ///
+    name(market_labor, replace)
+graph export "$figures/market_labor.png", replace width(1200)
+
+graph combine domestic_labor market_labor, ///
     title("Household Labor Supply Over Time") ///
-    subtitle("Mean household labor allocation across activities") ///
-    name(labor_supply, replace)
-	graph export "$figures/labor_supply.png", replace width(1200)	
-	
-
-* school attendance outcomes
-twoway (connected any_absence period, msymbol(O)) ///
-       (connected avg_attendance period, msymbol(D)) ///
-       (connected absence_count period, msymbol(T)), ///
-    xlabel(0 "Baseline" 1 "Midline") ///
-    xtitle("Survey Round") ytitle("School Attendance Measures") ///
-    legend(order(1 "`lab_any_absence'" 2 "`lab_attendance'" 3 "`lab_absence_count'")) ///
-    title("School Attendance Over Time") ///
-    subtitle("Mean household school participation measures") ///
-    name(school_attendance, replace)
-	graph export "$figures/school_attendance.png", replace width(1200)	
+    subtitle("Mean weekly hours in domestic and market activities") ///
+    rows(1) xsize(12) ysize(5)
+graph export "$figures/labor_combined.png", replace width(1600)
 
 restore
 
@@ -420,10 +418,11 @@ local lab_full_attend "Full Attendance"
 * baseline to midline mean plots
 preserve 
 
-* long dataset with baseline and midline values
+* long dataset setup
 gen period = 1
 gen time = "Midline"
 
+* generate education variables
 foreach var of local attainment {
     gen `var' = midline_`var'
     gen `var'0 = baseline_`var'
@@ -443,43 +442,40 @@ expand 2
 bysort hhid: replace period = _n - 1
 replace time = "Baseline" if period == 0
 
+* Replace baseline values separately for each group
+foreach var of local attainment {
+    replace `var' = `var'0 if period == 0
+    drop `var'0
+}
+
+foreach var of local enrollment {
+    replace `var' = `var'0 if period == 0
+    drop `var'0
+}
+
+foreach var of local attendance {
+    replace `var' = `var'0 if period == 0
+    drop `var'0
+}
+
 * means for each period
 collapse (mean) max_grade any_enrolled num_enrolled avg_attendance any_last_year full_attend, by(time period)
 
-* educational attainment
-twoway connected max_grade period, ///
+* Plot all education outcomes together
+twoway (connected max_grade period, msymbol(O)) ///
+       (connected any_enrolled period, msymbol(D)) ///
+       (connected num_enrolled period, msymbol(T)) ///
+       (connected avg_attendance period, msymbol(S)) ///
+       (connected any_last_year period, msymbol(+)) ///
+       (connected full_attend period, msymbol(X)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-	ylabel(0(2)10, format(%2.1f)) ///	
-    xtitle("Survey Round") ytitle("Average Grade Level") ///
-    legend(order(1 "`lab_max_grade'")) ///
-    title("Educational Attainment Over Time") ///
-    subtitle("Mean household maximum grade completed") ///
-    name(educ_attainment, replace)
-	graph export "$figures/educ_attainment.png", replace width(1200)	
-
-
-* enrollment outcomes
-twoway (connected any_enrolled period, msymbol(O)) ///
-       (connected num_enrolled period, msymbol(D)), ///
-    xlabel(0 "Baseline" 1 "Midline") ///
-    xtitle("Survey Round") ytitle("Enrollment Measures") ///
-    legend(order(1 "`lab_any_enrolled'" 2 "`lab_num_enrolled'")) ///
-    title("School Enrollment Over Time") ///
-    subtitle("Mean household enrollment measures") ///
-    name(enrollment, replace)
-	graph export "$figures/enrollment.png", replace width(1200)	
+    ylabel(0(2)10, format(%2.1f)) ///
+    xtitle("Survey Round") ytitle("Education Measures") ///
+    legend(order(1 "`lab_max_grade'" 2 "`lab_any_enrolled'" 3 "`lab_num_enrolled'" ///
+           4 "`lab_avg_attendance'" 5 "`lab_any_last_year'" 6 "`lab_full_attend'") cols(2)) ///
+    title("Educational Outcomes Over Time") ///
+    subtitle("Household education measures") ///
+    name(education_all, replace)
+graph export "$figures/education_outcomes.png", replace width(1200)
 	
-
-* attendance outcomes
-twoway (connected avg_attendance period, msymbol(O)) ///
-       (connected any_last_year period, msymbol(D)) ///
-       (connected full_attend period, msymbol(T)), ///
-    xlabel(0 "Baseline" 1 "Midline") ///
-    xtitle("Survey Round") ytitle("Attendance Measures") ///
-    legend(order(1 "`lab_avg_attendance'" 2 "`lab_any_last_year'" 3 "`lab_full_attend'")) ///
-    title("School Attendance Patterns Over Time") ///
-    subtitle("Mean household attendance measures") ///
-    name(attendance, replace)
-	graph export "$figures/attendance.png", replace width(1200)	
-
 restore

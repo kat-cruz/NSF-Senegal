@@ -569,35 +569,45 @@ forvalues i = 1/55 {
     cap replace health_5_4_`i'_days = . if health_5_4_`i' > 31
 }
 
+* total days lost to illness
+egen baseline_work_days_lost = rowtotal(health_5_4_*_days)
+label var baseline_work_days_lost "Total work days lost to illness (health_5_4)"
+
 * work participation by type
 forvalues i = 1/55 {
+    * household chores (hh_01, hh_02)
+    gen baseline_chore_hours_`i' = hh_01_`i' if hh_01_`i' >= 0
+    gen baseline_water_hours_`i' = hh_02_`i' if hh_02_`i' >= 0
+    label var baseline_chore_hours_`i' "Household chore hours (hh_01)"
+    label var baseline_water_hours_`i' "Water fetching hours (hh_02)"
+    
     * ag work (hh_03, hh_04)
     gen baseline_ag_work_any_`i' = (hh_03_`i' == 1)
-    gen baseline_ag_hours_`i' = hh_04_`i'
+    gen baseline_ag_hours_`i' = hh_04_`i' if hh_04_`i' >= 0  
     label var baseline_ag_hours_`i' "Agricultural work hours (hh_04)"
     
     * trade work (hh_08)
-    gen baseline_trade_hours_`i' = hh_08_`i'
+    gen baseline_trade_hours_`i' = hh_08_`i' if hh_08_`i' >= 0
     label var baseline_trade_hours_`i' "Trade work hours (hh_08)"
     
     * wage work (hh_09)
-    gen baseline_wage_hours_`i' = hh_09_`i'
+    gen baseline_wage_hours_`i' = hh_09_`i' if hh_09_`i' >= 0
     label var baseline_wage_hours_`i' "Wage work hours (hh_09)"
 }
-
-* hh-level work measures
-* total days lost
-egen baseline_work_days_lost = rowtotal(health_5_4_*_days)
-label var baseline_work_days_lost "Total work days lost to illness (health_5_4)"
 
 * ag participation
 egen baseline_ag_workers = rowtotal(baseline_ag_work_any_*)
 label var baseline_ag_workers "Number of agricultural workers (hh_03)"
 
-* Hours by type
+* Hours by type including chores
+egen baseline_total_chore_hours = rowtotal(baseline_chore_hours_*)
+egen baseline_total_water_hours = rowtotal(baseline_water_hours_*)
 egen baseline_total_ag_hours = rowtotal(baseline_ag_hours_*)
 egen baseline_total_trade_hours = rowtotal(baseline_trade_hours_*)
 egen baseline_total_wage_hours = rowtotal(baseline_wage_hours_*)
+
+label var baseline_total_chore_hours "Total HH chore hours (hh_01)"
+label var baseline_total_water_hours "Total HH water fetching hours (hh_02)"
 label var baseline_total_ag_hours "Total HH agricultural hours (hh_04)"
 label var baseline_total_trade_hours "Total HH trade hours (hh_08)"
 label var baseline_total_wage_hours "Total HH wage hours (hh_09)"
@@ -626,8 +636,8 @@ label var baseline_avg_attendance "Average school days attended (hh_38)"
 egen baseline_absence_count = rowtotal(baseline_school_absence_*)
 label var baseline_absence_count "Number of children missing school (hh_37)"
 
-* relevant variables
 keep hhid baseline_work_days_lost baseline_ag_workers ///
+    baseline_total_chore_hours baseline_total_water_hours ///
     baseline_total_ag_hours baseline_total_trade_hours baseline_total_wage_hours ///
     baseline_any_absence baseline_avg_attendance baseline_absence_count
 
@@ -1024,35 +1034,46 @@ forvalues i = 1/57 {
     cap replace health_5_4_`i'_days = . if health_5_4_`i' > 31
 }
 
+* total days lost to illness
+egen midline_work_days_lost = rowtotal(health_5_4_*_days)
+label var midline_work_days_lost "Total work days lost to illness (health_5_4)"
+
+
 * work participation by type
-forvalues i = 1/57 {
+forvalues i = 1/55 {
+    * household chores (hh_01, hh_02)
+    gen midline_chore_hours_`i' = hh_01_`i' if hh_01_`i' >= 0
+    gen midline_water_hours_`i' = hh_02_`i' if hh_02_`i' >= 0
+    label var midline_chore_hours_`i' "Household chore hours (hh_01)"
+    label var midline_water_hours_`i' "Water fetching hours (hh_02)"
+    
     * ag work (hh_03, hh_04)
     gen midline_ag_work_any_`i' = (hh_03_`i' == 1)
-    gen midline_ag_hours_`i' = hh_04_`i'
+    gen midline_ag_hours_`i' = hh_04_`i' if hh_04_`i' >= 0
     label var midline_ag_hours_`i' "Agricultural work hours (hh_04)"
     
     * trade work (hh_08)
-    gen midline_trade_hours_`i' = hh_08_`i'
+    gen midline_trade_hours_`i' = hh_08_`i' if hh_08_`i' >= 0
     label var midline_trade_hours_`i' "Trade work hours (hh_08)"
     
     * wage work (hh_09)
-    gen midline_wage_hours_`i' = hh_09_`i'
+    gen midline_wage_hours_`i' = hh_09_`i' if hh_09_`i' >= 0
     label var midline_wage_hours_`i' "Wage work hours (hh_09)"
 }
-
-* hh-level work measures
-* total days lost
-egen midline_work_days_lost = rowtotal(health_5_4_*_days)
-label var midline_work_days_lost "Total work days lost to illness (health_5_4)"
 
 * ag participation
 egen midline_ag_workers = rowtotal(midline_ag_work_any_*)
 label var midline_ag_workers "Number of agricultural workers (hh_03)"
 
-* Hours by type
+* Hours by type including chores
+egen midline_total_chore_hours = rowtotal(midline_chore_hours_*)
+egen midline_total_water_hours = rowtotal(midline_water_hours_*)
 egen midline_total_ag_hours = rowtotal(midline_ag_hours_*)
 egen midline_total_trade_hours = rowtotal(midline_trade_hours_*)
 egen midline_total_wage_hours = rowtotal(midline_wage_hours_*)
+
+label var midline_total_chore_hours "Total HH chore hours (hh_01)"
+label var midline_total_water_hours "Total HH water fetching hours (hh_02)"
 label var midline_total_ag_hours "Total HH agricultural hours (hh_04)"
 label var midline_total_trade_hours "Total HH trade hours (hh_08)"
 label var midline_total_wage_hours "Total HH wage hours (hh_09)"
@@ -1083,9 +1104,10 @@ label var midline_absence_count "Number of children missing school (hh_37)"
 
 * relevant variables
 keep hhid midline_work_days_lost midline_ag_workers ///
+    midline_total_chore_hours midline_total_water_hours ///
     midline_total_ag_hours midline_total_trade_hours midline_total_wage_hours ///
     midline_any_absence midline_avg_attendance midline_absence_count
-
+	
 tempfile work_school_outcomes
 save `work_school_outcomes'
 

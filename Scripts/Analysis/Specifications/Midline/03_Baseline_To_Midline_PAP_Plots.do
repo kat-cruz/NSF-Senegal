@@ -32,8 +32,8 @@ local lab_water_any "Harvest Vegetation (12mo)"
 local lab_harvest_any "Collect Vegetation (12mo)"
 local lab_removal_any "Remove Vegetation (12mo)"
 local lab_recent_any "Harvest Vegetation (7-day)"
-local lab_harvest_kg "Avg. Amount (kg, 12mo)"
-local lab_recent_kg "Total Amount (kg, 7-day)"
+local lab_harvest_kg "Avg. Weekly Amount (kg/hh, 12mo)"
+local lab_recent_kg "Total Amount (kg/hh, 7-day)"
 
 * simple baseline to midline mean plots
 set scheme s2color
@@ -100,8 +100,8 @@ restore
 
 * Define composting outcomes and labels
 local comp_outcomes "compost_any waste_any compost_plots waste_plots"
-local lab_compost_any "Uses Compost"
-local lab_waste_any "Uses Organic Waste"
+local lab_compost_any "AVR for Compost (12mo)"
+local lab_waste_any "AVR for Organic Waste (7-day)"
 local lab_compost_plots "Plot(s) Using Compost"
 local lab_waste_plots "Plots(s) Using Organic Waste"
 

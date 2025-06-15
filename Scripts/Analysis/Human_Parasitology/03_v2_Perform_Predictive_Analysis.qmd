@@ -58,7 +58,7 @@ We focus on three infection indicators, constructed from parasitological data:
 
 packages <- c("dplyr", "readr", "tidyr", "stargazer",
              "tidyverse", "kableExtra", "haven", "detectseparation", "kableExtra",
-              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov", "hdm", "fs", "xfun", "quarto")
+              "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov", "hdm", "fs", "xfun", "quarto", "labelled", "patchwork")
 
 # install.packages("haven")
 # library("haven")
@@ -143,11 +143,14 @@ test_indices <- shuffled_indices[(train_size + 1):n]
 train_df <- analysis_df[train_indices, ]
 test_df <- analysis_df[test_indices, ]
 
+
 # Check the sizes
 cat("Training set size:", nrow(train_df), "\n")
 cat("Testing set size:", nrow(test_df), "\n")
 
 ```
+
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 ## reorder summary data
@@ -156,9 +159,6 @@ sum_data <- analysis_df %>%
   relocate(sh_inf:total_egg, .before = living_01_bin) %>%
   relocate(age_hp, .before = hh_gender_) %>%
   relocate(sex_hp, .before = hh_10_w99)
-
-
-head(sum_data)
 
 
 ```
@@ -204,26 +204,6 @@ summary_stats <- function(data, exclude = NULL) {
 ```
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-##on full set of data
- # paras_sum_stats <- summary_stats(infection_df, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
- # 
- 
-```
- 
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
- 
- # kable(paras_sum_stats, format = "html", caption = "Summary Statistics for Infection Data") %>%
- #  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
- #  scroll_box(width = "100%")
-
-        # saveRDS(paras_sum_stats, file = "C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats")
-```  
-
-
-
 Summary stats for the analysis data. I imputed per PAP, dropped p2_avg and rows with missings, and used winsorized/standardized versions of q_51, asset_index, and hh_10_.
 
 
@@ -231,21 +211,15 @@ Summary stats for the analysis data. I imputed per PAP, dropped p2_avg and rows 
 
  paras_sum_stats_ad <- summary_stats(sum_data, exclude = c("hhid_village", "village_name", "hhid", "individ", "identificant","match_score", "round" ))
 
-# kable(paras_sum_stats_ad, format = "html", caption = "Summary Statistics for Analysis Data") %>%
-#   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
-#   scroll_box(width = "100%") %>%
-#   footnote(general = "Note: Baseline: 206 observations, Midline: 185 observations. Means are calculated from non-missing values.")
-
- 
-   # saveRDS(paras_sum_stats_ad, file = "C:/Users/Kateri/Box/NSF Senegal/Data_Management/Output/Analysis/Human_Parasitology/Tables/paras_sum_stats_ad")
-
 ```
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
-analysis_df %>% filter(round == 1) %>% nrow()
-analysis_df %>% filter(round == 2) %>% nrow()
+## Check # observations between baseline and midline 
+
+# analysis_df %>% filter(round == 1) %>% nrow()
+# analysis_df %>% filter(round == 2) %>% nrow()
 
 ```
 
@@ -328,7 +302,7 @@ exclude_vars <- c("hhid_village", "village_name", "hhid", "individ",
 
 
 #find coefficients of best model
-  model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
       coef(model)
 
 #print regression table
@@ -349,6 +323,40 @@ exclude_vars <- c("hhid_village", "village_name", "hhid", "individ",
 
   
 ```
+
+
+```{r}
+
+
+vars_raw <- rownames(mat)[mat[, 1] != 0]
+vars <- setdiff(vars_raw, "(Intercept)")
+
+# create a dataframe with variable names and their corresponding labels from train_df
+
+var_labels <- tibble(
+  variable = vars,
+  label = sapply(vars, function(v) {
+    if (v %in% names(train_df)) {
+      var_label(train_df[[v]])
+    } else {
+      NA  # in case it's an interaction or transformed variable
+    }
+  })
+)
+
+var_labels <- var_labels %>% 
+  relocate(label, .before = variable)
+
+# display with kable 
+
+
+kable(var_labels, format = "html", caption = "Best Predictors for Joint-Infection") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+
+
+```
+
 
 
 #### Prediction - all
@@ -426,13 +434,46 @@ kable(best_threshold, format = "html", caption = "Best Threshold") %>%
 
 ##### Summarize and visualize the probababilities
 
+In the Prediction – all tab, can you please add a scatter plot of the predicted probability of infection against the egg count, perhaps color coding S.haem. and S.mans. differently to enable visual differentiation?
+
 ```{r, message=FALSE, warning=FALSE}
 ### visulalize 
 
+# make a single df with that combines predictions and egg counts 
+plot_df <- data.frame(
+  predicted_prob = test_probs,
+  sm_egg_count = test_df$sm_egg_count,
+  sh_egg_count = test_df$sh_egg_count
+)
+
+plot_df <- plot_df %>%
+  rename(predicted_prob = s0)
+
+
+# create scatter plot with color-coded species
+
+ ggplot(plot_df) +
+  geom_point(aes(x = predicted_prob, y = sm_egg_count, color = "S. mansoni"), alpha = 0.7) +
+  geom_point(aes(x = predicted_prob, y = sh_egg_count, color = "S. haematobium"), alpha = 0.7) +
+  scale_color_manual(values = c("S. mansoni" = "blue", "S. haematobium" = "red")) +
+  labs(
+    title = "Predicted Probability vs Egg Counts",
+    x = "Predicted Probability of Infection",
+    y = "Egg Count",
+    color = "Species"
+  ) +
+  theme_minimal()
+
+
+```
+
+```{r, message=FALSE, warning=FALSE}
+
+### visulalize 
+
 summary(test_probs)
+
 hist(test_probs, breaks = 20, col = "skyblue", main = "Distribution of Predicted Probabilities")
-
-
 
 
 ```

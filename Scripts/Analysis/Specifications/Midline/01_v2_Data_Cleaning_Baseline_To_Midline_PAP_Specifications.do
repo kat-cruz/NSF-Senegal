@@ -283,6 +283,9 @@ egen baseline_avr_recent_any = anymatch(hh_22_*), values(0/2000)
 label var baseline_avr_recent_any "Any HH member collected vegetation (hh_22: last 7 days)"
 
 * quantity harvested (intensive margin)
+foreach var of varlist hh_14_* hh_22_* {
+    replace `var' = . if `var' < 0
+}
 * 12-month average weekly harvest (from hh_14: kg/week)
 egen baseline_avr_harvest_kg = rowtotal(hh_14_*)
 label var baseline_avr_harvest_kg "Total HH vegetation harvest kg/week (hh_14: 12mo avg)"
@@ -748,6 +751,9 @@ egen midline_avr_recent_any = anymatch(hh_22_*), values(0/2000)
 label var midline_avr_recent_any "Any HH member collected vegetation (hh_22: last 7 days)"
 
 * quantity harvested (intensive margin)
+foreach var of varlist hh_14_* hh_22_* {
+    replace `var' = . if `var' < 0
+}
 * 12-month average weekly harvest (from hh_14: kg/week)
 egen midline_avr_harvest_kg = rowtotal(hh_14_*)
 label var midline_avr_harvest_kg "Total HH vegetation harvest kg/week (hh_14: 12mo avg)"

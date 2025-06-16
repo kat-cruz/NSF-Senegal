@@ -494,7 +494,7 @@ gen count = _n
 gen quantity = kgs_of_compost
 replace quantity = quantity[_n - 1] + kgs_of_compost if count > 1 
 
-keep quantity mc_kg_of_compost
+keep count quantity mc_kg_of_compost
 
 save "$auctions/supply_curve_estimates_compost", replace 
 restore 
@@ -512,7 +512,7 @@ gen count = _n
 gen quantity = kgs_of_aniaml_feed
 replace quantity = quantity[_n - 1] + kgs_of_aniaml_feed if count > 1 
 
-keep quantity mc_animal_feed
+keep count quantity mc_animal_feed
 
 save "$auctions/supply_curve_estimates_animalfeed", replace 
 restore 

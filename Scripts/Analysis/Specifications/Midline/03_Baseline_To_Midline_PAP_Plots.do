@@ -32,8 +32,8 @@ local lab_water_any "Harvest Vegetation (12mo)"
 local lab_harvest_any "Collect Vegetation (12mo)"
 local lab_removal_any "Remove Vegetation (12mo)"
 local lab_recent_any "Harvest Vegetation (7-day)"
-local lab_harvest_kg "Avg. Weekly Amount (kg/hh, 12mo)"
-local lab_recent_kg "Total Amount (kg/hh, 7-day)"
+local lab_harvest_kg "Avg. Weekly Amount (kg, 12mo)"
+local lab_recent_kg "Total Amount (kg, 7-day)"
 
 * simple baseline to midline mean plots
 set scheme s2color
@@ -199,10 +199,10 @@ restore
 * schisto outcomes and labels
 local schisto_outcomes "bilharzia_any meds_any diagnosed_any urine_any stool_any"
 local lab_bilharzia_any "Diagnosed in Past 12mo"       // from health_5_3_2
-local lab_meds_any "Received Schisto Medication"       // from health_5_5
+local lab_meds_any "Received Schisto Meds (12mo)"       // from health_5_5
 local lab_diagnosed_any "Ever Diagnosed"               // from health_5_6 
-local lab_urine_any "Blood in Urine"                  // from health_5_8
-local lab_stool_any "Blood in Stool"
+local lab_urine_any "Blood in Urine (12mo)"                  // from health_5_8
+local lab_stool_any "Blood in Stool (12mo)"
 
 * baseline to midline mean plots
 preserve 

@@ -384,10 +384,16 @@ sum elas_leon_fenotlu_*
 
 sum elas_quad_renotlu_* 
 
-sum elas_leon_renotlu_*  
+sum elas_leon_renotlu_* 
+
+*** censor mpl at zero *** 
+gen cen_mpl_leon_re = mpl_leon_re 
+replace cen_mpl_leon_re = 0 if mpl_leon_re < 0 & mpl_leon_re != .  
 
 *** calculate allocative inefficiency *** 
 gen ai_leon_re = ln(daily_wage_10/mpl_leon_re) if ag_wage == 1
+gen ihs_ai = asinh(daily_wage_10/mpl_leon_re) if ag_wage == 1
+gen cen_ihs_ai = asinh(daily_wage_10/cen_mpl_leon_re) if ag_wage == 1
 
 *** calculate wage to mpl ratio *** 
 gen wage_ratio = daily_wage_10 / mpl_leon_re if ag_wage == 1 
@@ -399,12 +405,18 @@ gen land_to_labor = prod_hect_1 / ag_hours_1
 twoway (scatter ai_leon_re land_to_labor if ai_leon_re != .) (fpfit ai_leon_re land_to_labor if ai_leon_re != .), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) 
 graph export "$auctions/ai_land_labor.eps", as(eps) replace
 
+twoway (scatter ihs_ai land_to_labor if ihs_ai != . & ihs_ai > -5 & ihs_ai < 5), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) ylabel(-5(2.5)5)
+graph export "$auctions/ihs_ai_land_labor.eps", as(eps) replace
+
 *** plot ratio of wage to mpl along land to labor ratio *** 
 twoway (scatter wage_ratio land_to_labor) (fpfit wage_ratio land_to_labor), xtitle("Land to Labor Ratio") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)
 
 *** plot allocative inefficiency along asset index *** 
 twoway (scatter ai_leon_re asset_index_std if ai_leon_re != .) (fpfit ai_leon_re asset_index_std if ai_leon_re != .), xtitle("Asset Index") ytitle("Allocative Inefficiency") legend(off) 
 graph export "$auctions/ai_asset.eps", as(eps) replace
+
+twoway (scatter ihs_ai asset_index_std if ihs_ai != . & ihs_ai > -5 & ihs_ai < 5) (fpfit ai_leon_re asset_index_std if ihs_ai != . & ihs_ai > -5 & ihs_ai < 5), xtitle("Asset Index") ytitle("Allocative Inefficiency") legend(off) 
+graph export "$auctions/ihs_ai_asset.eps", as(eps) replace
 
 *** plot ratio of wage to mpl along asset index *** 
 twoway (scatter wage_ratio asset_index_std) (fpfit wage_ratio asset_index_std), xtitle("Asset Index") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)
@@ -413,14 +425,23 @@ twoway (scatter wage_ratio asset_index_std) (fpfit wage_ratio asset_index_std), 
 gen age2 = hhhead_age*hhhead_age 
 gen members2 = members*members
 gen child2 = child*child
+gen crop_types2 = crop_types*crop_types
+gen land2 = prod_hect_1*prod_hect_1
+gen TLU2 = TLU_1*TLU_1
 
-reg ai_leon_re hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types prod_hect_1 TLU_1, cluster(village_num) 
+reg ai_leon_re hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types crop_types2 prod_hect_1 land2 TLU_1 TLU2, cluster(village_num) 
 eststo ai_factors 
 
-esttab ai_factors using "$auctions/ai_factors.tex", keep(hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types prod_hect_1 TLU_1) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
+*** predict ai for those who do not do wage labor *** 
+gen est_ai = _b[_cons] + _b[hhhead_no_education]*hhhead_no_education + _b[hhhead_female]*hhhead_female + _b[hhhead_age]*hhhead_age + _b[age2]*age2 + _b[members]*members + _b[members2]*members2 + _b[child]*child + _b[child2]*child2 + _b[rice]*rice + _b[crop_types]*crop_types + _b[crop_types2]*crop_types2 + _b[prod_hect_1]*prod_hect_1 +_b[land2]*land2 + _b[TLU_1]*TLU_1 +_b[TLU2]*TLU2 if ag_hours_1 > 0 & ag_wage == 0 
+
+reg ihs_ai hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types crop_types2 prod_hect_1 land2 TLU_1 TLU2, cluster(village_num) 
+eststo ihs_ai_factors 
 
 *** predict ai for those who do not do wage labor *** 
-gen est_ai = _b[_cons] + _b[hhhead_no_education]*hhhead_no_education + _b[hhhead_female]*hhhead_female + _b[hhhead_age]*hhhead_age + _b[age2]*age2 + _b[members]*members + _b[members2]*members2 + _b[child]*child + _b[child2]*child2 + _b[rice]*rice + _b[crop_types]*crop_types + _b[prod_hect_1]*prod_hect_1 + _b[TLU_1]*TLU_1 if ag_hours_1 > 0 & ag_wage == 0 
+gen est_ihs_ai = _b[_cons] + _b[hhhead_no_education]*hhhead_no_education + _b[hhhead_female]*hhhead_female + _b[hhhead_age]*hhhead_age + _b[age2]*age2 + _b[members]*members + _b[members2]*members2 + _b[child]*child + _b[child2]*child2 + _b[rice]*rice + _b[crop_types]*crop_types + _b[crop_types2]*crop_types2 + _b[prod_hect_1]*prod_hect_1 +_b[land2]*land2 + _b[TLU_1]*TLU_1 +_b[TLU2]*TLU2 if ag_hours_1 > 0 & ag_wage == 0 
+
+esttab ai_factors ihs_ai_factors using "$auctions/ai_factors.tex", keep(hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types crop_types2 prod_hect_1 land2 TLU_1 TLU2) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
 
 *** estimate factors of the gap *** 
 reg wage_ratio hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types prod_hect_1 TLU_1, cluster(village_num)
@@ -433,13 +454,19 @@ gen est_shadow_wage = exp(est_ai)*mpl_leon_re
 gen est_shadow_wage_alt = est_wage_ratio*mpl_leon_re
 gen shadow_wage = exp(ai_leon_re)*mpl_leon_re
 gen shadow_wage_alt = wage_ratio*mpl_leon_re
+gen ihs_shadow_wage = sinh(est_ihs_ai)*mpl_leon_re 
 
 *** summarize shaodw wages *** 
-sum est_shadow_wage est_shadow_wage_alt shadow_wage shadow_wage_alt
+sum est_shadow_wage est_shadow_wage_alt shadow_wage shadow_wage_alt ihs_shadow_wage
 
-estpost summarize est_shadow_wage 
+gen cen_ihs_shadow_wage = ihs_shadow_wage 
+replace cen_ihs_shadow_wage = 0 if ihs_shadow_wage < 0 & ihs_shadow_wage != . 
+
+estpost summarize est_shadow_wage ihs_shadow_wage
 
 esttab . using "$auctions/shadow_wage_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+
+*** 
 
 *** save just shadow wages to then use in auctions supply curve *** 
 keep daily_wage_10 est_shadow_wage 
@@ -457,12 +484,12 @@ replace wage = wage_5 if wage < wage_5
 sort wage 
 
 preserve 
-gen mc_ton_of_compost = wage*9.356752746
+gen mc_ton_of_compost = wage*9.356752746 + 100*200
 gen fixed_cost = (39.1583907*574.446) / 1000
 gen mc_kg_of_compost = mc_ton_of_compost / 1000
-gen tot_mc_compost = mc_kg_of_compost + fixed_cost
+gen avg_tot_compost = mc_kg_of_compost + fixed_cost
 
-sort tot_mc_compost
+sort mc_kg_of_compost 
 
 gen quantity = _n 
 

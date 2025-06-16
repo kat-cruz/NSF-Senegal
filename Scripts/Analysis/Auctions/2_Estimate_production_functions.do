@@ -469,19 +469,17 @@ esttab . using "$auctions/shadow_wage_sum_stats.tex", cells("count mean(fmt(%9.3
 *** 
 
 *** save just shadow wages to then use in auctions supply curve *** 
-keep daily_wage_10 est_shadow_wage 
+keep daily_wage_10 ihs_shadow_wage slack_hours 
 
 gen wage = daily_wage_10
-replace wage = est_shadow_wage if est_shadow_wage != . 
+replace wage = ihs_shadow_wage if ihs_shadow_wage != . 
 
 drop if wage == . 
 
-drop if wage <= 0 
+drop if wage < 0 
 
-egen wage_5 = pctile(wage), p(5)
-replace wage = wage_5 if wage < wage_5 
-
-sort wage 
+gen compost_labor_hours = 9.356752746*8 
+gen kgs_of_compost = slack_hours / compost_labor_hours
 
 preserve 
 gen mc_ton_of_compost = wage*9.356752746 + 100*200
@@ -491,21 +489,28 @@ gen avg_tot_compost = mc_kg_of_compost + fixed_cost
 
 sort mc_kg_of_compost 
 
-gen quantity = _n 
+gen count = _n 
 
-keep quantity tot_mc_compost
+gen quantity = kgs_of_compost
+replace quantity = quantity[_n - 1] + kgs_of_compost if count > 1 
+
+keep quantity mc_kg_of_compost
 
 save "$auctions/supply_curve_estimates_compost", replace 
 restore 
 
 preserve 
+gen kgs_of_aniaml_feed = slack_hours / 8
 gen kg_veg_cost = 387.75 / wage 
 gen g_veg_cost = kg_veg_cost / 1000 
-gen mc_animal_feed = 357.8*kg_veg_cost + 340.825 
+gen mc_animal_feed = 357.8*kg_veg_cost + 340.825 + (100/5)
 
 sort mc_animal_feed 
 
-gen quantity = _n 
+gen count = _n 
+
+gen quantity = kgs_of_aniaml_feed
+replace quantity = quantity[_n - 1] + kgs_of_aniaml_feed if count > 1 
 
 keep quantity mc_animal_feed
 

@@ -293,6 +293,36 @@ collapse (max) fetch_water_hh_7d_act water_livestock_7d_act fetch_water_ag_7d_ac
 tempfile water_time_7days 
 save `water_time_7days'
 
+*** calculate above age 15 slack labor hours *** 
+*** import household roster data *** 
+use "$data/Complete_Baseline_Household_Roster", clear   
+
+*** keep 7 day recall time use variables and age variable *** 
+keep hhid hh_age_* hh_01_* hh_02_* hh_04_* hh_08_* hh_09_* hh_18_* 
+
+drop hh_age_resp
+
+*** reshape to long *** 
+reshape long hh_age_ hh_01_ hh_02_ hh_04_ hh_08_ hh_09_ hh_18_ , i(hhid) j(person)
+
+drop if hh_01_ == . 
+
+*** drop if under 15 *** 
+drop if hh_age_ < 15
+
+*** calculate total weekly labor hours *** 
+egen weekly_hrs = rowtotal(hh_01_ hh_02_ hh_04_ hh_08_ hh_09_ hh_18_)
+
+*** declare slack hours as any hours less than 80 hours per week *** 
+gen slack_hours = 80 - weekly_hrs 
+replace slack_hours = 0 if slack_hours < 0 
+
+*** calculate total number of slack labor hours per household ***
+collapse (sum) slack_hours, by(hhid)
+
+tempfile slackhours 
+save `slackhours'
+
 *** import agricultural plot level data *** 
 use "$data/Complete_Baseline_Agriculture", clear   
 
@@ -849,6 +879,10 @@ drop _merge
 
 rename asset_index_std0 asset_index_std
 
+merge 1:1 hhid using `slackhours'
+
+drop _merge 
+
 *** clean price data *** 
 rename q63_1 urea_price 
 rename q63_2 manure_price
@@ -940,7 +974,7 @@ egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hour
 
 egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std 
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std slack_hours
 
 tempfile shadow_wage_baseline
 save `shadow_wage_baseline'
@@ -1209,6 +1243,36 @@ collapse (max) fetch_water_hh_7d_act water_livestock_7d_act fetch_water_ag_7d_ac
 *** save dataset ***
 tempfile water_time_7days_midline
 save `water_time_7days_midline' 
+
+*** calculate above age 15 slack labor hours *** 
+*** import household roster data *** 
+use "$midline/Complete_Midline_Household_Roster", clear   
+
+*** keep 7 day recall time use variables and age variable *** 
+keep hhid hh_age_* hh_01_* hh_02_* hh_04_* hh_08_* hh_09_* hh_18_* 
+
+drop hh_age_resp
+
+*** reshape to long *** 
+reshape long hh_age_ hh_01_ hh_02_ hh_04_ hh_08_ hh_09_ hh_18_ , i(hhid) j(person)
+
+drop if hh_01_ == . 
+
+*** drop if under 15 *** 
+drop if hh_age_ < 15
+
+*** calculate total weekly labor hours *** 
+egen weekly_hrs = rowtotal(hh_01_ hh_02_ hh_04_ hh_08_ hh_09_ hh_18_)
+
+*** declare slack hours as any hours less than 80 hours per week *** 
+gen slack_hours = 80 - weekly_hrs 
+replace slack_hours = 0 if slack_hours < 0 
+
+*** calculate total number of slack labor hours per household ***
+collapse (sum) slack_hours, by(hhid)
+
+tempfile slackhours_midline 
+save `slackhours_midline'
 
 *** import agricultural plot level data *** 
 use "$midline/Complete_Midline_Agriculture", clear   
@@ -1802,6 +1866,10 @@ drop _merge
 
 rename asset_index_std1 asset_index_std
 
+merge 1:1 hhid using `slackhours_midline'
+
+drop _merge 
+
 *** clean price data *** 
 rename q63_1 urea_price 
 rename q63_2 manure_price
@@ -1880,7 +1948,7 @@ egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hour
 
 egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std   
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std slack_hours   
 
 tempfile shadow_wage_midline
 save `shadow_wage_midline'

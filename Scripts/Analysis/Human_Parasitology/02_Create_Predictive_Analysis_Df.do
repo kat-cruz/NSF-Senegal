@@ -839,7 +839,8 @@ drop beliefs_01 beliefs_02 beliefs_03
 		reshape long individ_ hh_age_ hh_gender_ hh_main_activity_ hh_10_ hh_12_6_ hh_26_ hh_32_ hh_37_, i(hhid) j(id)
 
 	rename individ_ individ
-		drop if missing(individ) 
+	
+		drop if individ == ""
 		drop id hh_age_resp hh_gender_resp hh_12_6
 		
 *-------------------*

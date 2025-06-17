@@ -10,7 +10,7 @@
 * <><<><><>> Read Me  <><<><><>>
 
 			** This file processes: 
-
+		
 							* Complete_Baseline_Health.dta
 							* Complete_Baseline_Household_Roster.dta
 							* Complete_Baseline_Standard_Of_Living.dta
@@ -685,7 +685,7 @@ drop beliefs_01 beliefs_02 beliefs_03
 ** now bring in child matched IDs the link in the parasitological data and survey data
 
 		use "$paras\child_matched_IDs_df.dta", clear	
-			keep if round == 0
+			keep if round == 1
 				drop round
 			
 					merge 1:1 identificant using "$tidy\base_paras.dta" // merge in paras data
@@ -791,10 +791,10 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable Humanwatercontact "Human Water Contact (Count)"
 		label variable InfectedBulinus "Infected Bulinus (Count)"
 		label variable InfectedBiomphalaria "Infected Biomphalaria (Count)"		
-		label variable schisto_indicator "Schistosomiasis Infection Indicator (Binary)"
+		label variable schisto_indicator "Ecological Schistosomiasis Infection Indicator (Binary)"
 
 		
-		label variable round "0 = Baseline, 1 = Midline"
+		label variable round "1 = Baseline, 2 = Midline"
 		
 	
 
@@ -1568,7 +1568,7 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable Humanwatercontact "Human Water Contact (Count)"
 		label variable InfectedBulinus "Infected Bulinus (Count)"
 		label variable InfectedBiomphalaria "Infected Biomphalaria (Count)"		
-		label variable schisto_indicator "Schistosomiasis Infection Indicator (Binary)"
+		label variable schisto_indicator "Ecological Schistosomiasis Infection Indicator (Binary)"
 
 		
 		label variable round "0 = Baseline, 1 = Midline"

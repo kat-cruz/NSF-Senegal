@@ -7,7 +7,7 @@ format:
     code-fold: true
     code-summary: "Show the code"
     theme: default
-    output-file: "Parasitological_Analysisv3.html" #MAKE SURE TO UPDATE
+    output-file: "Parasitological_Analysisv4.html" #MAKE SURE TO UPDATE
 execute:
   echo: true
 ---
@@ -109,9 +109,16 @@ analysis_df <- infection_df %>%
   select(-p2_avg, -q_51, -asset_index, -hh_10_, -fishing) %>%
   na.omit()
 
+analysis_df <- analysis_df %>%
+  mutate(age_diff = hh_age_ - age_hp) %>%
+  filter(abs(age_diff) < 4)
+
+
+
 # nrow(analysis_df)
 # nrow(infection_df)
 
+#view(infection_df)
 
 ```
 
@@ -126,25 +133,25 @@ Here we create Training and Testing data to perform prediction by subsetting 70%
 # reproducibility 
 set.seed(20240611)
 
-# Total number of observations
+# make matrix sith total number of observations
 n <- nrow(analysis_df)
 
-# Create a vector of shuffled row indices
+# create a vector of shuffled row indices
 shuffled_indices <- sample(n)
 
-# Compute the number of training observations (70%)
+# compute the number of training observations (70%)
 train_size <- floor(0.7 * n)
 
 # indices for training and testing
 train_indices <- shuffled_indices[1:train_size]
 test_indices <- shuffled_indices[(train_size + 1):n]
 
-# Subset the dataframes
+# now subset the dataframes
 train_df <- analysis_df[train_indices, ]
 test_df <- analysis_df[test_indices, ]
 
 
-# Check the sizes
+# check the sizes
 cat("Training set size:", nrow(train_df), "\n")
 cat("Testing set size:", nrow(test_df), "\n")
 
@@ -234,9 +241,9 @@ paras_sum_stats_ad <- paras_sum_stats_ad %>%
       Variable %in% Variable[match("q_51_w99", Variable):match("InfectedBiomphalaria", Variable)] ~ "Community-level Variables",
       TRUE ~ "Other"
     ),
-    source = case_when(
-      Variable %in% Variable[match("hh_age_", Variable):match("asset_index_std", Variable)] ~ "CRDES Household Survey Data",
-      Variable == "q_51" | Variable == "q_51_w99" ~ "CRDES Community Survey Data",
+    Source = case_when(
+      Variable %in% Variable[match("hh_age_", Variable):match("asset_index_std", Variable)] ~ "CRDES Household Survey",
+      Variable == "q_51" | Variable == "q_51_w99" ~ "CRDES Community Survey",
       Variable %in% Variable[match("sh_inf", Variable):match("sex_hp", Variable)] ~ "EPLS/UCAD Parasitological Data",
       Variable %in% Variable[match("schisto_indicator", Variable):match("InfectedBiomphalaria", Variable)] ~ "Notre Dame Ecological Data",
       TRUE ~ NA_character_
@@ -262,7 +269,7 @@ kbl_base %>%
     full_width = FALSE, position = "left"
   ) %>%
   scroll_box(width = "100%") %>%
-  footnote(general = "Note: Baseline: 206 observations, Midline: 185 observations. Means are calculated from non-missing values.")
+  footnote(general = "Note: Baseline: 183 observations, Midline: 161 observations. Means are calculated from non-missing values.")
 
 ```
 
@@ -317,16 +324,18 @@ model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
 # Remove intercept from selected vars
   vars <- setdiff(vars_raw, c("(Intercept)")) #confirm the precise variables we're interested in
 
-  kable(vars, format = "html", caption = "Best Predictors for Joint-Infection") %>%
-      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
-      scroll_box(width = "100%")
+  # kable(vars, format = "html", caption = "Best Predictors for Joint-Infection") %>%
+  #     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  #     scroll_box(width = "100%")
 
   
 ```
 
 
-```{r}
 
+
+```{r}
+# display best vars with labels 
 
 vars_raw <- rownames(mat)[mat[, 1] != 0]
 vars <- setdiff(vars_raw, "(Intercept)")
@@ -434,7 +443,7 @@ kable(best_threshold, format = "html", caption = "Best Threshold") %>%
 
 ##### Summarize and visualize the probababilities
 
-In the Prediction – all tab, can you please add a scatter plot of the predicted probability of infection against the egg count, perhaps color coding S.haem. and S.mans. differently to enable visual differentiation?
+This is a scatter plot of the predicted probability of infection against the egg count. Any dark red observations are the overlap of S. mansoni and S. haematobium. 
 
 ```{r, message=FALSE, warning=FALSE}
 ### visulalize 
@@ -471,7 +480,12 @@ plot_df <- plot_df %>%
 
 ### visulalize 
 
-summary(test_probs)
+test_probs_df <- summary(test_probs)
+
+kable(test_probs_df, format = "html", caption = "Summary of Probabilities") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE, position = "left") %>%
+  scroll_box(width = "100%")
+
 
 hist(test_probs, breaks = 20, col = "skyblue", main = "Distribution of Predicted Probabilities")
 

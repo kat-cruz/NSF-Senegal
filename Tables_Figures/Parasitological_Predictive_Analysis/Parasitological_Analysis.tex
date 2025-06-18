@@ -3,31 +3,31 @@
 
 \usetheme{Madrid}
 \usecolortheme{default}
-
+\usepackage{outlines}
 %------------------------------------------------------------
 %This block of code defines the information to appear in the
 %Title page
-\title[About Beamer] %optional
+\title[Predictive Analysis] %optional
 {Parasitological Predictive Analysis}
 
 \subtitle{NSF-Senegal}
+\author{Kateri Mouawad} % (optional)
 
-\author[Arthur, Doe] % (optional)
-{A.~B.~Arthur\inst{1} \and J.~Doe\inst{2}}
+% {A.~B.~Arthur\inst{1} \and J.~Doe\inst{2}}
 
-\institute[VFU] % (optional)
-{
-  \inst{1}%
-  Faculty of Physics\\
-  Very Famous University
-  \and
-  \inst{2}%
-  Faculty of Chemistry\\
-  Very Famous University
-}
+% \institute[VFU] % (optional)
+% {
+%   \inst{1}%
+%   Faculty of Physics\\
+%   Very Famous University
+%   \and
+%   \inst{2}%
+%   Faculty of Chemistry\\
+%   Very Famous University
+% }
 
-\date[VLC 2021] % (optional)
-{Very Large Conference, April 2021}
+\date[June 2025] % (optional)
+{NSF-Seneal Project Team Meeting}
 
 \logo{\includegraphics[height=1cm]{overleaf-logo}}
 
@@ -40,27 +40,41 @@
 
 %The next statement creates the title page.
 \begin{frame}
-\frametitle{Sample frame title}
-This is a text in second frame. For the sake of showing an example.
+\frametitle{Analysis Overview}
+This analysis proceeds in two steps for the joint-infection sm\_sh\_inf indicator:
 
-% \begin{itemize}
-%     \item<1-> Text visible on slide 1
-%     \item<2-> Text visible on slide 2
-%     \item<3> Text visible on slides 3
-%     \item<4-> Text visible on slide 4
-% \end{itemize}
+\begin{itemize}
+    \item<1-> Lasso-Logit Regression
+       \begin{itemize}
+             \item<2-> identifies the optimal lambda
+             \item<3-> fits the model
+             \item<4-> extracts the non-zero (important) variables.
+             \item<5-> identifies most predictive covariates for sm\_sh\_inf
+        \end{itemize}
+    \item<3-> Evaluation using Confusion Matrices
+         \begin{itemize}
+                 \item<4-> We apply the fitted model to the test data and generate confusion matrices to assess predictive performance
+         \end{itemize}
+\end{itemize}
+
 \end{frame}
 
 
 \begin{frame}
-\frametitle{Sample frame title}
-This is a text in second frame. For the sake of showing an example.
+\frametitle{Lasso-Logit Model Specification}
+
+Best predictors that were selected by Lasso:
+
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Sample frame title}
-This is a text in second frame. For the sake of showing an example.
+\frametitle{Confusion Matrix}
+The following output are the FPRs and FNRs using the logit-lasso coefficients. These are summarized in one confusion matrix.
+
+
+%include a graph too for spice?
+
 
 \end{frame}
 %---------------------------------------------------------

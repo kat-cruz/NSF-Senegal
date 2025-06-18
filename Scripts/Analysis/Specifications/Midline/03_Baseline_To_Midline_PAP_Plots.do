@@ -32,8 +32,8 @@ local lab_water_any "Harvest Vegetation (12mo)"
 local lab_harvest_any "Collect Vegetation (12mo)"
 local lab_removal_any "Remove Vegetation (12mo)"
 local lab_recent_any "Harvest Vegetation (7-day)"
-local lab_harvest_kg "Avg. Weekly Amount (kg, 12mo)"
-local lab_recent_kg "Total Amount (kg, 7-day)"
+local lab_harvest_kg "Avg. Weekly Amount (12mo)"
+local lab_recent_kg "Total Amount (7-day)"
 
 * simple baseline to midline mean plots
 set scheme s2color
@@ -98,13 +98,12 @@ restore
 * Composting
 **************************************
 
-* Define composting outcomes and labels
-local comp_outcomes "compost_any waste_any compost_plots waste_plots"
-local lab_compost_any "AVR for Compost (12mo)"
-local lab_waste_any "AVR for Organic Waste (7-day)"
-local lab_compost_plots "Plot(s) Using Compost"
-local lab_waste_plots "Plots(s) Using Organic Waste"
-
+* Define composting/fertilizer outcomes and labels
+local comp_outcomes "fert_ag_any fert_specific_any compost_any waste_any"
+local lab_fert_ag_any "AVR for Fertilizer (12mo)"
+local lab_fert_specific_any "AVR for Fertilizer (7-day)" 
+local lab_compost_any "Plot-Level Compost"
+local lab_waste_any "Plot-Level Waste"
 
 * baseline to midline mean plots
 preserve 
@@ -128,21 +127,21 @@ foreach var of local comp_outcomes {
 }
 
 * means for each period
-collapse (mean) *compost_* *waste_*, by(time period)
+collapse (mean) fert_* compost_* waste_*, by(time period)
 
-twoway (connected compost_any period, msymbol(O)) ///
-       (connected waste_any period, msymbol(D)) ///
-       (connected compost_plots period, msymbol(T)) ///
-       (connected waste_plots period, msymbol(S)), ///
+twoway (connected fert_ag_any period, msymbol(O)) ///
+       (connected fert_specific_any period, msymbol(D)) ///
+       (connected compost_any period, msymbol(T)) ///
+       (connected waste_any period, msymbol(S)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
     ylabel(0(.02).08, format(%3.2f)) /// 
     xtitle("Survey Round") ytitle("Share of Households") ///
-    legend(order(1 "`lab_compost_any'" 2 "`lab_waste_any'" ///
-                 3 "`lab_compost_plots'" 4 "`lab_waste_plots'") cols(2)) ///
-    title("Household Organic Input Use in Agriculture") ///
-    subtitle("Self-reported compost and organic waste application on agricultural plots") ///
+    legend(order(1 "`lab_fert_ag_any'" 2 "`lab_fert_specific_any'" ///
+                 3 "`lab_compost_any'" 4 "`lab_waste_any'") cols(2)) ///
+    title("Household Fertilizer and Organic Input Use") ///
+    subtitle("AVR fertilizer use and plot-level organic inputs") ///
     name(composting, replace)
-graph export "$figures/composting_outcomes.png", replace width(1200)
+graph export "$figures/fertilizer_composting.png", replace width(1200)
 	
 	
 restore
@@ -151,15 +150,19 @@ restore
 * Food Security
 *******************************************
 
-* food security outcomes and labels
-local food_outcomes "months_soudure rcsi_annual"
+* Food security outcomes and labels
+local food_outcomes "months_soudure rcsi_annual rcsi_work rcsi_assets rcsi_migrate rcsi_skip"
 local lab_months_soudure "Lean Season Months"
-local lab_rcsi_annual "12-Month rCSI"
+local lab_rcsi_annual "Coping Score"
+local lab_rcsi_work "Work-Related Coping"
+local lab_rcsi_assets "Asset Sales"
+local lab_rcsi_migrate "Migration"
+local lab_rcsi_skip "Skip Meals"
 
-* baseline to midline mean plots
+* Baseline to midline mean plots
 preserve 
 
-* long dataset with baseline and midline values
+* Long dataset with baseline and midline values
 gen period = 1
 gen time = "Midline"
 
@@ -177,18 +180,25 @@ foreach var of local food_outcomes {
     drop `var'0
 }
 
-* means for each period
-collapse (mean) months_soudure rcsi_annual, by(time period)
+* Means for each period
+collapse (mean) months_soudure rcsi_annual rcsi_work rcsi_assets rcsi_migrate rcsi_skip, by(time period)
 
-* food security outcomes
-twoway connected months_soudure rcsi_annual period, ///
+* Food security outcomes plot
+twoway (connected months_soudure period, msymbol(O)) ///
+       (connected rcsi_annual period, msymbol(D)) ///
+       (connected rcsi_work period, msymbol(T)) ///
+       (connected rcsi_assets period, msymbol(S)) ///
+       (connected rcsi_migrate period, msymbol(+)) ///
+       (connected rcsi_skip period, msymbol(X)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    xtitle("Survey Round") ytitle("Household Food Security Measures") ///
-    legend(order(1 "`lab_months_soudure'" 2 "`lab_rcsi_annual'")) ///
+    xtitle("Survey Round") ytitle("Food Security Measures") ///
+    legend(order(1 "`lab_months_soudure'" 2 "`lab_rcsi_annual'" ///
+                 3 "`lab_rcsi_work'" 4 "`lab_rcsi_assets'" ///
+                 5 "`lab_rcsi_migrate'" 6 "`lab_rcsi_skip'") cols(2)) ///
     title("Household Food Security Over Time") ///
-    subtitle("Mean household lean season months and coping strategy index") ///
+    subtitle("Mean household food security measures") ///
     name(food_security, replace) 
-	graph export "$figures/food_security.png", replace width(1200)
+graph export "$figures/food_security.png", replace width(1200)
 
 restore
 

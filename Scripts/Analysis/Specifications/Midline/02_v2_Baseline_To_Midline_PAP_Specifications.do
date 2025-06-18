@@ -618,28 +618,30 @@ esttab control_* using "$specifications/avr_control_changes.tex", replace ///
 * 1.1.4: Compost Production Analysis
 **************************************************
 
-* compost-related outcomes
-local comp_extensive "compost_any waste_any"              // binary adoption
-local comp_intensive "compost_plots waste_plots"         // intensity measures
-local fert_outcomes "fert_ag_any fert_specific_any fert_ag_count"  // fertilizer use
+* Fertilizer and composting outcomes
+local fert_outcomes "fert_ag_any fert_specific_any"        // AVR fertilizer use
+local comp_outcomes "compost_any waste_any"                // Composting practices
+local all_outcomes "`fert_outcomes' `comp_outcomes'"       // Combined outcomes
 
-* treatment arm effects (eq 2)
+* Treatment arm effects (eq 2)
 eststo clear
-foreach y of local comp_extensive {
+foreach y of local all_outcomes {
     eststo arm_`y': reg midline_`y' i.treatment_arm baseline_`y' ///
         $controls $distance_vector i.auction_village, vce(cluster hhid_village)
         
-    * Test differences between arms
-    test 1.treatment_arm = 2.treatment_arm  // Public vs Private
+    qui sum midline_`y' if treatment_arm==0
+    estadd scalar control_mean = r(mean)
+        
+    test 1.treatment_arm = 2.treatment_arm
     estadd scalar p_12 = r(p)
-    test 1.treatment_arm = 3.treatment_arm  // Public vs Both
+    test 1.treatment_arm = 3.treatment_arm
     estadd scalar p_13 = r(p)
-    test 2.treatment_arm = 3.treatment_arm  // Private vs Both
+    test 2.treatment_arm = 3.treatment_arm
     estadd scalar p_23 = r(p)
 }
 
 * spillover effects (eq 3)
-foreach y of local comp_extensive {
+foreach y of local all_outcomes {
     * Calculate control mean first
     qui sum midline_`y' if treatment_arm==0
     local cm = r(mean)
@@ -662,7 +664,7 @@ foreach y of local comp_extensive {
 }
 
 *  store control means first
-foreach y of local comp_extensive {
+foreach y of local all_outcomes {
     qui sum midline_`y' if treatment_arm==0
     estadd scalar control_mean = r(mean), replace: arm_`y'
 }
@@ -691,9 +693,11 @@ esttab arm_* using "$specifications/compost_arm_effects.tex", replace ///
         fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Compost\\Production}" ///
-            "\shortstack{Waste\\Collection}", ///
-        prefix(\multicolumn{1}{c}{) suffix(}))
+mlabels("\shortstack{12-Month AVR\\for Fertilizer}" ///
+        "\shortstack{7-Day AVR\\for Fertilizer}" ///
+        "\shortstack{Plot-Level\\Compost}" ///
+        "\shortstack{Plot-Level\\Waste}", ///
+    prefix(\multicolumn{1}{c}{) suffix(}))
 * export spillover effects
 esttab spill_* using "$specifications/compost_spillovers.tex", replace ///
     style(tex) booktabs ///
@@ -716,22 +720,19 @@ esttab spill_* using "$specifications/compost_spillovers.tex", replace ///
         labels("Control Mean" "P-value L=T" "N" "R-squared") ///
         fmt(3 3 %9.0f 3)) ///
     collabels(none) ///
-    mlabels("\shortstack{Compost\\Production}" ///
-            "\shortstack{Waste\\Collection}", ///
-        prefix(\multicolumn{1}{c}{) suffix(}))
-	
+mlabels("\shortstack{12-Month AVR\\for Fertilizer}" ///
+        "\shortstack{7-Day AVR\\for Fertilizer}" ///
+        "\shortstack{Plot-Level\\Compost}" ///
+        "\shortstack{Plot-Level\\Waste}", ///
+    prefix(\multicolumn{1}{c}{) suffix(}))
 **************************************************
 * 1.1.5: Private Benefits Spillovers for Composting
 **************************************************
 
-* composting outcomes
-local comp_outcomes "compost_any waste_any"
-local labels "Compost Production" "Waste Collection"
-
 eststo clear
 
 * basic spillovers in private benefits arms only (eq 3)
-foreach y of local comp_outcomes {
+foreach y of local all_outcomes {
     * restrict to arms B, C and control
     preserve
     keep if inlist(treatment_arm, 0, 2, 3)  // control, private benefits, both
@@ -756,7 +757,7 @@ foreach y of local comp_outcomes {
 }
 
 * arm-specific spillovers (eq 4)
-foreach y of local comp_outcomes {
+foreach y of local all_outcomes {
     * Calculate control mean first 
     qui sum midline_`y' if treatment_arm==0
     local cm = r(mean)
@@ -813,9 +814,11 @@ esttab priv_* using "$specifications/compost_private_spillovers.tex", replace //
         fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Compost\\Production}" ///
-            "\shortstack{Waste\\Collection}", ///
-        prefix(\multicolumn{1}{c}{) suffix(}))
+mlabels("\shortstack{12-Month AVR\\for Fertilizer}" ///
+        "\shortstack{7-Day AVR\\for Fertilizer}" ///
+        "\shortstack{Plot-Level\\Compost}" ///
+        "\shortstack{Plot-Level\\Waste}", ///
+    prefix(\multicolumn{1}{c}{) suffix(}))
 
 * export arm-specific private benefits results 
 esttab arms_* using "$specifications/compost_private_arms.tex", replace ///
@@ -841,21 +844,23 @@ esttab arms_* using "$specifications/compost_private_arms.tex", replace ///
         fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Compost\\Production}" ///
-            "\shortstack{Waste\\Collection}", ///
-        prefix(\multicolumn{1}{c}{) suffix(}))
+mlabels("\shortstack{12-Month AVR\\for Fertilizer}" ///
+        "\shortstack{7-Day AVR\\for Fertilizer}" ///
+        "\shortstack{Plot-Level\\Compost}" ///
+        "\shortstack{Plot-Level\\Waste}", ///
+    prefix(\multicolumn{1}{c}{) suffix(}))
 
 **************************************************
 * 1.1.6: Total Factor Productivity and Profitability
 **************************************************
 * wait until molly gets done with production functions
 
-* food security outcomes
-local food_outcomes "months_soudure rcsi_annual"     // main outcomes
-local rcsi_components "rcsi_work rcsi_assets rcsi_migrate rcsi_skip"  // RCSI components 
-local food_labels "Lean Season Months" "Reduced CSI" 
+* Food security outcomes with phases
+local food_outcomes "months_soudure rcsi_annual ipc_phase"     // main outcomes
+local rcsi_components "rcsi_work rcsi_assets rcsi_migrate rcsi_skip"  // coping components 
+local food_labels "Lean Season Months" "Coping Score" "Food Security Phase"
 
-* treatment arm effects on food security (eq 2)
+* Treatment arm effects on food security (eq 2)
 eststo clear
 foreach y of local food_outcomes {
     * Run regression
@@ -867,27 +872,27 @@ foreach y of local food_outcomes {
     estadd scalar control_mean = r(mean)
     
     * Test differences between arms
-    test 1.treatment_arm = 2.treatment_arm  // pub vs priv Benefits
+    test 1.treatment_arm = 2.treatment_arm  
     estadd scalar p_12 = r(p)
-    test 1.treatment_arm = 3.treatment_arm  // pub vs both
+    test 1.treatment_arm = 3.treatment_arm  
     estadd scalar p_13 = r(p)
-    test 2.treatment_arm = 3.treatment_arm  // priv vs both
+    test 2.treatment_arm = 3.treatment_arm  
     estadd scalar p_23 = r(p)
 }
 
-* export food security results
+* Export food security results
 esttab food_* using "$specifications/food_security.tex", replace ///
     style(tex) booktabs ///
     prehead("\begin{table}[htbp]\centering" ///
         "\begin{threeparttable}" ///
         "\caption{Treatment Effects on Food Security Outcomes}" ///
-        "\begin{tabular}{l*{2}{c}}") ///
+        "\begin{tabular}{l*{3}{c}}") ///
     posthead("\midrule") ///
     prefoot("\midrule") ///
     postfoot("\bottomrule" ///
         "\end{tabular}" ///
         "\begin{tablenotes}\footnotesize" ///
-        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Control group means at midline shown below estimates for comparison. Lean season months measures self-reported soudure duration. Reduced CSI is composite index of coping strategies. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Control group means at midline shown below estimates for comparison. Lean season months measures self-reported soudure duration. Coping Score is sum of weighted coping strategies. Food Security Phase: 1=Minimal (0-2), 2=Stressed (3-4), 3=Crisis (>4). All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
         "\end{tablenotes}" ///
         "\end{threeparttable}" ///
         "\end{table}") ///
@@ -899,7 +904,8 @@ esttab food_* using "$specifications/food_security.tex", replace ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
     mlabels("\shortstack{Lean Season\\Months}" ///
-            "\shortstack{Reduced CSI}", ///
+            "\shortstack{Coping\\Score}" ///
+            "\shortstack{Food Security\\Phase}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 
 * RCSI component regressions

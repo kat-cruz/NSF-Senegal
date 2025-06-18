@@ -699,7 +699,7 @@ forvalues i = 1/55 {
 egen baseline_avg_attendance = rowmean(attend_days_*)
 label var baseline_avg_attendance "Average days attended last week (hh_38)"
 
-egen baseline_full_attend = anymatch(attend_days_*), values(7)
+egen baseline_full_attend = anymatch(attend_days_*), values(5)
 label var baseline_full_attend "Any member perfect attendance"
 
 * keep educ outcomes
@@ -1172,7 +1172,7 @@ forvalues i = 1/57 {
 egen midline_avg_attendance = rowmean(attend_days_*)
 label var midline_avg_attendance "Average days attended last week (hh_38)"
 
-egen midline_full_attend = anymatch(attend_days_*), values(7)
+egen midline_full_attend = anymatch(attend_days_*), values(5)
 label var midline_full_attend "Any member perfect attendance"
 
 * keep educ outcomes

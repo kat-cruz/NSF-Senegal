@@ -31,10 +31,10 @@ local avr_outcomes "avr_water_any avr_harvest_any avr_removal_any avr_recent_any
 // Change to match exactly:
 local lab_water_any "Harvest Vegetation (12mo)"
 local lab_harvest_any "Collect Vegetation (12mo)" 
-local lab_removal_any "Remove Vegetation (12mo)"
+local lab_removal_any "Remove Vegetation (7-day)"
 local lab_recent_any "Harvest Vegetation (7-day)"
-local lab_harvest_kg "Avg. Weekly Amount (12mo)"
-local lab_recent_kg "Total Amount (7-day)"
+local lab_harvest_kg "Weekly Amount (12mo avg)"
+local lab_recent_kg "Total Amount (7-day)"  
 
 * simple baseline to midline mean plots
 set scheme s2color
@@ -102,10 +102,10 @@ restore
 * Define composting/fertilizer outcomes and labels
 local comp_outcomes "fert_ag_any fert_specific_any compost_any waste_any"
 // Update to match:
-local lab_fert_ag_any "Any HH Member AVR for Fertilizer"
+local lab_fert_ag_any "Any HH Member AVR for Fert."
 local lab_fert_specific_any "Specific AVR for Fertilizer"
 local lab_compost_any "Any Plot Using Compost"
-local lab_waste_any "Any Plot Using Household Waste"
+local lab_waste_any "Any Plot Using HH Waste"
 
 * baseline to midline mean plots
 preserve 
@@ -211,11 +211,11 @@ restore
 
 * schisto outcomes and labels
 local schisto_outcomes "bilharzia_any meds_any diagnosed_any urine_any stool_any"
-local lab_bilharzia_any "Diagnosed in Past 12mo"       // from health_5_3_2
-local lab_meds_any "Received Schisto Meds (12mo)"       // from health_5_5
-local lab_diagnosed_any "Ever Diagnosed"               // from health_5_6 
-local lab_urine_any "Blood in Urine (12mo)"                  // from health_5_8
-local lab_stool_any "Blood in Stool (12mo)"
+local lab_bilharzia_any "Self-Reported Infection"       
+local lab_meds_any "Medication Use"       
+local lab_diagnosed_any "Diagnosed Cases"               
+local lab_urine_any "Urine Symptoms"                  
+local lab_stool_any "Stool Symptoms"
 
 * baseline to midline mean plots
 preserve 

@@ -322,7 +322,7 @@ local lab_water_any "Harvests from Water Sources"
 local lab_harvest_any "12-Month Vegetation Collection"
 local lab_removal_any "Removes Aquatic Vegetation" 
 local lab_recent_any "7-Day Vegetation Collection"
-local lab_harvest_kg "12-Month Collection (kg)"
+local lab_harvest_kg "Weekly Amount (12mo avg)"
 local lab_recent_kg "7-Day Collection (kg)"
 
 * main effects (eq 1 and 2)
@@ -379,9 +379,9 @@ esttab main_* using "$specifications/avr_main_effects.tex", replace ///
     collabels(none) ///
 mlabels("\shortstack{Harvest Vegetation\\(12mo)}" ///
         "\shortstack{Collect Vegetation\\(12mo)}" ///
-        "\shortstack{Remove Vegetation\\(12mo)}" ///
+        "\shortstack{Remove Vegetation\\(7-day)}" ///
         "\shortstack{Harvest Vegetation\\(7-day)}" ///
-        "\shortstack{Avg. Weekly Amount\\(12mo)}" ///
+        "\shortstack{Weekly Amount\\(12mo avg)}" ///
         "\shortstack{Total Amount\\(7-day)}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 		
@@ -412,9 +412,9 @@ esttab arms_* using "$specifications/avr_treatment_arms.tex", replace ///
     collabels(none) ///
 mlabels("\shortstack{Harvest Vegetation\\(12mo)}" ///
         "\shortstack{Collect Vegetation\\(12mo)}" ///
-        "\shortstack{Remove Vegetation\\(12mo)}" ///
+        "\shortstack{Remove Vegetation\\(7-day)}" ///
         "\shortstack{Harvest Vegetation\\(7-day)}" ///
-        "\shortstack{Avg. Weekly Amount\\(12mo)}" ///
+        "\shortstack{Weekly Amount\\(12mo avg)}" ///
         "\shortstack{Total Amount\\(7-day)}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 		
@@ -499,12 +499,12 @@ esttab spill_avr_* using "$specifications/avr_spillovers.tex", replace ///
         fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Harvests from\\Water Sources}" ///
-            "\shortstack{12-Month\\Collection}" ///
-            "\shortstack{Removes\\Aquatic Veg.}" ///
-            "\shortstack{7-Day\\Collection}" ///
-            "\shortstack{12-Month\\Amount}" ///
-            "\shortstack{7-Day\\Amount}", ///
+mlabels("\shortstack{Harvest Vegetation\\(12mo)}" ///
+        "\shortstack{Collect Vegetation\\(12mo)}" ///
+        "\shortstack{Remove Vegetation\\(7-day)}" ///
+        "\shortstack{Harvest Vegetation\\(7-day)}" ///
+        "\shortstack{Weekly Amount\\(12mo avg)}" ///
+        "\shortstack{Total Amount\\(7-day)}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 
 * export arm-specific spillover results 
@@ -533,12 +533,12 @@ esttab spill_arm_avr_* using "$specifications/avr_arm_spillovers.tex", replace /
         fmt(3 3 3 3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Harvests from\\Water Sources}" ///
-            "\shortstack{12-Month\\Collection}" ///
-            "\shortstack{Removes\\Aquatic Veg.}" ///
-            "\shortstack{7-Day\\Collection}" ///
-            "\shortstack{12-Month\\Amount}" ///
-            "\shortstack{7-Day\\Amount}", ///
+mlabels("\shortstack{Harvest Vegetation\\(12mo)}" ///
+        "\shortstack{Collect Vegetation\\(12mo)}" ///
+        "\shortstack{Remove Vegetation\\(7-day)}" ///
+        "\shortstack{Harvest Vegetation\\(7-day)}" ///
+        "\shortstack{Weekly Amount\\(12mo avg)}" ///
+        "\shortstack{Total Amount\\(7-day)}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 
 **************************************************
@@ -1017,11 +1017,11 @@ esttab main_* using "$specifications/schisto_main_effects.tex", replace ///
         fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Self-Reported\\Infection}" ///
-            "\shortstack{Medication\\Use}" ///
-            "\shortstack{Diagnosed\\Cases}" ///
-            "\shortstack{Urine\\Symptoms}" ///
-            "\shortstack{Stool\\Symptoms}", ///
+mlabels("\shortstack{Self-Reported\\Infection}" ///
+        "\shortstack{Medication\\Use}" ///
+        "\shortstack{Diagnosed\\Cases}" ///
+        "\shortstack{Urine\\Symptoms}" ///
+        "\shortstack{Stool\\Symptoms}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 
 * export spillover effects
@@ -1047,11 +1047,11 @@ esttab spill_* using "$specifications/schisto_spillovers.tex", replace ///
         fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Self-Reported\\Infection}" ///
-            "\shortstack{Medication\\Use}" ///
-            "\shortstack{Diagnosed\\Cases}" ///
-            "\shortstack{Urine\\Symptoms}" ///
-            "\shortstack{Stool\\Symptoms}", ///
+mlabels("\shortstack{Self-Reported\\Infection}" ///
+        "\shortstack{Medication\\Use}" ///
+        "\shortstack{Diagnosed\\Cases}" ///
+        "\shortstack{Urine\\Symptoms}" ///
+        "\shortstack{Stool\\Symptoms}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 	
 **************************************************

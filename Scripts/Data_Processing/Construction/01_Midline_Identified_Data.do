@@ -89,6 +89,8 @@ forvalues i = 1/57 {
 	
 }
 
+drop if hhid == "133A11" | hhid == "133A19" | hhid == "133A20"
+
 save "$clean/DISES_Complete_Midline_Retained.dta", replace
 
 *** Merge midline with baseline to find attrition

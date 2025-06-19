@@ -7,7 +7,8 @@ format:
     code-fold: true
     code-summary: "Show the code"
     theme: default
-    output-file: "Parasitological_Analysisv4.html" #MAKE SURE TO UPDATE
+    output-file: "Parasitological_Analysisv5.html" #MAKE SURE TO UPDATE
+css: styles.css
 execute:
   echo: true
 ---
@@ -113,6 +114,8 @@ analysis_df <- analysis_df %>%
   mutate(age_diff = hh_age_ - age_hp) %>%
   filter(abs(age_diff) < 4)
 
+analysis_df <- analysis_df %>%
+  select(-age_diff)
 
 
 # nrow(analysis_df)
@@ -174,6 +177,7 @@ sum_data <- analysis_df %>%
 ### Summary Stats
 
 
+
 ```{r, message=FALSE, warning=FALSE}
       
 
@@ -230,9 +234,12 @@ Summary stats for the analysis data. I imputed per PAP, dropped p2_avg and rows 
 
 ```
 
+:::{.scrolling}
 
 ```{r}
-# Add section and source labels based on variable ranges
+# add section and source labels based on variable ranges
+## this is done dynamically so I don't have to replace the header or Source variable if we add new variables to the section.
+
 paras_sum_stats_ad <- paras_sum_stats_ad %>%
   mutate(
     section = case_when(
@@ -242,17 +249,20 @@ paras_sum_stats_ad <- paras_sum_stats_ad %>%
       TRUE ~ "Other"
     ),
     Source = case_when(
-      Variable %in% Variable[match("hh_age_", Variable):match("asset_index_std", Variable)] ~ "CRDES Household Survey",
+      Variable %in% c("age_hp", "sex_hp") ~ "EPLS/UCAD Parasitological Data",  # <- Specific override
+      Variable %in% Variable[match("hh_age_", Variable):match("health_5_9_", Variable)] ~ "CRDES Household Survey",
+        Variable %in% Variable[match("living_01_bin", Variable):match("asset_index_std", Variable)] ~ "CRDES Household Survey",
       Variable == "q_51" | Variable == "q_51_w99" ~ "CRDES Community Survey",
-      Variable %in% Variable[match("sh_inf", Variable):match("sex_hp", Variable)] ~ "EPLS/UCAD Parasitological Data",
+      Variable %in% Variable[match("sh_inf", Variable):match("total_egg", Variable)] ~ "EPLS/UCAD Parasitological Data",
       Variable %in% Variable[match("schisto_indicator", Variable):match("InfectedBiomphalaria", Variable)] ~ "Notre Dame Ecological Data",
       TRUE ~ NA_character_
     ),
     row_id = row_number()
   )
 
-# Prepare the base table (optional: you could keep section/source columns if you want to show them)
-kbl_base <- paras_sum_stats_ad %>% 
+
+# Prepare the base table
+kbl_base <- paras_sum_stats_ad %>%
   select(-section, -row_id) %>%
   kbl(format = "html", caption = "Summary Statistics for Analysis Data, Baseline & Midline")
 
@@ -262,18 +272,20 @@ for (sec in unique(paras_sum_stats_ad$section)) {
   kbl_base <- kbl_base %>% group_rows(sec, min(rows), max(rows))
 }
 
-# Add styling and footnote
+# Add styling, scrolling, and footnote
 kbl_base %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-    full_width = FALSE, position = "left"
+    full_width = FALSE,
+    position = "left"
   ) %>%
-  scroll_box(width = "100%") %>%
+  scroll_box(width = "100%", height = "600px") %>%  # enables scrolling
   footnote(general = "Note: Baseline: 183 observations, Midline: 161 observations. Means are calculated from non-missing values.")
+
 
 ```
 
-
+:::
 
 
 
@@ -307,10 +319,11 @@ exclude_vars <- c("hhid_village", "village_name", "hhid", "individ",
 #produce plot of test MSE by lambda value
     plot(k_val)
 
-
 #find coefficients of best model
-model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
-      coef(model)
+model <- glmnet(x, y, alpha = 1, lambda = best_lambda, family = "binomial")
+
+#model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+  coef(model)
 
 #print regression table
   print(model)
@@ -487,7 +500,14 @@ kable(test_probs_df, format = "html", caption = "Summary of Probabilities") %>%
   scroll_box(width = "100%")
 
 
-hist(test_probs, breaks = 20, col = "skyblue", main = "Distribution of Predicted Probabilities")
+#hist(test_probs, breaks = 20, col = "skyblue", main = "Distribution of Predicted Probabilities")
+
+hist(test_probs,
+     breaks = 20,
+     col = "skyblue",
+     main = "Distribution of Predicted Probabilities",
+     xlab = "Predicted Probability",
+     xlim = c(0, 1))
 
 
 ```

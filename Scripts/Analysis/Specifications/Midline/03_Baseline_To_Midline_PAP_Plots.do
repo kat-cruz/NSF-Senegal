@@ -28,8 +28,9 @@ local avr_outcomes "avr_water_any avr_harvest_any avr_removal_any avr_recent_any
 
 * labels
 * AVR outcome labels based on survey questions
+// Change to match exactly:
 local lab_water_any "Harvest Vegetation (12mo)"
-local lab_harvest_any "Collect Vegetation (12mo)"
+local lab_harvest_any "Collect Vegetation (12mo)" 
 local lab_removal_any "Remove Vegetation (12mo)"
 local lab_recent_any "Harvest Vegetation (7-day)"
 local lab_harvest_kg "Avg. Weekly Amount (12mo)"
@@ -100,10 +101,11 @@ restore
 
 * Define composting/fertilizer outcomes and labels
 local comp_outcomes "fert_ag_any fert_specific_any compost_any waste_any"
-local lab_fert_ag_any "AVR for Fertilizer (12mo)"
-local lab_fert_specific_any "AVR for Fertilizer (7-day)" 
-local lab_compost_any "Plot-Level Compost"
-local lab_waste_any "Plot-Level Waste"
+// Update to match:
+local lab_fert_ag_any "Any HH Member AVR for Fertilizer"
+local lab_fert_specific_any "Specific AVR for Fertilizer"
+local lab_compost_any "Any Plot Using Compost"
+local lab_waste_any "Any Plot Using Household Waste"
 
 * baseline to midline mean plots
 preserve 
@@ -152,12 +154,13 @@ restore
 
 * Food security outcomes and labels
 local food_outcomes "months_soudure rcsi_annual rcsi_work rcsi_assets rcsi_migrate rcsi_skip"
+// Keep these specific labels:
 local lab_months_soudure "Lean Season Months"
-local lab_rcsi_annual "Coping Score"
+local lab_rcsi_annual "Overall Coping Score"
 local lab_rcsi_work "Work-Related Coping"
-local lab_rcsi_assets "Asset Sales"
-local lab_rcsi_migrate "Migration"
-local lab_rcsi_skip "Skip Meals"
+local lab_rcsi_assets "Asset Sales Coping"
+local lab_rcsi_migrate "Migration Coping"
+local lab_rcsi_skip "Skip Meals Coping"
 
 * Baseline to midline mean plots
 preserve 
@@ -403,13 +406,13 @@ local attainment "max_grade"
 local enrollment "any_enrolled num_enrolled"
 local attendance "avg_attendance any_last_year full_attend"
 
-* labels for education outcomes
-local lab_max_grade "Maximum Grade Completed"
+// Update to match:
+local lab_max_grade "Highest Grade"
 local lab_any_enrolled "Any Child Enrolled"
-local lab_num_enrolled "Number of Children Enrolled"
-local lab_avg_attendance "Average Attendance Rate"
-local lab_any_last_year "Any Attendance Last Year"
-local lab_full_attend "Full Attendance"
+local lab_num_enrolled "Number Enrolled"
+local lab_avg_attendance "Avg Days Attended"
+local lab_any_last_year "Any Child Attended Last Year"
+local lab_full_attend "Full Week Attendance"
 
 * baseline to midline mean plots
 preserve 
@@ -457,21 +460,79 @@ foreach var of local attendance {
 * means for each period
 collapse (mean) max_grade any_enrolled num_enrolled avg_attendance any_last_year full_attend, by(time period)
 
-* Plot all education outcomes together
-twoway (connected max_grade period, msymbol(O)) ///
-       (connected any_enrolled period, msymbol(D)) ///
-       (connected num_enrolled period, msymbol(T)) ///
-       (connected avg_attendance period, msymbol(S)) ///
-       (connected any_last_year period, msymbol(+)) ///
-       (connected full_attend period, msymbol(X)), ///
+* Plot education outcomes with dual axes
+twoway (connected max_grade period, msymbol(O) yaxis(1)) ///
+       (connected num_enrolled period, msymbol(T) yaxis(1)) ///
+       (connected any_enrolled period, msymbol(D) yaxis(2)) ///
+       (connected avg_attendance period, msymbol(S) yaxis(2)) ///
+       (connected any_last_year period, msymbol(+) yaxis(2)) ///
+       (connected full_attend period, msymbol(X) yaxis(2)), ///
     xlabel(0 "Baseline" 1 "Midline") ///
-    ylabel(0(2)8, format(%2.1f)) ///
-    xtitle("Survey Round") ytitle("Education Measures") ///
-    legend(order(1 "`lab_max_grade'" 2 "`lab_any_enrolled'" 3 "`lab_num_enrolled'" ///
-           4 "`lab_avg_attendance'" 5 "`lab_any_last_year'" 6 "`lab_full_attend'") cols(2)) ///
+    xtitle("Survey Round") ///
+    ytitle("Grade / Number Enrolled", axis(1)) ///
+    ytitle("Share of Households", axis(2)) ///
+    ylabel(0(2)8, axis(1)) ///
+    ylabel(0(1)1, axis(2) format(%3.1f)) ///
+    legend(order(1 "`lab_max_grade'" 2 "`lab_num_enrolled'" ///
+                 3 "`lab_any_enrolled'" 4 "`lab_avg_attendance'" ///
+                 5 "`lab_any_last_year'" 6 "`lab_full_attend'") cols(2)) ///
     title("Educational Outcomes Over Time") ///
     subtitle("Household education measures") ///
     name(education_all, replace)
 graph export "$figures/education_outcomes.png", replace width(1200)
 	
+restore
+
+*******************************************
+* Work and School Days Lost
+*******************************************
+
+* Define outcomes and labels
+local attendance_outcomes "work_days_lost any_absence absence_count"
+local lab_work_days_lost "HH Days Lost to Illness"       // Total days lost across household members
+local lab_any_absence "Any Child Missing Week+"          // Binary: any child missing week+ due to illness
+local lab_absence_count "Children Missing Week+" 
+
+* Baseline to midline mean plots
+preserve 
+
+* Long dataset with baseline and midline values
+gen period = 1
+gen time = "Midline"
+
+foreach var of local attendance_outcomes {
+    gen `var' = midline_`var'
+    gen `var'0 = baseline_`var'
+}
+
+expand 2
+bysort hhid: replace period = _n - 1
+replace time = "Baseline" if period == 0
+
+foreach var of local attendance_outcomes {
+    replace `var' = `var'0 if period == 0
+    drop `var'0
+}
+
+* Means for each period
+collapse (mean) work_days_lost any_absence absence_count, by(time period)
+
+* Work and school attendance plot
+twoway (connected work_days_lost period, msymbol(O) yaxis(1)) ///
+       (connected absence_count period, msymbol(T) yaxis(2)) ///
+       (connected any_absence period, msymbol(D) yaxis(2)), ///
+    xlabel(0 "Baseline" 1 "Midline") ///
+    xtitle("Survey Round") ///
+    ytitle("Days Lost to Illness", axis(1)) ///
+    ytitle("Children Missing School / Share of HH", axis(2)) ///
+    ylabel(0(5)20, axis(1)) ///  // Adjusted for work days lost mean
+    ylabel(0(.2)1, axis(2) format(%3.1f)) ///  // Works for absence measures
+    legend(order(1 "HH Days Lost to Illness" ///
+                 2 "Children Missing Week+" ///
+                 3 "Any Child Missing Week+") cols(1)) ///
+    title("Work and School Attendance Over Time") ///
+    subtitle("Household illness days and extended school absences") ///
+    name(attendance, replace) 
+graph export "$figures/attendance_outcomes.png", replace width(1200)
+
 restore

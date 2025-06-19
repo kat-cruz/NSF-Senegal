@@ -43,12 +43,6 @@ local control_vars "q_51 q4 living_01_bin asset_index_std hh_age_h hh_gender_h h
 * create latex table
 file open balance using "$specifications/balance_table.tex", write replace
 
-* set up document
-file write balance "\documentclass{article}" _n
-file write balance "\usepackage{longtable}" _n
-file write balance "\usepackage{booktabs}" _n
-file write balance "\begin{document}" _n
-
 * start longtable
 file write balance "\begin{longtable}{lccccp{2cm}}" _n
 file write balance "\caption{Balance Across Treatment Arms} \\" _n
@@ -313,7 +307,6 @@ foreach var of local control_vars {
 
 * close table and document
 file write balance "\end{longtable}" _n
-file write balance "\end{document}" _n
 
 file close balance
 
@@ -384,12 +377,12 @@ esttab main_* using "$specifications/avr_main_effects.tex", replace ///
         fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Harvests from\\Water Sources}" ///
-            "\shortstack{12-Month\\Collection}" ///
-            "\shortstack{Removes\\Aquatic Veg.}" ///
-            "\shortstack{7-Day\\Collection}" ///
-            "\shortstack{12-Month\\Amount}" ///
-            "\shortstack{7-Day\\Amount}", ///
+mlabels("\shortstack{Harvest Vegetation\\(12mo)}" ///
+        "\shortstack{Collect Vegetation\\(12mo)}" ///
+        "\shortstack{Remove Vegetation\\(12mo)}" ///
+        "\shortstack{Harvest Vegetation\\(7-day)}" ///
+        "\shortstack{Avg. Weekly Amount\\(12mo)}" ///
+        "\shortstack{Total Amount\\(7-day)}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 		
 * export treatment arm effects (eq 2)
@@ -417,12 +410,12 @@ esttab arms_* using "$specifications/avr_treatment_arms.tex", replace ///
         fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Harvests from\\Water Sources}" ///
-            "\shortstack{12-Month\\Collection}" ///
-            "\shortstack{Removes\\Aquatic Veg.}" ///
-            "\shortstack{7-Day\\Collection}" ///
-            "\shortstack{12-Month\\Amount}" ///
-            "\shortstack{7-Day\\Amount}", ///
+mlabels("\shortstack{Harvest Vegetation\\(12mo)}" ///
+        "\shortstack{Collect Vegetation\\(12mo)}" ///
+        "\shortstack{Remove Vegetation\\(12mo)}" ///
+        "\shortstack{Harvest Vegetation\\(7-day)}" ///
+        "\shortstack{Avg. Weekly Amount\\(12mo)}" ///
+        "\shortstack{Total Amount\\(7-day)}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 		
 **************************************************
@@ -669,19 +662,19 @@ foreach y of local all_outcomes {
     estadd scalar control_mean = r(mean), replace: arm_`y'
 }
 
-* treatment arm effects with control means
+* Treatment arm effects with control means
 esttab arm_* using "$specifications/compost_arm_effects.tex", replace ///
     style(tex) booktabs ///
     prehead("\begin{table}[htbp]\centering" ///
         "\begin{threeparttable}" ///
-        "\caption{Treatment Arm Effects on Compost Activities}" ///
-        "\begin{tabular}{l*{2}{c}}") ///
+        "\caption{Treatment Arm Effects on Fertilizer and Compost Use}" ///
+        "\begin{tabular}{l*{4}{c}}") ///    // Changed to 4 columns
     posthead("\midrule") ///
     prefoot("\midrule") ///
     postfoot("\bottomrule" ///
         "\end{tabular}" ///
         "\begin{tablenotes}\footnotesize" ///
-        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Control group means at midline shown below estimates for comparison. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
+        "\item \textit{Notes:} Treatment arms: A=Public Health, B=Private Benefits, C=Both Messages. Control group means at midline shown below estimates. All specifications include baseline outcome, household controls, walking distances to nearest villages by treatment arm, and auction experiment fixed effects. Standard errors clustered at village level." ///
         "\end{tablenotes}" ///
         "\end{threeparttable}" ///
         "\end{table}") ///
@@ -693,11 +686,11 @@ esttab arm_* using "$specifications/compost_arm_effects.tex", replace ///
         fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-mlabels("\shortstack{12-Month AVR\\for Fertilizer}" ///
-        "\shortstack{7-Day AVR\\for Fertilizer}" ///
-        "\shortstack{Plot-Level\\Compost}" ///
-        "\shortstack{Plot-Level\\Waste}", ///
-    prefix(\multicolumn{1}{c}{) suffix(}))
+mlabels("\shortstack{Any HH Member\\AVR for Fertilizer}" ///
+        "\shortstack{Specific AVR\\for Fertilizer}" ///
+        "\shortstack{Any Plot\\Using Compost}" ///
+        "\shortstack{Any Plot Using\\Household Waste}", ///
+        prefix(\multicolumn{1}{c}{) suffix(}))
 * export spillover effects
 esttab spill_* using "$specifications/compost_spillovers.tex", replace ///
     style(tex) booktabs ///
@@ -720,10 +713,10 @@ esttab spill_* using "$specifications/compost_spillovers.tex", replace ///
         labels("Control Mean" "P-value L=T" "N" "R-squared") ///
         fmt(3 3 %9.0f 3)) ///
     collabels(none) ///
-mlabels("\shortstack{12-Month AVR\\for Fertilizer}" ///
-        "\shortstack{7-Day AVR\\for Fertilizer}" ///
-        "\shortstack{Plot-Level\\Compost}" ///
-        "\shortstack{Plot-Level\\Waste}", ///
+mlabels("\shortstack{Any HH Member\\AVR for Fertilizer}" ///
+        "\shortstack{Specific AVR\\for Fertilizer}" ///
+        "\shortstack{Any Plot\\Using Compost}" ///
+        "\shortstack{Any Plot Using\\Household Waste}", ///
     prefix(\multicolumn{1}{c}{) suffix(}))
 **************************************************
 * 1.1.5: Private Benefits Spillovers for Composting
@@ -814,10 +807,10 @@ esttab priv_* using "$specifications/compost_private_spillovers.tex", replace //
         fmt(3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-mlabels("\shortstack{12-Month AVR\\for Fertilizer}" ///
-        "\shortstack{7-Day AVR\\for Fertilizer}" ///
-        "\shortstack{Plot-Level\\Compost}" ///
-        "\shortstack{Plot-Level\\Waste}", ///
+mlabels("\shortstack{Any HH Member\\AVR for Fertilizer}" ///
+        "\shortstack{Specific AVR\\for Fertilizer}" ///
+        "\shortstack{Any Plot\\Using Compost}" ///
+        "\shortstack{Any Plot Using\\Household Waste}", ///
     prefix(\multicolumn{1}{c}{) suffix(}))
 
 * export arm-specific private benefits results 
@@ -844,10 +837,10 @@ esttab arms_* using "$specifications/compost_private_arms.tex", replace ///
         fmt(3 3 3 3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-mlabels("\shortstack{12-Month AVR\\for Fertilizer}" ///
-        "\shortstack{7-Day AVR\\for Fertilizer}" ///
-        "\shortstack{Plot-Level\\Compost}" ///
-        "\shortstack{Plot-Level\\Waste}", ///
+mlabels("\shortstack{Any HH Member\\AVR for Fertilizer}" ///
+        "\shortstack{Specific AVR\\for Fertilizer}" ///
+        "\shortstack{Any Plot\\Using Compost}" ///
+        "\shortstack{Any Plot Using\\Household Waste}", ///
     prefix(\multicolumn{1}{c}{) suffix(}))
 
 **************************************************
@@ -1195,9 +1188,9 @@ esttab main_* using "$specifications/work_school_main.tex", replace ///
         fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Work Days\\Lost}" ///
-            "\shortstack{Any School\\Absence}" ///
-            "\shortstack{Number of\\Absences}", ///
+mlabels("\shortstack{HH Days Lost\\to Illness}" ///
+        "\shortstack{Any Child Missing\\Week+ School}" ///
+        "\shortstack{Children Missing\\Week+ School}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 
 * export spillover effects
@@ -1299,12 +1292,12 @@ esttab main_* using "$specifications/education_main.tex", replace ///
         fmt(3 %9.0f 3)) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     collabels(none) ///
-    mlabels("\shortstack{Highest\\Grade}" ///
-            "\shortstack{Any\\Enrollment}" ///
-            "\shortstack{Number\\Enrolled}" ///
-            "\shortstack{Average\\Attendance}" ///
-            "\shortstack{Attended\\Last Year}" ///
-            "\shortstack{Full\\Attendance}", ///
+mlabels("\shortstack{Highest\\Grade}" ///
+        "\shortstack{Any Child\\Enrolled}" ///
+        "\shortstack{Number\\Enrolled}" ///
+        "\shortstack{Avg Days\\Attended}" ///
+        "\shortstack{Any Child Attended\\Last Year}" ///
+        "\shortstack{Full Week\\Attendance}", ///
         prefix(\multicolumn{1}{c}{) suffix(}))
 
 * export spillover effects

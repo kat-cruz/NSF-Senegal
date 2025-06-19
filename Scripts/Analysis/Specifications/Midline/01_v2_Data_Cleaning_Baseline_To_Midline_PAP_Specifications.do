@@ -628,16 +628,16 @@ forvalues i = 1/55 {
 
 * hh-level school measures
 * any child missing school
-egen baseline_any_absence = anymatch(baseline_school_absence_*), values(1)
-label var baseline_any_absence "Any child missed week+ school (hh_37)"
+egen basline_any_absence = anymatch(basline_school_absence_*), values(1)
+label var basline_any_absence "Any child missed week+ due to illness (hh_37)"
 
 * avg attendance
-egen baseline_avg_attendance = rowmean(baseline_school_days_*)
-label var baseline_avg_attendance "Average school days attended (hh_38)"
+egen basline_avg_attendance = rowmean(basline_school_days_*)
+label var basline_avg_attendance "Average school days attended (hh_38)"
 
 * count of children missing school
-egen baseline_absence_count = rowtotal(baseline_school_absence_*)
-label var baseline_absence_count "Number of children missing school (hh_37)"
+egen basline_absence_count = rowtotal(basline_school_absence_*)
+label var basline_absence_count "Number of children missing week+ due to illness (hh_37)"
 
 keep hhid baseline_work_days_lost baseline_ag_workers ///
     baseline_total_chore_hours baseline_total_water_hours ///
@@ -1098,7 +1098,7 @@ forvalues i = 1/57 {
 * hh-level school measures
 * any child missing school
 egen midline_any_absence = anymatch(midline_school_absence_*), values(1)
-label var midline_any_absence "Any child missed week+ school (hh_37)"
+label var midline_any_absence "Any child missed week+ due to illness (hh_37)"
 
 * avg attendance
 egen midline_avg_attendance = rowmean(midline_school_days_*)
@@ -1106,7 +1106,7 @@ label var midline_avg_attendance "Average school days attended (hh_38)"
 
 * count of children missing school
 egen midline_absence_count = rowtotal(midline_school_absence_*)
-label var midline_absence_count "Number of children missing school (hh_37)"
+label var midline_absence_count "Number of children missing week+ due to illness (hh_37)"
 
 * relevant variables
 keep hhid midline_work_days_lost midline_ag_workers ///

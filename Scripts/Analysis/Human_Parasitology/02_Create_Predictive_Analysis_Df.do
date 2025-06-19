@@ -744,23 +744,23 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
 		label variable hh_12_6_ "Harvest aquatic vegetation (1=Yes, 0=No)"
 		label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 0=No)"
-		label variable hh_32 "Attends school during the 2023/2024 academic year"
+		label variable hh_32 "Attends school during the 2023/2024 academic year (1=Yes, 0=No)"
 		label variable hh_37_ "Missed >1 week of school due to illness, past 12mo (children only)"
 	
 
-		label variable health_5_2 "Fell ill in the last 12 months"
+		label variable health_5_2 "Fell ill in the last 12 months (1=Yes, 0=No)"
 		label variable health_5_3_1 "Suffered from Malaria (1=Yes, 0=No)"
 		label variable health_5_3_2 "Suffered from Bilharzia (1=Yes, 0=No)"
 		label variable health_5_3_3 "Suffered from Diarrhea (1=Yes, 0=No)"
 		label variable health_5_3_6 "Suffered from Skin issues (1=Yes, 0=No)"
 		label variable health_5_3_9 "Suffered from Stomach ache (1=Yes, 0=No)"
 		label variable health_5_5 "Received medication for schistosomiasis past 12mo (1=Yes, 0=No)"
-		label variable health_5_8 "Had blood in urine in the last 12 months"
-		label variable health_5_9 "Had blood in stool in the last 12 months"
+		label variable health_5_8 "Had blood in urine in the last 12 months (1=Yes, 0=No)"
+		label variable health_5_9 "Had blood in stool in the last 12 months (1=Yes, 0=No)"
 
 
-		label variable living_01_bin "Indicator for selected tap water as main source of drinking water "
-		label variable living_04_bin "Indicator for latrine in home"
+		label variable living_01_bin "Tap water as main source of drinking water (1=Yes, 0=No)"
+		label variable living_04_bin "Latrine in home (1=Yes, 0=No)"
 		
 		label variable beliefs_01_bin "Prob. self gets bilharzia in next 12mo (1=Agree/Strongly agree)"
 		label variable beliefs_02_bin "Prob. HH member gets bilharzia in next 12mo (1=Agree/Strongly agree)"
@@ -770,9 +770,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable asset_index_std "Standardized PCA Asset index"
 		
 
-		label variable sh_inf "Indicator for Schistosoma haematobium infection"
-		label variable sm_inf "Indicator for Schistosoma mansoni infection"
-		label variable sm_sh_inf "Indicator for Schistosoma manson OR haematobium infection"
+		label variable sh_inf "Indicator for Schistosoma haematobium infection (1=Yes, 0=No)"
+		label variable sm_inf "Indicator for Schistosoma mansoni infection (1=Yes, 0=No)"
+		label variable sm_sh_inf "Indicator for Schistosoma manson OR haematobium infection (1=Yes, 0=No)"
 		label variable sh_egg_count "Egg count for Schistosoma haematobium"
 		label variable sm_egg_count "Egg count for Schistosoma mansoni"
 		label variable p1_avg "Average EPG from P1 (Kato-Katz slide 1 and 2)"
@@ -791,7 +791,7 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable Humanwatercontact "Human Water Contact (Count)"
 		label variable InfectedBulinus "Infected Bulinus (Count)"
 		label variable InfectedBiomphalaria "Infected Biomphalaria (Count)"		
-		label variable schisto_indicator "Ecological Schistosomiasis Infection Indicator (Binary)"
+		label variable schisto_indicator "Ecological Schistosomiasis Infection Indicator (1=Yes, 0=No)"
 
 		
 		label variable round "1 = Baseline, 2 = Midline"
@@ -1522,23 +1522,23 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable hh_10_ "Hours per week spent within 1 meter of surface water source"
 		label variable hh_12_6_ "Harvest aquatic vegetation (1=Yes, 0=No)"
 		label variable hh_26_ "Currently enrolled in formal school? (1=Yes, 0=No)"
-		label variable hh_32 "Attends school during the 2023/2024 academic year"
+		label variable hh_32 "Attends school during the 2023/2024 academic year (1=Yes, 0=No)"
 		label variable hh_37_ "Missed >1 week of school due to illness, past 12mo (children only)"
 	
 
-		label variable health_5_2 "Fell ill in the last 12 months"
+		label variable health_5_2 "Fell ill in the last 12 months (1=Yes, 0=No)"
 		label variable health_5_3_1 "Suffered from Malaria (1=Yes, 0=No)"
 		label variable health_5_3_2 "Suffered from Bilharzia (1=Yes, 0=No)"
 		label variable health_5_3_3 "Suffered from Diarrhea (1=Yes, 0=No)"
 		label variable health_5_3_6 "Suffered from Skin issues (1=Yes, 0=No)"
 		label variable health_5_3_9 "Suffered from Stomach ache (1=Yes, 0=No)"
 		label variable health_5_5 "Received medication for schistosomiasis past 12mo (1=Yes, 0=No)"
-		label variable health_5_8 "Had blood in urine in the last 12 months"
-		label variable health_5_9 "Had blood in stool in the last 12 months"
+		label variable health_5_8 "Had blood in urine in the last 12 months (1=Yes, 0=No)"
+		label variable health_5_9 "Had blood in stool in the last 12 months (1=Yes, 0=No)"
 
 
-		label variable living_01_bin "Indicator for selected tap water as main source of drinking water "
-		label variable living_04_bin "Indicator for latrine in home"
+		label variable living_01_bin "Tap water as main source of drinking water (1=Yes, 0=No)"
+		label variable living_04_bin "Latrine in home (1=Yes, 0=No)"
 		
 		label variable beliefs_01_bin "Prob. self gets bilharzia in next 12mo (1=Agree/Strongly agree)"
 		label variable beliefs_02_bin "Prob. HH member gets bilharzia in next 12mo (1=Agree/Strongly agree)"
@@ -1548,9 +1548,9 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable asset_index_std "Standardized PCA Asset index"
 		
 
-		label variable sh_inf "Indicator for Schistosoma haematobium infection"
-		label variable sm_inf "Indicator for Schistosoma mansoni infection"
-		label variable sm_sh_inf "Indicator for Schistosoma manson OR haematobium infection"
+		label variable sh_inf "Indicator for Schistosoma haematobium infection (1=Yes, 0=No)"
+		label variable sm_inf "Indicator for Schistosoma mansoni infection (1=Yes, 0=No)"
+		label variable sm_sh_inf "Indicator for Schistosoma manson OR haematobium infection (1=Yes, 0=No)"
 		label variable sh_egg_count "Egg count for Schistosoma haematobium"
 		label variable sm_egg_count "Egg count for Schistosoma mansoni"
 		label variable p1_avg "Average EPG from P1 (Kato-Katz slide 1 and 2)"
@@ -1569,10 +1569,11 @@ drop beliefs_01 beliefs_02 beliefs_03
 		label variable Humanwatercontact "Human Water Contact (Count)"
 		label variable InfectedBulinus "Infected Bulinus (Count)"
 		label variable InfectedBiomphalaria "Infected Biomphalaria (Count)"		
-		label variable schisto_indicator "Ecological Schistosomiasis Infection Indicator (Binary)"
+		label variable schisto_indicator "Ecological Schistosomiasis Infection Indicator (1=Yes, 0=No)"
 
 		
-		label variable round "0 = Baseline, 1 = Midline"
+		label variable round "1 = Baseline, 2 = Midline"
+		
 		
 		
 *-------------------*

@@ -477,48 +477,26 @@ confusion_latex <- kable(results_df, format = "latex", booktabs = TRUE,
 # Write to .tex file
 writeLines(confusion_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/confusion_matrix.tex")
 
-# Repeat for best threshold
-threshold_latex <- kable(best_threshold, format = "latex", booktabs = TRUE, 
-                         caption = "Best Threshold") %>%
-  kable_styling(latex_options = c("hold_position", "striped"))
-
-writeLines(threshold_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/best_threshold.tex")
-
-
-## Include table with highlighted best threshold:
-
-confusion_matrix_threshold <- kable(results_df, format = "latex", booktabs = TRUE, 
-                           caption = "Confusion Matrix for sm\\_sh\\_inf at each threshold") %>%
-  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
-  rrow_spec(7, background = "highlightyellow")
-
-
-writeLines(confusion_matrix_threshold, "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/confusion_matrix_threshold.tex")
-
 ```
 
 ```{r}
 
-# Example data frame
-
-
+## Include table with highlighted best threshold:
+# estabilish how many rows
+max_row <- min(n, 10)
 # Build table without "striped"
-confusion_matrix_threshold <- kable(
-  results_df,
-  format = "latex",
-  booktabs = TRUE,
-  caption = "Confusion Matrix for sm\\_sh\\_inf at each threshold"
-) %>%
+confusion_matrix_threshold <- kable(results_df,  format = "latex",  booktabs = TRUE,  
+                                    caption = "Confusion Matrix for sm\\_sh\\_inf at each threshold") %>%
   kable_styling(latex_options = c("hold_position"), full_width = FALSE)
 
-# Add manual stripes: even rows light gray, odd rows white
-for(i in 1:n){
-  if(i %% 2 == 0){
+
+for (i in 1:max_row) {
+  if (i %% 2 == 0) {
     confusion_matrix_threshold <- confusion_matrix_threshold %>%
-      row_spec(i, background = "gray!20")  # light gray stripe
+      row_spec(i, background = "gray!10")
   } else {
     confusion_matrix_threshold <- confusion_matrix_threshold %>%
-      row_spec(i, background = "white")    # white stripe
+      row_spec(i, background = "white")
   }
 }
 
@@ -527,6 +505,9 @@ confusion_matrix_threshold <- confusion_matrix_threshold %>%
   row_spec(7, background = "yellow")
 
 cat(confusion_matrix_threshold)
+
+
+writeLines(confusion_matrix_threshold, "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/confusion_matrix_threshold.tex")
 
 ```
 

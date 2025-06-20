@@ -53,16 +53,11 @@ We focus on three infection indicators, constructed from parasitological data:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
-# packages <- c("clusterSEs", "mlogit", "writexl", "dplyr", "readr", "tidyr",
-#               "haven", "data.table", "tidyverse", "estimatr", "broom", "kableExtra", "haven", "caret",
-#               "sandwich", "lmtest", "stats", "nnet", "car", "aod", "clubSandwich", "glmnet", "multiwayvcov")
 
-packages <- c("dplyr", "readr", "tidyr", "stargazer",
-             "tidyverse", "kableExtra", "haven", "detectseparation", "kableExtra",
+packages <- c("dplyr", "readr", "tidyr", "knitr",
+             "tidyverse", "kableExtra", "haven", "kableExtra",
               "sandwich", "lmtest", "stats", "clubSandwich", "glmnet", "multiwayvcov", "hdm", "fs", "xfun", "quarto", "labelled", "patchwork")
 
-# install.packages("haven")
-# library("haven")
 # Install any missing packages
 new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
 if (length(new_packages)) install.packages(new_packages, dependencies = TRUE)
@@ -380,6 +375,22 @@ kable(var_labels, format = "html", caption = "Best Predictors for Joint-Infectio
 ```
 
 
+```{r}
+# Create LaTeX table string
+
+var_labels_latex <- kable(var_labels, format = "latex", booktabs = TRUE,
+                          caption = "Best Predictors for Joint-Infection") %>%
+  kable_styling(latex_options = c("hold_position", "striped", "scale_down"))
+# var_labels_latex <- kable(var_labels, format = "latex", booktabs = TRUE, 
+#                          caption = "Best Predictors for Joint-Infection") %>%
+#   kable_styling(latex_options = c("hold_position", "striped"))
+
+# Write to .tex file
+writeLines(var_labels_latex, "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/best_predictors.tex")
+
+```
+
+
 
 #### Prediction - all
 
@@ -464,7 +475,7 @@ confusion_latex <- kable(results_df, format = "latex", booktabs = TRUE,
   kable_styling(latex_options = c("hold_position", "striped"))
 
 # Write to .tex file
-writeLines(confusion_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/Confusion_matrix.tex")
+writeLines(confusion_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/confusion_matrix.tex")
 
 # Repeat for best threshold
 threshold_latex <- kable(best_threshold, format = "latex", booktabs = TRUE, 
@@ -472,6 +483,64 @@ threshold_latex <- kable(best_threshold, format = "latex", booktabs = TRUE,
   kable_styling(latex_options = c("hold_position", "striped"))
 
 writeLines(threshold_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/best_threshold.tex")
+
+
+## Include table with highlighted best threshold:
+
+confusion_matrix_threshold <- kable(results_df, format = "latex", booktabs = TRUE, 
+                           caption = "Confusion Matrix for sm\\_sh\\_inf at each threshold") %>%
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
+  rrow_spec(7, background = "highlightyellow")
+
+
+writeLines(confusion_matrix_threshold, "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/confusion_matrix_threshold.tex")
+
+```
+
+```{r}
+
+# Example data frame
+
+
+# Build table without "striped"
+confusion_matrix_threshold <- kable(
+  results_df,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Confusion Matrix for sm\\_sh\\_inf at each threshold"
+) %>%
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE)
+
+# Add manual stripes: even rows light gray, odd rows white
+for(i in 1:n){
+  if(i %% 2 == 0){
+    confusion_matrix_threshold <- confusion_matrix_threshold %>%
+      row_spec(i, background = "gray!20")  # light gray stripe
+  } else {
+    confusion_matrix_threshold <- confusion_matrix_threshold %>%
+      row_spec(i, background = "white")    # white stripe
+  }
+}
+
+# Highlight row 7 with yellow (overrides previous background)
+confusion_matrix_threshold <- confusion_matrix_threshold %>%
+  row_spec(7, background = "yellow")
+
+cat(confusion_matrix_threshold)
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+## HTML version so i can see what the output is and fix anything haha 
+
+confusion_matrix_threshold_html <- kable(results_df, format = "html", caption = "Confusion Matrix") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE) %>%
+  row_spec(7, background = "yellow")
+
+# View the table in the Viewer pane
+confusion_matrix_threshold_html
 
 ```
 

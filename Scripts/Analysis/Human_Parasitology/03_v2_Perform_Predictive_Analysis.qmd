@@ -454,6 +454,28 @@ kable(best_threshold, format = "html", caption = "Best Threshold") %>%
 ```
 
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+##Output table as latex document 
+
+# Create LaTeX table string
+confusion_latex <- kable(results_df, format = "latex", booktabs = TRUE, 
+                         caption = "Confusion Matrix for sm\\_sh\\_inf at each threshold") %>%
+  kable_styling(latex_options = c("hold_position", "striped"))
+
+# Write to .tex file
+writeLines(confusion_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/Confusion_matrix.tex")
+
+# Repeat for best threshold
+threshold_latex <- kable(best_threshold, format = "latex", booktabs = TRUE, 
+                         caption = "Best Threshold") %>%
+  kable_styling(latex_options = c("hold_position", "striped"))
+
+writeLines(threshold_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/best_threshold.tex")
+
+```
+
+
 ##### Summarize and visualize the probababilities
 
 This is a scatter plot of the predicted probability of infection against the egg count. Any dark red observations are the overlap of S. mansoni and S. haematobium. 

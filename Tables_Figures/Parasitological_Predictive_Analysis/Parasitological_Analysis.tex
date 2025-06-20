@@ -33,7 +33,7 @@
 % }
 
 \date[June 2025] % (optional)
-{NSF-Seneal Project Team Meeting}
+{NSF-Senegal Project Team Meeting}
 
 %\logo{\includegraphics[height=1cm]{overleaf-logo}}
 
@@ -47,19 +47,16 @@
 %The next statement creates the title page.
 \begin{frame}
 \frametitle{Analysis Overview}
-This analysis proceeds in two steps for the joint-infection sm\_sh\_inf indicator:
+We evaluate children who were matched between CRDES household survey data and parasitological data, and are infected with S. haematobium and S. mansoni \\
 
 \begin{itemize}
-    \item<1-> Lasso-Logit Regression
+    \item<1-> LASSO-Logit Regression
        \begin{itemize}
-             \item<2-> identifies the optimal lambda
-             \item<3-> fits the model
-             \item<4-> extracts the non-zero (important) variables.
-             \item<5-> identifies most predictive covariates for sm\_sh\_inf
+             \item<2-> “LASSO Logit to identify the most parsimonious set of predictors and generate estimated probabilities of infection
         \end{itemize}
-    \item<3-> Evaluation using Confusion Matrices
+    \item<3-> Evaluation using confusion matrices
          \begin{itemize}
-                 \item<4-> We apply the fitted model to the test data and generate confusion matrices to assess predictive performance
+                 \item<4-> Generate confusion matrices for each probability threshold to minimize classification errors using LASSO-Logit estimates.
          \end{itemize}
 \end{itemize}
 

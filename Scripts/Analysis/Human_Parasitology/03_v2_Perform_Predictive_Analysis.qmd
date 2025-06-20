@@ -350,21 +350,23 @@ vars <- setdiff(vars_raw, "(Intercept)")
 
 # create a dataframe with variable names and their corresponding labels from train_df
 
+
+# Extract coefficient vector (first column of mat)
+coef_vec <- mat[vars, 1]  # assumes rownames(mat) contain all vars
+
+# Create the var_labels table
 var_labels <- tibble(
   variable = vars,
-  label = sapply(vars, function(v) {
+  `Variable Label` = sapply(vars, function(v) {
     if (v %in% names(train_df)) {
       var_label(train_df[[v]])
     } else {
-      NA  # in case it's an interaction or transformed variable
+      NA
     }
-  })
-)
-
-var_labels <- var_labels %>% 
-  relocate(label, .before = variable)
-
-# display with kable 
+  }),
+  `Estimated Effect` = ifelse(coef_vec > 0, "+", "-")
+) %>%
+  relocate(`Variable Label`, .before = variable)
 
 
 kable(var_labels, format = "html", caption = "Best Predictors for Joint-Infection") %>%
@@ -377,16 +379,32 @@ kable(var_labels, format = "html", caption = "Best Predictors for Joint-Infectio
 
 ```{r}
 # Create LaTeX table string
+best_predictors <- var_labels %>%
+  select(-variable)
 
-var_labels_latex <- kable(var_labels, format = "latex", booktabs = TRUE,
-                          caption = "Best Predictors for Joint-Infection") %>%
-  kable_styling(latex_options = c("hold_position", "striped", "scale_down"))
-# var_labels_latex <- kable(var_labels, format = "latex", booktabs = TRUE, 
-#                          caption = "Best Predictors for Joint-Infection") %>%
-#   kable_styling(latex_options = c("hold_position", "striped"))
+
+# best_predictors_latex <- kable(best_predictors, format = "latex", booktabs = TRUE,
+#                           caption = "Best Predictors for Joint-Infection") %>%
+#   kable_styling(latex_options = c("hold_position", "striped", "scale_down"))
+
+best_predictors_latex <- kable(
+  best_predictors,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Best Predictors for Joint-Infection"
+) %>%
+  kable_styling(
+    latex_options = c("hold_position", "striped", "scale_down"),
+    full_width = FALSE
+  ) %>%
+  add_footnote(label = "\\vspace{-1em}", escape = FALSE)
+
+cat(best_predictors_latex)
 
 # Write to .tex file
-writeLines(var_labels_latex, "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/best_predictors.tex")
+writeLines(best_predictors_latex, "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/best_predictors.tex")
+
+
 
 ```
 
@@ -471,11 +489,11 @@ kable(best_threshold, format = "html", caption = "Best Threshold") %>%
 
 # Create LaTeX table string
 confusion_latex <- kable(results_df, format = "latex", booktabs = TRUE, 
-                         caption = "Confusion Matrix for sm\\_sh\\_inf at each threshold") %>%
+                         caption = "Confusion Matrix for predicted infection probability at each threshold") %>%
   kable_styling(latex_options = c("hold_position", "striped"))
 
 # Write to .tex file
-writeLines(confusion_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/confusion_matrix.tex")
+writeLines(confusion_latex, "C:/Users/km978/Downloads/SenegalGIT/NSF-Senegal/Tables_Figures/Parasitological_Predictive_Analysis/confusion_matrix.tex")
 
 ```
 
@@ -486,7 +504,7 @@ writeLines(confusion_latex, "C:/Users/Kateri/Downloads/NSF-Senegal/Tables_Figure
 max_row <- min(n, 10)
 # Build table without "striped"
 confusion_matrix_threshold <- kable(results_df,  format = "latex",  booktabs = TRUE,  
-                                    caption = "Confusion Matrix for sm\\_sh\\_inf at each threshold") %>%
+                                    caption = "Confusion Matrix for predicted infection probability at each threshold") %>%
   kable_styling(latex_options = c("hold_position"), full_width = FALSE)
 
 

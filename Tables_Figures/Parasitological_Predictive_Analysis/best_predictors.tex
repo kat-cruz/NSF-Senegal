@@ -1,27 +1,21 @@
 \begin{table}[!h]
 \centering
-\caption{Best Predictors for Joint-Infection}
+\caption{Confusion Matrix}
 \centering
-\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
-\begin{tabular}[t]{ll}
+\begin{tabular}[t]{rrrr}
 \toprule
-label & variable\\
+threshold & FPR & FNR & total\_error\\
 \midrule
-\cellcolor{gray!10}{Individual's gender (1=Male, 0=Female)} & \cellcolor{gray!10}{hh\_gender\_}\\
-Harvest aquatic vegetation (1=Yes, 0=No) & hh\_12\_6\_\\
-\cellcolor{gray!10}{Fell ill in the last 12 months (1=Yes, 0=No)} & \cellcolor{gray!10}{health\_5\_2\_}\\
-Suffered from Diarrhea (1=Yes, 0=No) & health\_5\_3\_3\_\\
-\cellcolor{gray!10}{Received medication for schistosomiasis past 12mo (1=Yes, 0=No)} & \cellcolor{gray!10}{health\_5\_5\_}\\
+\cellcolor{gray!10}{0.1} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0}\\
+0.2 & 0 & 0 & 0\\
+\cellcolor{gray!10}{0.3} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0}\\
+0.4 & 0 & 0 & 0\\
+\cellcolor{gray!10}{0.5} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0}\\
 \addlinespace
-Had blood in stool in the last 12 months (1=Yes, 0=No) & health\_5\_9\_\\
-\cellcolor{gray!10}{Prob. self gets bilharzia in next 12mo (1=Agree/Strongly agree)} & \cellcolor{gray!10}{beliefs\_01\_bin}\\
-Ecological Schistosomiasis Infection Indicator (1=Yes, 0=No) & schisto\_indicator\\
-\cellcolor{gray!10}{EPLS/UCAD child age (years)} & \cellcolor{gray!10}{age\_hp}\\
-EPLS/UCAD child sex (1=M, 0=F) & sex\_hp\\
-\addlinespace
-\cellcolor{gray!10}{Bulinus Snail (Count)} & \cellcolor{gray!10}{Bulinus}\\
-Human Water Contact (Count) & Humanwatercontact\\
-\cellcolor{gray!10}{Infected Biomphalaria (Count)} & \cellcolor{gray!10}{InfectedBiomphalaria}\\
+0.6 & 0 & 0 & 0\\
+\cellcolor{yellow}{\cellcolor{gray!10}{0.7}} & \cellcolor{yellow}{\cellcolor{gray!10}{0}} & \cellcolor{yellow}{\cellcolor{gray!10}{0}} & \cellcolor{yellow}{\cellcolor{gray!10}{0}}\\
+0.8 & 0 & 0 & 0\\
+\cellcolor{gray!10}{0.9} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0}\\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}

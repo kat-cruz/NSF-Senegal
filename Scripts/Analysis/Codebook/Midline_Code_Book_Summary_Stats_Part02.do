@@ -51,6 +51,8 @@ global schoolattendance "$survey\Complete_Midline_SchoolAttendance"
 * household Data Summary
 **************************************************
 use "$household", clear
+sum hh_age_resp
+tab hh_gender_resp
 tab hh_49
 sum hh_49
 tab attend_training
@@ -84,6 +86,10 @@ replace hh_12_a_ = . if hh_12_a_ == 2
 sum hh_12_a_
 
 tab hh_15_
+
+tab hh_20_a_
+replace hh_20_a_ = . if hh_20_a_ == 2
+sum hh_20_a_
 
 tab hh_27_
 replace hh_27_ = . if hh_27_ == 2
@@ -248,6 +254,7 @@ summarize agri_income_24*
 
 * Summarize agri_income_25 to agri_income_30
 summarize agri_income_25 agri_income_26 agri_income_27 agri_income_28 agri_income_29 agri_income_30
+sum agri_income_25 if agri_income_25 < 2
 tab agri_income_28
 sum agri_income_29 if agri_income_29 > -9
 sum agri_income_30 if agri_income_30 < 2

@@ -974,7 +974,7 @@ egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hour
 
 egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std slack_hours
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std slack_hours urea_price
 
 tempfile shadow_wage_baseline
 save `shadow_wage_baseline'
@@ -1948,7 +1948,7 @@ egen total_ag_hours = rowtotal(ag_hours planting_hours growth_hours harvest_hour
 
 egen total_fert = rowtotal(urea_kgs phosphate_kgs npk_kgs other_kgs)
 
-keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std slack_hours   
+keep hhid agri_6_14 agri_6_15 total_value_production total_production_hectares total_ag_hours total_fert collective_manage rice agri_6_30_ agri_6_34_comp_ agri_6_34_ agri_income_15 agri_income_16 number_mech_equip TLU any_milk_sales milk_sales agri_income_01 daily_wage ag_wage hhhead* rice crop_types child members asset_index_std slack_hours urea_price  
 
 tempfile shadow_wage_midline
 save `shadow_wage_midline'

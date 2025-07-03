@@ -469,10 +469,10 @@ gen cen_ihs_shadow_wage_alt = sinh(est_cen_ihs_ai)*mpl_leon_re
 *** summarize shaodw wages *** 
 sum est_shadow_wage est_shadow_wage_alt shadow_wage shadow_wage_alt ihs_shadow_wage cen_ihs_shadow_wage_alt
 
-gen cen_ihs_shadow_wage = ihs_shadow_wage 
-replace cen_ihs_shadow_wage = 0 if ihs_shadow_wage < 0 & ihs_shadow_wage != . 
+gen cen_ihs_shadow_wage = cen_ihs_shadow_wage_alt
+replace cen_ihs_shadow_wage = 0 if cen_ihs_shadow_wage_alt < 0 & cen_ihs_shadow_wage_alt != . 
 
-estpost summarize cen_ihs_shadow_wage_alt daily_wage_10, detail 
+estpost summarize cen_ihs_shadow_wage daily_wage_10, detail 
 
 esttab . using "$auctions/shadow_wage_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min p50 max") noobs nonumber label replace
 

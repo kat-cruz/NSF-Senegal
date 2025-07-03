@@ -405,8 +405,11 @@ gen land_to_labor = prod_hect_1 / ag_hours_1
 twoway (scatter ai_leon_re land_to_labor if ai_leon_re != .) (fpfit ai_leon_re land_to_labor if ai_leon_re != .), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) 
 graph export "$auctions/ai_land_labor.eps", as(eps) replace
 
-twoway (scatter ihs_ai land_to_labor if ihs_ai != . & ihs_ai > -5 & ihs_ai < 5), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) ylabel(-5(2.5)5)
+twoway (scatter ihs_ai land_to_labor if ihs_ai != . & ihs_ai > -5 & ihs_ai < 5) (fpfit cen_ihs_ai land_to_labor if ihs_ai != . & ihs_ai > -5 & ihs_ai < 5), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) ylabel(-5(2.5)5)
 graph export "$auctions/ihs_ai_land_labor.eps", as(eps) replace
+
+twoway (scatter cen_ihs_ai land_to_labor if cen_ihs_ai != . & cen_ihs_ai > -5 & cen_ihs_ai < 5) (fpfit cen_ihs_ai land_to_labor if cen_ihs_ai != . & cen_ihs_ai > -5 & cen_ihs_ai < 5), xtitle("Land to Labor Ratio") ytitle("Allocative Inefficiency") legend(off) xlabel(0(0.5)2) ylabel(-5(2.5)5)
+graph export "$auctions/cen_ihs_ai_land_labor.eps", as(eps) replace
 
 *** plot ratio of wage to mpl along land to labor ratio *** 
 twoway (scatter wage_ratio land_to_labor) (fpfit wage_ratio land_to_labor), xtitle("Land to Labor Ratio") ytitle("Wage to Marginal Revenue Product of Labor Ratio") legend(off)
@@ -441,7 +444,13 @@ eststo ihs_ai_factors
 *** predict ai for those who do not do wage labor *** 
 gen est_ihs_ai = _b[_cons] + _b[hhhead_no_education]*hhhead_no_education + _b[hhhead_female]*hhhead_female + _b[hhhead_age]*hhhead_age + _b[age2]*age2 + _b[members]*members + _b[members2]*members2 + _b[child]*child + _b[child2]*child2 + _b[rice]*rice + _b[crop_types]*crop_types + _b[crop_types2]*crop_types2 + _b[prod_hect_1]*prod_hect_1 +_b[land2]*land2 + _b[TLU_1]*TLU_1 +_b[TLU2]*TLU2 if ag_hours_1 > 0 & ag_wage == 0 
 
-esttab ai_factors ihs_ai_factors using "$auctions/ai_factors.tex", keep(hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types crop_types2 prod_hect_1 land2 TLU_1 TLU2) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
+reg cen_ihs_ai hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types crop_types2 prod_hect_1 land2 TLU_1 TLU2, cluster(village_num) 
+eststo cen_ihs_ai_factors 
+
+*** predict ai for those who do not do wage labor *** 
+gen est_cen_ihs_ai = _b[_cons] + _b[hhhead_no_education]*hhhead_no_education + _b[hhhead_female]*hhhead_female + _b[hhhead_age]*hhhead_age + _b[age2]*age2 + _b[members]*members + _b[members2]*members2 + _b[child]*child + _b[child2]*child2 + _b[rice]*rice + _b[crop_types]*crop_types + _b[crop_types2]*crop_types2 + _b[prod_hect_1]*prod_hect_1 +_b[land2]*land2 + _b[TLU_1]*TLU_1 +_b[TLU2]*TLU2 if ag_hours_1 > 0 & ag_wage == 0 
+
+esttab ai_factors ihs_ai_factors cen_ihs_ai_factors using "$auctions/ai_factors.tex", keep(hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types crop_types2 prod_hect_1 land2 TLU_1 TLU2) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
 
 *** estimate factors of the gap *** 
 reg wage_ratio hhhead_no_education hhhead_female hhhead_age age2 members members2 child child2 rice crop_types prod_hect_1 TLU_1, cluster(village_num)
@@ -455,24 +464,25 @@ gen est_shadow_wage_alt = est_wage_ratio*mpl_leon_re
 gen shadow_wage = exp(ai_leon_re)*mpl_leon_re
 gen shadow_wage_alt = wage_ratio*mpl_leon_re
 gen ihs_shadow_wage = sinh(est_ihs_ai)*mpl_leon_re 
+gen cen_ihs_shadow_wage_alt = sinh(est_cen_ihs_ai)*mpl_leon_re
 
 *** summarize shaodw wages *** 
-sum est_shadow_wage est_shadow_wage_alt shadow_wage shadow_wage_alt ihs_shadow_wage
+sum est_shadow_wage est_shadow_wage_alt shadow_wage shadow_wage_alt ihs_shadow_wage cen_ihs_shadow_wage_alt
 
 gen cen_ihs_shadow_wage = ihs_shadow_wage 
 replace cen_ihs_shadow_wage = 0 if ihs_shadow_wage < 0 & ihs_shadow_wage != . 
 
-estpost summarize est_shadow_wage ihs_shadow_wage
+estpost summarize est_shadow_wage ihs_shadow_wage cen_ihs_shadow_wage cen_ihs_shadow_wage_alt
 
 esttab . using "$auctions/shadow_wage_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
 *** 
 
 *** save just shadow wages to then use in auctions supply curve *** 
-keep daily_wage_10 ihs_shadow_wage slack_hours 
+keep daily_wage_10 cen_ihs_shadow_wage_alt slack_hours 
 
 gen wage = daily_wage_10
-replace wage = ihs_shadow_wage if ihs_shadow_wage != . 
+replace wage = cen_ihs_shadow_wage_alt if daily_wage_10 == . & cen_ihs_shadow_wage_alt != . 
 
 drop if wage == . 
 

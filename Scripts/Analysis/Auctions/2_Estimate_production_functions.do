@@ -309,10 +309,14 @@ esttab leon_re leon_fe leon_re_notlue leon_fe_notlu using "$auctions/leon_prods.
 
 esttab quad_re quad_fe quad_re_notlu quad_fe_notlu using "$auctions/quad_prods.tex", keep(dm_land dm_land_sq dm_hh_labor dm_hh_labor_sq dm_fert dm_fert_sq dm_TLU dm_TLU_sq dm_hired_labor dm_hired_labor_sq dm_equip dm_equip_sq dm_land_hh_labor dm_land_fert dm_land_TLU dm_land_hired_labor dm_land_equip dm_hh_labor_fert dm_hh_labor_TLU dm_hh_labor_hired_labor dm_hh_labor_equip dm_fert_TLU dm_fert_hired_labor dm_fert_equip dm_TLU_hired_labor dm_TLU_equip dm_hired_labor_equip manure compost hhwaste) se r2 star(* 0.1 ** 0.05 *** 0.01) replace 
 
-*** summarize estiamte marginal products of labor *** 
-sum mpl_quad_re mpl_leon_re mpl_quad_fe mpl_leon_fe mpl_quad_re_notlu mpl_leon_re_notlu mpl_quad_fe_notlu mpl_leon_fe_notlu daily_wage_10
+*** censor mpl at zero *** 
+gen cen_mpl_leon_re = mpl_leon_re 
+replace cen_mpl_leon_re = 0 if mpl_leon_re < 0 & mpl_leon_re != .  
 
-estpost summarize mpl_quad_re mpl_leon_re mpl_quad_fe mpl_leon_fe mpl_quad_re_notlu mpl_leon_re_notlu mpl_quad_fe_notlu mpl_leon_fe_notlu daily_wage_10
+*** summarize estiamte marginal products of labor *** 
+sum cen_mpl_leon_re daily_wage_10
+
+estpost summarize cen_mpl_leon_re daily_wage_10
 
 esttab . using "$auctions/mpl_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
 
@@ -385,10 +389,6 @@ sum elas_leon_fenotlu_*
 sum elas_quad_renotlu_* 
 
 sum elas_leon_renotlu_* 
-
-*** censor mpl at zero *** 
-gen cen_mpl_leon_re = mpl_leon_re 
-replace cen_mpl_leon_re = 0 if mpl_leon_re < 0 & mpl_leon_re != .  
 
 *** calculate allocative inefficiency *** 
 gen ai_leon_re = ln(daily_wage_10/mpl_leon_re) if ag_wage == 1
@@ -472,9 +472,9 @@ sum est_shadow_wage est_shadow_wage_alt shadow_wage shadow_wage_alt ihs_shadow_w
 gen cen_ihs_shadow_wage = ihs_shadow_wage 
 replace cen_ihs_shadow_wage = 0 if ihs_shadow_wage < 0 & ihs_shadow_wage != . 
 
-estpost summarize est_shadow_wage ihs_shadow_wage cen_ihs_shadow_wage cen_ihs_shadow_wage_alt
+estpost summarize cen_ihs_shadow_wage_alt daily_wage_10, detail 
 
-esttab . using "$auctions/shadow_wage_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min max") noobs nonumber label replace
+esttab . using "$auctions/shadow_wage_sum_stats.tex", cells("count mean(fmt(%9.3f)) sd(fmt(%9.3f)) min p50 max") noobs nonumber label replace
 
 *** 
 

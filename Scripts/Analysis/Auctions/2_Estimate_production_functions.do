@@ -482,7 +482,7 @@ esttab . using "$auctions/shadow_wage_sum_stats.tex", cells("count mean(fmt(%9.3
 keep daily_wage_10 cen_ihs_shadow_wage_alt slack_hours 
 
 gen wage = daily_wage_10
-replace wage = cen_ihs_shadow_wage_alt if daily_wage_10 == . & cen_ihs_shadow_wage_alt != . 
+replace wage = cen_ihs_shadow_wage if daily_wage_10 == . & cen_ihs_shadow_wage != . 
 
 drop if wage == . 
 

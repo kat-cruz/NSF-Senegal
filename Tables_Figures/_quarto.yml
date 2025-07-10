@@ -1,8 +1,0 @@
-project: 
-  type: website
-  output-dir: Figures_&_Tables/docs
-  render: 
-    - "*.qmd"
-
-website:
-  title: "NSF - Senegal"

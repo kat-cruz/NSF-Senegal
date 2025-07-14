@@ -549,7 +549,7 @@ confusion_matrix_threshold_html
 This is a scatter plot of the predicted probability of infection against the egg count. Any dark red observations are the overlap of S. mansoni and S. haematobium. 
 
 ```{r, message=FALSE, warning=FALSE}
-### visulalize 
+### visualize 
 
 # make a single df with that combines predictions and egg counts 
 plot_df <- data.frame(
@@ -608,7 +608,11 @@ hist(test_probs,
 :::
 
 
+<!--
 
+** end of qmd file. Questions? Contact me at kateri.mouawad@gmail.com
+
+-->
 
 
 
